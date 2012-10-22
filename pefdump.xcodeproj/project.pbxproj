@@ -7,8 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC845615163465C7001E49E2 /* LoaderSection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC845613163465C7001E49E2 /* LoaderSection.cpp */; };
+		DC84561B16347770001E49E2 /* ImportedLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8456191634776F001E49E2 /* ImportedLibrary.cpp */; };
+		DC8456221634B832001E49E2 /* ImportedSymbol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8456201634B832001E49E2 /* ImportedSymbol.cpp */; };
+		DC8456261634D409001E49E2 /* Relocation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8456241634D409001E49E2 /* Relocation.cpp */; };
+		DC8456291634DFA5001E49E2 /* Export.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8456271634DFA4001E49E2 /* Export.cpp */; };
 		DCC3DC3516338A7900792F4A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCC3DC3416338A7900792F4A /* main.cpp */; };
 		DCC3DC3716338A7900792F4A /* pefdump.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3DC3616338A7900792F4A /* pefdump.1 */; };
+		DCC3DC3F16338AA700792F4A /* Structures.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCC3DC3D16338AA700792F4A /* Structures.cpp */; };
+		DCC3DC4916339D5F00792F4A /* Container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCC3DC4716339D5F00792F4A /* Container.cpp */; };
+		DCC3DC4D16339ECD00792F4A /* InstantiableSection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCC3DC4B16339ECD00792F4A /* InstantiableSection.cpp */; };
+		DCC3DC501633A2B600792F4A /* FileMapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCC3DC4E1633A2B600792F4A /* FileMapper.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,9 +34,29 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DC845613163465C7001E49E2 /* LoaderSection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LoaderSection.cpp; sourceTree = "<group>"; };
+		DC845614163465C7001E49E2 /* LoaderSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoaderSection.h; sourceTree = "<group>"; };
+		DC84561716346BB8001E49E2 /* BigEndian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigEndian.h; sourceTree = "<group>"; };
+		DC8456191634776F001E49E2 /* ImportedLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImportedLibrary.cpp; sourceTree = "<group>"; };
+		DC84561A1634776F001E49E2 /* ImportedLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImportedLibrary.h; sourceTree = "<group>"; };
+		DC8456201634B832001E49E2 /* ImportedSymbol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImportedSymbol.cpp; sourceTree = "<group>"; };
+		DC8456211634B832001E49E2 /* ImportedSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImportedSymbol.h; sourceTree = "<group>"; };
+		DC8456241634D409001E49E2 /* Relocation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Relocation.cpp; sourceTree = "<group>"; };
+		DC8456251634D409001E49E2 /* Relocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Relocation.h; sourceTree = "<group>"; };
+		DC8456271634DFA4001E49E2 /* Export.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Export.cpp; sourceTree = "<group>"; };
+		DC8456281634DFA5001E49E2 /* Export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Export.h; sourceTree = "<group>"; };
 		DCC3DC3016338A7900792F4A /* pefdump */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pefdump; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCC3DC3416338A7900792F4A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DCC3DC3616338A7900792F4A /* pefdump.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = pefdump.1; sourceTree = "<group>"; };
+		DCC3DC3D16338AA700792F4A /* Structures.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Structures.cpp; sourceTree = "<group>"; };
+		DCC3DC3E16338AA700792F4A /* Structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Structures.h; sourceTree = "<group>"; };
+		DCC3DC461633993700792F4A /* Endian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Endian.h; sourceTree = "<group>"; };
+		DCC3DC4716339D5F00792F4A /* Container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Container.cpp; sourceTree = "<group>"; };
+		DCC3DC4A16339DEF00792F4A /* Container.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
+		DCC3DC4B16339ECD00792F4A /* InstantiableSection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InstantiableSection.cpp; sourceTree = "<group>"; };
+		DCC3DC4C16339ECD00792F4A /* InstantiableSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InstantiableSection.h; sourceTree = "<group>"; };
+		DCC3DC4E1633A2B600792F4A /* FileMapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileMapper.cpp; sourceTree = "<group>"; };
+		DCC3DC4F1633A2B600792F4A /* FileMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileMapper.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +70,38 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DC84561F1634B7C6001E49E2 /* PEF */ = {
+			isa = PBXGroup;
+			children = (
+				DCC3DC461633993700792F4A /* Endian.h */,
+				DC84561716346BB8001E49E2 /* BigEndian.h */,
+				DCC3DC3D16338AA700792F4A /* Structures.cpp */,
+				DCC3DC3E16338AA700792F4A /* Structures.h */,
+				DCC3DC4716339D5F00792F4A /* Container.cpp */,
+				DCC3DC4A16339DEF00792F4A /* Container.h */,
+				DCC3DC4B16339ECD00792F4A /* InstantiableSection.cpp */,
+				DCC3DC4C16339ECD00792F4A /* InstantiableSection.h */,
+				DC845613163465C7001E49E2 /* LoaderSection.cpp */,
+				DC845614163465C7001E49E2 /* LoaderSection.h */,
+				DC8456191634776F001E49E2 /* ImportedLibrary.cpp */,
+				DC84561A1634776F001E49E2 /* ImportedLibrary.h */,
+				DC8456201634B832001E49E2 /* ImportedSymbol.cpp */,
+				DC8456211634B832001E49E2 /* ImportedSymbol.h */,
+				DC8456241634D409001E49E2 /* Relocation.cpp */,
+				DC8456251634D409001E49E2 /* Relocation.h */,
+				DC8456271634DFA4001E49E2 /* Export.cpp */,
+				DC8456281634DFA5001E49E2 /* Export.h */,
+			);
+			name = PEF;
+			sourceTree = "<group>";
+		};
+		DC8456231634C00A001E49E2 /* CFM */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = CFM;
+			sourceTree = "<group>";
+		};
 		DCC3DC2516338A7900792F4A = {
 			isa = PBXGroup;
 			children = (
@@ -61,7 +122,11 @@
 			isa = PBXGroup;
 			children = (
 				DCC3DC3416338A7900792F4A /* main.cpp */,
+				DCC3DC4E1633A2B600792F4A /* FileMapper.cpp */,
+				DCC3DC4F1633A2B600792F4A /* FileMapper.h */,
 				DCC3DC3616338A7900792F4A /* pefdump.1 */,
+				DC84561F1634B7C6001E49E2 /* PEF */,
+				DC8456231634C00A001E49E2 /* CFM */,
 			);
 			path = pefdump;
 			sourceTree = "<group>";
@@ -118,6 +183,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				DCC3DC3516338A7900792F4A /* main.cpp in Sources */,
+				DCC3DC3F16338AA700792F4A /* Structures.cpp in Sources */,
+				DCC3DC4916339D5F00792F4A /* Container.cpp in Sources */,
+				DCC3DC4D16339ECD00792F4A /* InstantiableSection.cpp in Sources */,
+				DCC3DC501633A2B600792F4A /* FileMapper.cpp in Sources */,
+				DC845615163465C7001E49E2 /* LoaderSection.cpp in Sources */,
+				DC84561B16347770001E49E2 /* ImportedLibrary.cpp in Sources */,
+				DC8456221634B832001E49E2 /* ImportedSymbol.cpp in Sources */,
+				DC8456261634D409001E49E2 /* Relocation.cpp in Sources */,
+				DC8456291634DFA5001E49E2 /* Export.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -208,6 +282,7 @@
 				DCC3DC3C16338A7900792F4A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
