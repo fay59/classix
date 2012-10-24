@@ -80,16 +80,12 @@ namespace PPCVM
 	{
 		begin = nullptr;
 		nextEmptyBlock = nullptr;
-		sizeLocked = false;
 		currentSize = 0;
 		ScribbleFreedMemory = false;
 	}
 	
 	const uint8_t* MemoryManager::GetBaseAddress() const
 	{
-		if (!sizeLocked)
-			throw std::logic_error("cannot get base address until size is locked");
-		
 		return begin;
 	}
 	
@@ -125,11 +121,6 @@ namespace PPCVM
 		Reserve(currentSize + size);
 	}
 	
-	void MemoryManager::LockReservedSize()
-	{
-		sizeLocked = true;
-	}
-	
 	uint32_t MemoryManager::Allocate(size_t size)
 	{
 		bool heapCompacted = false;
@@ -161,13 +152,9 @@ namespace PPCVM
 				CompactHeap();
 				heapCompacted = true;
 			}
-			else if (!sizeLocked)
-			{
-				ReserveAdditional(size);
-			}
 			else
 			{
-				return 0;
+				ReserveAdditional(size);
 			}
 		}
 		while (true);

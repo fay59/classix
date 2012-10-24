@@ -33,13 +33,11 @@ namespace PPCVM
 		
 		uint8_t* begin;
 		uint8_t* nextEmptyBlock;
+		size_t currentSize;
 		
 		std::unordered_map<uint32_t, Allocation> allocations;
 		std::map<uint8_t*, uint32_t> allocationsByAddress;
 		std::list<uint32_t> recycledHandles;
-		
-		bool sizeLocked;
-		size_t currentSize;
 		
 		void CompactHeap();
 		
@@ -67,7 +65,6 @@ namespace PPCVM
 		size_t GetReservedSize() const;
 		void Reserve(size_t size);
 		void ReserveAdditional(size_t size);
-		void LockReservedSize();
 		
 		uint32_t Allocate(size_t size);
 		void Deallocate(uint32_t handle);
