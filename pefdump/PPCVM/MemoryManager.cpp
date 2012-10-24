@@ -76,17 +76,25 @@ namespace PPCVM
 			allocation->lockCount--;
 	}
 	
+	const ptrdiff_t MemoryManager::PageSize = 512;
+	
 	MemoryManager::MemoryManager()
 	{
-		begin = nullptr;
-		nextEmptyBlock = nullptr;
-		currentSize = 0;
+		begin = static_cast<uint8_t*>(malloc(PageSize));
+		nextEmptyBlock = begin + PageSize;
+		currentSize = PageSize;
+		memset_pattern4(begin, &DeadPattern, PageSize);
 		ScribbleFreedMemory = false;
 	}
 	
 	const uint8_t* MemoryManager::GetBaseAddress() const
 	{
 		return begin;
+	}
+	
+	intptr_t MemoryManager::GetRelativeAddress(const uint8_t *address) const
+	{
+		return address - begin;
 	}
 	
 	size_t MemoryManager::GetReservedSize() const
@@ -221,11 +229,10 @@ namespace PPCVM
 		std::list<Relocation> relocated;
 		
 		auto iter = allocationsByAddress.begin();
-		Allocation* lastAllocation = &allocations[iter->second];
+		uint8_t* lastAllocationEnd = begin + PageSize;
 		for (iter++; iter != allocationsByAddress.end(); iter++)
 		{
 			auto& allocation = allocations[iter->second];
-			uint8_t* lastAllocationEnd = lastAllocation->address + lastAllocation->size;
 			ptrdiff_t difference = allocation.address - lastAllocationEnd;
 			if (difference != 0)
 			{
@@ -261,10 +268,10 @@ namespace PPCVM
 					}
 				}
 			}
-			lastAllocation = &allocations[iter->second];
+			lastAllocationEnd = allocation.address + allocation.size;
 		}
 		
-		nextEmptyBlock = lastAllocation->address + lastAllocation->size;
+		nextEmptyBlock = lastAllocationEnd;
 		
 		for (auto iter = relocated.begin(); iter != relocated.end(); iter++)
 		{

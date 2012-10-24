@@ -35,8 +35,7 @@ int main(int argc, const char * argv[])
 		
 		fragmentManager.LoadContainer(argv[1]);
 		
-		memoryManager.ReserveAdditional(0x2000000); // 32 MB
-		memoryManager.LockReservedSize();
+		// memoryManager.ReserveAdditional(0x2000000); // 32 MB
 		std::cout << "Successfully loaded container " << argv[1] << endline;
 	}
 	catch (std::logic_error error)

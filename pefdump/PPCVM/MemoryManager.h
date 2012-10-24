@@ -42,6 +42,8 @@ namespace PPCVM
 		void CompactHeap();
 		
 	public:
+		static const ptrdiff_t PageSize;
+		
 		class AddressLock
 		{
 			Allocation* allocation;
@@ -61,6 +63,7 @@ namespace PPCVM
 		bool ScribbleFreedMemory;
 		
 		const uint8_t* GetBaseAddress() const;
+		intptr_t GetRelativeAddress(const uint8_t* address) const;
 		
 		size_t GetReservedSize() const;
 		void Reserve(size_t size);
