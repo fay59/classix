@@ -22,9 +22,7 @@ namespace CFM
 			throw std::logic_error(strerror(errno));
 		
 		fileSize = lseek(fd, 0, SEEK_END);
-		lseek(fd, 0, SEEK_SET);
-		
-		address = mmap(nullptr, fileSize, PROT_READ, MAP_PRIVATE, fd, 0);
+		address = mmap(nullptr, static_cast<size_t>(fileSize), PROT_READ, MAP_PRIVATE, fd, 0);
 		close(fd);
 		
 		if (address == MAP_FAILED)
@@ -36,11 +34,11 @@ namespace CFM
 		if (fd < 0)
 			throw new std::logic_error("file descriptor is not open");
 		
-		long currentPosition = lseek(fd, 0, SEEK_CUR);
+		long long currentPosition = lseek(fd, 0, SEEK_CUR);
 		fileSize = lseek(fd, 0, SEEK_END);
 		lseek(fd, currentPosition, SEEK_SET);
 		
-		address = mmap(nullptr, fileSize, PROT_READ, MAP_PRIVATE, fd, 0);
+		address = mmap(nullptr, static_cast<size_t>(fileSize), PROT_READ, MAP_PRIVATE, fd, 0);
 		if (address == MAP_FAILED)
 			throw std::logic_error(strerror(errno));
 	}
@@ -65,6 +63,6 @@ namespace CFM
 
 	FileMapping::FileMapping()
 	{
-		munmap(address, fileSize);
+		munmap(address, static_cast<size_t>(fileSize));
 	}
 }

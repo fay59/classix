@@ -27,12 +27,12 @@ namespace CFM
 		
 	public:
 		FragmentManager();
-		FragmentManager(const FragmentManager&& that) = delete;
+		FragmentManager(const FragmentManager& that) = delete;
 		
 		std::list<LibraryResolver*> Resolvers;
 		
 		bool LoadContainer(const std::string& name);
-		void* ResolveSymbol(const std::string& container, const std::string& name);
+		intptr_t ResolveSymbol(const std::string& container, const std::string& name);
 	};
 }
 

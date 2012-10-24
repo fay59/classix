@@ -31,14 +31,15 @@ namespace
 
 namespace CFM
 {
-	PEFLibraryResolver::PEFLibraryResolver(FragmentManager& manager)
+	PEFLibraryResolver::PEFLibraryResolver(Common::IAllocator* allocator, FragmentManager& manager)
 	: cfm(manager)
+	, allocator(allocator)
 	{ }
 	
 	SymbolResolver* PEFLibraryResolver::ResolveLibrary(const std::string &name)
 	{
 		FileDescriptor file(name);
-		return file.fd < 0 ? nullptr : new PEFSymbolResolver(cfm, FileMapping(file.fd));
+		return file.fd < 0 ? nullptr : new PEFSymbolResolver(allocator, cfm, FileMapping(file.fd));
 	}
 	
 	PEFLibraryResolver::~PEFLibraryResolver()

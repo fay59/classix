@@ -15,7 +15,7 @@ namespace CFM
 {
 	class FileMapping
 	{
-		long fileSize;
+		long long fileSize;
 		void* address;
 		
 	public:

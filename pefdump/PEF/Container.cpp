@@ -44,7 +44,7 @@ namespace PEF
 			else
 			{
 				instantiableSectionIndices.push_back(static_cast<int32_t>(this->sections.size()));
-				this->sections.emplace_back(sectionHeader, sectionName, Base, static_cast<const uint8_t*>(end));
+				this->sections.emplace_back(allocator, sectionHeader, sectionName, Base, static_cast<const uint8_t*>(end));
 			}
 		}
 		

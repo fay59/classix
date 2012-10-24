@@ -13,6 +13,7 @@
 #include "Container.h"
 #include "FileMapping.h"
 #include "FragmentManager.h"
+#include "IAllocator.h"
 
 namespace CFM
 {
@@ -21,15 +22,16 @@ namespace CFM
 		FragmentManager& cfm;
 		FileMapping mapping;
 		PEF::Container container;
+		Common::IAllocator* allocator;
 		
 		void Fixup();
 		
 	public:
-		PEFSymbolResolver(FragmentManager& cfm, const std::string& filePath);
-		PEFSymbolResolver(FragmentManager& cfm, FileMapping&& mapping);
+		PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, const std::string& filePath);
+		PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, FileMapping&& mapping);
 		
 		virtual SymbolResolver::MainSymbol GetMainSymbol();
-		virtual void* ResolveSymbol(const std::string& symbolName);
+		virtual intptr_t ResolveSymbol(const std::string& symbolName);
 		
 		virtual ~PEFSymbolResolver();
 	};

@@ -20,7 +20,7 @@ namespace CFM
 		typedef int (*MainSymbol)(int argc, const char** argv);
 		
 		virtual MainSymbol GetMainSymbol() = 0;
-		virtual void* ResolveSymbol(const std::string& name) = 0;
+		virtual intptr_t ResolveSymbol(const std::string& name) = 0;
 		virtual ~SymbolResolver() = 0;
 	};
 }
