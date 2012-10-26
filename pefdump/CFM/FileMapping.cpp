@@ -61,7 +61,7 @@ namespace CFM
 		return static_cast<uint8_t*>(address) + fileSize;
 	}
 
-	FileMapping::FileMapping()
+	FileMapping::~FileMapping()
 	{
 		munmap(address, static_cast<size_t>(fileSize));
 	}

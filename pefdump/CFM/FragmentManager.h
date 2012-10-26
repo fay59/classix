@@ -32,7 +32,7 @@ namespace CFM
 		std::list<LibraryResolver*> Resolvers;
 		
 		bool LoadContainer(const std::string& name);
-		intptr_t ResolveSymbol(const std::string& container, const std::string& name);
+		ResolvedSymbol ResolveSymbol(const std::string& container, const std::string& name);
 	};
 }
 

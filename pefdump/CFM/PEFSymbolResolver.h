@@ -13,25 +13,28 @@
 #include "Container.h"
 #include "FileMapping.h"
 #include "FragmentManager.h"
-#include "IAllocator.h"
+#include "MemoryManager.h"
+#include "MemoryManagerAllocator.h"
 
 namespace CFM
 {
-	class PEFSymbolResolver : public SymbolResolver
+	class PEFSymbolResolver : public virtual SymbolResolver
 	{
-		FragmentManager& cfm;
 		FileMapping mapping;
+		PPCVM::MemoryManagerAllocator allocator;
 		PEF::Container container;
-		Common::IAllocator* allocator;
 		
-		void Fixup();
+		FragmentManager& cfm;
+		PPCVM::MemoryManager& memoryManager;
+		
+		ResolvedSymbol Symbolize(const uint8_t* address);
 		
 	public:
-		PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, const std::string& filePath);
-		PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, FileMapping&& mapping);
+		PEFSymbolResolver(PPCVM::MemoryManager& memMan, FragmentManager& cfm, const std::string& filePath);
+		PEFSymbolResolver(PPCVM::MemoryManager& memMan, FragmentManager& cfm, FileMapping&& mapping);
 		
 		virtual SymbolResolver::MainSymbol GetMainSymbol();
-		virtual intptr_t ResolveSymbol(const std::string& symbolName);
+		virtual ResolvedSymbol ResolveSymbol(const std::string& symbolName);
 		
 		virtual ~PEFSymbolResolver();
 	};

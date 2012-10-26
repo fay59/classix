@@ -29,14 +29,17 @@ namespace PEF
 		Common::IAllocator* allocator;
 		
 	public:
-		typedef std::vector<InstantiableSection>::const_iterator iterator;
+		typedef std::vector<InstantiableSection>::iterator iterator;
+		typedef std::vector<InstantiableSection>::const_iterator const_iterator;
 		
 		const uint8_t* Base;
 		
 		Container(Common::IAllocator* allocator, const void* base, const void* end);
 		
-		iterator SectionsBegin() const;
-		iterator SectionsEnd() const;
+		iterator SectionsBegin();
+		iterator SectionsEnd();
+		const_iterator SectionsBegin() const;
+		const_iterator SectionsEnd() const;
 		size_t Size() const;
 		
 		InstantiableSection& GetSection(uint32_t index);

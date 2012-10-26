@@ -8,5 +8,26 @@
 
 #include "SymbolResolver.h"
 
-CFM::SymbolResolver::~SymbolResolver()
-{ }
+namespace CFM
+{
+	const ResolvedSymbol ResolvedSymbol::Invalid(SymbolUniverse::LostInTimeAndSpace, 0);
+	
+	ResolvedSymbol::ResolvedSymbol(SymbolUniverse universe, intptr_t address)
+	{
+		Universe = universe;
+		Address = address;
+	}
+	
+	ResolvedSymbol ResolvedSymbol::PowerPCSymbol(intptr_t address)
+	{
+		return ResolvedSymbol(SymbolUniverse::PowerPC, address);
+	}
+	
+	ResolvedSymbol ResolvedSymbol::IntelSymbol(intptr_t address)
+	{
+		return ResolvedSymbol(SymbolUniverse::Intel, address);
+	}
+	
+	CFM::SymbolResolver::~SymbolResolver()
+	{ }
+}

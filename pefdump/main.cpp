@@ -12,7 +12,6 @@
 #include "FragmentManager.h"
 #include "PEFLibraryResolver.h"
 #include "MemoryManager.h"
-#include "MemoryManagerAllocator.h"
 
 const char endline = '\n';
 
@@ -27,10 +26,9 @@ int main(int argc, const char * argv[])
 	try
 	{
 		PPCVM::MemoryManager memoryManager;
-		PPCVM::MemoryManagerAllocator allocator(memoryManager);
 		
 		CFM::FragmentManager fragmentManager;
-		CFM::PEFLibraryResolver pefResolver(&allocator, fragmentManager);
+		CFM::PEFLibraryResolver pefResolver(memoryManager, fragmentManager);
 		fragmentManager.Resolvers.push_back(&pefResolver);
 		
 		fragmentManager.LoadContainer(argv[1]);

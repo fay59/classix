@@ -11,17 +11,17 @@
 
 #include "LibraryResolver.h"
 #include "FragmentManager.h"
-#include "IAllocator.h"
+#include "MemoryManager.h"
 
 namespace CFM
 {
-	class PEFLibraryResolver : public LibraryResolver
+	class PEFLibraryResolver : public virtual LibraryResolver
 	{
 		FragmentManager& cfm;
-		Common::IAllocator* allocator;
+		PPCVM::MemoryManager& memoryManager;
 		
 	public:
-		PEFLibraryResolver(Common::IAllocator* allocator, FragmentManager& manager);
+		PEFLibraryResolver(PPCVM::MemoryManager& memMan, FragmentManager& manager);
 						   
 		virtual SymbolResolver* ResolveLibrary(const std::string& name);
 		virtual ~PEFLibraryResolver();

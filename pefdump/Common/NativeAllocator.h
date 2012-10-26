@@ -13,7 +13,7 @@
 
 namespace Common
 {
-	class NativeAllocator : public IAllocator
+	class NativeAllocator : public virtual IAllocator
 	{
 	public:
 		static NativeAllocator* Instance;

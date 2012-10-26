@@ -27,7 +27,7 @@ namespace CFM
 		void* begin();
 		void* end();
 		
-		FileMapping();
+		~FileMapping();
 	};
 }
 

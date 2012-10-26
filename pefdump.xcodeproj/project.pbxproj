@@ -11,6 +11,7 @@
 		DC40D01F1635B4A0008CA9BC /* PEFSymbolResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC40D01D1635B4A0008CA9BC /* PEFSymbolResolver.cpp */; };
 		DC40D0261635CABE008CA9BC /* LibraryResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC40D0241635CABE008CA9BC /* LibraryResolver.cpp */; };
 		DC40D0291635CBD1008CA9BC /* PEFLibraryResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC40D0271635CBD1008CA9BC /* PEFLibraryResolver.cpp */; };
+		DC6847CB1638C258003E906D /* PEFRelocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC6847C91638C258003E906D /* PEFRelocator.cpp */; };
 		DC75BC381635AD8500F89EA1 /* FragmentManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC75BC361635AD8500F89EA1 /* FragmentManager.cpp */; };
 		DC75BC3B1635ADFD00F89EA1 /* FileMapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC75BC391635ADFA00F89EA1 /* FileMapping.cpp */; };
 		DC82A9BD1636F51800EAEDCD /* MemoryManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC82A9BB1636F51800EAEDCD /* MemoryManager.cpp */; };
@@ -51,6 +52,8 @@
 		DC40D0251635CABE008CA9BC /* LibraryResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryResolver.h; sourceTree = "<group>"; };
 		DC40D0271635CBD1008CA9BC /* PEFLibraryResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PEFLibraryResolver.cpp; sourceTree = "<group>"; };
 		DC40D0281635CBD1008CA9BC /* PEFLibraryResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEFLibraryResolver.h; sourceTree = "<group>"; };
+		DC6847C91638C258003E906D /* PEFRelocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PEFRelocator.cpp; sourceTree = "<group>"; };
+		DC6847CA1638C258003E906D /* PEFRelocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEFRelocator.h; sourceTree = "<group>"; };
 		DC75BC361635AD8500F89EA1 /* FragmentManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FragmentManager.cpp; sourceTree = "<group>"; };
 		DC75BC371635AD8500F89EA1 /* FragmentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FragmentManager.h; sourceTree = "<group>"; };
 		DC75BC391635ADFA00F89EA1 /* FileMapping.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FileMapping.cpp; sourceTree = "<group>"; };
@@ -70,7 +73,6 @@
 		DCF3599616384E1400EC1A95 /* Container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Container.cpp; sourceTree = "<group>"; };
 		DCF3599716384E1400EC1A95 /* Container.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
 		DCF3599816384E1400EC1A95 /* Endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Endian.h; sourceTree = "<group>"; };
-		DCF3599916384E1400EC1A95 /* Endianness.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Endianness.h; sourceTree = "<group>"; };
 		DCF3599A16384E1400EC1A95 /* Export.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Export.cpp; sourceTree = "<group>"; };
 		DCF3599B16384E1400EC1A95 /* Export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Export.h; sourceTree = "<group>"; };
 		DCF3599C16384E1400EC1A95 /* ImportedLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImportedLibrary.cpp; sourceTree = "<group>"; };
@@ -116,7 +118,6 @@
 				DCF3599616384E1400EC1A95 /* Container.cpp */,
 				DCF3599716384E1400EC1A95 /* Container.h */,
 				DCF3599816384E1400EC1A95 /* Endian.h */,
-				DCF3599916384E1400EC1A95 /* Endianness.h */,
 				DCF3599A16384E1400EC1A95 /* Export.cpp */,
 				DCF3599B16384E1400EC1A95 /* Export.h */,
 				DCF3599C16384E1400EC1A95 /* ImportedLibrary.cpp */,
@@ -150,6 +151,8 @@
 				DC40D0251635CABE008CA9BC /* LibraryResolver.h */,
 				DC40D0271635CBD1008CA9BC /* PEFLibraryResolver.cpp */,
 				DC40D0281635CBD1008CA9BC /* PEFLibraryResolver.h */,
+				DC6847C91638C258003E906D /* PEFRelocator.cpp */,
+				DC6847CA1638C258003E906D /* PEFRelocator.h */,
 			);
 			path = CFM;
 			sourceTree = "<group>";
@@ -264,6 +267,7 @@
 				DCF359AD16384E1400EC1A95 /* LoaderSection.cpp in Sources */,
 				DCF359AE16384E1400EC1A95 /* Relocation.cpp in Sources */,
 				DCF359AF16384E1400EC1A95 /* Structures.cpp in Sources */,
+				DC6847CB1638C258003E906D /* PEFRelocator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,6 +329,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_VERSION = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = i386;
 			};
@@ -334,6 +339,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_VERSION = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = i386;
 			};

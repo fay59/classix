@@ -31,15 +31,19 @@ namespace
 
 namespace CFM
 {
-	PEFLibraryResolver::PEFLibraryResolver(Common::IAllocator* allocator, FragmentManager& manager)
+	PEFLibraryResolver::PEFLibraryResolver(PPCVM::MemoryManager& memMan, FragmentManager& manager)
 	: cfm(manager)
-	, allocator(allocator)
+	, memoryManager(memMan)
 	{ }
 	
 	SymbolResolver* PEFLibraryResolver::ResolveLibrary(const std::string &name)
 	{
 		FileDescriptor file(name);
-		return file.fd < 0 ? nullptr : new PEFSymbolResolver(allocator, cfm, FileMapping(file.fd));
+		if (file.fd < 0)
+			return nullptr;
+		
+		FileMapping mapping(file.fd);
+		return new PEFSymbolResolver(memoryManager, cfm, std::move(mapping));
 	}
 	
 	PEFLibraryResolver::~PEFLibraryResolver()

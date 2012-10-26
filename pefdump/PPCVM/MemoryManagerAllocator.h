@@ -14,7 +14,7 @@
 
 namespace PPCVM
 {
-	class MemoryManagerAllocator : public Common::IAllocator
+	class MemoryManagerAllocator : public virtual Common::IAllocator
 	{
 		MemoryManager& manager;
 		

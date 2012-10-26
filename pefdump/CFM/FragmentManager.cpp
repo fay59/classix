@@ -35,7 +35,7 @@ namespace CFM
 		return false;
 	}
 	
-	intptr_t FragmentManager::ResolveSymbol(const std::string &container, const std::string &name)
+	ResolvedSymbol FragmentManager::ResolveSymbol(const std::string &container, const std::string &name)
 	{
 		if (!LoadContainer(container))
 			throw std::logic_error("Cannot resolve symbol because container cannot be openend");
