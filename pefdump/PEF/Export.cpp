@@ -42,9 +42,9 @@ namespace PEF
 		const char* nameTable = reinterpret_cast<const char*>(base) + header->LoaderStringsOffset;
 		uint32_t exportedSymbols = header->ExportedSymbolCount;
 		
-		const uint32_t* hashTableStart = reinterpret_cast<const uint32_t*>(base + header->ExportHashOffset);
+		const UInt32* hashTableStart = reinterpret_cast<const UInt32*>(base + header->ExportHashOffset);
 		uint32_t hashCount = 1 << header->ExportHashTablePower;
-		const uint32_t* exportKeyTable = hashTableStart + hashCount;
+		const UInt32* exportKeyTable = hashTableStart + hashCount;
 		const ExportedSymbolEntry* exportSymbolTable = reinterpret_cast<const ExportedSymbolEntry*>(exportKeyTable + exportedSymbols);
 		
 		for (uint32_t i = 0; i < exportedSymbols; i++)
@@ -52,7 +52,9 @@ namespace PEF
 			const auto& symbolEntry = exportSymbolTable[i];
 			ExportedSymbol symbol;
 			symbol.Class = static_cast<SymbolClasses::Enum>(symbolEntry.ClassAndName >> 24);
-			symbol.SymbolName = nameTable + (symbolEntry.ClassAndName & 0xffffff);
+			const char* nameBegin = nameTable + (symbolEntry.ClassAndName & 0xffffff);
+			const char* nameEnd = nameBegin + (exportKeyTable[i] >> 16);
+			symbol.SymbolName = std::string(nameBegin, nameEnd);
 			symbol.SectionIndex = symbolEntry.SectionIndex;
 			symbol.Offset = symbolEntry.SymbolValue;
 			symbolNames.push_back(symbol.SymbolName);

@@ -13,7 +13,7 @@
 namespace Common
 {
 	// nice hack
-	NativeAllocator* NativeAllocator::Instance = static_cast<NativeAllocator*>(malloc(0));
+	NativeAllocator* NativeAllocator::Instance = new NativeAllocator();
 	
 	uint8_t* NativeAllocator::Allocate(size_t size)
 	{

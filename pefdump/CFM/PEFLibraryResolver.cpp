@@ -42,7 +42,7 @@ namespace CFM
 		if (file.fd < 0)
 			return nullptr;
 		
-		FileMapping mapping(file.fd);
+		Common::FileMapping mapping(file.fd);
 		return new PEFSymbolResolver(memoryManager, cfm, std::move(mapping));
 	}
 	

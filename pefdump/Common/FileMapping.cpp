@@ -13,7 +13,7 @@
 
 #include "FileMapping.h"
 
-namespace CFM
+namespace Common
 {
 	FileMapping::FileMapping(const std::string& path)
 	{

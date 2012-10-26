@@ -20,7 +20,7 @@ namespace CFM
 {
 	class PEFSymbolResolver : public virtual SymbolResolver
 	{
-		FileMapping mapping;
+		Common::FileMapping mapping;
 		PPCVM::MemoryManagerAllocator allocator;
 		PEF::Container container;
 		
@@ -31,7 +31,7 @@ namespace CFM
 		
 	public:
 		PEFSymbolResolver(PPCVM::MemoryManager& memMan, FragmentManager& cfm, const std::string& filePath);
-		PEFSymbolResolver(PPCVM::MemoryManager& memMan, FragmentManager& cfm, FileMapping&& mapping);
+		PEFSymbolResolver(PPCVM::MemoryManager& memMan, FragmentManager& cfm, Common::FileMapping&& mapping);
 		
 		virtual SymbolResolver::MainSymbol GetMainSymbol();
 		virtual ResolvedSymbol ResolveSymbol(const std::string& symbolName);

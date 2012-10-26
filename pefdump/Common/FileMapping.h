@@ -11,7 +11,7 @@
 
 #include <string>
 
-namespace CFM
+namespace Common
 {
 	class FileMapping
 	{

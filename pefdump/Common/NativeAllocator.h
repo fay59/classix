@@ -18,10 +18,6 @@ namespace Common
 	public:
 		static NativeAllocator* Instance;
 		
-		NativeAllocator() = delete;
-		NativeAllocator(const NativeAllocator& that) = delete;
-		NativeAllocator(NativeAllocator&& that) = delete;
-		
 		virtual uint8_t* Allocate(size_t size);
 		virtual void Deallocate(void* address);
 		virtual ~NativeAllocator();
