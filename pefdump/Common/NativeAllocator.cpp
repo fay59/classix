@@ -15,6 +15,11 @@ namespace Common
 	// nice hack
 	NativeAllocator* NativeAllocator::Instance = new NativeAllocator();
 	
+	const uint8_t* NativeAllocator::GetBaseAddress()
+	{
+		return nullptr;
+	}
+	
 	uint8_t* NativeAllocator::Allocate(size_t size)
 	{
 		return static_cast<uint8_t*>(malloc(size));

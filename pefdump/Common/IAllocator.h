@@ -20,6 +20,7 @@ namespace Common
 	class IAllocator
 	{
 	public:
+		virtual const uint8_t* GetBaseAddress() = 0;
 		virtual uint8_t* Allocate(size_t size) = 0;
 		virtual void Deallocate(void* address) = 0;
 		virtual ~IAllocator();

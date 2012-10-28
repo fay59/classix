@@ -13,11 +13,12 @@
 
 namespace Common
 {
-	class NativeAllocator : public virtual IAllocator
+	class NativeAllocator : public IAllocator
 	{
 	public:
 		static NativeAllocator* Instance;
 		
+		virtual const uint8_t* GetBaseAddress();
 		virtual uint8_t* Allocate(size_t size);
 		virtual void Deallocate(void* address);
 		virtual ~NativeAllocator();

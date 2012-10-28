@@ -14,14 +14,14 @@
 
 namespace CFM
 {
-	PEFSymbolResolver::PEFSymbolResolver(PPCVM::MemoryManager& memMan, FragmentManager& cfm, const std::string& filePath)
-	: PEFSymbolResolver(memMan, cfm, Common::FileMapping(filePath))
+	PEFSymbolResolver::PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, const std::string& filePath)
+	: PEFSymbolResolver(allocator, cfm, Common::FileMapping(filePath))
 	{ }
 	
-	PEFSymbolResolver::PEFSymbolResolver(PPCVM::MemoryManager& memMan, FragmentManager& cfm, Common::FileMapping&& mapping)
+	PEFSymbolResolver::PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, Common::FileMapping&& mapping)
 	: mapping(std::move(mapping))
-	, allocator(memMan)
-	, container(&allocator, this->mapping.begin(), this->mapping.end())
+	, allocator(allocator)
+	, container(allocator, this->mapping.begin(), this->mapping.end())
 	, cfm(cfm)
 	{
 		// perform fixup

@@ -12,7 +12,6 @@
 #include <map>
 #include "SymbolResolver.h"
 #include "IAllocator.h"
-#include "MemoryManager.h"
 
 namespace ObjCBridge
 {

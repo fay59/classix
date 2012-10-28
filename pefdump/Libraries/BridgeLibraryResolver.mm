@@ -17,10 +17,10 @@
 
 namespace ObjCBridge
 {
-	BridgeLibraryResolver::BridgeLibraryResolver(PPCVM::MemoryManager& memMan, PPCVM::MachineState& state)
-	: allocator(memMan)
+	BridgeLibraryResolver::BridgeLibraryResolver(Common::IAllocator* allocator, PPCVM::MachineState& state)
+	: allocator(allocator)
 	{
-		objcAllocator = [[PPCAllocator alloc] initWithAllocator:&allocator];
+		objcAllocator = [[PPCAllocator alloc] initWithAllocator:allocator];
 		this->state = [[PPCMachineState alloc] initWithMachineState:&state];
 	}
 	
@@ -34,7 +34,7 @@ namespace ObjCBridge
 			return nullptr;
 		
 		id<PPCLibrary> library = [[[cls alloc] initWithAllocator:(PPCAllocator*)objcAllocator] autorelease];
-		return new BridgeSymbolResolver(&allocator, state, library);
+		return new BridgeSymbolResolver(allocator, state, library);
 	}
 	
 	BridgeLibraryResolver::~BridgeLibraryResolver()

@@ -11,19 +11,18 @@
 
 #include "LibraryResolver.h"
 #include "MachineState.h"
-#include "MemoryManager.h"
-#include "MemoryManagerAllocator.h"
+#include "IAllocator.h"
 
 namespace ObjCBridge
 {
 	class BridgeLibraryResolver : public virtual CFM::LibraryResolver
 	{
-		PPCVM::MemoryManagerAllocator allocator;
+		Common::IAllocator* allocator;
 		void* objcAllocator;
 		void* state;
 		
 	public:
-		BridgeLibraryResolver(PPCVM::MemoryManager& memMan, PPCVM::MachineState& state);
+		BridgeLibraryResolver(Common::IAllocator* allocator, PPCVM::MachineState& state);
 		
 		virtual CFM::SymbolResolver* ResolveLibrary(const std::string& name);
 		virtual ~BridgeLibraryResolver();

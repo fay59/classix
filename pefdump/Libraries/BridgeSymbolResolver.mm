@@ -8,13 +8,23 @@
 
 #include <objc/runtime.h>
 #include "BridgeSymbolResolver.h"
-#include "MemoryManagerAllocator.h"
 #import "PPCLibrary.h"
 
 #define LIBRARY reinterpret_cast< id<PPCLibrary> >(library)
 #define STATE reinterpret_cast<PPCMachineState*>(machineState)
 
 typedef void* (*DataSymbolMethod)(id, SEL);
+
+namespace
+{
+	class Autoreleaser
+	{
+		id<NSObject> obj;
+	public:
+		Autoreleaser(id<NSObject> obj) : obj(obj) { }
+		~Autoreleaser() { [obj release]; }
+	};
+}
 
 namespace ObjCBridge
 {
@@ -61,12 +71,15 @@ namespace ObjCBridge
 		if (iter != symbols.end())
 			return iter->second;
 		
+		Class cls = [LIBRARY class];
 		NSMutableString* selectorName = [[NSMutableString alloc] initWithFormat:@"%s_%s", libraryName.c_str(), name.c_str()];
+		Autoreleaser selectorNameRelease(selectorName);
+		
 		// can we get a data symbol with that name?
 		SEL dataSymbolSel = NSSelectorFromString(selectorName);
 		if ([LIBRARY respondsToSelector:dataSymbolSel])
 		{
-			Method method = class_getInstanceMethod([LIBRARY class], dataSymbolSel);
+			Method method = class_getInstanceMethod(cls, dataSymbolSel);
 			IMP implementation = method_getImplementation(method);
 			DataSymbolMethod symbolGetter = reinterpret_cast<DataSymbolMethod>(implementation);
 			void* address = symbolGetter(LIBRARY, dataSymbolSel);
@@ -75,11 +88,17 @@ namespace ObjCBridge
 		else
 		{
 			[selectorName appendString:@":"];
+			SEL codeSymbolSel = NSSelectorFromString(selectorName);
+			
 			// then can we get a function symbol with that name?
-			// TODO trampoline stuff
-			return ResolvedSymbol::IntelSymbol(0);
+			if ([LIBRARY respondsToSelector:codeSymbolSel])
+			{
+				// TODO trampoline stuff
+				//Method method = class_getInstanceMethod(cls, codeSymbolSel);
+				return ResolvedSymbol::IntelSymbol(0);
+			}
+			return ResolvedSymbol::Invalid;
 		}
-		[selectorName release];
 	}
 	
 	BridgeSymbolResolver::~BridgeSymbolResolver()

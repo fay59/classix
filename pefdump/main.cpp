@@ -11,7 +11,6 @@
 
 #include "FragmentManager.h"
 #include "PEFLibraryResolver.h"
-#include "MemoryManager.h"
 #include "NativeAllocator.h"
 #include "FileMapping.h"
 #include "Unmangle.h"
@@ -22,12 +21,11 @@ const char endline = '\n';
 
 static void loadTest(const std::string& path)
 {
-	PPCVM::MemoryManager memoryManager;
 	PPCVM::MachineState state;
 	
 	CFM::FragmentManager fragmentManager;
-	CFM::PEFLibraryResolver pefResolver(memoryManager, fragmentManager);
-	ObjCBridge::BridgeLibraryResolver objcResolver(memoryManager, state);
+	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
+	ObjCBridge::BridgeLibraryResolver objcResolver(Common::NativeAllocator::Instance, state);
 	
 	fragmentManager.Resolvers.push_back(&pefResolver);
 	fragmentManager.Resolvers.push_back(&objcResolver);
