@@ -10,10 +10,55 @@
 
 namespace CFM
 {
-	PEFRelocator::PEFRelocator(FragmentManager& cfm, LoaderSection& loaderSection, InstantiableSection& section)
+	PEFRelocator::PEFRelocator(FragmentManager& cfm, const LoaderSection& loaderSection, InstantiableSection& section)
 	: cfm(cfm), fixupSection(section), loaderSection(loaderSection)
 	{
-		data = reinterpret_cast<UInt32*>(section.Data);
+		data = reinterpret_cast<Common::UInt32*>(section.Data);
+		relocAddress = 0;
+		importIndex = 0;
+		sectionC = 0;
+		sectionD = 0;
+	}
+	
+	void PEFRelocator::AddSymbol(uint32_t index)
+	{
+		const ImportedSymbol& symbolHeader = loaderSection.GetSymbol(index);
+		auto symbol = cfm.ResolveSymbol(symbolHeader.LibraryName, symbolHeader.Name);
+		if (symbol.Universe == SymbolUniverse::LostInTimeAndSpace)
+			throw std::logic_error("cannot perform fixup: symbol not found");
+		
+		Common::UInt32& relocValue = data[relocAddress];
+		uint32_t nativeEndian = relocValue;
+		if (nativeEndian != 0 && symbol.Universe != SymbolUniverse::PowerPC && symbolHeader.Class == SymbolClasses::CodeSymbol)
+			throw std::logic_error("cannot fixup a non-PPC function whose offset is not 0");
+		
+		nativeEndian += symbol.Address;
+		relocValue = nativeEndian;
+		relocAddress++;
+	}
+	
+	void PEFRelocator::RelocByIndex(int subOpcode, int index)
+	{
+		Common::UInt32* asIntegers = reinterpret_cast<Common::UInt32*>(fixupSection.Data);
+		switch (subOpcode)
+		{
+			case 0:
+				AddSymbol(index);
+				importIndex = index + 1;
+				break;
+				
+			case 1:
+				sectionC = asIntegers[index];
+				break;
+				
+			case 2:
+				sectionD = asIntegers[index];
+				break;
+				
+			case 3:
+				Add(asIntegers[index]);
+				break;
+		}
 	}
 	
 	void PEFRelocator::RelocBySectDWithSkip(uint32_t value)

@@ -145,7 +145,9 @@ namespace PPCVM
 				else
 				{
 					// the +1 makes sure that the handle 0 is never used
-					index = allocations.size() + 1;
+					size_t bigIndex = allocations.size() + 1;
+					assert(bigIndex <= UINT32_MAX);
+					index = static_cast<uint32_t>(bigIndex);
 				}
 				
 				Allocation& newAlloc = allocations[index];
@@ -232,11 +234,11 @@ namespace PPCVM
 		uint8_t* lastAllocationEnd = begin + PageSize;
 		for (iter++; iter != allocationsByAddress.end(); iter++)
 		{
-			auto& allocation = allocations[iter->second];
+			Allocation& allocation = allocations[iter->second];
 			ptrdiff_t difference = allocation.address - lastAllocationEnd;
 			if (difference != 0)
 			{
-				auto& lastHole = holes.back();
+				HeapHole& lastHole = holes.back();
 				if (lastHole.address == lastAllocationEnd)
 				{
 					lastHole.size += difference;
@@ -275,12 +277,12 @@ namespace PPCVM
 		
 		for (auto iter = relocated.begin(); iter != relocated.end(); iter++)
 		{
-			auto& relocation = *iter;
+			Relocation& relocation = *iter;
 			auto allocationIter = allocationsByAddress.find(relocation.first);
-			auto allocation = allocationIter->second;
+			uint32_t handle = allocationIter->second;
 			assert(allocationIter != allocationsByAddress.end() && "how did we relocate a nonexistant allocation?");
 			allocationsByAddress.erase(allocationIter);
-			allocationsByAddress[relocation.second] = allocation;
+			allocationsByAddress[relocation.second] = handle;
 		}
 	}
 	

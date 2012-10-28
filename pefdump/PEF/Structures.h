@@ -16,7 +16,7 @@
 
 namespace PEF
 {
-	using namespace BigEndian;
+	using namespace Common;
 	
 	union TypeTag
 	{
@@ -82,19 +82,19 @@ namespace PEF
 		TypeTag Tag2; // 'peff'
 		TypeTag Architecture; // 'pwpc' or 'm68k'
 		
-		UInt32 FormatVersion; // 1
+		Common::UInt32 FormatVersion; // 1
 		
-		UInt32 DateTimeStamp; // seconds since Jan 1, 1904; use (Get|Set)CreationTime to have UNIX time stamps
+		Common::UInt32 DateTimeStamp; // seconds since Jan 1, 1904; use (Get|Set)CreationTime to have UNIX time stamps
 		
 		// fragment manager stuff
-		UInt32 OldDefVersion;
-		UInt32 OldImpVersion;
-		UInt32 CurrentVersion;
+		Common::UInt32 OldDefVersion;
+		Common::UInt32 OldImpVersion;
+		Common::UInt32 CurrentVersion;
 		
-		UInt16 SectionCount;
-		UInt16 InstSectionCount;
+		Common::UInt16 SectionCount;
+		Common::UInt16 InstSectionCount;
 		
-		UInt32 Reserved; // always 0
+		Common::UInt32 Reserved; // always 0
 	} __attribute__((packed));
 	
 	struct SectionHeader
@@ -105,12 +105,12 @@ namespace PEF
 		
 		SectionHeader();
 		
-		SInt32 NameOffset; // offset to name from name table, or -1 if no name
-		UInt32 DefaultAddress; // preferred address
-		UInt32 ExecutionSize; // the total size required by the section
-		UInt32 UnpackedSize; // size of explicitly initialized data
-		UInt32 PackedSize; // size in this file
-		UInt32 ContainerOffset; // offset from beginning of file to contents
+		Common::SInt32 NameOffset; // offset to name from name table, or -1 if no name
+		Common::UInt32 DefaultAddress; // preferred address
+		Common::UInt32 ExecutionSize; // the total size required by the section
+		Common::UInt32 UnpackedSize; // size of explicitly initialized data
+		Common::UInt32 PackedSize; // size in this file
+		Common::UInt32 ContainerOffset; // offset from beginning of file to contents
 		
 		SectionType SectionType;
 		ShareType ShareType;
@@ -122,8 +122,8 @@ namespace PEF
 	{
 		struct SectionWithOffset
 		{
-			SInt32 Section;
-			UInt32 Offset;
+			Common::SInt32 Section;
+			Common::UInt32 Offset;
 			
 			SectionWithOffset();
 			SectionWithOffset(int32_t section, uint32_t offset);
@@ -138,26 +138,26 @@ namespace PEF
 		SectionWithOffset Init;
 		SectionWithOffset Term;
 		
-		UInt32 ImportedLibraryCount;
-		UInt32 ImportedSymbolCount;
-		UInt32 RelocSectionCount;
-		UInt32 RelocInstructionOffset;
-		UInt32 LoaderStringsOffset;
-		UInt32 ExportHashOffset;
-		UInt32 ExportHashTablePower;
-		UInt32 ExportedSymbolCount;
+		Common::UInt32 ImportedLibraryCount;
+		Common::UInt32 ImportedSymbolCount;
+		Common::UInt32 RelocSectionCount;
+		Common::UInt32 RelocInstructionOffset;
+		Common::UInt32 LoaderStringsOffset;
+		Common::UInt32 ExportHashOffset;
+		Common::UInt32 ExportHashTablePower;
+		Common::UInt32 ExportedSymbolCount;
 	} __attribute__((packed));
 		
 	struct ImportedLibraryHeader
 	{
-		UInt32 NameOffset;
-		UInt32 OldImpVersion;
-		UInt32 CurrentVersion;
-		UInt32 ImportedSymbolCount;
-		UInt32 FirstImportedSymbol;
+		Common::UInt32 NameOffset;
+		Common::UInt32 OldImpVersion;
+		Common::UInt32 CurrentVersion;
+		Common::UInt32 ImportedSymbolCount;
+		Common::UInt32 FirstImportedSymbol;
 		uint8_t Options;
 		uint8_t reservedA;
-		UInt16 reservedB;
+		Common::UInt16 reservedB;
 	} __attribute__((packed));
 		
 	struct SymbolFlags
@@ -197,7 +197,7 @@ namespace PEF
 	
 	struct ImportedSymbolHeader
 	{
-		UInt32 Entry;
+		Common::UInt32 Entry;
 		
 		inline SymbolClass GetClass() const
 		{
@@ -208,16 +208,16 @@ namespace PEF
 		
 		inline uint32_t GetNameOffset() const
 		{
-			return UInt32(Entry.AsBigEndian & 0xffffff00);
+			return Common::UInt32(Entry.AsBigEndian & 0xffffff00);
 		}
 	} __attribute__((packed));
 		
 	struct RelocationHeader
 	{
-		UInt16 SectionIndex;
-		UInt16 Reserved;
-		UInt32 RelocationCount;
-		UInt32 FirstRelocationOffset;
+		Common::UInt16 SectionIndex;
+		Common::UInt16 Reserved;
+		Common::UInt32 RelocationCount;
+		Common::UInt32 FirstRelocationOffset;
 	} __attribute__((packed));
 }
 

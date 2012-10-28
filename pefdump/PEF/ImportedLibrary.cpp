@@ -14,10 +14,11 @@ namespace PEF
 	: Name(nameTable + header->NameOffset)
 	{
 		Header = header;
-		auto first = symbolTable + header->FirstImportedSymbol;
+		const PEF::ImportedSymbolHeader* libraryHeaders = symbolTable + header->FirstImportedSymbol;
+		Symbols.reserve(header->ImportedSymbolCount);
 		for (uint32_t i = 0; i < header->ImportedSymbolCount; i++)
 		{
-			auto& header = first[i];
+			const ImportedSymbolHeader& header = libraryHeaders[i];
 			std::string symbolName = nameTable + header.GetNameOffset();
 			bool isStronglyLinked = !header.GetClass().HasFlag(SymbolFlags::Weak);
 			auto symbolClass = static_cast<SymbolClasses::Enum>(header.GetClass().Class);

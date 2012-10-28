@@ -15,9 +15,18 @@
 		DC6847CB1638C258003E906D /* PEFRelocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC6847C91638C258003E906D /* PEFRelocator.cpp */; };
 		DC75BC381635AD8500F89EA1 /* FragmentManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC75BC361635AD8500F89EA1 /* FragmentManager.cpp */; };
 		DC82A9BD1636F51800EAEDCD /* MemoryManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC82A9BB1636F51800EAEDCD /* MemoryManager.cpp */; };
+		DC94F100163C4DA4004538C5 /* Unmangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC94F0FE163C4DA4004538C5 /* Unmangle.cpp */; };
+		DC94F105163C7AE5004538C5 /* MathLib.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC94F104163C7AE5004538C5 /* MathLib.mm */; };
+		DC94F108163C80E9004538C5 /* SymbolResolutionException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC94F106163C80E8004538C5 /* SymbolResolutionException.cpp */; };
+		DC94F10B163CC232004538C5 /* LibraryResolutionException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC94F109163CC231004538C5 /* LibraryResolutionException.cpp */; };
 		DCA6DBFA1638451400BFA046 /* IAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBF81638451400BFA046 /* IAllocator.cpp */; };
 		DCA6DBFD1638460600BFA046 /* NativeAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */; };
 		DCA6DC001638471900BFA046 /* MemoryManagerAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBFE1638471900BFA046 /* MemoryManagerAllocator.cpp */; };
+		DCB00B9C163B6C85003C88CA /* PPCMachineState.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCB00B9B163B6C85003C88CA /* PPCMachineState.mm */; };
+		DCB00B9F163B6DAD003C88CA /* MachineState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCB00B9D163B6DAD003C88CA /* MachineState.cpp */; };
+		DCB00BA7163BA8FD003C88CA /* BridgeLibraryResolver.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCB00BA5163BA8FD003C88CA /* BridgeLibraryResolver.mm */; };
+		DCB00BAF163BAA06003C88CA /* BridgeSymbolResolver.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCB00BAD163BAA06003C88CA /* BridgeSymbolResolver.mm */; };
+		DCB00BB2163BB9E1003C88CA /* PPCAllocator.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCB00BB1163BB9E1003C88CA /* PPCAllocator.mm */; };
 		DCC3DC3516338A7900792F4A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCC3DC3416338A7900792F4A /* main.cpp */; };
 		DCC3DC3716338A7900792F4A /* pefdump.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3DC3616338A7900792F4A /* pefdump.1 */; };
 		DCF359A816384E1400EC1A95 /* Container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF3599616384E1400EC1A95 /* Container.cpp */; };
@@ -60,19 +69,38 @@
 		DC75BC371635AD8500F89EA1 /* FragmentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FragmentManager.h; sourceTree = "<group>"; };
 		DC82A9BB1636F51800EAEDCD /* MemoryManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MemoryManager.cpp; sourceTree = "<group>"; };
 		DC82A9BC1636F51800EAEDCD /* MemoryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryManager.h; sourceTree = "<group>"; };
+		DC94F0FE163C4DA4004538C5 /* Unmangle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Unmangle.cpp; sourceTree = "<group>"; };
+		DC94F0FF163C4DA4004538C5 /* Unmangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unmangle.h; sourceTree = "<group>"; };
+		DC94F103163C7AE5004538C5 /* MathLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathLib.h; sourceTree = "<group>"; };
+		DC94F104163C7AE5004538C5 /* MathLib.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MathLib.mm; sourceTree = "<group>"; };
+		DC94F106163C80E8004538C5 /* SymbolResolutionException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SymbolResolutionException.cpp; sourceTree = "<group>"; };
+		DC94F107163C80E8004538C5 /* SymbolResolutionException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolResolutionException.h; sourceTree = "<group>"; };
+		DC94F109163CC231004538C5 /* LibraryResolutionException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryResolutionException.cpp; sourceTree = "<group>"; };
+		DC94F10A163CC232004538C5 /* LibraryResolutionException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryResolutionException.h; sourceTree = "<group>"; };
 		DCA6DBF81638451400BFA046 /* IAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IAllocator.cpp; sourceTree = "<group>"; };
 		DCA6DBF91638451400BFA046 /* IAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAllocator.h; sourceTree = "<group>"; };
 		DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NativeAllocator.cpp; sourceTree = "<group>"; };
 		DCA6DBFC1638460600BFA046 /* NativeAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NativeAllocator.h; sourceTree = "<group>"; };
 		DCA6DBFE1638471900BFA046 /* MemoryManagerAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MemoryManagerAllocator.cpp; sourceTree = "<group>"; };
 		DCA6DBFF1638471900BFA046 /* MemoryManagerAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryManagerAllocator.h; sourceTree = "<group>"; };
+		DCB00B97163B6BBE003C88CA /* PPCLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPCLibrary.h; sourceTree = "<group>"; };
+		DCB00B9A163B6C85003C88CA /* PPCMachineState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPCMachineState.h; sourceTree = "<group>"; };
+		DCB00B9B163B6C85003C88CA /* PPCMachineState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PPCMachineState.mm; sourceTree = "<group>"; };
+		DCB00B9D163B6DAD003C88CA /* MachineState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MachineState.cpp; sourceTree = "<group>"; };
+		DCB00B9E163B6DAD003C88CA /* MachineState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachineState.h; sourceTree = "<group>"; };
+		DCB00BA0163B933B003C88CA /* Endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Endian.h; sourceTree = "<group>"; };
+		DCB00BA1163B9367003C88CA /* BigEndian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigEndian.h; sourceTree = "<group>"; };
+		DCB00BA5163BA8FD003C88CA /* BridgeLibraryResolver.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BridgeLibraryResolver.mm; sourceTree = "<group>"; };
+		DCB00BA6163BA8FD003C88CA /* BridgeLibraryResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BridgeLibraryResolver.h; sourceTree = "<group>"; };
+		DCB00BAD163BAA06003C88CA /* BridgeSymbolResolver.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BridgeSymbolResolver.mm; sourceTree = "<group>"; };
+		DCB00BAE163BAA06003C88CA /* BridgeSymbolResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BridgeSymbolResolver.h; sourceTree = "<group>"; };
+		DCB00BB0163BB9E0003C88CA /* PPCAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPCAllocator.h; sourceTree = "<group>"; };
+		DCB00BB1163BB9E1003C88CA /* PPCAllocator.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PPCAllocator.mm; sourceTree = "<group>"; };
 		DCC3DC3016338A7900792F4A /* pefdump */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pefdump; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCC3DC3416338A7900792F4A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DCC3DC3616338A7900792F4A /* pefdump.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = pefdump.1; sourceTree = "<group>"; };
-		DCF3599516384E1400EC1A95 /* BigEndian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigEndian.h; sourceTree = "<group>"; };
 		DCF3599616384E1400EC1A95 /* Container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Container.cpp; sourceTree = "<group>"; };
 		DCF3599716384E1400EC1A95 /* Container.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
-		DCF3599816384E1400EC1A95 /* Endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Endian.h; sourceTree = "<group>"; };
 		DCF3599A16384E1400EC1A95 /* Export.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Export.cpp; sourceTree = "<group>"; };
 		DCF3599B16384E1400EC1A95 /* Export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Export.h; sourceTree = "<group>"; };
 		DCF3599C16384E1400EC1A95 /* ImportedLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImportedLibrary.cpp; sourceTree = "<group>"; };
@@ -107,6 +135,8 @@
 				DC82A9BC1636F51800EAEDCD /* MemoryManager.h */,
 				DCA6DBFE1638471900BFA046 /* MemoryManagerAllocator.cpp */,
 				DCA6DBFF1638471900BFA046 /* MemoryManagerAllocator.h */,
+				DCB00B9D163B6DAD003C88CA /* MachineState.cpp */,
+				DCB00B9E163B6DAD003C88CA /* MachineState.h */,
 			);
 			path = PPCVM;
 			sourceTree = "<group>";
@@ -114,10 +144,8 @@
 		DC84561F1634B7C6001E49E2 /* PEF */ = {
 			isa = PBXGroup;
 			children = (
-				DCF3599516384E1400EC1A95 /* BigEndian.h */,
 				DCF3599616384E1400EC1A95 /* Container.cpp */,
 				DCF3599716384E1400EC1A95 /* Container.h */,
-				DCF3599816384E1400EC1A95 /* Endian.h */,
 				DCF3599A16384E1400EC1A95 /* Export.cpp */,
 				DCF3599B16384E1400EC1A95 /* Export.h */,
 				DCF3599C16384E1400EC1A95 /* ImportedLibrary.cpp */,
@@ -143,29 +171,71 @@
 				DC75BC371635AD8500F89EA1 /* FragmentManager.h */,
 				DC40D0191635B125008CA9BC /* SymbolResolver.cpp */,
 				DC40D01A1635B125008CA9BC /* SymbolResolver.h */,
-				DC40D01D1635B4A0008CA9BC /* PEFSymbolResolver.cpp */,
-				DC40D01E1635B4A0008CA9BC /* PEFSymbolResolver.h */,
 				DC40D0241635CABE008CA9BC /* LibraryResolver.cpp */,
 				DC40D0251635CABE008CA9BC /* LibraryResolver.h */,
+				DC40D01D1635B4A0008CA9BC /* PEFSymbolResolver.cpp */,
+				DC40D01E1635B4A0008CA9BC /* PEFSymbolResolver.h */,
 				DC40D0271635CBD1008CA9BC /* PEFLibraryResolver.cpp */,
 				DC40D0281635CBD1008CA9BC /* PEFLibraryResolver.h */,
 				DC6847C91638C258003E906D /* PEFRelocator.cpp */,
 				DC6847CA1638C258003E906D /* PEFRelocator.h */,
+				DC94F106163C80E8004538C5 /* SymbolResolutionException.cpp */,
+				DC94F107163C80E8004538C5 /* SymbolResolutionException.h */,
+				DC94F109163CC231004538C5 /* LibraryResolutionException.cpp */,
+				DC94F10A163CC232004538C5 /* LibraryResolutionException.h */,
 			);
 			path = CFM;
+			sourceTree = "<group>";
+		};
+		DC94F102163C7AC1004538C5 /* Implementation */ = {
+			isa = PBXGroup;
+			children = (
+				DC94F103163C7AE5004538C5 /* MathLib.h */,
+				DC94F104163C7AE5004538C5 /* MathLib.mm */,
+			);
+			path = Implementation;
 			sourceTree = "<group>";
 		};
 		DCA6DBF61638450000BFA046 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				DCB00BA1163B9367003C88CA /* BigEndian.h */,
+				DCB00BA0163B933B003C88CA /* Endian.h */,
 				DC5E33C5163A496300944FFD /* FileMapping.cpp */,
 				DC5E33C6163A496300944FFD /* FileMapping.h */,
 				DCA6DBF81638451400BFA046 /* IAllocator.cpp */,
 				DCA6DBF91638451400BFA046 /* IAllocator.h */,
 				DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */,
 				DCA6DBFC1638460600BFA046 /* NativeAllocator.h */,
+				DC94F0FE163C4DA4004538C5 /* Unmangle.cpp */,
+				DC94F0FF163C4DA4004538C5 /* Unmangle.h */,
 			);
 			path = Common;
+			sourceTree = "<group>";
+		};
+		DCB00B95163B6B76003C88CA /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				DCB00BA5163BA8FD003C88CA /* BridgeLibraryResolver.mm */,
+				DCB00BA6163BA8FD003C88CA /* BridgeLibraryResolver.h */,
+				DCB00BAD163BAA06003C88CA /* BridgeSymbolResolver.mm */,
+				DCB00BAE163BAA06003C88CA /* BridgeSymbolResolver.h */,
+				DCB00BB3163BB9E7003C88CA /* ObjC */,
+			);
+			path = Libraries;
+			sourceTree = "<group>";
+		};
+		DCB00BB3163BB9E7003C88CA /* ObjC */ = {
+			isa = PBXGroup;
+			children = (
+				DC94F102163C7AC1004538C5 /* Implementation */,
+				DCB00B97163B6BBE003C88CA /* PPCLibrary.h */,
+				DCB00B9A163B6C85003C88CA /* PPCMachineState.h */,
+				DCB00B9B163B6C85003C88CA /* PPCMachineState.mm */,
+				DCB00BB0163BB9E0003C88CA /* PPCAllocator.h */,
+				DCB00BB1163BB9E1003C88CA /* PPCAllocator.mm */,
+			);
+			name = ObjC;
 			sourceTree = "<group>";
 		};
 		DCC3DC2516338A7900792F4A = {
@@ -193,6 +263,7 @@
 				DC84561F1634B7C6001E49E2 /* PEF */,
 				DC8456231634C00A001E49E2 /* CFM */,
 				DC82A9B91636F4E100EAEDCD /* PPCVM */,
+				DCB00B95163B6B76003C88CA /* Libraries */,
 			);
 			path = pefdump;
 			sourceTree = "<group>";
@@ -268,6 +339,15 @@
 				DCF359AF16384E1400EC1A95 /* Structures.cpp in Sources */,
 				DC6847CB1638C258003E906D /* PEFRelocator.cpp in Sources */,
 				DC5E33C7163A496300944FFD /* FileMapping.cpp in Sources */,
+				DCB00B9C163B6C85003C88CA /* PPCMachineState.mm in Sources */,
+				DCB00B9F163B6DAD003C88CA /* MachineState.cpp in Sources */,
+				DCB00BA7163BA8FD003C88CA /* BridgeLibraryResolver.mm in Sources */,
+				DCB00BAF163BAA06003C88CA /* BridgeSymbolResolver.mm in Sources */,
+				DCB00BB2163BB9E1003C88CA /* PPCAllocator.mm in Sources */,
+				DC94F100163C4DA4004538C5 /* Unmangle.cpp in Sources */,
+				DC94F105163C7AE5004538C5 /* MathLib.mm in Sources */,
+				DC94F108163C80E9004538C5 /* SymbolResolutionException.cpp in Sources */,
+				DC94F10B163CC232004538C5 /* LibraryResolutionException.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -328,20 +408,20 @@
 		DCC3DC3B16338A7900792F4A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				GCC_VERSION = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				VALID_ARCHS = i386;
+				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Debug;
 		};
 		DCC3DC3C16338A7900792F4A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				GCC_VERSION = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				VALID_ARCHS = i386;
+				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Release;
 		};

@@ -8,6 +8,8 @@
 
 #include "FragmentManager.h"
 #include "PEFSymbolResolver.h"
+#include "LibraryResolutionException.h"
+#include "SymbolResolutionException.h"
 
 namespace CFM
 {
@@ -22,7 +24,7 @@ namespace CFM
 		if (findResult != resolvers.end())
 			return true;
 		
-		for (auto libraryResolver : Resolvers)
+		for (LibraryResolver* libraryResolver : Resolvers)
 		{
 			SymbolResolver* symbolResolver = libraryResolver->ResolveLibrary(name);
 			if (symbolResolver != nullptr)
@@ -38,8 +40,12 @@ namespace CFM
 	ResolvedSymbol FragmentManager::ResolveSymbol(const std::string &container, const std::string &name)
 	{
 		if (!LoadContainer(container))
-			throw std::logic_error("Cannot resolve symbol because container cannot be openend");
+			throw CFM::LibraryResolutionException(container);
 		
-		return resolvers[name]->ResolveSymbol(name);
+		ResolvedSymbol symbol = resolvers[name]->ResolveSymbol(name);
+		if (symbol.Universe == CFM::SymbolUniverse::LostInTimeAndSpace)
+			throw CFM::SymbolResolutionException(container, name);
+		
+		return symbol;
 	}
 }

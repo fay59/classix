@@ -25,7 +25,6 @@ namespace CFM
 		PEF::Container container;
 		
 		FragmentManager& cfm;
-		PPCVM::MemoryManager& memoryManager;
 		
 		ResolvedSymbol Symbolize(const uint8_t* address);
 		

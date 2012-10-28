@@ -42,14 +42,14 @@ namespace PEF
 		const char* nameTable = reinterpret_cast<const char*>(base) + header->LoaderStringsOffset;
 		uint32_t exportedSymbols = header->ExportedSymbolCount;
 		
-		const UInt32* hashTableStart = reinterpret_cast<const UInt32*>(base + header->ExportHashOffset);
+		const Common::UInt32* hashTableStart = reinterpret_cast<const Common::UInt32*>(base + header->ExportHashOffset);
 		uint32_t hashCount = 1 << header->ExportHashTablePower;
-		const UInt32* exportKeyTable = hashTableStart + hashCount;
+		const Common::UInt32* exportKeyTable = hashTableStart + hashCount;
 		const ExportedSymbolEntry* exportSymbolTable = reinterpret_cast<const ExportedSymbolEntry*>(exportKeyTable + exportedSymbols);
 		
 		for (uint32_t i = 0; i < exportedSymbols; i++)
 		{
-			const auto& symbolEntry = exportSymbolTable[i];
+			const ExportedSymbolEntry& symbolEntry = exportSymbolTable[i];
 			ExportedSymbol symbol;
 			symbol.Class = static_cast<SymbolClasses::Enum>(symbolEntry.ClassAndName >> 24);
 			const char* nameBegin = nameTable + (symbolEntry.ClassAndName & 0xffffff);

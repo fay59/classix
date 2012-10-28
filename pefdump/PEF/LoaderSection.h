@@ -34,7 +34,7 @@ namespace PEF
 		library_iterator LibrariesBegin() const;
 		library_iterator LibrariesEnd() const;
 		
-		const ImportedSymbol& GetSymbol(uint32_t index);
+		const ImportedSymbol& GetSymbol(uint32_t index) const;
 		
 		relocation_iterator RelocationsBegin() const;
 		relocation_iterator RelocationsEnd() const;

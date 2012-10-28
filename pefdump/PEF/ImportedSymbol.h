@@ -19,8 +19,8 @@ namespace PEF
 	public:
 		ImportedSymbol(const std::string& libName, const std::string& name, bool isStronglyLinked, SymbolClasses::Enum symbolClass);
 		
-		std::string LibraryName;
-		std::string Name;
+		const std::string LibraryName;
+		const std::string Name;
 		intptr_t Address;
 		bool IsStronglyLinked;
 		SymbolClasses::Enum Class;

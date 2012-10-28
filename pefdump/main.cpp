@@ -14,44 +14,64 @@
 #include "MemoryManager.h"
 #include "NativeAllocator.h"
 #include "FileMapping.h"
+#include "Unmangle.h"
+#include "BridgeLibraryResolver.h"
+#include "MachineState.h"
 
 const char endline = '\n';
 
 static void loadTest(const std::string& path)
 {
-	try
-	{
-		PPCVM::MemoryManager memoryManager;
-		
-		CFM::FragmentManager fragmentManager;
-		CFM::PEFLibraryResolver pefResolver(memoryManager, fragmentManager);
-		fragmentManager.Resolvers.push_back(&pefResolver);
-		
-		fragmentManager.LoadContainer(path);
-		
-		// memoryManager.ReserveAdditional(0x2000000); // 32 MB
-		std::cout << "Successfully loaded container " << path << endline;
-	}
-	catch (std::logic_error error)
-	{
-		std::cerr << "operation failed: " << error.what() << endline;
-	}
+	PPCVM::MemoryManager memoryManager;
+	PPCVM::MachineState state;
+	
+	CFM::FragmentManager fragmentManager;
+	CFM::PEFLibraryResolver pefResolver(memoryManager, fragmentManager);
+	ObjCBridge::BridgeLibraryResolver objcResolver(memoryManager, state);
+	
+	fragmentManager.Resolvers.push_back(&pefResolver);
+	fragmentManager.Resolvers.push_back(&objcResolver);
+	
+	fragmentManager.LoadContainer(path);
+	
+	// memoryManager.ReserveAdditional(0x2000000); // 32 MB
+	std::cout << "Successfully loaded container " << path << endline;
 }
+
+static char classChars[] = {
+	[PEF::SymbolClasses::CodeSymbol] = 'C',
+	[PEF::SymbolClasses::DataSymbol] = 'D',
+	[PEF::SymbolClasses::DirectData] = 'I',
+	[PEF::SymbolClasses::FunctionPointer] = 'F',
+	[PEF::SymbolClasses::GlueSymbol] = 'G'
+};
 
 static void listExports(const std::string& path)
 {
-	try
+	Common::FileMapping mapping(path);
+	PEF::Container container(Common::NativeAllocator::Instance, mapping.begin(), mapping.end());
+	
+	const PEF::ExportHashTable& exportTable = container.LoaderSection()->ExportTable;
+	for (auto iter = exportTable.begin(); iter != exportTable.end(); iter++)
 	{
-		Common::FileMapping mapping(path);
-		PEF::Container container(Common::NativeAllocator::Instance, mapping.begin(), mapping.end());
-		
-		const auto& exportTable = container.LoaderSection()->ExportTable;
-		for (auto iter = exportTable.begin(); iter != exportTable.end(); iter++)
-			std::cout << *iter << endline;
+		const PEF::ExportedSymbol* symbol = exportTable.Find(*iter);
+		std::cout << '[' << classChars[symbol->Class] << "] " << Common::Unmangle(symbol->SymbolName) << endline;
 	}
-	catch (std::logic_error error)
+	std::cout << endline;
+}
+
+static void listImports(const std::string& path)
+{
+	Common::FileMapping mapping(path);
+	PEF::Container container(Common::NativeAllocator::Instance, mapping.begin(), mapping.end());
+	
+	const PEF::LoaderSection* loader = container.LoaderSection();
+	for (auto libIter = loader->LibrariesBegin(); libIter != loader->LibrariesEnd(); libIter++)
 	{
-		std::cerr << "operation failed: " << error.what() << endline;
+		std::cout << libIter->Name << ':' << endline;
+		for (auto& symbol : libIter->Symbols)
+			std::cout << "  [" << classChars[symbol.Class] << "] " << Common::Unmangle(symbol.Name) << endline;
+		std::cout << endline;
 	}
 }
 
@@ -67,9 +87,18 @@ int main(int argc, const char * argv[])
 	std::string mode = argv[1];
 	std::string path = argv[2];
 	
-	if (mode == "-o")
-		loadTest(path);
-	else if (mode == "-l")
-		listExports(path);
+	try
+	{
+		if (mode == "-o")
+			loadTest(path);
+		else if (mode == "-e")
+			listExports(path);
+		else if (mode == "-i")
+			listImports(path);
+	}
+	catch (std::exception& error)
+	{
+		std::cerr << "operation failed: " << error.what() << endline;
+	}
 }
 

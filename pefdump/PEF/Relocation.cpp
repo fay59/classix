@@ -13,7 +13,7 @@ namespace PEF
 	Relocation::Relocation(const RelocationHeader* header, const uint8_t* relocationBase)
 	{
 		this->header = header;
-		this->relocationBase = reinterpret_cast<const UInt16*>(relocationBase + header->FirstRelocationOffset);
+		this->relocationBase = reinterpret_cast<const Common::UInt16*>(relocationBase + header->FirstRelocationOffset);
 	}
 	
 	uint16_t Relocation::GetSectionIndex() const

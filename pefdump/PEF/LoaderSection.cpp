@@ -20,7 +20,7 @@ namespace PEF
 		
 		for (uint32_t i = 0; i < header->ImportedLibraryCount; i++)
 		{
-			auto& libraryHeader = libraries[i];
+			const ImportedLibraryHeader& libraryHeader = libraries[i];
 			this->libraries.emplace_back(&libraryHeader, nameTable, symbols);
 		}
 		
@@ -28,7 +28,7 @@ namespace PEF
 		const RelocationHeader* relocations = reinterpret_cast<const RelocationHeader*>(relocationBase) - header->RelocSectionCount;
 		for (uint32_t i = 0; i < header->RelocSectionCount; i++)
 		{
-			auto& relocation = relocations[i];
+			const RelocationHeader& relocation = relocations[i];
 			this->relocations.emplace_back(&relocation, relocationBase);
 		}
 	}
@@ -43,9 +43,9 @@ namespace PEF
 		return libraries.end();
 	}
 	
-	const ImportedSymbol& LoaderSection::GetSymbol(uint32_t index)
+	const ImportedSymbol& LoaderSection::GetSymbol(uint32_t index) const
 	{
-		for (auto library : libraries)
+		for (const ImportedLibrary& library : libraries)
 		{
 			uint32_t beginImport = library.Header->FirstImportedSymbol;
 			uint32_t endImport = beginImport + library.Header->ImportedSymbolCount;

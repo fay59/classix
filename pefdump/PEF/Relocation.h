@@ -16,10 +16,10 @@ namespace PEF
 	class Relocation
 	{
 		const RelocationHeader* header;
-		const UInt16* relocationBase;
+		const Common::UInt16* relocationBase;
 		
 	public:
-		typedef const UInt16* iterator;
+		typedef const Common::UInt16* iterator;
 		
 		Relocation(const RelocationHeader* header, const uint8_t* relocationBase);
 		

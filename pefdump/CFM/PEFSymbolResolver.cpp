@@ -10,6 +10,7 @@
 #include "PEFSymbolResolver.h"
 #include "Relocation.h"
 #include "PEFRelocator.h"
+#include "LibraryResolutionException.h"
 
 namespace CFM
 {
@@ -20,31 +21,36 @@ namespace CFM
 	PEFSymbolResolver::PEFSymbolResolver(PPCVM::MemoryManager& memMan, FragmentManager& cfm, Common::FileMapping&& mapping)
 	: mapping(std::move(mapping))
 	, allocator(memMan)
-	, memoryManager(memMan)
 	, container(&allocator, this->mapping.begin(), this->mapping.end())
 	, cfm(cfm)
 	{
 		// perform fixup
-		auto loaderSection = container.LoaderSection();
+		const LoaderSection* loaderSection = container.LoaderSection();
 		for (auto iter = loaderSection->LibrariesBegin(); iter != loaderSection->LibrariesEnd(); iter++)
-			cfm.LoadContainer(iter->Name);
+		{
+			bool loaded = cfm.LoadContainer(iter->Name);
+			if (!loaded)
+				throw LibraryResolutionException(iter->Name);
+		}
 		
 		for (auto iter = loaderSection->RelocationsBegin(); iter != loaderSection->RelocationsEnd(); iter++)
 		{
-			auto& section = container.GetSection(iter->GetSectionIndex());
+			InstantiableSection& section = container.GetSection(iter->GetSectionIndex());
 			PEFRelocator relocator(cfm, *loaderSection, section);
+			auto address = &(*loaderSection->LibrariesBegin()).Symbols[0];
+			std::cout << "address is " << address << std::endl;
 			relocator.Execute(iter->begin(), iter->end());
 		}
 	}
 	
 	ResolvedSymbol PEFSymbolResolver::Symbolize(const uint8_t *address)
 	{
-		return ResolvedSymbol::PowerPCSymbol(address - memoryManager.GetBaseAddress());
+		return ResolvedSymbol::PowerPCSymbol(reinterpret_cast<intptr_t>(address));
 	}
 	
 	SymbolResolver::MainSymbol PEFSymbolResolver::GetMainSymbol()
 	{
-		auto mainInfo = container.LoaderSection()->Header->Main;
+		const LoaderHeader::SectionWithOffset& mainInfo = container.LoaderSection()->Header->Main;
 		if (mainInfo.Section == -1)
 			return nullptr;
 		
@@ -55,7 +61,7 @@ namespace CFM
 	
 	ResolvedSymbol PEFSymbolResolver::ResolveSymbol(const std::string &symbolName)
 	{
-		auto symbol = container.LoaderSection()->ExportTable.Find(symbolName);
+		const ExportedSymbol* symbol = container.LoaderSection()->ExportTable.Find(symbolName);
 		if (symbol != nullptr)
 		{
 			// section 0-n: address relative to section
@@ -75,7 +81,7 @@ namespace CFM
 			// section -3: reexported symbol
 			if (symbol->SectionIndex == -3)
 			{
-				auto importedSymbol = container.LoaderSection()->GetSymbol(symbol->Offset);
+				const ImportedSymbol& importedSymbol = container.LoaderSection()->GetSymbol(symbol->Offset);
 				return cfm.ResolveSymbol(importedSymbol.LibraryName, importedSymbol.Name);
 			}
 		}
