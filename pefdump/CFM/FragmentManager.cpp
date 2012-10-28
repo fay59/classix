@@ -42,7 +42,7 @@ namespace CFM
 		if (!LoadContainer(container))
 			throw CFM::LibraryResolutionException(container);
 		
-		ResolvedSymbol symbol = resolvers[name]->ResolveSymbol(name);
+		ResolvedSymbol symbol = resolvers[container]->ResolveSymbol(name);
 		if (symbol.Universe == CFM::SymbolUniverse::LostInTimeAndSpace)
 			throw CFM::SymbolResolutionException(container, name);
 		

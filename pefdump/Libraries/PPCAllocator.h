@@ -15,6 +15,8 @@
 
 -(id)initWithAllocator:(void*)allocator;
 
+-(void*)translate:(intptr_t)offset;
+
 -(void*)allocate:(NSUInteger)size;
 -(void)deallocate:(void*)ptr;
 

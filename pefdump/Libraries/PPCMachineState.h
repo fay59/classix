@@ -24,6 +24,8 @@
 -(id)init;
 -(id)initWithMachineState:(void*)machineState;
 
+-(void*)state;
+
 -(uint32_t)GPR:(uint32_t)gprNumber;
 -(void)setGPR:(uint32_t)gprNumber value:(uint32_t)value;
 

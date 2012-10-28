@@ -25,6 +25,11 @@
 	return self;
 }
 
+-(void*)state
+{
+	return state;
+}
+
 -(id)initWithMachineState:(void*)machineState
 {
 	if (!(self = [super init]))

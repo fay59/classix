@@ -35,6 +35,8 @@
 		DCF359AD16384E1400EC1A95 /* LoaderSection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF359A216384E1400EC1A95 /* LoaderSection.cpp */; };
 		DCF359AE16384E1400EC1A95 /* Relocation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF359A416384E1400EC1A95 /* Relocation.cpp */; };
 		DCF359AF16384E1400EC1A95 /* Structures.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF359A616384E1400EC1A95 /* Structures.cpp */; };
+		DCFDF963163DD0EC004D499A /* StdCLib.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCFDF962163DD0EC004D499A /* StdCLib.mm */; };
+		DCFDF968163DF5C6004D499A /* Executor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFDF966163DF5C6004D499A /* Executor.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -109,6 +111,11 @@
 		DCF359A516384E1400EC1A95 /* Relocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Relocation.h; sourceTree = "<group>"; };
 		DCF359A616384E1400EC1A95 /* Structures.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Structures.cpp; sourceTree = "<group>"; };
 		DCF359A716384E1400EC1A95 /* Structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Structures.h; sourceTree = "<group>"; };
+		DCFDF961163DD0EC004D499A /* StdCLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StdCLib.h; sourceTree = "<group>"; };
+		DCFDF962163DD0EC004D499A /* StdCLib.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StdCLib.mm; sourceTree = "<group>"; };
+		DCFDF965163DDAC0004D499A /* Arguments.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Arguments.h; sourceTree = "<group>"; };
+		DCFDF966163DF5C6004D499A /* Executor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Executor.cpp; sourceTree = "<group>"; };
+		DCFDF967163DF5C6004D499A /* Executor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Executor.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +134,8 @@
 			children = (
 				DCB00B9D163B6DAD003C88CA /* MachineState.cpp */,
 				DCB00B9E163B6DAD003C88CA /* MachineState.h */,
+				DCFDF966163DF5C6004D499A /* Executor.cpp */,
+				DCFDF967163DF5C6004D499A /* Executor.h */,
 			);
 			path = PPCVM;
 			sourceTree = "<group>";
@@ -182,6 +191,8 @@
 			children = (
 				DC94F103163C7AE5004538C5 /* MathLib.h */,
 				DC94F104163C7AE5004538C5 /* MathLib.mm */,
+				DCFDF961163DD0EC004D499A /* StdCLib.h */,
+				DCFDF962163DD0EC004D499A /* StdCLib.mm */,
 			);
 			path = Implementation;
 			sourceTree = "<group>";
@@ -206,6 +217,7 @@
 		DCB00B95163B6B76003C88CA /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				DCFDF965163DDAC0004D499A /* Arguments.h */,
 				DCB00BA5163BA8FD003C88CA /* BridgeLibraryResolver.mm */,
 				DCB00BA6163BA8FD003C88CA /* BridgeLibraryResolver.h */,
 				DCB00BAD163BAA06003C88CA /* BridgeSymbolResolver.mm */,
@@ -336,6 +348,8 @@
 				DC94F105163C7AE5004538C5 /* MathLib.mm in Sources */,
 				DC94F108163C80E9004538C5 /* SymbolResolutionException.cpp in Sources */,
 				DC94F10B163CC232004538C5 /* LibraryResolutionException.cpp in Sources */,
+				DCFDF963163DD0EC004D499A /* StdCLib.mm in Sources */,
+				DCFDF968163DF5C6004D499A /* Executor.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

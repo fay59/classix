@@ -23,6 +23,11 @@
 	return self;
 }
 
+-(void*)translate:(intptr_t)offset
+{
+	return ALLOCATOR->GetBaseAddress() + offset;
+}
+
 -(void*)allocate:(NSUInteger)size
 {
 	return ALLOCATOR->Allocate(size);
