@@ -118,6 +118,7 @@ namespace
 					input += consumedLength;
 					
 					const uint8_t* commonData = input;
+					input += commonSize;
 					//std::cerr << "interleaving " << customSize << " custom bytes with " << argument << " common bytes, " << repeatCount << " times" << std::endl;
 					
 					for (uint32_t i = 0; i < repeatCount; i++)
@@ -131,8 +132,10 @@ namespace
 					memcpy(output, commonData, commonSize);
 					output += commonSize;
 					
-					assert(input == initialInputPosition + consumedLength + commonSize + (customSize * repeatCount) && "pattern was not correctly interpreted");
-					assert(output == initialOutputPosition + (commonSize + customSize) * repeatCount + commonSize && "output was not correctly written");
+					const uint8_t* inputFinal = initialInputPosition + consumedLength + commonSize + (customSize * repeatCount);
+					const uint8_t* outputFinal = initialOutputPosition + (commonSize + customSize) * repeatCount + commonSize;
+					assert(input == inputFinal && "pattern was not correctly interpreted");
+					assert(output == outputFinal && "output was not correctly written");
 					break;
 				}
 					
@@ -199,14 +202,14 @@ namespace PEF
 			case SectionType::UnpackedData:
 			case SectionType::ExecutableData:
 			{
-				assert((2 << header->Alignment) % 16 == 0 && "Content should be aligned on a minimum 16 bytes boundary");
+				//assert((2 << header->Alignment) % 16 == 0 && "Content should be aligned on a minimum 16 bytes boundary");
 				memcpy(Data, sectionContent, totalSize);
 				break;
 			}
 				
 			case SectionType::PatternInitializedData:
 			{
-				assert((2 << header->Alignment) % 4 == 0 && "Content should be aligned on a minimum 16 bytes boundary");
+				//assert((2 << header->Alignment) % 4 == 0 && "Content should be aligned on a minimum 16 bytes boundary");
 				ExecutePattern(sectionContent, packedSize, Data, unpackedSize);
 				memset(Data + unpackedSize, 0, totalSize - unpackedSize);
 				break;
