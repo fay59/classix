@@ -79,8 +79,9 @@ int main(int argc, const char * argv[])
 {
 	if (argc != 3)
 	{
-		std::cerr << "usage: pefdump -o file" << std::endl;
-		std::cerr << "       pefdump -l file" << std::endl;
+		std::cerr << "usage: pefdump -o file # tries to load fragment" << std::endl;
+		std::cerr << "       pefdump -e file # tries to list exports" << std::endl;
+		std::cerr << "       pefdump -i file # tries to list imports" << std::endl;
 		return 1;
 	}
 	
