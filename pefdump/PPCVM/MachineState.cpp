@@ -9,15 +9,7 @@
 #include "MachineState.h"
 #include <cstring>
 
-namespace PPCVM
+extern "C" void MachineStateInit(MachineState* state)
 {
-	MachineState::MachineState()
-	{
-		memset(gpr, 0, sizeof gpr);
-		memset(fpr, 0, sizeof fpr);
-		lr = ctr = 0;
-		cr = xer = 0;
-		fpscr = 0;
-		pc = 0;
-	}
+	memset(state, 0, sizeof *state);
 }

@@ -21,11 +21,12 @@ const char endline = '\n';
 
 static void loadTest(const std::string& path)
 {
-	PPCVM::MachineState state;
+	MachineState state;
+	MachineStateInit(&state);
 	
 	CFM::FragmentManager fragmentManager;
 	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
-	ObjCBridge::BridgeLibraryResolver objcResolver(Common::NativeAllocator::Instance, state);
+	ObjCBridge::BridgeLibraryResolver objcResolver(Common::NativeAllocator::Instance);
 	
 	fragmentManager.Resolvers.push_back(&pefResolver);
 	fragmentManager.Resolvers.push_back(&objcResolver);

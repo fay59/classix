@@ -17,7 +17,7 @@ struct StdCLibGlobals
 	Common::UInt32 __NubAt3;
 	Common::UInt32 __p_CType;
 	Common::UInt32 __SigEnv;
-	PPCVM::MachineState __target_for_exit;
+	MachineState __target_for_exit;
 	Common::UInt32 __yd;
 	Common::UInt32 _CategoryLoc;
 	Common::Real64 _DBL_EPSILON;
@@ -128,29 +128,29 @@ struct StdCLibGlobals
 #pragma mark -
 #pragma mark Code Symbols
 // for now, just implement what it takes for the Hello program
--(void)StdCLib___setjmp:(PPCMachineState *)state
+-(void)StdCLib___setjmp:(MachineState *)state
 {
 	// TODO this is *almost certainly* not the right way to do it
-	void* address = [allocator translate:[state GPR:3]];
-	memcpy(address, [state state], sizeof(PPCVM::MachineState));
-	[state setGPR:3 value:0];
+	void* address = [allocator translate:state->gpr[3]];
+	memcpy(address, state, sizeof *state);
+	state->gpr[3] = 0;
 }
 
--(void)StdCLib__BreakPoint:(PPCMachineState *)state
+-(void)StdCLib__BreakPoint:(MachineState *)state
 {
 	__asm__ ("int $3");
 }
 
--(void)StdCLib_exit:(PPCMachineState *)state
+-(void)StdCLib_exit:(MachineState *)state
 {
 	// TODO longjmp to __target_for_exit
 	// for now we'll just kill the host (which is really, really bad)
-	exit([state GPR:3]);
+	exit(state->gpr[3]);
 }
 
--(void)StdCLib_puts:(PPCMachineState *)state
+-(void)StdCLib_puts:(MachineState *)state
 {
-	void* address = [allocator translate:[state GPR:3]];
+	void* address = [allocator translate:state->gpr[3]];
 	const char* ptr = reinterpret_cast<const char*>(address);
 	puts(ptr);
 }

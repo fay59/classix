@@ -10,8 +10,10 @@
 #define __pefdump__BridgeSymbolResolver__
 
 #include <map>
+#include <list>
 #include "SymbolResolver.h"
 #include "IAllocator.h"
+#include "MachineState.h"
 
 namespace ObjCBridge
 {
@@ -19,16 +21,16 @@ namespace ObjCBridge
 	
 	class BridgeSymbolResolver : public virtual SymbolResolver
 	{
-		void* machineState;
 		void* library;
 		std::string libraryName;
 		std::map<std::string, ResolvedSymbol> symbols;
+		std::list<void*> trampolines;
 		Common::IAllocator* allocator;
 		
 		ResolvedSymbol& CacheSymbol(const std::string& name, void* address);
 		
 	public:
-		BridgeSymbolResolver(Common::IAllocator* allocator, void* machineStateAsVoid, void* libraryAsVoid);
+		BridgeSymbolResolver(Common::IAllocator* allocator, void* libraryAsVoid);
 		
 		std::string& LibraryName();
 		const std::string& LibraryName() const;

@@ -7,13 +7,13 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "PPCMachineState.h"
+#import "MachineState.h"
 #import "PPCAllocator.h"
 
 // Signature of a bridged Intel-to-PowerPC call. This is what the -resolve: call is expected to return.
 // Here, id will be the PPCLibrary object; SEL, the name of the function; and PPCMachineState*, the machine state
 // object.
-typedef void (*PPCLibraryFunction)(id, SEL, PPCMachineState*);
+typedef void (*PPCLibraryFunction)(id, SEL, MachineState*);
 
 // The PPCLibrary interface proposes two methods: -libraryName and -resolve:. For method resolution, though,
 // the preferred way is to implement a method called [LibraryName]_[FunctionName]: that accepts, as a single

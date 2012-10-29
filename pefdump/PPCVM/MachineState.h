@@ -9,22 +9,26 @@
 #ifndef __pefdump__MachineState__
 #define __pefdump__MachineState__
 
-#include <stdint.h>
-#include "BigEndian.h"
+#ifdef __cplusplus
+# define EXTERN_C extern "C"
+#else
+# define EXTERN_C
+#endif
 
-namespace PPCVM
+#include <stdint.h>
+
+typedef struct MachineState
 {
-	struct MachineState
-	{
-		uint32_t gpr[32];
-		double fpr[32];
-		uint32_t lr, ctr;
-		uint32_t cr, xer;
-		uint32_t fpscr;
-		uint32_t pc;
-		
-		MachineState();
-	};
-}
+	uint32_t gpr[32];
+	double fpr[32];
+	uint32_t lr, ctr;
+	uint32_t cr, xer;
+	uint32_t fpscr;
+	uint32_t pc;
+} MachineState;
+
+EXTERN_C void MachineStateInit(MachineState* state);
+
+#undef EXTERN_C
 
 #endif /* defined(__pefdump__MachineState__) */

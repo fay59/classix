@@ -8,10 +8,10 @@
 
 #include <objc/runtime.h>
 #include "BridgeSymbolResolver.h"
+#include "AsmJit.h"
 #import "PPCLibrary.h"
 
 #define LIBRARY reinterpret_cast< id<PPCLibrary> >(library)
-#define STATE reinterpret_cast<PPCMachineState*>(machineState)
 
 typedef void* (*DataSymbolMethod)(id, SEL);
 
@@ -24,13 +24,35 @@ namespace
 		Autoreleaser(id<NSObject> obj) : obj(obj) { }
 		~Autoreleaser() { [obj release]; }
 	};
+	
+	void* MakeTrampoline(void* sender, SEL sel, void* implementation)
+	{
+		using namespace AsmJit;
+		Compiler x86;
+		x86.newFunction(CALL_CONV_DEFAULT, FunctionBuilder1<void, MachineState*>());
+		ECall* call = x86.call(implementation);
+		call->setPrototype(CALL_CONV_CDECL, FunctionBuilder3<void, id, SEL, MachineState*>());
+		call->setArgument(0, imm((intptr_t)sender));
+		call->setArgument(1, imm((intptr_t)sel));
+		call->setArgument(2, GPVar(x86.argGP(1)));
+		return x86.make();
+	}
+	
+	void* MakeTrampoline(void* sender, Class cls, SEL sel)
+	{
+		Method method = class_getInstanceMethod(cls, sel);
+		if (method == nullptr)
+			throw std::logic_error("Class does not respond to selector");
+		
+		IMP imp = method_getImplementation(method);
+		return MakeTrampoline(sender, sel, reinterpret_cast<void*>(imp));
+	}
 }
 
 namespace ObjCBridge
 {
-	BridgeSymbolResolver::BridgeSymbolResolver(Common::IAllocator* allocator, void* machineStateAsVoid, void* idAsVoid)
+	BridgeSymbolResolver::BridgeSymbolResolver(Common::IAllocator* allocator, void* idAsVoid)
 	{
-		machineState = [reinterpret_cast<PPCMachineState*>(machineStateAsVoid) retain];
 		library = [reinterpret_cast< id<PPCLibrary> >(idAsVoid) retain];
 		
 		this->allocator = allocator;
@@ -93,17 +115,33 @@ namespace ObjCBridge
 			// then can we get a function symbol with that name?
 			if ([LIBRARY respondsToSelector:codeSymbolSel])
 			{
-				// TODO trampoline stuff
-				//Method method = class_getInstanceMethod(cls, codeSymbolSel);
-				return ResolvedSymbol::IntelSymbol(0);
+				void* trampoline = MakeTrampoline(library, cls, codeSymbolSel);
+				trampolines.push_back(trampoline);
+				return CacheSymbol(name, trampoline);
 			}
-			return ResolvedSymbol::Invalid;
+			else
+			{
+				// well then, try the -resolve method
+				NSString* objcName = [[NSString alloc] initWithCString:name.c_str() encoding:NSUTF8StringEncoding];
+				Autoreleaser objcNameRelease(objcName);
+				PPCLibraryFunction func = [LIBRARY resolve:objcName];
+				if (func != nullptr)
+				{
+					void* trampoline = MakeTrampoline(library, codeSymbolSel, (void*)func);
+					trampolines.push_back(trampoline);
+					return CacheSymbol(name, trampoline);
+				}
+			}
 		}
+		return ResolvedSymbol::Invalid;
 	}
 	
 	BridgeSymbolResolver::~BridgeSymbolResolver()
 	{
+		auto manager = AsmJit::MemoryManager::getGlobal();
+		for (void* trampoline : trampolines)
+			manager->free(trampoline);
+		
 		[LIBRARY release];
-		[STATE release];
 	}
 }

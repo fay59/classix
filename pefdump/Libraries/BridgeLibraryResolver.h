@@ -19,10 +19,9 @@ namespace ObjCBridge
 	{
 		Common::IAllocator* allocator;
 		void* objcAllocator;
-		void* state;
 		
 	public:
-		BridgeLibraryResolver(Common::IAllocator* allocator, PPCVM::MachineState& state);
+		BridgeLibraryResolver(Common::IAllocator* allocator);
 		
 		virtual CFM::SymbolResolver* ResolveLibrary(const std::string& name);
 		virtual ~BridgeLibraryResolver();

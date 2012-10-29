@@ -10,18 +10,14 @@
 #include "BridgeLibraryResolver.h"
 #include "BridgeSymbolResolver.h"
 #import "PPCLibrary.h"
-#import "PPCMachineState.h"
 #import "PPCAllocator.h"
-
-#define STATE reinterpret_cast<PPCMachineState*>(state)
 
 namespace ObjCBridge
 {
-	BridgeLibraryResolver::BridgeLibraryResolver(Common::IAllocator* allocator, PPCVM::MachineState& state)
+	BridgeLibraryResolver::BridgeLibraryResolver(Common::IAllocator* allocator)
 	: allocator(allocator)
 	{
 		objcAllocator = [[PPCAllocator alloc] initWithAllocator:allocator];
-		this->state = [[PPCMachineState alloc] initWithMachineState:&state];
 	}
 	
 	CFM::SymbolResolver* BridgeLibraryResolver::ResolveLibrary(const std::string &name)
@@ -34,12 +30,11 @@ namespace ObjCBridge
 			return nullptr;
 		
 		id<PPCLibrary> library = [[[cls alloc] initWithAllocator:(PPCAllocator*)objcAllocator] autorelease];
-		return new BridgeSymbolResolver(allocator, state, library);
+		return new BridgeSymbolResolver(allocator, library);
 	}
 	
 	BridgeLibraryResolver::~BridgeLibraryResolver()
 	{
 		[(NSObject*)objcAllocator release];
-		[STATE release];
 	}
 }
