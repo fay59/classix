@@ -22,9 +22,24 @@ typedef struct MachineState
 	uint32_t gpr[32];
 	double fpr[32];
 	uint32_t lr, ctr;
-	uint32_t cr, xer;
 	uint32_t fpscr;
 	uint32_t pc;
+	
+	union
+	{
+		uint32_t xer;
+		struct
+		{
+			unsigned xer_so : 1;
+			unsigned xer_ov : 1;
+			unsigned xer_ca : 1;
+			unsigned xer_unused : 22;
+			unsigned xer_bytecount : 7;
+		};
+	};
+	
+	uint8_t cr0[4];
+	uint8_t cr1[4];
 } MachineState;
 
 EXTERN_C void MachineStateInit(MachineState* state);

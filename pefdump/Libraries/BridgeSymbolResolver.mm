@@ -29,6 +29,7 @@ namespace
 	{
 		using namespace AsmJit;
 		Compiler x86;
+		x86.dd(0xffffffff); // native marker
 		x86.newFunction(CALL_CONV_DEFAULT, FunctionBuilder1<void, MachineState*>());
 		ECall* call = x86.call(implementation);
 		call->setPrototype(CALL_CONV_CDECL, FunctionBuilder3<void, id, SEL, MachineState*>());

@@ -18,6 +18,8 @@
 		DC94F105163C7AE5004538C5 /* MathLib.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC94F104163C7AE5004538C5 /* MathLib.mm */; };
 		DC94F108163C80E9004538C5 /* SymbolResolutionException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC94F106163C80E8004538C5 /* SymbolResolutionException.cpp */; };
 		DC94F10B163CC232004538C5 /* LibraryResolutionException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC94F109163CC231004538C5 /* LibraryResolutionException.cpp */; };
+		DCA1E14E16438149008C3C8C /* ppc_disasm.c in Sources */ = {isa = PBXBuildFile; fileRef = DCA1E14D16438149008C3C8C /* ppc_disasm.c */; };
+		DCA1E15116438152008C3C8C /* Disassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA1E14F16438152008C3C8C /* Disassembler.cpp */; };
 		DCA6DBFA1638451400BFA046 /* IAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBF81638451400BFA046 /* IAllocator.cpp */; };
 		DCA6DBFD1638460600BFA046 /* NativeAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */; };
 		DCB00B9F163B6DAD003C88CA /* MachineState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCB00B9D163B6DAD003C88CA /* MachineState.cpp */; };
@@ -49,6 +51,7 @@
 		DCFDF997163DFE39004D499A /* OperandX86X64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFDF985163DFE39004D499A /* OperandX86X64.cpp */; };
 		DCFDF998163DFE39004D499A /* Platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFDF987163DFE39004D499A /* Platform.cpp */; };
 		DCFDF999163DFE39004D499A /* Util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFDF98A163DFE39004D499A /* Util.cpp */; };
+		DCFDF9A1163E1457004D499A /* Emulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFDF99F163E1456004D499A /* Emulator.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -87,6 +90,10 @@
 		DC94F107163C80E8004538C5 /* SymbolResolutionException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolResolutionException.h; sourceTree = "<group>"; };
 		DC94F109163CC231004538C5 /* LibraryResolutionException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryResolutionException.cpp; sourceTree = "<group>"; };
 		DC94F10A163CC232004538C5 /* LibraryResolutionException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryResolutionException.h; sourceTree = "<group>"; };
+		DCA1E14C16438149008C3C8C /* ppc_disasm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ppc_disasm.h; sourceTree = "<group>"; };
+		DCA1E14D16438149008C3C8C /* ppc_disasm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ppc_disasm.c; sourceTree = "<group>"; };
+		DCA1E14F16438152008C3C8C /* Disassembler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Disassembler.cpp; sourceTree = "<group>"; };
+		DCA1E15016438152008C3C8C /* Disassembler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Disassembler.h; sourceTree = "<group>"; };
 		DCA6DBF81638451400BFA046 /* IAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IAllocator.cpp; sourceTree = "<group>"; };
 		DCA6DBF91638451400BFA046 /* IAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAllocator.h; sourceTree = "<group>"; };
 		DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NativeAllocator.cpp; sourceTree = "<group>"; };
@@ -160,6 +167,8 @@
 		DCFDF98A163DFE39004D499A /* Util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Util.cpp; sourceTree = "<group>"; };
 		DCFDF98B163DFE39004D499A /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
 		DCFDF98C163DFE39004D499A /* Util_p.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util_p.h; sourceTree = "<group>"; };
+		DCFDF99F163E1456004D499A /* Emulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Emulator.cpp; sourceTree = "<group>"; };
+		DCFDF9A0163E1456004D499A /* Emulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Emulator.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,8 +187,8 @@
 			children = (
 				DCB00B9D163B6DAD003C88CA /* MachineState.cpp */,
 				DCB00B9E163B6DAD003C88CA /* MachineState.h */,
-				DCFDF966163DF5C6004D499A /* Executor.cpp */,
-				DCFDF967163DF5C6004D499A /* Executor.h */,
+				DCA1E14916437D08008C3C8C /* Execution */,
+				DCA1E14B1643810E008C3C8C /* Disassembler */,
 			);
 			path = PPCVM;
 			sourceTree = "<group>";
@@ -239,6 +248,28 @@
 				DCFDF962163DD0EC004D499A /* StdCLib.mm */,
 			);
 			path = Implementation;
+			sourceTree = "<group>";
+		};
+		DCA1E14916437D08008C3C8C /* Execution */ = {
+			isa = PBXGroup;
+			children = (
+				DCFDF966163DF5C6004D499A /* Executor.cpp */,
+				DCFDF967163DF5C6004D499A /* Executor.h */,
+				DCFDF99F163E1456004D499A /* Emulator.cpp */,
+				DCFDF9A0163E1456004D499A /* Emulator.h */,
+			);
+			name = Execution;
+			sourceTree = "<group>";
+		};
+		DCA1E14B1643810E008C3C8C /* Disassembler */ = {
+			isa = PBXGroup;
+			children = (
+				DCA1E14F16438152008C3C8C /* Disassembler.cpp */,
+				DCA1E15016438152008C3C8C /* Disassembler.h */,
+				DCA1E14C16438149008C3C8C /* ppc_disasm.h */,
+				DCA1E14D16438149008C3C8C /* ppc_disasm.c */,
+			);
+			path = Disassembler;
 			sourceTree = "<group>";
 		};
 		DCA6DBF61638450000BFA046 /* Common */ = {
@@ -446,6 +477,9 @@
 				DCFDF997163DFE39004D499A /* OperandX86X64.cpp in Sources */,
 				DCFDF998163DFE39004D499A /* Platform.cpp in Sources */,
 				DCFDF999163DFE39004D499A /* Util.cpp in Sources */,
+				DCFDF9A1163E1457004D499A /* Emulator.cpp in Sources */,
+				DCA1E14E16438149008C3C8C /* ppc_disasm.c in Sources */,
+				DCA1E15116438152008C3C8C /* Disassembler.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

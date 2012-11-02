@@ -10,31 +10,24 @@
 #define __pefdump__Executor__
 
 #include <cstdint>
+#include "BigEndian.h"
 #include "MachineState.h"
 
 namespace PPCVM
 {
-	typedef void (*NativeCallback)(MachineState* state);
-	
-	struct NativeCallVector
-	{
-		uint32_t signature; // 0xffffffff
-		NativeCallback callback;
-		
-		NativeCallVector(NativeCallback callback);
-	};
+	typedef void (*NativeCall)(MachineState*);
 	
 	class Executor
 	{
 	protected:
 		MachineState& state;
+		const Common::UInt32* base;
 		
 	public:
-		Executor(MachineState& state);
+		Executor(MachineState& state, const Common::UInt32* base);
 		
-		virtual void ExecuteSingleInstruction(uint32_t instruction) = 0;
-		virtual void ExecuteFunction(const void* functionAddress) = 0;
-		void ExecuteNativeFunction(const NativeCallVector* vector);
+		virtual void ExecuteSingleInstruction() = 0;
+		virtual void ExecuteFunction() = 0;
 		
 		virtual ~Executor();
 	};

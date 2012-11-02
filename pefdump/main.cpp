@@ -8,6 +8,7 @@
 
 #include <cstdio>
 #include <iostream>
+#include <iomanip>
 
 #include "FragmentManager.h"
 #include "PEFLibraryResolver.h"
@@ -16,8 +17,17 @@
 #include "Unmangle.h"
 #include "BridgeLibraryResolver.h"
 #include "MachineState.h"
+#include "Disassembler.h"
 
 const char endline = '\n';
+
+static char classChars[] = {
+	[PEF::SymbolClasses::CodeSymbol] = 'C',
+	[PEF::SymbolClasses::DataSymbol] = 'D',
+	[PEF::SymbolClasses::DirectData] = 'I',
+	[PEF::SymbolClasses::FunctionPointer] = 'F',
+	[PEF::SymbolClasses::GlueSymbol] = 'G'
+};
 
 static void loadTest(const std::string& path)
 {
@@ -33,17 +43,7 @@ static void loadTest(const std::string& path)
 	
 	fragmentManager.LoadContainer(path);
 	
-	// memoryManager.ReserveAdditional(0x2000000); // 32 MB
-	std::cout << "Successfully loaded container " << path << endline;
 }
-
-static char classChars[] = {
-	[PEF::SymbolClasses::CodeSymbol] = 'C',
-	[PEF::SymbolClasses::DataSymbol] = 'D',
-	[PEF::SymbolClasses::DirectData] = 'I',
-	[PEF::SymbolClasses::FunctionPointer] = 'F',
-	[PEF::SymbolClasses::GlueSymbol] = 'G'
-};
 
 static void listExports(const std::string& path)
 {
@@ -74,6 +74,33 @@ static void listImports(const std::string& path)
 	}
 }
 
+static void disassemble(const std::string& path)
+{
+	Common::FileMapping mapping(path);
+	PEF::Container container(Common::NativeAllocator::Instance, mapping.begin(), mapping.end());
+	
+	for (uint32_t i = 0; i < container.Size(); i++)
+	{
+		const PEF::InstantiableSection& section = container.GetSection(i);
+		if (section.GetSectionType() != PEF::SectionType::Code && section.GetSectionType() != PEF::SectionType::ExecutableData)
+			continue;
+		
+		std::cout << "Section " << i;
+		if (section.Name.length() != 0)
+			std::cout << " (" << section.Name << ")";
+		std::cout << ": " << endline;
+		
+		const uint32_t totalInstructions = section.Size() / 4;
+		const uint32_t* instructions = reinterpret_cast<const uint32_t*>(section.Data);
+		PPCVM::Disassembler::DisassembledInstruction instruction;
+		for (uint32_t i = 0; i < totalInstructions; i++)
+		{
+			PPCVM::Disassembler::Disassemble(instructions[i], instruction);
+			std::cout << std::left << std::setw(10) << instruction.Opcode << ' ' << instruction.Arguments << endline;
+		}
+	}
+}
+
 int main(int argc, const char * argv[])
 {
 	if (argc != 3)
@@ -81,6 +108,7 @@ int main(int argc, const char * argv[])
 		std::cerr << "usage: pefdump -o file # tries to load fragment" << std::endl;
 		std::cerr << "       pefdump -e file # tries to list exports" << std::endl;
 		std::cerr << "       pefdump -i file # tries to list imports" << std::endl;
+		std::cerr << "       pefdump -d file # tries to disassemble code sections" << std::endl;
 		return 1;
 	}
 	
@@ -95,6 +123,8 @@ int main(int argc, const char * argv[])
 			listExports(path);
 		else if (mode == "-i")
 			listImports(path);
+		else if (mode == "-d")
+			disassemble(path);
 	}
 	catch (std::exception& error)
 	{

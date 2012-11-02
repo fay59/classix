@@ -241,6 +241,11 @@ namespace PEF
 		return this->header->ShareType;
 	}
 	
+	size_t InstantiableSection::Size() const
+	{
+		return header->ExecutionSize;
+	}
+	
 	InstantiableSection::~InstantiableSection()
 	{
 		allocator->Deallocate(Data);
