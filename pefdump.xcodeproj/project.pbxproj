@@ -13,6 +13,12 @@
 		DC40D0291635CBD1008CA9BC /* PEFLibraryResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC40D0271635CBD1008CA9BC /* PEFLibraryResolver.cpp */; };
 		DC5E33C7163A496300944FFD /* FileMapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC5E33C5163A496300944FFD /* FileMapping.cpp */; };
 		DC6847CB1638C258003E906D /* PEFRelocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC6847C91638C258003E906D /* PEFRelocator.cpp */; };
+		DC72740416471CD800DA17E5 /* FloatingPointInstructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7273F816471CD800DA17E5 /* FloatingPointInstructions.cpp */; };
+		DC72740516471CD800DA17E5 /* IntegerInstructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7273FC16471CD800DA17E5 /* IntegerInstructions.cpp */; };
+		DC72740616471CD800DA17E5 /* Interpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7273FD16471CD800DA17E5 /* Interpreter.cpp */; };
+		DC72740716471CD800DA17E5 /* LoadStoreInstructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7273FF16471CD800DA17E5 /* LoadStoreInstructions.cpp */; };
+		DC72740816471CD800DA17E5 /* SystemRegisterInstructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC72740016471CD800DA17E5 /* SystemRegisterInstructions.cpp */; };
+		DC72740E1647225500DA17E5 /* TrapException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC72740C1647225500DA17E5 /* TrapException.cpp */; };
 		DC75BC381635AD8500F89EA1 /* FragmentManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC75BC361635AD8500F89EA1 /* FragmentManager.cpp */; };
 		DC94F100163C4DA4004538C5 /* Unmangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC94F0FE163C4DA4004538C5 /* Unmangle.cpp */; };
 		DC94F105163C7AE5004538C5 /* MathLib.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC94F104163C7AE5004538C5 /* MathLib.mm */; };
@@ -37,7 +43,6 @@
 		DCF359AE16384E1400EC1A95 /* Relocation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF359A416384E1400EC1A95 /* Relocation.cpp */; };
 		DCF359AF16384E1400EC1A95 /* Structures.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF359A616384E1400EC1A95 /* Structures.cpp */; };
 		DCFDF963163DD0EC004D499A /* StdCLib.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCFDF962163DD0EC004D499A /* StdCLib.mm */; };
-		DCFDF968163DF5C6004D499A /* Executor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFDF966163DF5C6004D499A /* Executor.cpp */; };
 		DCFDF98D163DFE39004D499A /* AssemblerX86X64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFDF96E163DFE39004D499A /* AssemblerX86X64.cpp */; };
 		DCFDF98E163DFE39004D499A /* CodeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFDF971163DFE39004D499A /* CodeGenerator.cpp */; };
 		DCFDF98F163DFE39004D499A /* Compiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFDF973163DFE39004D499A /* Compiler.cpp */; };
@@ -51,7 +56,6 @@
 		DCFDF997163DFE39004D499A /* OperandX86X64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFDF985163DFE39004D499A /* OperandX86X64.cpp */; };
 		DCFDF998163DFE39004D499A /* Platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFDF987163DFE39004D499A /* Platform.cpp */; };
 		DCFDF999163DFE39004D499A /* Util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFDF98A163DFE39004D499A /* Util.cpp */; };
-		DCFDF9A1163E1457004D499A /* Emulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFDF99F163E1456004D499A /* Emulator.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -80,6 +84,17 @@
 		DC5E33C6163A496300944FFD /* FileMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileMapping.h; sourceTree = "<group>"; };
 		DC6847C91638C258003E906D /* PEFRelocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PEFRelocator.cpp; sourceTree = "<group>"; };
 		DC6847CA1638C258003E906D /* PEFRelocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEFRelocator.h; sourceTree = "<group>"; };
+		DC7273F816471CD800DA17E5 /* FloatingPointInstructions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FloatingPointInstructions.cpp; sourceTree = "<group>"; };
+		DC7273F916471CD800DA17E5 /* FloatingPointStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloatingPointStatus.h; sourceTree = "<group>"; };
+		DC7273FC16471CD800DA17E5 /* IntegerInstructions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntegerInstructions.cpp; sourceTree = "<group>"; };
+		DC7273FD16471CD800DA17E5 /* Interpreter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Interpreter.cpp; sourceTree = "<group>"; };
+		DC7273FE16471CD800DA17E5 /* Interpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Interpreter.h; sourceTree = "<group>"; };
+		DC7273FF16471CD800DA17E5 /* LoadStoreInstructions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LoadStoreInstructions.cpp; sourceTree = "<group>"; };
+		DC72740016471CD800DA17E5 /* SystemRegisterInstructions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SystemRegisterInstructions.cpp; sourceTree = "<group>"; };
+		DC72740A16471FF100DA17E5 /* InstructionDispatcher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InstructionDispatcher.h; sourceTree = "<group>"; };
+		DC72740B1647208800DA17E5 /* Instruction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Instruction.h; sourceTree = "<group>"; };
+		DC72740C1647225500DA17E5 /* TrapException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrapException.cpp; sourceTree = "<group>"; };
+		DC72740D1647225500DA17E5 /* TrapException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrapException.h; sourceTree = "<group>"; };
 		DC75BC361635AD8500F89EA1 /* FragmentManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FragmentManager.cpp; sourceTree = "<group>"; };
 		DC75BC371635AD8500F89EA1 /* FragmentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FragmentManager.h; sourceTree = "<group>"; };
 		DC94F0FE163C4DA4004538C5 /* Unmangle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Unmangle.cpp; sourceTree = "<group>"; };
@@ -130,8 +145,6 @@
 		DCF359A716384E1400EC1A95 /* Structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Structures.h; sourceTree = "<group>"; };
 		DCFDF961163DD0EC004D499A /* StdCLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StdCLib.h; sourceTree = "<group>"; };
 		DCFDF962163DD0EC004D499A /* StdCLib.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StdCLib.mm; sourceTree = "<group>"; };
-		DCFDF966163DF5C6004D499A /* Executor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Executor.cpp; sourceTree = "<group>"; };
-		DCFDF967163DF5C6004D499A /* Executor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Executor.h; sourceTree = "<group>"; };
 		DCFDF96A163DFE39004D499A /* ApiBegin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApiBegin.h; sourceTree = "<group>"; };
 		DCFDF96B163DFE39004D499A /* ApiEnd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApiEnd.h; sourceTree = "<group>"; };
 		DCFDF96C163DFE39004D499A /* AsmJit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsmJit.h; sourceTree = "<group>"; };
@@ -167,8 +180,6 @@
 		DCFDF98A163DFE39004D499A /* Util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Util.cpp; sourceTree = "<group>"; };
 		DCFDF98B163DFE39004D499A /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
 		DCFDF98C163DFE39004D499A /* Util_p.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util_p.h; sourceTree = "<group>"; };
-		DCFDF99F163E1456004D499A /* Emulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Emulator.cpp; sourceTree = "<group>"; };
-		DCFDF9A0163E1456004D499A /* Emulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Emulator.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -182,9 +193,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DC7273E316471CB300DA17E5 /* Interpreter */ = {
+			isa = PBXGroup;
+			children = (
+				DC7273F816471CD800DA17E5 /* FloatingPointInstructions.cpp */,
+				DC7273F916471CD800DA17E5 /* FloatingPointStatus.h */,
+				DC7273FC16471CD800DA17E5 /* IntegerInstructions.cpp */,
+				DC7273FD16471CD800DA17E5 /* Interpreter.cpp */,
+				DC7273FE16471CD800DA17E5 /* Interpreter.h */,
+				DC7273FF16471CD800DA17E5 /* LoadStoreInstructions.cpp */,
+				DC72740016471CD800DA17E5 /* SystemRegisterInstructions.cpp */,
+			);
+			path = Interpreter;
+			sourceTree = "<group>";
+		};
 		DC82A9B91636F4E100EAEDCD /* PPCVM */ = {
 			isa = PBXGroup;
 			children = (
+				DC72740A16471FF100DA17E5 /* InstructionDispatcher.h */,
+				DC72740B1647208800DA17E5 /* Instruction.h */,
 				DCB00B9D163B6DAD003C88CA /* MachineState.cpp */,
 				DCB00B9E163B6DAD003C88CA /* MachineState.h */,
 				DCA1E14916437D08008C3C8C /* Execution */,
@@ -253,10 +280,9 @@
 		DCA1E14916437D08008C3C8C /* Execution */ = {
 			isa = PBXGroup;
 			children = (
-				DCFDF966163DF5C6004D499A /* Executor.cpp */,
-				DCFDF967163DF5C6004D499A /* Executor.h */,
-				DCFDF99F163E1456004D499A /* Emulator.cpp */,
-				DCFDF9A0163E1456004D499A /* Emulator.h */,
+				DC72740C1647225500DA17E5 /* TrapException.cpp */,
+				DC72740D1647225500DA17E5 /* TrapException.h */,
+				DC7273E316471CB300DA17E5 /* Interpreter */,
 			);
 			name = Execution;
 			sourceTree = "<group>";
@@ -463,7 +489,6 @@
 				DC94F108163C80E9004538C5 /* SymbolResolutionException.cpp in Sources */,
 				DC94F10B163CC232004538C5 /* LibraryResolutionException.cpp in Sources */,
 				DCFDF963163DD0EC004D499A /* StdCLib.mm in Sources */,
-				DCFDF968163DF5C6004D499A /* Executor.cpp in Sources */,
 				DCFDF98D163DFE39004D499A /* AssemblerX86X64.cpp in Sources */,
 				DCFDF98E163DFE39004D499A /* CodeGenerator.cpp in Sources */,
 				DCFDF98F163DFE39004D499A /* Compiler.cpp in Sources */,
@@ -477,9 +502,14 @@
 				DCFDF997163DFE39004D499A /* OperandX86X64.cpp in Sources */,
 				DCFDF998163DFE39004D499A /* Platform.cpp in Sources */,
 				DCFDF999163DFE39004D499A /* Util.cpp in Sources */,
-				DCFDF9A1163E1457004D499A /* Emulator.cpp in Sources */,
 				DCA1E14E16438149008C3C8C /* ppc_disasm.c in Sources */,
 				DCA1E15116438152008C3C8C /* Disassembler.cpp in Sources */,
+				DC72740416471CD800DA17E5 /* FloatingPointInstructions.cpp in Sources */,
+				DC72740516471CD800DA17E5 /* IntegerInstructions.cpp in Sources */,
+				DC72740616471CD800DA17E5 /* Interpreter.cpp in Sources */,
+				DC72740716471CD800DA17E5 /* LoadStoreInstructions.cpp in Sources */,
+				DC72740816471CD800DA17E5 /* SystemRegisterInstructions.cpp in Sources */,
+				DC72740E1647225500DA17E5 /* TrapException.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
