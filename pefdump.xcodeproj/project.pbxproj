@@ -85,7 +85,6 @@
 		DC6847C91638C258003E906D /* PEFRelocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PEFRelocator.cpp; sourceTree = "<group>"; };
 		DC6847CA1638C258003E906D /* PEFRelocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEFRelocator.h; sourceTree = "<group>"; };
 		DC7273F816471CD800DA17E5 /* FloatingPointInstructions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FloatingPointInstructions.cpp; sourceTree = "<group>"; };
-		DC7273F916471CD800DA17E5 /* FloatingPointStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloatingPointStatus.h; sourceTree = "<group>"; };
 		DC7273FC16471CD800DA17E5 /* IntegerInstructions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntegerInstructions.cpp; sourceTree = "<group>"; };
 		DC7273FD16471CD800DA17E5 /* Interpreter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Interpreter.cpp; sourceTree = "<group>"; };
 		DC7273FE16471CD800DA17E5 /* Interpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Interpreter.h; sourceTree = "<group>"; };
@@ -95,6 +94,7 @@
 		DC72740B1647208800DA17E5 /* Instruction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Instruction.h; sourceTree = "<group>"; };
 		DC72740C1647225500DA17E5 /* TrapException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrapException.cpp; sourceTree = "<group>"; };
 		DC72740D1647225500DA17E5 /* TrapException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrapException.h; sourceTree = "<group>"; };
+		DC72740F1647350C00DA17E5 /* FloatingPointStatus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FloatingPointStatus.h; sourceTree = "<group>"; };
 		DC75BC361635AD8500F89EA1 /* FragmentManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FragmentManager.cpp; sourceTree = "<group>"; };
 		DC75BC371635AD8500F89EA1 /* FragmentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FragmentManager.h; sourceTree = "<group>"; };
 		DC94F0FE163C4DA4004538C5 /* Unmangle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Unmangle.cpp; sourceTree = "<group>"; };
@@ -197,7 +197,6 @@
 			isa = PBXGroup;
 			children = (
 				DC7273F816471CD800DA17E5 /* FloatingPointInstructions.cpp */,
-				DC7273F916471CD800DA17E5 /* FloatingPointStatus.h */,
 				DC7273FC16471CD800DA17E5 /* IntegerInstructions.cpp */,
 				DC7273FD16471CD800DA17E5 /* Interpreter.cpp */,
 				DC7273FE16471CD800DA17E5 /* Interpreter.h */,
@@ -210,6 +209,7 @@
 		DC82A9B91636F4E100EAEDCD /* PPCVM */ = {
 			isa = PBXGroup;
 			children = (
+				DC72740F1647350C00DA17E5 /* FloatingPointStatus.h */,
 				DC72740A16471FF100DA17E5 /* InstructionDispatcher.h */,
 				DC72740B1647208800DA17E5 /* Instruction.h */,
 				DCB00B9D163B6DAD003C88CA /* MachineState.cpp */,
