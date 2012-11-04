@@ -26,13 +26,18 @@ namespace CFM
 		PEF::Container* main;
 		
 	public:
+		typedef std::map<std::string, SymbolResolver*>::const_iterator SymbolResolverIterator;
 		FragmentManager();
 		FragmentManager(const FragmentManager& that) = delete;
 		
-		std::list<LibraryResolver*> Resolvers;
+		std::list<LibraryResolver*> LibraryResolvers;
 		
 		bool LoadContainer(const std::string& name);
 		ResolvedSymbol ResolveSymbol(const std::string& container, const std::string& name);
+		
+		SymbolResolverIterator Begin() const;
+		SymbolResolverIterator End() const;
+		SymbolResolver* GetSymbolResolver(const std::string& resolver);
 	};
 }
 

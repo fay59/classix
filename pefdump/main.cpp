@@ -18,6 +18,7 @@
 #include "BridgeLibraryResolver.h"
 #include "MachineState.h"
 #include "Disassembler.h"
+#include "Interpreter.h"
 
 const char endline = '\n';
 
@@ -38,8 +39,8 @@ static void loadTest(const std::string& path)
 	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
 	ObjCBridge::BridgeLibraryResolver objcResolver(Common::NativeAllocator::Instance);
 	
-	fragmentManager.Resolvers.push_back(&pefResolver);
-	fragmentManager.Resolvers.push_back(&objcResolver);
+	fragmentManager.LibraryResolvers.push_back(&pefResolver);
+	fragmentManager.LibraryResolvers.push_back(&objcResolver);
 	
 	fragmentManager.LoadContainer(path);
 	
@@ -101,6 +102,38 @@ static void disassemble(const std::string& path)
 	}
 }
 
+static void run(const std::string& path)
+{
+	MachineState state;
+	MachineStateInit(&state);
+	
+	CFM::FragmentManager fragmentManager;
+	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
+	ObjCBridge::BridgeLibraryResolver objcResolver(Common::NativeAllocator::Instance);
+	
+	fragmentManager.LibraryResolvers.push_back(&pefResolver);
+	fragmentManager.LibraryResolvers.push_back(&objcResolver);
+	
+	if (!fragmentManager.LoadContainer(path))
+	{
+		std::cerr << "could not load " << path << std::endl;
+		return;
+	}
+	
+	PPCVM::Execution::Interpreter interpreter(&state);
+	
+	auto resolver = fragmentManager.GetSymbolResolver(path);
+	auto main = resolver->GetMainAddress();
+	if (main.Universe != CFM::SymbolUniverse::PowerPC)
+	{
+		std::cerr << path << " successfully loaded, but main symbol is not a PPC symbol" << std::endl;
+		return;
+	}
+	
+	const void* mainAddress = reinterpret_cast<const void*>(main.Address);
+	interpreter.Execute(mainAddress);
+}
+
 int main(int argc, const char * argv[])
 {
 	if (argc != 3)
@@ -109,6 +142,7 @@ int main(int argc, const char * argv[])
 		std::cerr << "       pefdump -e file # tries to list exports" << std::endl;
 		std::cerr << "       pefdump -i file # tries to list imports" << std::endl;
 		std::cerr << "       pefdump -d file # tries to disassemble code sections" << std::endl;
+		std::cerr << "       pefdump -r file # tries to *gasp* run the file" << std::endl;
 		return 1;
 	}
 	
@@ -125,6 +159,8 @@ int main(int argc, const char * argv[])
 			listImports(path);
 		else if (mode == "-d")
 			disassemble(path);
+		else if (mode == "-r")
+			run(path);
 	}
 	catch (std::exception& error)
 	{

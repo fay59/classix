@@ -35,7 +35,10 @@ namespace ObjCBridge
 		std::string& LibraryName();
 		const std::string& LibraryName() const;
 		
-		virtual SymbolResolver::MainSymbol GetMainSymbol();
+		virtual ResolvedSymbol GetInitAddress();
+		virtual ResolvedSymbol GetMainAddress();
+		virtual ResolvedSymbol GetTermAddress();
+		
 		virtual ResolvedSymbol ResolveSymbol(const std::string& name);
 		virtual ~BridgeSymbolResolver();
 	};

@@ -24,7 +24,7 @@ namespace CFM
 		if (findResult != resolvers.end())
 			return true;
 		
-		for (LibraryResolver* libraryResolver : Resolvers)
+		for (LibraryResolver* libraryResolver : LibraryResolvers)
 		{
 			SymbolResolver* symbolResolver = libraryResolver->ResolveLibrary(name);
 			if (symbolResolver != nullptr)
@@ -47,5 +47,23 @@ namespace CFM
 			throw CFM::SymbolResolutionException(container, name);
 		
 		return symbol;
+	}
+	
+	FragmentManager::SymbolResolverIterator FragmentManager::Begin() const
+	{
+		return resolvers.begin();
+	}
+	
+	FragmentManager::SymbolResolverIterator FragmentManager::End() const
+	{
+		return resolvers.end();
+	}
+	
+	SymbolResolver* FragmentManager::GetSymbolResolver(const std::string &resolver)
+	{
+		auto iter = resolvers.find(resolver);
+		if (iter == resolvers.end())
+			return nullptr;
+		return iter->second;
 	}
 }

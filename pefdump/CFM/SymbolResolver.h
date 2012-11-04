@@ -45,9 +45,10 @@ namespace CFM
 	class SymbolResolver
 	{
 	public:
-		typedef int (*MainSymbol)(int argc, const char** argv);
+		virtual ResolvedSymbol GetInitAddress() = 0;
+		virtual ResolvedSymbol GetMainAddress() = 0;
+		virtual ResolvedSymbol GetTermAddress() = 0;
 		
-		virtual MainSymbol GetMainSymbol() = 0;
 		virtual ResolvedSymbol ResolveSymbol(const std::string& name) = 0;
 		virtual ~SymbolResolver() = 0;
 	};

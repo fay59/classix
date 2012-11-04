@@ -81,10 +81,19 @@ namespace ObjCBridge
 		return libraryName;
 	}
 	
-	SymbolResolver::MainSymbol BridgeSymbolResolver::GetMainSymbol()
+	ResolvedSymbol BridgeSymbolResolver::GetInitAddress()
 	{
-		// Intel bridged libraries cannot have a main symbol--sorry
-		return nullptr;
+		return ResolvedSymbol::Invalid;
+	}
+	
+	ResolvedSymbol BridgeSymbolResolver::GetMainAddress()
+	{
+		return ResolvedSymbol::Invalid;
+	}
+	
+	ResolvedSymbol BridgeSymbolResolver::GetTermAddress()
+	{
+		return ResolvedSymbol::Invalid;
 	}
 	
 	ResolvedSymbol BridgeSymbolResolver::ResolveSymbol(const std::string &name)

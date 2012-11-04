@@ -226,8 +226,6 @@ namespace PPCVM
 			void tlbia(Instruction inst);
 			void tlbie(Instruction inst);
 			void tlbsync(Instruction inst);
-			
-			~Interpreter();
 		};
 	}
 }

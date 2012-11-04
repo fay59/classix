@@ -45,18 +45,37 @@ namespace CFM
 	
 	ResolvedSymbol PEFSymbolResolver::Symbolize(const uint8_t *address)
 	{
+		if (address == nullptr)
+			return ResolvedSymbol::Invalid;
+		
 		return ResolvedSymbol::PowerPCSymbol(reinterpret_cast<intptr_t>(address));
 	}
 	
-	SymbolResolver::MainSymbol PEFSymbolResolver::GetMainSymbol()
+	ResolvedSymbol PEFSymbolResolver::Symbolize(const PEF::LoaderHeader::SectionWithOffset &sectionWithOffset)
+	{
+		if (sectionWithOffset.Section == -1)
+			return ResolvedSymbol::Invalid;
+		
+		const uint8_t* address = container.GetSection(sectionWithOffset.Section).Data + sectionWithOffset.Offset;
+		return Symbolize(address);
+	}
+	
+	ResolvedSymbol PEFSymbolResolver::GetInitAddress()
+	{
+		const LoaderHeader::SectionWithOffset& initInfo = container.LoaderSection()->Header->Init;
+		return Symbolize(initInfo);
+	}
+	
+	ResolvedSymbol PEFSymbolResolver::GetMainAddress()
 	{
 		const LoaderHeader::SectionWithOffset& mainInfo = container.LoaderSection()->Header->Main;
-		if (mainInfo.Section == -1)
-			return nullptr;
-		
-		// TODO
-		std::cerr << "This code fragment has a main symbol, but the PowerPC VM is not implemented." << std::endl;
-		return nullptr;
+		return Symbolize(mainInfo);
+	}
+	
+	ResolvedSymbol PEFSymbolResolver::GetTermAddress()
+	{
+		const LoaderHeader::SectionWithOffset& termInfo = container.LoaderSection()->Header->Term;
+		return Symbolize(termInfo);
 	}
 	
 	ResolvedSymbol PEFSymbolResolver::ResolveSymbol(const std::string &symbolName)

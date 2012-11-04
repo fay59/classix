@@ -25,12 +25,16 @@ namespace CFM
 		FragmentManager& cfm;
 		
 		ResolvedSymbol Symbolize(const uint8_t* address);
+		ResolvedSymbol Symbolize(const PEF::LoaderHeader::SectionWithOffset& sectionWithOffset);
 		
 	public:
 		PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, const std::string& filePath);
 		PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, Common::FileMapping&& mapping);
 		
-		virtual SymbolResolver::MainSymbol GetMainSymbol();
+		virtual ResolvedSymbol GetInitAddress();
+		virtual ResolvedSymbol GetMainAddress();
+		virtual ResolvedSymbol GetTermAddress();
+		
 		virtual ResolvedSymbol ResolveSymbol(const std::string& symbolName);
 		
 		virtual ~PEFSymbolResolver();
