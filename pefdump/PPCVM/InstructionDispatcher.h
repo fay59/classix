@@ -24,7 +24,7 @@ namespace PPCVM
 			{
 				case 19: method = table19[inst.SUBOP10]; break;
 				case 31: method = table31[inst.SUBOP10]; break;
-				case 59: method = table59[inst.SUBOP10]; break;
+				case 59: method = table59[inst.SUBOP5]; break;
 				case 63: method = table63[inst.SUBOP10]; break;
 				default: method = primaryTable[inst.OPCD]; break;
 			}
