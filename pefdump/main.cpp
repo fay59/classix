@@ -52,6 +52,7 @@ static void listExports(const std::string& path)
 	PEF::Container container(Common::NativeAllocator::Instance, mapping.begin(), mapping.end());
 	
 	const PEF::ExportHashTable& exportTable = container.LoaderSection()->ExportTable;
+	std::cout << exportTable.SymbolCount() << " exports" << endline;
 	for (auto iter = exportTable.begin(); iter != exportTable.end(); iter++)
 	{
 		const PEF::ExportedSymbol* symbol = exportTable.Find(*iter);

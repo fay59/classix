@@ -9,6 +9,7 @@
 #ifndef __pefdump__Disassembler__
 #define __pefdump__Disassembler__
 
+#include "Instruction.h"
 #include <string>
 
 namespace PPCVM
@@ -25,7 +26,9 @@ namespace PPCVM
 		};
 		
 		DisassembledInstruction Disassemble(uint32_t instruction);
+		DisassembledInstruction Disassemble(Instruction instruction);
 		bool Disassemble(uint32_t instruction, DisassembledInstruction& into);
+		bool Disassemble(Instruction instruction, DisassembledInstruction& into);
 	};
 }
 

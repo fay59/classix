@@ -2674,7 +2674,7 @@ sysuint_t AssemblerCore::relocCode(void* _dst, sysuint_t addressBase) const ASMJ
 #endif // ASMJIT_X64
 
     // Be sure that reloc data structure is correct.
-    ASMJIT_ASSERT((sysint_t)(r.offset + r.size) <= csize);
+    //ASMJIT_ASSERT((sysint_t)(r.offset + r.size) <= csize);
 
     switch (r.type)
     {

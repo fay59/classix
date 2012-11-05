@@ -14,9 +14,7 @@
 namespace CFM
 {
 	FragmentManager::FragmentManager()
-	{
-		main = nullptr;
-	}
+	{ }
 	
 	bool FragmentManager::LoadContainer(const std::string &name)
 	{

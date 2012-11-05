@@ -5,6 +5,8 @@ using namespace Common;
 
 namespace
 {
+	using namespace PPCVM;
+	
 #if TARGET_RT_BIG_ENDIAN
 	const bool IsBigEndian = true;
 #else
@@ -159,7 +161,8 @@ namespace PPCVM
 
 		void Interpreter::lhbrx(Instruction inst)
 		{
-			state->gpr[inst.RD] = GetEffectivePointerX<UInt16>(state, inst)->AsBigEndian;
+			uint16_t halfWord = *GetEffectivePointerX<uint16_t>(state, inst);
+			state->gpr[inst.RD] = EndianU16_LtoN(halfWord);
 		}
 
 		void Interpreter::lhz(Instruction inst)
@@ -273,7 +276,8 @@ namespace PPCVM
 
 		void Interpreter::lwbrx(Instruction inst)
 		{
-			state->gpr[inst.RD] = GetEffectivePointerX<UInt32>(state, inst)->AsBigEndian;
+			uint32_t word = *GetEffectivePointerX<uint32_t>(state, inst);
+			state->gpr[inst.RD] = EndianU32_NtoL(word);
 		}
 
 		void Interpreter::lwz(Instruction inst)
@@ -388,7 +392,8 @@ namespace PPCVM
 
 		void Interpreter::sthbrx(Instruction inst)
 		{
-			GetEffectivePointerX<UInt16>(state, inst)->AsBigEndian = static_cast<uint16_t>(state->gpr[inst.RS]);
+			uint16_t halfWord = EndianU16_NtoL(static_cast<uint16_t>(state->gpr[inst.RS]));
+			*GetEffectivePointerX<uint16_t>(state, inst) = halfWord;
 		}
 
 		void Interpreter::sthu(Instruction inst)
@@ -479,8 +484,7 @@ namespace PPCVM
 
 		void Interpreter::stwbrx(Instruction inst)
 		{
-			UInt32* address = GetEffectivePointerX<UInt32>(state, inst);
-			address->AsBigEndian = state->gpr[inst.RS];
+			*GetEffectivePointerX<uint32_t>(state, inst) = EndianU32_NtoL(state->gpr[inst.RS]);
 		}
 
 		void Interpreter::stwcxd(Instruction inst)

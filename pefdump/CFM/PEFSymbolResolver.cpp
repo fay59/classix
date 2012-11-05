@@ -7,6 +7,7 @@
 //
 
 #include <iostream>
+#include <cassert>
 #include "PEFSymbolResolver.h"
 #include "Relocation.h"
 #include "PEFRelocator.h"
@@ -37,8 +38,6 @@ namespace CFM
 		{
 			InstantiableSection& section = container.GetSection(iter->GetSectionIndex());
 			PEFRelocator relocator(cfm, *loaderSection, section);
-			auto address = &(*loaderSection->LibrariesBegin()).Symbols[0];
-			std::cout << "address is " << address << std::endl;
 			relocator.Execute(iter->begin(), iter->end());
 		}
 	}
@@ -56,7 +55,8 @@ namespace CFM
 		if (sectionWithOffset.Section == -1)
 			return ResolvedSymbol::Invalid;
 		
-		const uint8_t* address = container.GetSection(sectionWithOffset.Section).Data + sectionWithOffset.Offset;
+		auto& section = container.GetSection(sectionWithOffset.Section);
+		const uint8_t* address = section.Data + sectionWithOffset.Offset;
 		return Symbolize(address);
 	}
 	

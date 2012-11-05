@@ -1,4 +1,5 @@
 #include "Interpreter.h"
+#include "Disassembler.h"
 #include <iostream>
 
 namespace
@@ -52,16 +53,24 @@ namespace PPCVM
 
 		void Interpreter::unknown(Instruction inst)
 		{
-			Panic("Unknown instruction");
+			Disassembler::DisassembledInstruction disassembly;
+			if (Disassembler::Disassemble(inst.hex, disassembly))
+			{
+				Panic("Unknown instruction " + disassembly.Opcode + " " + disassembly.Arguments);
+			}
+			else
+			{
+				Panic("Unknown instruction");
+			}
 		}
 
 		const void* Interpreter::ExecuteUntilBranch(const void* address)
 		{
-			currentAddress = reinterpret_cast<const Instruction*>(address);
+			currentAddress = reinterpret_cast<const Common::UInt32*>(address);
 			branchAddress = nullptr;
 			do
 			{
-				Dispatch(*currentAddress);
+				Dispatch(Instruction(*currentAddress));
 				currentAddress++;
 			} while (branchAddress == nullptr);
 			return branchAddress;

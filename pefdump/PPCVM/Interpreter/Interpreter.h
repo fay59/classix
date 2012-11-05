@@ -4,6 +4,7 @@
 #include "MachineState.h"
 #include "Instruction.h"
 #include "InstructionDispatcher.h"
+#include "BigEndian.h"
 #include <string>
 
 namespace PPCVM
@@ -13,7 +14,7 @@ namespace PPCVM
 		class Interpreter : public InstructionDispatcher<Interpreter>
 		{
 			MachineState* state;
-			const Instruction* currentAddress;
+			const Common::UInt32* currentAddress;
 			const void* branchAddress;
 			const void* ExecuteUntilBranch(const void* address);
 			

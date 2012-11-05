@@ -23,7 +23,6 @@ namespace CFM
 	class FragmentManager
 	{
 		std::map<std::string, SymbolResolver*> resolvers;
-		PEF::Container* main;
 		
 	public:
 		typedef std::map<std::string, SymbolResolver*>::const_iterator SymbolResolverIterator;

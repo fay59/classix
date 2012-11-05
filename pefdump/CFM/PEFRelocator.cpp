@@ -33,7 +33,7 @@ namespace CFM
 			throw std::logic_error("cannot fixup a non-PPC function whose offset is not 0");
 		
 		nativeEndian += symbol.Address;
-		relocValue = nativeEndian;
+		relocValue.Set(nativeEndian);
 		relocAddress++;
 	}
 	

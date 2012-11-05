@@ -18,6 +18,25 @@ PPCVM::Disassembler::DisassembledInstruction::DisassembledInstruction(const std:
 : Opcode(opcode), Arguments(operands)
 { }
 
+PPCVM::Disassembler::DisassembledInstruction PPCVM::Disassembler::Disassemble(Instruction instruction)
+{
+	return Disassemble(instruction.hex);
+}
+
+PPCVM::Disassembler::DisassembledInstruction PPCVM::Disassembler::Disassemble(uint32_t instruction)
+{
+	DisassembledInstruction disassembly;
+	if (Disassemble(instruction, disassembly))
+		return disassembly;
+	
+	throw std::logic_error("could not disassemble instruction");
+}
+
+bool PPCVM::Disassembler::Disassemble(Instruction instruction, DisassembledInstruction& into)
+{
+	return Disassemble(instruction.hex, into);
+}
+
 bool PPCVM::Disassembler::Disassemble(uint32_t instruction, DisassembledInstruction& into)
 {
 	// arrays sized accordingly to ppc_disasm.h

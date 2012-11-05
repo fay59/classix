@@ -196,10 +196,10 @@
 		DC7273E316471CB300DA17E5 /* Interpreter */ = {
 			isa = PBXGroup;
 			children = (
+				DC7273FE16471CD800DA17E5 /* Interpreter.h */,
+				DC7273FD16471CD800DA17E5 /* Interpreter.cpp */,
 				DC7273F816471CD800DA17E5 /* FloatingPointInstructions.cpp */,
 				DC7273FC16471CD800DA17E5 /* IntegerInstructions.cpp */,
-				DC7273FD16471CD800DA17E5 /* Interpreter.cpp */,
-				DC7273FE16471CD800DA17E5 /* Interpreter.h */,
 				DC7273FF16471CD800DA17E5 /* LoadStoreInstructions.cpp */,
 				DC72740016471CD800DA17E5 /* SystemRegisterInstructions.cpp */,
 			);
@@ -532,6 +532,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
+					"$(inherited)",
+				);
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
+					"ASMJIT_DEBUG=1",
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;

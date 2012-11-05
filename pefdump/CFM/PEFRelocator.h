@@ -33,7 +33,7 @@ namespace CFM
 		{
 			uint32_t nativeEndian = data[relocAddress];
 			nativeEndian += value;
-			data[relocAddress] = nativeEndian;
+			data[relocAddress].Set(nativeEndian);
 			relocAddress++;
 		}
 		

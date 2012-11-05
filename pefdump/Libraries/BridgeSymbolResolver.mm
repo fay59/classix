@@ -31,12 +31,25 @@ namespace
 		Compiler x86;
 		x86.dd(0xffffffff); // native marker
 		x86.newFunction(CALL_CONV_DEFAULT, FunctionBuilder1<void, MachineState*>());
+		
+		GPVar gpSender(x86.newGP(VARIABLE_TYPE_GPD));
+		GPVar gpSel(x86.newGP(VARIABLE_TYPE_GPD));
+		
+		x86.mov(gpSender, imm((intptr_t)sender));
+		x86.mov(gpSel, imm((intptr_t)sel));
+		
 		ECall* call = x86.call(implementation);
 		call->setPrototype(CALL_CONV_CDECL, FunctionBuilder3<void, id, SEL, MachineState*>());
-		call->setArgument(0, imm((intptr_t)sender));
-		call->setArgument(1, imm((intptr_t)sel));
-		call->setArgument(2, GPVar(x86.argGP(1)));
-		return x86.make();
+		call->setArgument(0, gpSender);
+		call->setArgument(1, gpSel);
+		call->setArgument(2, GPVar(x86.argGP(0)));
+		x86.endFunction();
+		
+		void* trampoline = x86.make();
+		if (trampoline == nullptr)
+			throw std::logic_error("could not generate trampoline");
+		
+		return trampoline;
 	}
 	
 	void* MakeTrampoline(void* sender, Class cls, SEL sel)
