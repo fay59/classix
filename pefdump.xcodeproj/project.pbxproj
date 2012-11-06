@@ -113,6 +113,7 @@
 		DCA6DBF91638451400BFA046 /* IAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAllocator.h; sourceTree = "<group>"; };
 		DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NativeAllocator.cpp; sourceTree = "<group>"; };
 		DCA6DBFC1638460600BFA046 /* NativeAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NativeAllocator.h; sourceTree = "<group>"; };
+		DCAB94021648B1CD00E9B4E1 /* NativeCall.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NativeCall.h; sourceTree = "<group>"; };
 		DCB00B97163B6BBE003C88CA /* PPCLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPCLibrary.h; sourceTree = "<group>"; };
 		DCB00B9D163B6DAD003C88CA /* MachineState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MachineState.cpp; sourceTree = "<group>"; };
 		DCB00B9E163B6DAD003C88CA /* MachineState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachineState.h; sourceTree = "<group>"; };
@@ -280,6 +281,7 @@
 		DCA1E14916437D08008C3C8C /* Execution */ = {
 			isa = PBXGroup;
 			children = (
+				DCAB94021648B1CD00E9B4E1 /* NativeCall.h */,
 				DC72740C1647225500DA17E5 /* TrapException.cpp */,
 				DC72740D1647225500DA17E5 /* TrapException.h */,
 				DC7273E316471CB300DA17E5 /* Interpreter */,

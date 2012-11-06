@@ -8,16 +8,25 @@
 
 #include "PEFRelocator.h"
 
+namespace
+{
+	inline uint32_t SectionAddress(PEF::Container& container, uint32_t section)
+	{
+		intptr_t address = reinterpret_cast<intptr_t>(container.GetSection(section).Data);
+		return static_cast<uint32_t>(address);
+	}
+}
+
 namespace CFM
 {
-	PEFRelocator::PEFRelocator(FragmentManager& cfm, const LoaderSection& loaderSection, InstantiableSection& section)
-	: cfm(cfm), fixupSection(section), loaderSection(loaderSection)
+	PEFRelocator::PEFRelocator(FragmentManager& cfm, Container& container, InstantiableSection& section)
+	: cfm(cfm), fixupSection(section), container(container), loaderSection(*container.LoaderSection())
 	{
 		data = reinterpret_cast<Common::UInt32*>(section.Data);
 		relocAddress = 0;
 		importIndex = 0;
-		sectionC = 0;
-		sectionD = 0;
+		sectionC = SectionAddress(container, 0);
+		sectionD = SectionAddress(container, 1);
 	}
 	
 	void PEFRelocator::AddSymbol(uint32_t index)
@@ -39,25 +48,28 @@ namespace CFM
 	
 	void PEFRelocator::RelocByIndex(int subOpcode, int index)
 	{
-		Common::UInt32* asIntegers = reinterpret_cast<Common::UInt32*>(fixupSection.Data);
-		switch (subOpcode)
+		if (subOpcode == 0)
 		{
-			case 0:
-				AddSymbol(index);
-				importIndex = index + 1;
-				break;
-				
-			case 1:
-				sectionC = asIntegers[index];
-				break;
-				
-			case 2:
-				sectionD = asIntegers[index];
-				break;
-				
-			case 3:
-				Add(asIntegers[index]);
-				break;
+			AddSymbol(index);
+			importIndex = index + 1;
+		}
+		else
+		{
+			uint32_t sectionAddress = SectionAddress(container, index);
+			switch (subOpcode)
+			{
+				case 1:
+					sectionC = sectionAddress;
+					break;
+					
+				case 2:
+					sectionD = sectionAddress;
+					break;
+					
+				case 3:
+					Add(sectionAddress);
+					break;
+			}
 		}
 	}
 	

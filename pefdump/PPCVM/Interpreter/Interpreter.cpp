@@ -1,5 +1,6 @@
 #include "Interpreter.h"
 #include "Disassembler.h"
+#include "NativeCall.h"
 #include <iostream>
 
 namespace
@@ -63,6 +64,13 @@ namespace PPCVM
 				Panic("Unknown instruction");
 			}
 		}
+		
+		const void* Interpreter::ExecuteNative(const void *address)
+		{
+			NativeCall function = reinterpret_cast<NativeCall>(const_cast<void*>(address));
+			function(state);
+			return reinterpret_cast<const void*>(state->lr);
+		}
 
 		const void* Interpreter::ExecuteUntilBranch(const void* address)
 		{
@@ -70,8 +78,16 @@ namespace PPCVM
 			branchAddress = nullptr;
 			do
 			{
-				Dispatch(Instruction(*currentAddress));
-				currentAddress++;
+				uint32_t instructionCode = *currentAddress;
+				if (instructionCode == 0xffffffff)
+				{
+					branchAddress = ExecuteNative(currentAddress + 1);
+				}
+				else
+				{
+					Dispatch(instructionCode);
+					currentAddress++;
+				}
 			} while (branchAddress == nullptr);
 			return branchAddress;
 		}

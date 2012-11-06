@@ -20,6 +20,7 @@ namespace CFM
 	class PEFRelocator
 	{
 		FragmentManager& cfm;
+		Container& container;
 		InstantiableSection& fixupSection;
 		const LoaderSection& loaderSection;
 		Common::UInt32* data;
@@ -57,7 +58,7 @@ namespace CFM
 		void RelocLargeSetOrBySection(uint32_t value);
 		
 	public:
-		PEFRelocator(FragmentManager& cfm, const LoaderSection& loaderSection, InstantiableSection& section);
+		PEFRelocator(FragmentManager& cfm, Container& container, InstantiableSection& section);
 		
 		void Execute(Relocation::iterator begin, Relocation::iterator end);
 	};

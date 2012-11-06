@@ -17,6 +17,7 @@ namespace PPCVM
 			const Common::UInt32* currentAddress;
 			const void* branchAddress;
 			const void* ExecuteUntilBranch(const void* address);
+			const void* ExecuteNative(const void* address);
 			
 		public:
 			Interpreter(MachineState* state);
