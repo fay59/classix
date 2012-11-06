@@ -7,6 +7,7 @@
 //
 
 #include "PEFRelocator.h"
+#include <cassert>
 
 namespace
 {
@@ -143,7 +144,9 @@ namespace CFM
 	
 	void PEFRelocator::RelocIncrementPosition(uint32_t value)
 	{
-		relocAddress += (value & 0xfff) + 1;
+		uint32_t increment = (value & 0xfff) + 1;
+		assert((increment & 3) == 0 && "incrementing to unaligned memory address");
+		relocAddress += increment / 4;
 	}
 	
 	void PEFRelocator::RelocSmallRepeat(uint32_t value, Relocation::iterator current)
