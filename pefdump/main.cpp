@@ -163,8 +163,9 @@ static void runMPW(const std::string& path)
 		return;
 	}
 	
-	const void* mainAddress = reinterpret_cast<const void*>(main.Address);
-	interpreter.Execute(mainAddress);
+	const Common::UInt32* mainAddress = reinterpret_cast<const Common::UInt32*>(main.Address);
+	uint32_t startAddress = *mainAddress;
+	interpreter.Execute(reinterpret_cast<const void*>(startAddress));
 }
 
 int main(int argc, const char * argv[])
