@@ -49,13 +49,9 @@ typedef unsigned int ppc_word;
 
 
 // Félix Cloutier, 2012-11-02
-// Adapted to work in an environment where endianness macros are already defined
+// Always consider we're big-endian
 /* endianess */
-#if TARGET_RT_BIG_ENDIAN
-# define BIGENDIAN
-#else
-# define LITTLEENDIAN
-#endif
+#define BIGENDIAN
 
 /* BEGIN old code
 #if macintosh

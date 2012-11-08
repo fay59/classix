@@ -1,3 +1,4 @@
+#include <cassert>
 #include "Interpreter.h"
 
 namespace
@@ -124,7 +125,25 @@ namespace PPCVM
 
 		void Interpreter::mfspr(Instruction inst)
 		{
-			abort();
+			uint8_t spr = (inst.RB << 5) | inst.RA;
+			switch (spr)
+			{
+				case 1: // xer
+					state->gpr[inst.RD] = state->xer;
+					break;
+					
+				case 8: // lr
+					state->gpr[inst.RD] = state->lr;
+					break;
+					
+				case 9: // ctr
+					state->gpr[inst.RD] = state->ctr;
+					break;
+					
+				default:
+					assert(!"Getting value of unknown system register");
+					break;
+			}
 		}
 
 		void Interpreter::mftb(Instruction inst)

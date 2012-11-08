@@ -11,6 +11,7 @@
 
 #include "Instruction.h"
 #include <string>
+#include <iostream>
 
 namespace PPCVM
 {
@@ -31,5 +32,7 @@ namespace PPCVM
 		bool Disassemble(Instruction instruction, DisassembledInstruction& into);
 	};
 }
+
+std::ostream& operator<<(std::ostream& into, const PPCVM::Disassembler::DisassembledInstruction& inst);
 
 #endif /* defined(__pefdump__Disassembler__) */

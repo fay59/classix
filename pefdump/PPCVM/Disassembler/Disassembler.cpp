@@ -57,3 +57,9 @@ bool PPCVM::Disassembler::Disassemble(uint32_t instruction, DisassembledInstruct
 	into.Arguments = operandsBuffer;
 	return true;
 }
+
+std::ostream& operator<<(std::ostream& into, const PPCVM::Disassembler::DisassembledInstruction& inst)
+{
+	into << inst.Opcode << '\t' << inst.Arguments;
+	return into;
+}

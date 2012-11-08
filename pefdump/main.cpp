@@ -93,7 +93,7 @@ static void disassemble(const std::string& path)
 		std::cout << ": " << endline;
 		
 		const uint32_t totalInstructions = section.Size() / 4;
-		const uint32_t* instructions = reinterpret_cast<const uint32_t*>(section.Data);
+		const Common::UInt32* instructions = reinterpret_cast<const Common::UInt32*>(section.Data);
 		PPCVM::Disassembler::DisassembledInstruction instruction;
 		for (uint32_t i = 0; i < totalInstructions; i++)
 		{

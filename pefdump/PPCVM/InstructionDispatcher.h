@@ -2,6 +2,8 @@
 #define INSTRUCTIONDISPATCHER_H
 
 #include "Instruction.h"
+#include "Disassembler.h"
+#include <iostream>
 
 namespace PPCVM
 {
@@ -19,6 +21,8 @@ namespace PPCVM
 	public:
 		inline void Dispatch(Instruction inst)
 		{
+			std::cerr << Disassembler::Disassemble(inst) << std::endl;
+			
 			DispatchableMethod method = nullptr;
 			switch (inst.OPCD)
 			{
