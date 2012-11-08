@@ -14,6 +14,24 @@
 
 namespace Common
 {
+	class IAllocator;
+	
+	class AutoAllocation
+	{
+		void* address;
+		IAllocator* allocator;
+		
+	public:
+		AutoAllocation(IAllocator* allocator, size_t size);
+		AutoAllocation(const AutoAllocation& that) = delete;
+		AutoAllocation(AutoAllocation&& that);
+		
+		void* operator*();
+		const void* operator*() const;
+		
+		~AutoAllocation();
+	};
+	
 	// we're not using C++ allocators because we're really more interested in creating big flat memory zones
 	// than actualy creating objects; and besides, we don't want to virally add templates to anything that needs
 	// to allocate memory.
@@ -21,8 +39,12 @@ namespace Common
 	{
 	public:
 		virtual uint8_t* GetBaseAddress() = 0;
+		
 		virtual uint8_t* Allocate(size_t size) = 0;
 		virtual void Deallocate(void* address) = 0;
+		
+		AutoAllocation AllocateAuto(size_t size);
+		
 		virtual ~IAllocator();
 	};
 }
