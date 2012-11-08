@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <iostream>
 #include <iomanip>
+#include <memory>
 
 #include "FragmentManager.h"
 #include "PEFLibraryResolver.h"
@@ -20,6 +21,9 @@
 #include "Disassembler.h"
 #include "Interpreter.h"
 
+// be super-generous: apps on Mac OS 9, by default, have a 32 KB stack
+// but we give them 1 MB since messing with ApplLimit has no effect
+const uint32_t defaultStackSize = 0x100000;
 const char endline = '\n';
 
 static char classChars[] = {
@@ -137,9 +141,6 @@ static void run(const std::string& path)
 
 static void runMPW(const std::string& path)
 {
-	MachineState state;
-	MachineStateInit(&state);
-	
 	CFM::FragmentManager fragmentManager;
 	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
 	ObjCBridge::BridgeLibraryResolver objcResolver(Common::NativeAllocator::Instance);
@@ -153,8 +154,6 @@ static void runMPW(const std::string& path)
 		return;
 	}
 	
-	PPCVM::Execution::Interpreter interpreter(&state);
-	
 	auto resolver = fragmentManager.GetSymbolResolver(path);
 	auto main = resolver->GetMainAddress();
 	if (main.Universe != CFM::SymbolUniverse::PowerPC)
@@ -163,8 +162,19 @@ static void runMPW(const std::string& path)
 		return;
 	}
 	
-	const Common::UInt32* mainAddress = reinterpret_cast<const Common::UInt32*>(main.Address);
-	uint32_t startAddress = *mainAddress;
+	const PEF::TransitionVector* mainVector = reinterpret_cast<const PEF::TransitionVector*>(main.Address);
+	uint32_t startAddress = mainVector->EntryPoint;
+	
+	Common::AutoAllocation stackRef = Common::NativeAllocator::Instance->AllocateAuto(defaultStackSize);
+	uint8_t* stack = static_cast<uint8_t*>(*stackRef);
+	
+	MachineState state;
+	MachineStateInit(&state);
+	state.gpr[1] = reinterpret_cast<intptr_t>(stack + defaultStackSize - 12);
+	state.gpr[2] = mainVector->TableOfContents;
+	
+	PPCVM::Execution::Interpreter interpreter(&state);
+	
 	interpreter.Execute(reinterpret_cast<const void*>(startAddress));
 }
 

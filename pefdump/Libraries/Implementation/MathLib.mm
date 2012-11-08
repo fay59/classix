@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 Félix. All rights reserved.
 //
 
-#import "MathLib.h"
 #include "BigEndian.h"
+#import "MathLib.h"
 
 struct MathLibGlobals
 {

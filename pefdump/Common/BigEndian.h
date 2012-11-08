@@ -101,9 +101,11 @@ namespace Common
 			AsBigEndian = 0;
 		}
 		
-		inline UInt32(uint32_t AsBigEndian)
+		static inline UInt32 FromBigEndian(uint32_t AsBigEndian)
 		{
-			this->AsBigEndian = AsBigEndian;
+			UInt32 value;
+			value.AsBigEndian = AsBigEndian;
+			return value;
 		}
 		
 		inline uint32_t Get() const
@@ -111,9 +113,15 @@ namespace Common
 			return EndianU32_BtoN(AsBigEndian);
 		}
 		
-		inline void Set(uint32_t AsBigEndian)
+		inline void Set(uint32_t asNativeEndian)
 		{
-			this->AsBigEndian = EndianU32_NtoB(AsBigEndian);
+			this->AsBigEndian = EndianU32_NtoB(asNativeEndian);
+		}
+		
+		inline UInt32& operator=(uint32_t that)
+		{
+			Set(that);
+			return *this;
 		}
 		
 		inline operator uint32_t() const
@@ -131,9 +139,11 @@ namespace Common
 			AsBigEndian = 0;
 		}
 		
-		inline SInt32(int32_t AsBigEndian)
+		inline SInt32 FromBigEndian(int32_t AsBigEndian)
 		{
-			this->AsBigEndian = AsBigEndian;
+			SInt32 value;
+			value.AsBigEndian = AsBigEndian;
+			return value;
 		}
 		
 		inline int32_t Get() const
@@ -141,9 +151,15 @@ namespace Common
 			return EndianS32_BtoN(AsBigEndian);
 		}
 		
-		inline void Set(int32_t AsBigEndian)
+		inline void Set(int32_t asNativeEndian)
 		{
-			this->AsBigEndian = EndianS32_NtoB(AsBigEndian);
+			this->AsBigEndian = EndianS32_NtoB(asNativeEndian);
+		}
+		
+		inline SInt32& operator=(int32_t that)
+		{
+			Set(that);
+			return *this;
 		}
 		
 		inline operator int32_t() const
@@ -161,9 +177,11 @@ namespace Common
 			AsBigEndian = 0;
 		}
 		
-		inline UInt16(uint16_t AsBigEndian)
+		inline UInt16 FromBigEndian(uint16_t AsBigEndian)
 		{
-			this->AsBigEndian = AsBigEndian;
+			UInt16 value;
+			value.AsBigEndian = AsBigEndian;
+			return value;
 		}
 		
 		inline uint16_t Get() const
@@ -171,9 +189,15 @@ namespace Common
 			return EndianU16_BtoN(AsBigEndian);
 		}
 		
-		inline void Set(uint16_t AsBigEndian)
+		inline void Set(uint16_t asNativeEndian)
 		{
-			this->AsBigEndian = EndianU16_NtoB(AsBigEndian);
+			this->AsBigEndian = EndianU16_NtoB(asNativeEndian);
+		}
+		
+		inline UInt16& operator=(uint16_t that)
+		{
+			Set(that);
+			return *this;
 		}
 		
 		inline operator uint16_t() const
@@ -191,9 +215,11 @@ namespace Common
 			AsBigEndian = 0;
 		}
 		
-		inline SInt16(int16_t AsBigEndian)
+		inline SInt16 FromBigEndian(int16_t AsBigEndian)
 		{
-			this->AsBigEndian = AsBigEndian;
+			SInt16 value;
+			value.AsBigEndian = AsBigEndian;
+			return value;
 		}
 		
 		inline int16_t Get() const
@@ -201,9 +227,15 @@ namespace Common
 			return EndianS16_BtoN(AsBigEndian);
 		}
 		
-		inline void Set(int16_t AsBigEndian)
+		inline void Set(int16_t asNativeEndian)
 		{
-			this->AsBigEndian = EndianS16_NtoB(AsBigEndian);
+			this->AsBigEndian = EndianS16_NtoB(asNativeEndian);
+		}
+		
+		inline SInt16& operator=(int16_t that)
+		{
+			Set(that);
+			return *this;
 		}
 		
 		inline operator int16_t() const
@@ -221,19 +253,20 @@ namespace Common
 			AsBigEndian.v = 0;
 		}
 		
-		inline Real32(float AsBigEndian)
-		{
-			this->AsBigEndian = CF::ConvertFloatHostToSwapped(AsBigEndian);
-		}
-		
 		inline float Get() const
 		{
 			return CF::ConvertFloatSwappedToHost(AsBigEndian);
 		}
 		
-		inline void Set(float AsBigEndian)
+		inline void Set(float nativeEndian)
 		{
-			this->AsBigEndian = CF::ConvertFloatHostToSwapped(AsBigEndian);
+			this->AsBigEndian = CF::ConvertFloatHostToSwapped(nativeEndian);
+		}
+		
+		inline Real32& operator=(float that)
+		{
+			Set(that);
+			return *this;
 		}
 		
 		inline operator double() const
@@ -251,19 +284,20 @@ namespace Common
 			AsBigEndian.v = 0;
 		}
 		
-		inline Real64(double AsBigEndian)
-		{
-			this->AsBigEndian = CF::ConvertDoubleHostToSwapped(AsBigEndian);
-		}
-		
 		inline double Get() const
 		{
 			return CF::ConvertDoubleSwappedToHost(AsBigEndian);
 		}
 		
-		inline void Set(double AsBigEndian)
+		inline void Set(double nativeEndian)
 		{
-			this->AsBigEndian = CF::ConvertDoubleHostToSwapped(AsBigEndian);
+			this->AsBigEndian = CF::ConvertDoubleHostToSwapped(nativeEndian);
+		}
+		
+		inline Real64& operator=(double that)
+		{
+			Set(that);
+			return *this;
 		}
 		
 		inline operator double() const

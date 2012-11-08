@@ -6,9 +6,9 @@
 //  Copyright (c) 2012 Félix. All rights reserved.
 //
 
-#import "StdCLib.h"
 #include "BigEndian.h"
 #include "MachineState.h"
+#import "StdCLib.h"
 
 struct StdCLibGlobals
 {

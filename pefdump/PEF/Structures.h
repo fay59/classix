@@ -208,7 +208,7 @@ namespace PEF
 		
 		inline uint32_t GetNameOffset() const
 		{
-			return Common::UInt32(Entry.AsBigEndian & 0xffffff00);
+			return Common::UInt32::FromBigEndian(Entry.AsBigEndian & 0xffffff00);
 		}
 	} __attribute__((packed));
 		
@@ -219,6 +219,12 @@ namespace PEF
 		Common::UInt32 RelocationCount;
 		Common::UInt32 FirstRelocationOffset;
 	} __attribute__((packed));
+		
+	struct TransitionVector
+	{
+		Common::UInt32 EntryPoint;
+		Common::UInt32 TableOfContents;
+	};
 }
 
 #endif /* defined(__pefdump__PEFContaierHeader__) */
