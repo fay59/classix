@@ -176,6 +176,7 @@ static void runMPW(const std::string& path)
 	PPCVM::Execution::Interpreter interpreter(&state);
 	
 	interpreter.Execute(reinterpret_cast<const void*>(startAddress));
+	std::cout << "Execution returned " << state.gpr[3] << std::endl;
 }
 
 int main(int argc, const char * argv[])

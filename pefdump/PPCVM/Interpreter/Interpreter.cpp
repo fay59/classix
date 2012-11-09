@@ -3,6 +3,12 @@
 #include "NativeCall.h"
 #include <iostream>
 
+#ifdef DEBUG
+# define CHECK_JUMP_TARGET()	(void)*(uint8_t*)branchAddress
+#else
+# define CHECK_JUMP_TARGET()
+#endif
+
 namespace
 {
 	template<typename T>
@@ -12,7 +18,7 @@ namespace
 	};
 	
 	template<typename T>
-	const T EndAddress<T>::Value = reinterpret_cast<T>(0xffffffff);
+	const T EndAddress<T>::Value = reinterpret_cast<T>(0xfffffffc);
 	
 	inline int32_t SignExt16(int16_t x)
 	{
@@ -112,6 +118,7 @@ namespace PPCVM
 				target += address;
 			
 			branchAddress = reinterpret_cast<const void*>(target);
+			CHECK_JUMP_TARGET();
 		}
 
 		void Interpreter::bcx(Instruction inst)
@@ -132,11 +139,12 @@ namespace PPCVM
 				if (inst.LK)
 					state->lr = address + 4;
 					
-				intptr_t target = SignExt26(inst.LI << 2);
+				intptr_t target = SignExt16(inst.BD << 2);
 				if (!inst.AA)
 					target += address;
 				branchAddress = reinterpret_cast<const void*>(target);
 			}
+			CHECK_JUMP_TARGET();
 		}
 
 		void Interpreter::bclrx(Instruction inst)
@@ -153,6 +161,7 @@ namespace PPCVM
 				if (inst.LK_3)
 					state->lr = reinterpret_cast<intptr_t>(currentAddress + 1);
 			}
+			CHECK_JUMP_TARGET();
 		}
 
 		void Interpreter::bcctrx(Instruction inst)
@@ -166,6 +175,7 @@ namespace PPCVM
 				
 				branchAddress = reinterpret_cast<const void*>(state->ctr & ~3);
 			}
+			CHECK_JUMP_TARGET();
 		}
 
 		void Interpreter::sc(Instruction inst)

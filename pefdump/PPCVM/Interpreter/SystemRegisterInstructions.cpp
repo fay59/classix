@@ -192,7 +192,25 @@ namespace PPCVM
 
 		void Interpreter::mtspr(Instruction inst)
 		{
-			abort();
+			uint8_t spr = (inst.RB << 5) | inst.RA;
+			switch (spr)
+			{
+				case 1: // xer
+					state->xer = state->gpr[inst.RD];
+					break;
+					
+				case 8: // lr
+					state->lr = state->gpr[inst.RD];
+					break;
+					
+				case 9: // ctr
+					state->ctr = state->gpr[inst.RD];
+					break;
+					
+				default:
+					assert(!"Getting value of unknown system register");
+					break;
+			}
 		}
 	}
 }
