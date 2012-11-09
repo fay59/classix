@@ -362,10 +362,9 @@ static void bc(struct DisasmPara_PPC *dp,ppc_word in)
     oper += offs;
     *oper++ = ',';
   }
-  if (in & 2)  /* AA ? */
-    sprintf(dp->operands,"0x%lx",(unsigned long)d);
-  else
-    sprintf(oper,"0x%lx",(unsigned long)((char *)dp->iaddr + d));
+	// Félix Cloutier, 2012-11-08
+	// Print the offset instead of an absolute location
+	sprintf(dp->operands, "%s0x%lx", (in & 2) == 0 ? "+" : "", (unsigned long)d);
   dp->type = PPCINSTR_BRANCH;
   dp->displacement = (ppc_word)d;
 }
