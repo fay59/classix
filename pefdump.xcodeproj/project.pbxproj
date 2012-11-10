@@ -210,9 +210,9 @@
 		DC82A9B91636F4E100EAEDCD /* PPCVM */ = {
 			isa = PBXGroup;
 			children = (
-				DC72740F1647350C00DA17E5 /* FloatingPointStatus.h */,
-				DC72740A16471FF100DA17E5 /* InstructionDispatcher.h */,
 				DC72740B1647208800DA17E5 /* Instruction.h */,
+				DC72740A16471FF100DA17E5 /* InstructionDispatcher.h */,
+				DC72740F1647350C00DA17E5 /* FloatingPointStatus.h */,
 				DCB00B9D163B6DAD003C88CA /* MachineState.cpp */,
 				DCB00B9E163B6DAD003C88CA /* MachineState.h */,
 				DCA1E14916437D08008C3C8C /* Execution */,

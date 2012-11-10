@@ -4,13 +4,16 @@
 #include <iostream>
 
 #ifdef DEBUG
-# define CHECK_JUMP_TARGET()	(void)*(uint8_t*)branchAddress
+# define CHECK_JUMP_TARGET()	(*(uint8_t*)branchAddress = *(uint8_t*)branchAddress)
 #else
 # define CHECK_JUMP_TARGET()
 #endif
 
 namespace
 {
+	// If the interpreter reaches the address of that symbol, it knows that it needs to stop interpreting.
+	uint32_t EndLocation = 0xdeaddead;
+	
 	template<typename T>
 	struct EndAddress
 	{
@@ -18,7 +21,7 @@ namespace
 	};
 	
 	template<typename T>
-	const T EndAddress<T>::Value = reinterpret_cast<T>(0xfffffffc);
+	const T EndAddress<T>::Value = reinterpret_cast<T>(&EndLocation);
 	
 	inline int32_t SignExt16(int16_t x)
 	{
