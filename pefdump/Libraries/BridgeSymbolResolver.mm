@@ -9,6 +9,7 @@
 #include <objc/runtime.h>
 #include "BridgeSymbolResolver.h"
 #include "AsmJit.h"
+#include "NativeCall.h"
 #import "PPCLibrary.h"
 
 #define LIBRARY reinterpret_cast< id<PPCLibrary> >(library)
@@ -29,7 +30,7 @@ namespace
 	{
 		using namespace AsmJit;
 		Compiler x86;
-		x86.dd(0xffffffff); // native marker
+		x86.dd(PPCVM::Execution::NativeTag); // native marker
 		x86.newFunction(CALL_CONV_DEFAULT, FunctionBuilder1<void, MachineState*>());
 		
 		GPVar gpSender(x86.newGP(VARIABLE_TYPE_GPD));
@@ -79,7 +80,12 @@ namespace ObjCBridge
 	
 	ResolvedSymbol& BridgeSymbolResolver::CacheSymbol(const std::string& name, void *address)
 	{
-		auto symbol = ResolvedSymbol::IntelSymbol(reinterpret_cast<intptr_t>(address));
+		PEF::TransitionVector transition;
+		transition.EntryPoint = reinterpret_cast<intptr_t>(address);
+		transition.TableOfContents = 0;
+		auto iter = transitions.insert(transitions.end(), transition);
+		
+		auto symbol = ResolvedSymbol::IntelSymbol(reinterpret_cast<intptr_t>(&*iter));
 		auto pair = symbols.insert(std::pair<std::string, ResolvedSymbol>(name, std::move(symbol)));
 		return pair.first->second;
 	}

@@ -26,24 +26,6 @@ namespace
 	{
 		state->cr[field] = value;
 	}
-	
-	inline void SetCR(MachineState* state, uint32_t value)
-	{
-		for (int i = 0; i < 8; i++)
-		{
-			state->cr[i] = (value >> (28 - i * 4)) & 0xf;
-		}
-	}
-	
-	inline uint32_t GetCR(MachineState* state)
-	{
-		uint32_t cr = state->cr[0] << 28;
-		for (int i = 0; i < 8; i++)
-		{
-			cr |= state->cr[i] << (28 - i * 4);
-		}
-		return cr;
-	}
 }
 
 namespace PPCVM
@@ -115,7 +97,7 @@ namespace PPCVM
 
 		void Interpreter::mfcr(Instruction inst)
 		{
-			state->gpr[inst.RD] = GetCR(state);
+			state->gpr[inst.RD] = MachineStateGetCR(state);
 		}
 
 		void Interpreter::mffsx(Instruction inst)
@@ -156,7 +138,7 @@ namespace PPCVM
 			uint32_t crm = inst.CRM;
 			if (crm == 0xFF)
 			{
-				SetCR(state, state->gpr[inst.RS]);
+				MachineStateSetCR(state, state->gpr[inst.RS]);
 			}
 			else
 			{
@@ -166,7 +148,7 @@ namespace PPCVM
 					if (crm & (1 << i))
 						mask |= 0xF << (i*4);
 				}
-				SetCR(state, (GetCR(state) & ~mask) | (state->gpr[inst.RS] & mask));
+				MachineStateSetCR(state, (MachineStateGetCR(state) & ~mask) | (state->gpr[inst.RS] & mask));
 			}
 		}
 

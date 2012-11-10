@@ -139,7 +139,7 @@ static void run(const std::string& path)
 	interpreter.Execute(mainAddress);
 }
 
-static void runMPW(const std::string& path)
+static void runMPW(const std::string& path, int argc, const char* argv[], const char* envp[])
 {
 	CFM::FragmentManager fragmentManager;
 	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
@@ -170,16 +170,22 @@ static void runMPW(const std::string& path)
 	
 	MachineState state;
 	MachineStateInit(&state);
-	state.gpr[1] = reinterpret_cast<intptr_t>(stack + defaultStackSize - 12);
-	state.gpr[2] = mainVector->TableOfContents;
+	
+	state.r1 = reinterpret_cast<intptr_t>(stack + defaultStackSize - 12);
+	state.r2 = mainVector->TableOfContents;
+	
+	// TODO argv and envp need to be moved to a safe place of the address space
+	state.r29 = argc;
+	state.r30 = reinterpret_cast<intptr_t>(argv);
+	state.r31 = reinterpret_cast<intptr_t>(envp);
 	
 	PPCVM::Execution::Interpreter interpreter(&state);
 	
 	interpreter.Execute(reinterpret_cast<const void*>(startAddress));
-	std::cout << "Execution returned " << state.gpr[3] << std::endl;
+	std::cout << "Execution returned " << state.r3 << std::endl;
 }
 
-int main(int argc, const char * argv[])
+int main(int argc, const char* argv[], const char* envp[])
 {
 	if (argc != 3)
 	{
@@ -208,7 +214,7 @@ int main(int argc, const char * argv[])
 		else if (mode == "-r")
 			run(path);
 		else if (mode == "-mpw")
-			runMPW(path);
+			runMPW(path, argc - 3, argv + 3, envp);
 	}
 	catch (std::exception& error)
 	{

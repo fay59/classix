@@ -4,7 +4,8 @@
 #include <iostream>
 
 #ifdef DEBUG
-# define CHECK_JUMP_TARGET()	(*(uint8_t*)branchAddress = *(uint8_t*)branchAddress)
+static uint8_t _writeBucket_;
+# define CHECK_JUMP_TARGET()	(_writeBucket_ = *(uint8_t*)branchAddress)
 #else
 # define CHECK_JUMP_TARGET()
 #endif
@@ -87,14 +88,14 @@ namespace PPCVM
 			branchAddress = nullptr;
 			do
 			{
-				uint32_t instructionCode = *currentAddress;
-				if (instructionCode == 0xffffffff)
+				const Common::UInt32& instructionCode = *currentAddress;
+				if (instructionCode.AsBigEndian == NativeTag)
 				{
 					branchAddress = ExecuteNative(currentAddress + 1);
 				}
 				else
 				{
-					Dispatch(instructionCode);
+					Dispatch(instructionCode.Get());
 					currentAddress++;
 				}
 			} while (branchAddress == nullptr);
@@ -146,8 +147,8 @@ namespace PPCVM
 				if (!inst.AA)
 					target += address;
 				branchAddress = reinterpret_cast<const void*>(target);
+				CHECK_JUMP_TARGET();
 			}
-			CHECK_JUMP_TARGET();
 		}
 
 		void Interpreter::bclrx(Instruction inst)
@@ -160,11 +161,12 @@ namespace PPCVM
 
 			if (counter & condition)
 			{
-				branchAddress = reinterpret_cast<const void*>(state->lr & ~3);
 				if (inst.LK_3)
 					state->lr = reinterpret_cast<intptr_t>(currentAddress + 1);
+				
+				branchAddress = reinterpret_cast<const void*>(state->lr & ~3);
+				CHECK_JUMP_TARGET();
 			}
-			CHECK_JUMP_TARGET();
 		}
 
 		void Interpreter::bcctrx(Instruction inst)
@@ -177,8 +179,8 @@ namespace PPCVM
 					state->lr = reinterpret_cast<intptr_t>(currentAddress + 1);
 				
 				branchAddress = reinterpret_cast<const void*>(state->ctr & ~3);
+				CHECK_JUMP_TARGET();
 			}
-			CHECK_JUMP_TARGET();
 		}
 
 		void Interpreter::sc(Instruction inst)

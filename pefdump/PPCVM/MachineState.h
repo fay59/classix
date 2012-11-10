@@ -19,7 +19,17 @@
 
 typedef struct MachineState
 {
-	uint32_t gpr[32];
+	union
+	{
+		uint32_t gpr[32];
+		struct
+		{
+			uint32_t r0, r1, r2, r3, r4, r5, r6, r7;
+			uint32_t r8, r9, r10, r11, r12, r13, r14, r15;
+			uint32_t r16, r17, r18, r19, r20, r21, r22, r23;
+			uint32_t r24, r25, r26, r27, r28, r29, r30, r31;
+		};
+	};
 	double fpr[32];
 	uint32_t pc;
 	uint8_t cr[8];
@@ -78,6 +88,8 @@ typedef struct MachineState
 } MachineState;
 
 EXTERN_C void MachineStateInit(MachineState* state);
+EXTERN_C void MachineStateSetCR(MachineState* state, uint32_t cr);
+EXTERN_C uint32_t MachineStateGetCR(MachineState* state);
 
 #undef EXTERN_C
 

@@ -15,6 +15,7 @@ namespace PPCVM
 {
 	namespace Execution
 	{
+		extern const uint32_t NativeTag;
 		typedef void (*NativeCall)(MachineState*);
 	}
 }

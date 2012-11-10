@@ -127,13 +127,26 @@ struct StdCLibGlobals
 
 #pragma mark -
 #pragma mark Code Symbols
-// for now, just implement what it takes for the Hello program
 -(void)StdCLib___setjmp:(MachineState *)state
 {
-	// TODO this is *almost certainly* not the right way to do it
-	void* address = [allocator translate:state->gpr[3]];
-	memcpy(address, state, sizeof *state);
-	state->gpr[3] = 0;
+	// since the client is not really supposed to read from jmpBuf values, we
+	// shouldn't have to worry about endianness
+	uint32_t* jmpBuf = reinterpret_cast<uint32_t*>([allocator translate:state->r3]);
+	jmpBuf[0] = state->lr;
+	jmpBuf[1] = MachineStateGetCR(state);
+	jmpBuf[2] = state->r1;
+	jmpBuf[3] = state->r2;
+	jmpBuf[4] = 0;
+	memcpy(jmpBuf + 5, state->gpr + 13, 19 * sizeof(uint32_t));
+	memcpy(jmpBuf + 24, state->fpr + 14, 18 * sizeof(double));
+	jmpBuf[61] = 0;
+	jmpBuf[62] = 0;
+	
+	// ??? there are two fields left over
+	jmpBuf[63] = 0;
+	jmpBuf[64] = 0;
+	
+	state->r3 = 0;
 }
 
 -(void)StdCLib__BreakPoint:(MachineState *)state
@@ -145,14 +158,14 @@ struct StdCLibGlobals
 {
 	// TODO longjmp to __target_for_exit
 	// for now we'll just kill the host (which is really, really bad)
-	exit(state->gpr[3]);
+	exit(state->r3);
 }
 
 -(void)StdCLib_puts:(MachineState *)state
 {
-	void* address = [allocator translate:state->gpr[3]];
+	void* address = [allocator translate:state->r3];
 	const char* ptr = reinterpret_cast<const char*>(address);
-	puts(ptr);
+	state->r3 = puts(ptr);
 }
 
 @end

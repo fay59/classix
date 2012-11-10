@@ -24,6 +24,7 @@
 		DC94F105163C7AE5004538C5 /* MathLib.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC94F104163C7AE5004538C5 /* MathLib.mm */; };
 		DC94F108163C80E9004538C5 /* SymbolResolutionException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC94F106163C80E8004538C5 /* SymbolResolutionException.cpp */; };
 		DC94F10B163CC232004538C5 /* LibraryResolutionException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC94F109163CC231004538C5 /* LibraryResolutionException.cpp */; };
+		DC9D8D3B164EC05800036FDD /* NativeCall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC9D8D3A164EC05800036FDD /* NativeCall.cpp */; };
 		DCA1E14E16438149008C3C8C /* ppc_disasm.c in Sources */ = {isa = PBXBuildFile; fileRef = DCA1E14D16438149008C3C8C /* ppc_disasm.c */; };
 		DCA1E15116438152008C3C8C /* Disassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA1E14F16438152008C3C8C /* Disassembler.cpp */; };
 		DCA6DBFA1638451400BFA046 /* IAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBF81638451400BFA046 /* IAllocator.cpp */; };
@@ -105,6 +106,7 @@
 		DC94F107163C80E8004538C5 /* SymbolResolutionException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolResolutionException.h; sourceTree = "<group>"; };
 		DC94F109163CC231004538C5 /* LibraryResolutionException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryResolutionException.cpp; sourceTree = "<group>"; };
 		DC94F10A163CC232004538C5 /* LibraryResolutionException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryResolutionException.h; sourceTree = "<group>"; };
+		DC9D8D3A164EC05800036FDD /* NativeCall.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NativeCall.cpp; sourceTree = "<group>"; };
 		DCA1E14C16438149008C3C8C /* ppc_disasm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ppc_disasm.h; sourceTree = "<group>"; };
 		DCA1E14D16438149008C3C8C /* ppc_disasm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ppc_disasm.c; sourceTree = "<group>"; };
 		DCA1E14F16438152008C3C8C /* Disassembler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Disassembler.cpp; sourceTree = "<group>"; };
@@ -282,6 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				DCAB94021648B1CD00E9B4E1 /* NativeCall.h */,
+				DC9D8D3A164EC05800036FDD /* NativeCall.cpp */,
 				DC72740C1647225500DA17E5 /* TrapException.cpp */,
 				DC72740D1647225500DA17E5 /* TrapException.h */,
 				DC7273E316471CB300DA17E5 /* Interpreter */,
@@ -512,6 +515,7 @@
 				DC72740716471CD800DA17E5 /* LoadStoreInstructions.cpp in Sources */,
 				DC72740816471CD800DA17E5 /* SystemRegisterInstructions.cpp in Sources */,
 				DC72740E1647225500DA17E5 /* TrapException.cpp in Sources */,
+				DC9D8D3B164EC05800036FDD /* NativeCall.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

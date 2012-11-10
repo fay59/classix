@@ -11,6 +11,7 @@
 
 #include <map>
 #include <list>
+#include "Structures.h"
 #include "SymbolResolver.h"
 #include "IAllocator.h"
 #include "MachineState.h"
@@ -25,6 +26,7 @@ namespace ObjCBridge
 		std::string libraryName;
 		std::map<std::string, ResolvedSymbol> symbols;
 		std::list<void*> trampolines;
+		std::list<PEF::TransitionVector> transitions;
 		Common::IAllocator* allocator;
 		
 		ResolvedSymbol& CacheSymbol(const std::string& name, void* address);
