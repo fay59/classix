@@ -33,7 +33,7 @@ namespace Common
 		
 		virtual uint8_t* GetBaseAddress();
 		
-		virtual uint8_t* Allocate(size_t size, const std::string& reason);
+		virtual uint8_t* Allocate(const std::string& reason, size_t size);
 		virtual void Deallocate(void* address);
 		
 		void PrintMemoryMap() const;

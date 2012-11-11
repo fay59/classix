@@ -9,3 +9,9 @@
 #include "NativeCall.h"
 
 extern const uint32_t PPCVM::Execution::NativeTag = 0x4e544956; // 'NTIV'
+
+PPCVM::Execution::NativeCall::NativeCall(NativeCallback cb)
+{
+	Tag = NativeTag;
+	this->Callback = cb;
+}

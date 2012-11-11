@@ -2,6 +2,7 @@
 #include "Disassembler.h"
 #include "NativeCall.h"
 #include <iostream>
+#include <cassert>
 
 #ifdef DEBUG
 static uint8_t _writeBucket_;
@@ -52,8 +53,8 @@ namespace PPCVM
 {
 	namespace Execution
 	{
-		Interpreter::Interpreter(MachineState* state)
-		: state(state)
+		Interpreter::Interpreter(Common::IAllocator* allocator, MachineState* state)
+		: state(state), allocator(allocator)
 		{ }
 
 		void Interpreter::Panic(const std::string& error)
@@ -75,11 +76,13 @@ namespace PPCVM
 			}
 		}
 		
-		const void* Interpreter::ExecuteNative(const void *address)
+		const void* Interpreter::ExecuteNative(const NativeCall* function)
 		{
-			NativeCall function = reinterpret_cast<NativeCall>(const_cast<void*>(address));
-			function(state);
-			return reinterpret_cast<const void*>(state->lr);
+			assert(function->Tag == NativeTag && "Call doesn't have native tag");
+			
+			void* libGlobals = allocator->ToPointer<void>(state->r2);
+			function->Callback(libGlobals, state);
+			return allocator->ToPointer<const void>(state->lr);
 		}
 
 		const void* Interpreter::ExecuteUntilBranch(const void* address)
@@ -91,7 +94,8 @@ namespace PPCVM
 				const Common::UInt32& instructionCode = *currentAddress;
 				if (instructionCode.AsBigEndian == NativeTag)
 				{
-					branchAddress = ExecuteNative(currentAddress + 1);
+					const NativeCall* call = static_cast<const NativeCall*>(address);
+					branchAddress = ExecuteNative(call);
 				}
 				else
 				{

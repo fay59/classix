@@ -1,6 +1,8 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
+#include "NativeCall.h"
+#include "IAllocator.h"
 #include "MachineState.h"
 #include "Instruction.h"
 #include "InstructionDispatcher.h"
@@ -14,13 +16,14 @@ namespace PPCVM
 		class Interpreter : public InstructionDispatcher<Interpreter>
 		{
 			MachineState* state;
+			Common::IAllocator* allocator;
 			const Common::UInt32* currentAddress;
 			const void* branchAddress;
 			const void* ExecuteUntilBranch(const void* address);
-			const void* ExecuteNative(const void* address);
+			const void* ExecuteNative(const NativeCall* address);
 			
 		public:
-			Interpreter(MachineState* state);
+			Interpreter(Common::IAllocator* allocator, MachineState* state);
 			
 			void Execute(const void* address);
 			

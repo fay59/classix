@@ -41,8 +41,10 @@ namespace Common
 		
 		template<typename U>
 		STAllocator(const STAllocator<U>& that)
-		: allocator(that.allocator), forcedNextName(&that.NextName)
-		{ }
+		: allocator(that.allocator)
+		{
+			forcedNextName = that.forcedNextName != nullptr ? that.forcedNextName : &that.NextName;
+		}
 		
 		pointer address(reference x) const { return &x; }
 		const_pointer address(const_reference x) const { return &x; }
@@ -50,7 +52,7 @@ namespace Common
 		pointer allocate(size_type n, void* hint = nullptr)
 		{
 			const std::string* toUse = forcedNextName ? forcedNextName : &NextName;
-			pointer result = reinterpret_cast<pointer>(allocator->Allocate(sizeof(T) * n, *toUse));
+			pointer result = reinterpret_cast<pointer>(allocator->Allocate(*toUse, sizeof(T) * n));
 			return result;
 		}
 		

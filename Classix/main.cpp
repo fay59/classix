@@ -1,6 +1,6 @@
 //
 //  main.cpp
-//  pefdump
+//  Classix
 //
 //  Created by Félix on 2012-10-20.
 //  Copyright (c) 2012 Félix. All rights reserved.
@@ -13,13 +13,12 @@
 
 #include "FragmentManager.h"
 #include "PEFLibraryResolver.h"
+#include "DyldLibraryResolver.h"
+#include "VirtualMachine.h"
 #include "NativeAllocator.h"
 #include "FileMapping.h"
 #include "Unmangle.h"
-#include "BridgeLibraryResolver.h"
-#include "MachineState.h"
 #include "Disassembler.h"
-#include "Interpreter.h"
 
 // be super-generous: apps on Mac OS 9, by default, have a 32 KB stack
 // but we give them 1 MB since messing with ApplLimit has no effect
@@ -41,13 +40,14 @@ static void loadTest(const std::string& path)
 	
 	CFM::FragmentManager fragmentManager;
 	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
-	ObjCBridge::BridgeLibraryResolver objcResolver(Common::NativeAllocator::Instance);
+	ClassixCore::DyldLibraryResolver dyldResolver(Common::NativeAllocator::Instance);
+	
+	dyldResolver.RegisterLibrary("StdCLib");
 	
 	fragmentManager.LibraryResolvers.push_back(&pefResolver);
-	fragmentManager.LibraryResolvers.push_back(&objcResolver);
+	fragmentManager.LibraryResolvers.push_back(&dyldResolver);
 	
 	fragmentManager.LoadContainer(path);
-	
 }
 
 static void listExports(const std::string& path)
@@ -109,95 +109,37 @@ static void disassemble(const std::string& path)
 
 static void run(const std::string& path)
 {
-	MachineState state;
-	MachineStateInit(&state);
-	
-	CFM::FragmentManager fragmentManager;
-	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
-	ObjCBridge::BridgeLibraryResolver objcResolver(Common::NativeAllocator::Instance);
-	
-	fragmentManager.LibraryResolvers.push_back(&pefResolver);
-	fragmentManager.LibraryResolvers.push_back(&objcResolver);
-	
-	if (!fragmentManager.LoadContainer(path))
-	{
-		std::cerr << "could not load " << path << std::endl;
-		return;
-	}
-	
-	PPCVM::Execution::Interpreter interpreter(&state);
-	
-	auto resolver = fragmentManager.GetSymbolResolver(path);
-	auto main = resolver->GetMainAddress();
-	if (main.Universe != CFM::SymbolUniverse::PowerPC)
-	{
-		std::cerr << path << " successfully loaded, but main symbol is not a PPC symbol" << std::endl;
-		return;
-	}
-	
-	const void* mainAddress = reinterpret_cast<const void*>(main.Address);
-	interpreter.Execute(mainAddress);
+	throw std::logic_error("direct main invocation is not supported");
 }
 
 static void runMPW(const std::string& path, int argc, const char* argv[], const char* envp[])
 {
-	CFM::FragmentManager fragmentManager;
-	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
-	ObjCBridge::BridgeLibraryResolver objcResolver(Common::NativeAllocator::Instance);
+	ClassixCore::DyldLibraryResolver dyldResolver(Common::NativeAllocator::Instance);
+	dyldResolver.RegisterLibrary("StdCLib");
 	
-	fragmentManager.LibraryResolvers.push_back(&pefResolver);
-	fragmentManager.LibraryResolvers.push_back(&objcResolver);
+	Classix::VirtualMachine vm(Common::NativeAllocator::Instance);
+	vm.AddLibraryResolver(dyldResolver);
 	
-	if (!fragmentManager.LoadContainer(path))
-	{
-		std::cerr << "could not load " << path << std::endl;
-		return;
-	}
-	
-	auto resolver = fragmentManager.GetSymbolResolver(path);
-	auto main = resolver->GetMainAddress();
-	if (main.Universe != CFM::SymbolUniverse::PowerPC)
-	{
-		std::cerr << path << " successfully loaded, but main symbol is not a PPC symbol" << std::endl;
-		return;
-	}
-	
-	const PEF::TransitionVector* mainVector = reinterpret_cast<const PEF::TransitionVector*>(main.Address);
-	uint32_t startAddress = mainVector->EntryPoint;
-	
-	Common::NativeAllocator* allocator = Common::NativeAllocator::Instance;
-	Common::AutoAllocation stackRef = allocator->AllocateAuto(defaultStackSize, "PPC Stack");
-	uint8_t* stack = static_cast<uint8_t*>(*stackRef);
-	
-	MachineState state;
-	MachineStateInit(&state);
-	
-	state.r1 = reinterpret_cast<intptr_t>(stack + defaultStackSize - 12);
-	state.r2 = mainVector->TableOfContents;
-	
-	// TODO argv and envp need to be moved to a safe place of the address space
-	state.r29 = argc;
-	state.r30 = reinterpret_cast<intptr_t>(argv);
-	state.r31 = reinterpret_cast<intptr_t>(envp);
-	
-	PPCVM::Execution::Interpreter interpreter(&state);
-	
-	interpreter.Execute(reinterpret_cast<const void*>(startAddress));
-	std::cout << "Execution returned " << state.r3 << std::endl;
+	auto stub = vm.LoadMainContainer(path);
+	stub(argc, argv, envp);
 }
 
 int main(int argc, const char* argv[], const char* envp[])
 {
 	if (argc != 3)
 	{
-		std::cerr << "usage: pefdump -o file # tries to load fragment" << std::endl;
-		std::cerr << "       pefdump -e file # tries to list exports" << std::endl;
-		std::cerr << "       pefdump -i file # tries to list imports" << std::endl;
-		std::cerr << "       pefdump -d file # tries to disassemble code sections" << std::endl;
-		std::cerr << "       pefdump -r file # tries to *gasp* run the file" << std::endl;
-		std::cerr << "       pefdump -mpw file # tries to run the file as a MPW executable" << std::endl;
+		std::cerr << "usage: Classix -o file # tries to load fragment" << std::endl;
+		std::cerr << "       Classix -e file # tries to list exports" << std::endl;
+		std::cerr << "       Classix -i file # tries to list imports" << std::endl;
+		std::cerr << "       Classix -d file # tries to disassemble code sections" << std::endl;
+		std::cerr << "       Classix -r file # tries to *gasp* run the file" << std::endl;
+		std::cerr << "       Classix -mpw file # tries to run the file as a MPW executable" << std::endl;
 		return 1;
 	}
+	
+	// keeping this reference around to help printing memory areas
+	Common::NativeAllocator* allocator = Common::NativeAllocator::Instance;
+	(void)allocator;
 	
 	std::string mode = argv[1];
 	std::string path = argv[2];

@@ -28,7 +28,7 @@ namespace Common
 		return nullptr;
 	}
 	
-	uint8_t* NativeAllocator::Allocate(size_t size, const std::string& reason)
+	uint8_t* NativeAllocator::Allocate(const std::string& reason, size_t size)
 	{
 		uint8_t* allocation = static_cast<uint8_t*>(malloc(size));
 		ranges[allocation] = AllocatedRange(allocation, allocation + size, reason);
