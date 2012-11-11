@@ -17,7 +17,7 @@
 
 -(void*)translate:(intptr_t)offset;
 
--(void*)allocate:(NSUInteger)size;
+-(void*)allocate:(NSUInteger)size reason:(NSString*)reason;
 -(void)deallocate:(void*)ptr;
 
 @end

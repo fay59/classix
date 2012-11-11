@@ -7,6 +7,7 @@
 //
 
 #include "Container.h"
+#include <sstream>
 
 namespace PEF
 {
@@ -43,7 +44,14 @@ namespace PEF
 			}
 			else
 			{
-				instantiableSectionIndices.push_back(static_cast<int32_t>(this->sections.size()));
+				int32_t id = static_cast<int32_t>(this->sections.size());
+				instantiableSectionIndices.push_back(id);
+				if (sectionName.length() == 0)
+				{
+					std::stringstream ss;
+					ss << "Instantiable section #" << id;
+					sectionName = ss.str();
+				}
 				this->sections.emplace_back(allocator, sectionHeader, sectionName, Base, static_cast<const uint8_t*>(end));
 			}
 		}

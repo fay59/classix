@@ -13,8 +13,9 @@
 #include <list>
 #include "Structures.h"
 #include "SymbolResolver.h"
-#include "IAllocator.h"
 #include "MachineState.h"
+#include "IAllocator.h"
+#include "STAllocator.h"
 
 namespace ObjCBridge
 {
@@ -24,12 +25,16 @@ namespace ObjCBridge
 	{
 		void* library;
 		std::string libraryName;
+		Common::IAllocator* allocator;
+		Common::STAllocator<PEF::TransitionVector> listNodeAllocator;
+		
 		std::map<std::string, ResolvedSymbol> symbols;
 		std::list<void*> trampolines;
-		std::list<PEF::TransitionVector> transitions;
-		Common::IAllocator* allocator;
+		std::list<PEF::TransitionVector, Common::STAllocator<PEF::TransitionVector>> transitions;
 		
 		ResolvedSymbol& CacheSymbol(const std::string& name, void* address);
+		ResolvedSymbol& CacheDataSymbol(const std::string& name, void* address);
+		ResolvedSymbol& CacheCodeSymbol(const std::string& name, void* address);
 		
 	public:
 		BridgeSymbolResolver(Common::IAllocator* allocator, void* libraryAsVoid);

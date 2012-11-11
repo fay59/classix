@@ -28,9 +28,9 @@
 	return ALLOCATOR->GetBaseAddress() + offset;
 }
 
--(void*)allocate:(NSUInteger)size
+-(void*)allocate:(NSUInteger)size reason:(NSString*)reason
 {
-	return ALLOCATOR->Allocate(size);
+	return ALLOCATOR->Allocate(size, [reason UTF8String]);
 }
 
 -(void)deallocate:(void *)ptr

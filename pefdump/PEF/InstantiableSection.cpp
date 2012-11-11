@@ -193,7 +193,7 @@ namespace PEF
 		
 		this->header = header;
 		Name = name;
-		Data = allocator->Allocate(totalSize);
+		Data = allocator->Allocate(totalSize, name);
 		
 		switch (GetSectionType())
 		{

@@ -8,10 +8,10 @@
 
 #include "IAllocator.h"
 
-Common::AutoAllocation::AutoAllocation(IAllocator* allocator, size_t size)
+Common::AutoAllocation::AutoAllocation(IAllocator* allocator, size_t size, const std::string& zoneName)
 : allocator(allocator)
 {
-	address = allocator->Allocate(size);
+	address = allocator->Allocate(size, zoneName);
 }
 
 Common::AutoAllocation::AutoAllocation(AutoAllocation&& that)
@@ -38,9 +38,9 @@ Common::AutoAllocation::~AutoAllocation()
 		allocator->Deallocate(address);
 }
 
-Common::AutoAllocation Common::IAllocator::AllocateAuto(size_t size)
+Common::AutoAllocation Common::IAllocator::AllocateAuto(size_t size, const std::string& zoneName)
 {
-	return AutoAllocation(this, size);
+	return AutoAllocation(this, size, zoneName);
 }
 
 Common::IAllocator::~IAllocator()

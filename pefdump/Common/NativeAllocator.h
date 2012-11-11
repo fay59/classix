@@ -10,17 +10,34 @@
 #define __pefdump__NativeAllocator__
 
 #include "IAllocator.h"
+#include <map>
 
 namespace Common
 {
 	class NativeAllocator : public IAllocator
 	{
+		struct AllocatedRange
+		{
+			void* start;
+			void* end;
+			std::string name;
+			
+			AllocatedRange();
+			AllocatedRange(void* start, void* end, const std::string& name);
+		};
+		
+		std::map<void*, AllocatedRange> ranges;
+		
 	public:
 		static NativeAllocator* Instance;
 		
 		virtual uint8_t* GetBaseAddress();
-		virtual uint8_t* Allocate(size_t size);
+		
+		virtual uint8_t* Allocate(size_t size, const std::string& reason);
 		virtual void Deallocate(void* address);
+		
+		void PrintMemoryMap() const;
+		
 		virtual ~NativeAllocator();
 	};
 }

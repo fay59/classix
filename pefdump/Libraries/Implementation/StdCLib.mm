@@ -70,7 +70,7 @@ struct StdCLibGlobals
 		return nil;
 	
 	allocator = [aAllocator retain];
-	globals = reinterpret_cast<StdCLibGlobals*>([allocator allocate:sizeof(StdCLibGlobals)]);
+	globals = reinterpret_cast<StdCLibGlobals*>([allocator allocate:sizeof(StdCLibGlobals) reason:@"StdCLib Globals"]);
 	
 	return self;
 }

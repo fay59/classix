@@ -67,6 +67,7 @@ namespace
 namespace ObjCBridge
 {
 	BridgeSymbolResolver::BridgeSymbolResolver(Common::IAllocator* allocator, void* idAsVoid)
+	: allocator(allocator), listNodeAllocator(allocator), transitions(listNodeAllocator)
 	{
 		library = [reinterpret_cast< id<PPCLibrary> >(idAsVoid) retain];
 		
@@ -80,14 +81,25 @@ namespace ObjCBridge
 	
 	ResolvedSymbol& BridgeSymbolResolver::CacheSymbol(const std::string& name, void *address)
 	{
+		auto symbol = ResolvedSymbol::IntelSymbol(reinterpret_cast<intptr_t>(address));
+		auto pair = symbols.insert(std::pair<std::string, ResolvedSymbol>(name, std::move(symbol)));
+		return pair.first->second;
+	}
+	
+	ResolvedSymbol& BridgeSymbolResolver::CacheCodeSymbol(const std::string &name, void *address)
+	{
 		PEF::TransitionVector transition;
 		transition.EntryPoint = reinterpret_cast<intptr_t>(address);
 		transition.TableOfContents = 0;
-		auto iter = transitions.insert(transitions.end(), transition);
 		
-		auto symbol = ResolvedSymbol::IntelSymbol(reinterpret_cast<intptr_t>(&*iter));
-		auto pair = symbols.insert(std::pair<std::string, ResolvedSymbol>(name, std::move(symbol)));
-		return pair.first->second;
+		listNodeAllocator.NextName = "Transition vector [" + name + "]";
+		auto iter = transitions.insert(transitions.end(), transition);
+		return CacheSymbol(name, &*iter);
+	}
+	
+	ResolvedSymbol& BridgeSymbolResolver::CacheDataSymbol(const std::string &name, void *address)
+	{
+		return CacheSymbol(name, address);
 	}
 	
 	std::string& BridgeSymbolResolver::LibraryName()
@@ -134,7 +146,7 @@ namespace ObjCBridge
 			IMP implementation = method_getImplementation(method);
 			DataSymbolMethod symbolGetter = reinterpret_cast<DataSymbolMethod>(implementation);
 			void* address = symbolGetter(LIBRARY, dataSymbolSel);
-			return CacheSymbol(name, address);
+			return CacheDataSymbol(name, address);
 		}
 		else
 		{
@@ -146,7 +158,7 @@ namespace ObjCBridge
 			{
 				void* trampoline = MakeTrampoline(library, cls, codeSymbolSel);
 				trampolines.push_back(trampoline);
-				return CacheSymbol(name, trampoline);
+				return CacheCodeSymbol(name, trampoline);
 			}
 			else
 			{
@@ -158,7 +170,7 @@ namespace ObjCBridge
 				{
 					void* trampoline = MakeTrampoline(library, codeSymbolSel, (void*)func);
 					trampolines.push_back(trampoline);
-					return CacheSymbol(name, trampoline);
+					return CacheCodeSymbol(name, trampoline);
 				}
 			}
 		}

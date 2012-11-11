@@ -11,6 +11,7 @@
 
 #include <cstdint>
 #include <cstddef>
+#include <string>
 
 namespace Common
 {
@@ -22,7 +23,7 @@ namespace Common
 		IAllocator* allocator;
 		
 	public:
-		AutoAllocation(IAllocator* allocator, size_t size);
+		AutoAllocation(IAllocator* allocator, size_t size, const std::string& zoneName);
 		AutoAllocation(const AutoAllocation& that) = delete;
 		AutoAllocation(AutoAllocation&& that);
 		
@@ -40,10 +41,10 @@ namespace Common
 	public:
 		virtual uint8_t* GetBaseAddress() = 0;
 		
-		virtual uint8_t* Allocate(size_t size) = 0;
+		virtual uint8_t* Allocate(size_t size, const std::string& zoneName) = 0;
 		virtual void Deallocate(void* address) = 0;
 		
-		AutoAllocation AllocateAuto(size_t size);
+		AutoAllocation AllocateAuto(size_t size, const std::string& zoneName);
 		
 		virtual ~IAllocator();
 	};

@@ -165,7 +165,8 @@ static void runMPW(const std::string& path, int argc, const char* argv[], const 
 	const PEF::TransitionVector* mainVector = reinterpret_cast<const PEF::TransitionVector*>(main.Address);
 	uint32_t startAddress = mainVector->EntryPoint;
 	
-	Common::AutoAllocation stackRef = Common::NativeAllocator::Instance->AllocateAuto(defaultStackSize);
+	Common::NativeAllocator* allocator = Common::NativeAllocator::Instance;
+	Common::AutoAllocation stackRef = allocator->AllocateAuto(defaultStackSize, "PPC Stack");
 	uint8_t* stack = static_cast<uint8_t*>(*stackRef);
 	
 	MachineState state;

@@ -9,10 +9,18 @@
 #include "NativeAllocator.h"
 
 #include <cstdlib>
+#include <iostream>
 
 namespace Common
 {
-	// nice hack
+	NativeAllocator::AllocatedRange::AllocatedRange(void* start, void* end, const std::string& name)
+	: start(start), end(end), name(name)
+	{ }
+	
+	NativeAllocator::AllocatedRange::AllocatedRange()
+	: start(0), end(0)
+	{ }
+	
 	NativeAllocator* NativeAllocator::Instance = new NativeAllocator();
 	
 	uint8_t* NativeAllocator::GetBaseAddress()
@@ -20,14 +28,26 @@ namespace Common
 		return nullptr;
 	}
 	
-	uint8_t* NativeAllocator::Allocate(size_t size)
+	uint8_t* NativeAllocator::Allocate(size_t size, const std::string& reason)
 	{
-		return static_cast<uint8_t*>(malloc(size));
+		uint8_t* allocation = static_cast<uint8_t*>(malloc(size));
+		ranges[allocation] = AllocatedRange(allocation, allocation + size, reason);
+		return allocation;
 	}
 	
 	void NativeAllocator::Deallocate(void* address)
 	{
+		ranges.erase(address);
 		free(address);
+	}
+	
+	void NativeAllocator::PrintMemoryMap() const
+	{
+		for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
+		{
+			const auto& range = iter->second;
+			std::cout << range.start << " - " << range.end << ": " << range.name << std::endl;
+		}
 	}
 	
 	NativeAllocator::~NativeAllocator()
