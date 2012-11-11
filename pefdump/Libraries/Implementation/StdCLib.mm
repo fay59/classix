@@ -6,18 +6,43 @@
 //  Copyright (c) 2012 Félix. All rights reserved.
 //
 
+#include <cstring>
 #include "BigEndian.h"
 #include "MachineState.h"
+#include "STAllocator.h"
 #import "StdCLib.h"
+
+const int StdCLib_NFILE = 40;
+
+union StdCLibPPCFILE
+{
+	struct
+	{
+		int32_t _cnt;
+		uint32_t _ptr;
+		uint32_t _base;
+		uint32_t _end;
+		uint16_t _size;
+		uint16_t _flag;
+		uint16_t _file;
+	};
+	
+	struct
+	{
+		uint32_t : 32;
+		FILE* fptr;
+	};
+};
 
 struct StdCLibGlobals
 {
+#pragma mark Globals
 	Common::UInt32 __C_phase;
 	Common::UInt32 __loc;
 	Common::UInt32 __NubAt3;
 	Common::UInt32 __p_CType;
 	Common::UInt32 __SigEnv;
-	MachineState __target_for_exit;
+	uint32_t __target_for_exit[64];
 	Common::UInt32 __yd;
 	Common::UInt32 _CategoryLoc;
 	Common::Real64 _DBL_EPSILON;
@@ -28,7 +53,7 @@ struct StdCLibGlobals
 	Common::Real64 _FLT_MAX;
 	Common::Real64 _FLT_MIN;
 	Common::UInt32 _IntEnv;
-	Common::UInt32 _iob;
+	StdCLibPPCFILE _iob[StdCLib_NFILE];
 	Common::UInt32 _lastbuf;
 	Common::Real64 _LDBL_EPSILON;
 	Common::Real64 _LDBL_MIN;
@@ -43,10 +68,17 @@ struct StdCLibGlobals
 	Common::UInt32 StandAlone;
 	Common::UInt32 TimeData;
 	
+#pragma mark Housekeeping
+	
 	StdCLibGlobals()
 	{
-		// I know, I know, this is ugly
-		memset(this, 0, sizeof *this);
+		memset(__target_for_exit, 0, sizeof __target_for_exit);
+		
+		_iob[0].fptr = stdin;
+		_iob[1].fptr = stdout;
+		_iob[2].fptr = stderr;
+		for (int i = 3; i < StdCLib_NFILE; i++)
+			_iob[i].fptr = nullptr;
 		
 		_DBL_EPSILON = DBL_EPSILON;
 		_DBL_MIN = DBL_MIN;
@@ -64,13 +96,26 @@ struct StdCLibGlobals
 
 @implementation StdCLib
 
+static FILE* MakeFilePtr(StdCLibGlobals* globals, intptr_t ptr)
+{
+	for (int i = 0; i < StdCLib_NFILE; i++)
+	{
+		intptr_t thisIOB = reinterpret_cast<intptr_t>(&globals->_iob[i]);
+		if (ptr == thisIOB)
+			return globals->_iob[i].fptr;
+	}
+	return nullptr;
+}
+
 -(id)initWithAllocator:(PPCAllocator *)aAllocator
 {
 	if (!(self = [super init]))
 		return nil;
 	
 	allocator = [aAllocator retain];
-	globals = reinterpret_cast<StdCLibGlobals*>([allocator allocate:sizeof(StdCLibGlobals) reason:@"StdCLib Globals"]);
+	void* globalsRegion = [allocator allocate:sizeof(StdCLibGlobals) reason:@"StdCLib Globals"];
+	globals = reinterpret_cast<StdCLibGlobals*>(globalsRegion);
+	new (globals) StdCLibGlobals();
 	
 	return self;
 }
@@ -154,6 +199,18 @@ struct StdCLibGlobals
 	__asm__ ("int $3");
 }
 
+-(void)StdCLib__filbuf:(MachineState *)state
+{
+	fprintf(stderr, "Using '_filbuf'\n");
+	state->r3 = 0;
+}
+
+-(void)StdCLib__flsbuf:(MachineState *)state
+{
+	fprintf(stderr, "Using '_flsbuf'\n");
+	state->r3 = 0;
+}
+
 -(void)StdCLib_exit:(MachineState *)state
 {
 	// TODO longjmp to __target_for_exit
@@ -161,11 +218,142 @@ struct StdCLibGlobals
 	exit(state->r3);
 }
 
+-(void)StdCLib_faccess:(MachineState *)state
+{
+	fprintf(stderr, "Using 'faccess' with mode %08x\n", state->r4);
+	state->r3 = 0;
+}
+
+-(void)StdCLib_fclose:(MachineState *)state
+{
+	for (int i = 0; i < StdCLib_NFILE; i++)
+	{
+		auto& ioBuffer = globals->_iob[i];
+		intptr_t ioBufferAddress = reinterpret_cast<intptr_t>(&ioBuffer);
+		if (ioBufferAddress == state->r3)
+		{
+			state->r3 = fclose(ioBuffer.fptr);
+			ioBuffer.fptr = nullptr;
+			return;
+		}
+	}
+	
+	globals->errno_ = EBADF;
+	state->r3 = EOF;
+}
+
+-(void)StdCLib_fgets:(MachineState *)state
+{
+	char* buffer = reinterpret_cast<char*>(state->r3);
+	int32_t size = state->r4;
+	FILE* fptr = MakeFilePtr(globals, state->r5);
+	
+	char* result = fgets(buffer, size, fptr);
+	state->r3 = reinterpret_cast<intptr_t>(result);
+}
+
+-(void)StdCLib_fopen:(MachineState *)state
+{
+	const char* filename = reinterpret_cast<const char*>(state->r3);
+	const char* mode = reinterpret_cast<const char*>(state->r4);
+	
+	for (int i = 0; i < StdCLib_NFILE; i++)
+	{
+		auto& ioBuffer = globals->_iob[i];
+		if (ioBuffer.fptr == nullptr)
+		{
+			ioBuffer.fptr = fopen(filename, mode);
+			state->r3 = reinterpret_cast<intptr_t>(&ioBuffer);
+			return;
+		}
+	}
+	state->r3 = 0;
+}
+
+-(void)StdCLib_fprintf:(MachineState *)state
+{
+	FILE* fptr = MakeFilePtr(globals, state->r3);
+	const char* formatString = reinterpret_cast<const char*>(state->r4);
+	// gah, let's just print the format string for now.
+	state->r3 = fputs(formatString, fptr);
+}
+
+-(void)StdCLib_fseek:(MachineState *)state
+{
+	FILE* fptr = MakeFilePtr(globals, state->r3);
+	int32_t offset = state->r4;
+	int whence = state->r5;
+	state->r3 = fseek(fptr, offset, whence);
+}
+
+-(void)StdCLib_getenv:(MachineState *)state
+{
+	const char* name = reinterpret_cast<const char*>(state->r3);
+	const char* env = getenv(name);
+	state->r3 = reinterpret_cast<intptr_t>(env);
+}
+
+-(void)StdCLib_memcmp:(MachineState *)state
+{
+	const void* s1 = reinterpret_cast<const void*>(state->r3);
+	const void* s2 = reinterpret_cast<const void*>(state->r4);
+	size_t size = state->r5;
+	state->r3 = memcmp(s1, s2, size);
+}
+
+-(void)StdCLib_memcpy:(MachineState *)state
+{
+	void* s1 = reinterpret_cast<void*>(state->r3);
+	const void* s2 = reinterpret_cast<const void*>(state->r4);
+	size_t size = state->r5;
+	state->r3 = reinterpret_cast<intptr_t>(memcpy(s1, s2, size));
+}
+
+-(void)StdCLib_printf:(MachineState *)state
+{
+	const char* formatString = reinterpret_cast<const char*>(state->r3);
+	// gah, let's just print the format string for now.
+	state->r3 = puts(formatString);
+}
+
 -(void)StdCLib_puts:(MachineState *)state
 {
 	void* address = [allocator translate:state->r3];
 	const char* ptr = reinterpret_cast<const char*>(address);
 	state->r3 = puts(ptr);
+}
+
+-(void)StdCLib_strchr:(MachineState *)state
+{
+	const char* s = reinterpret_cast<const char*>(state->r3);
+	int c = state->r4;
+	char* result = strrchr(s, c);
+	state->r3 = reinterpret_cast<intptr_t>(result);
+}
+
+-(void)StdCLib_strcmp:(MachineState *)state
+{
+	const char* s1 = reinterpret_cast<const char*>(state->r3);
+	const char* s2 = reinterpret_cast<const char*>(state->r4);
+	state->r3 = strcmp(s1, s2);
+}
+
+-(void)StdCLib_strcpy:(MachineState *)state
+{
+	char* s1 = reinterpret_cast<char*>(state->r3);
+	const char* s2 = reinterpret_cast<const char*>(state->r4);
+	state->r3 = reinterpret_cast<intptr_t>(strcpy(s1, s2));
+}
+
+-(void)StdCLib_strlen:(MachineState *)state
+{
+	char* s = reinterpret_cast<char*>(state->r3);
+	state->r3 = strlen(s);
+}
+
+-(void)StdCLib_tolower:(MachineState *)state
+{
+	state->r3 = tolower(state->r3);
 }
 
 @end
