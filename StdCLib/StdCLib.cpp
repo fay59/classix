@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <cfloat>
 #include <cassert>
+#include <cctype>
 #include <map>
 #include <string>
 
@@ -20,6 +21,8 @@
 #include "BigEndian.h"
 #include "StdCLib.h"
 #include "StdCLibFunctions.h"
+
+using PPCVM::MachineState;
 
 const int StdCLib_NFILE = 40;
 
@@ -54,6 +57,34 @@ union StdCLibPPCFILE
 		uint32_t : 32;
 		FILE* fptr;
 	};
+};
+
+#define _U		 01
+#define _L		 02
+#define _N		 04
+#define _S		 010
+#define _P		 020
+#define _C		 040
+#define _B		 0100
+#define _X		 0200
+
+const uint8_t cTypeCharClasses[0x100]={
+	_C, _C, _C, _C, _C, _C, _C, _C,
+	_C, _C|_S, _C|_S, _C|_S, _C|_S, _C|_S, _C, _C,
+	_C, _C, _C, _C, _C, _C, _C, _C,
+	_C, _C, _C, _C, _C, _C, _C, _C,
+	_S|_B, _P, _P, _P, _P, _P, _P, _P,
+	_P, _P, _P, _P, _P, _P, _P, _P,
+	_N, _N, _N, _N, _N, _N, _N, _N,
+	_N, _N, _P, _P, _P, _P, _P, _P,
+	_P, _U|_X, _U|_X, _U|_X, _U|_X, _U|_X, _U|_X, _U,
+	_U, _U, _U, _U, _U, _U, _U, _U,
+	_U, _U, _U, _U, _U, _U, _U, _U,
+	_U, _U, _U, _P, _P, _P, _P, _P,
+	_P, _L|_X, _L|_X, _L|_X, _L|_X, _L|_X, _L|_X, _L,
+	_L, _L, _L, _L, _L, _L, _L, _L,
+	_L, _L, _L, _L, _L, _L, _L, _L,
+	_L, _L, _L, _P, _P, _P, _P, _C
 };
 
 struct StdCLibGlobals
@@ -91,6 +122,7 @@ struct StdCLibGlobals
 	Common::UInt32 TimeData;
 	
 #pragma mark Housekeeping
+	uint8_t cType[256];
 	Common::IAllocator* allocator;
 	
 	static std::map<std::string, off_t> FieldOffsets;
@@ -99,6 +131,9 @@ struct StdCLibGlobals
 	: allocator(allocator)
 	{
 		memset(__target_for_exit, 0, sizeof __target_for_exit);
+		memcpy(cType, cTypeCharClasses, sizeof cType);
+		
+		__p_CType = allocator->ToIntPtr(&cType);
 		
 		_iob[0].fptr = fdup(stdin);
 		_iob[1].fptr = fdup(stdout);
@@ -263,7 +298,7 @@ void StdCLib___setjmp(StdCLibGlobals* globals, MachineState* state)
 	// shouldn't have to worry about endianness
 	uint32_t* jmpBuf = ToPointer<uint32_t>(state->r3);
 	jmpBuf[0] = state->lr;
-	jmpBuf[1] = MachineStateGetCR(state);
+	jmpBuf[1] = state->GetCR();
 	jmpBuf[2] = state->r1;
 	jmpBuf[3] = state->r2;
 	jmpBuf[4] = 0;

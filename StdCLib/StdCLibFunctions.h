@@ -9,15 +9,12 @@
 #ifndef Classix_StdCLibFunctions_h
 #define Classix_StdCLibFunctions_h
 
-#ifdef __cplusplus
+#include "MachineState.h"
+
 extern "C"
 {
-#endif
+	using PPCVM::MachineState;
 	struct StdCLibGlobals;
-	struct MachineState;
-	
-	typedef struct StdCLibGlobals StdCLibGlobals;
-	typedef struct MachineState MachineState;
 
 	void StdCLib___abort(StdCLibGlobals* globals, MachineState* state);
 	void StdCLib___assertprint(StdCLibGlobals* globals, MachineState* state);
@@ -268,8 +265,6 @@ extern "C"
 	void StdCLib_wcstombs(StdCLibGlobals* globals, MachineState* state);
 	void StdCLib_wctomb(StdCLibGlobals* globals, MachineState* state);
 	void StdCLib_write(StdCLibGlobals* globals, MachineState* state);
-#ifdef __cplusplus
 }
-#endif
 
 #endif
