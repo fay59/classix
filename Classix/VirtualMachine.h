@@ -26,7 +26,7 @@ namespace Classix
 		friend class MainStub;
 		
 		Common::IAllocator* allocator;
-		MachineState state;
+		PPCVM::MachineState state;
 		CFM::PEFLibraryResolver pefResolver;
 		CFM::FragmentManager fragmentManager;
 		PPCVM::Execution::Interpreter interpreter;
@@ -123,12 +123,22 @@ namespace Classix
 			auto mainVector = vm.allocator->ToPointer<const PEF::TransitionVector>(mainSymbol.Address);
 			Common::AutoAllocation stack = vm.allocator->AllocateAuto("Stack", StackSize);
 			
+			// according to http://opensource.apple.com/source/Csu/Csu-47/start.s the following registers should be set to:
+			// r0: 0
+			// r1: stack ptr
+			// r2: (not set, but we set it to the executable's TOC anyways)
+			// r3: argc
+			// r4: argv
+			// r5: envp
+			// r27: (argc+1) * sizeof(char*), but that shouldn't matter
+			
 			vm.state.r0 = 0;
 			vm.state.r1 = stack.GetVirtualAddress() + StackSize - 12;
 			vm.state.r2 = mainVector->TableOfContents;
-			vm.state.r29 = argc;
-			vm.state.r30 = vm.allocator->ToIntPtr(argv);
-			vm.state.r31 = vm.allocator->ToIntPtr(envp);
+			vm.state.r3 = argc;
+			vm.state.r4 = vm.allocator->ToIntPtr(argv);
+			vm.state.r5 = vm.allocator->ToIntPtr(envp);
+			vm.state.r27 = (argc + 1) * sizeof(uint32_t);
 			
 			const void* entryPoint = vm.allocator->ToPointer<const void>(mainVector->EntryPoint);
 			vm.interpreter.Execute(entryPoint);

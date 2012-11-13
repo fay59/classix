@@ -48,7 +48,6 @@ namespace Classix
 	VirtualMachine::VirtualMachine(Common::IAllocator* allocator)
 	: allocator(allocator), interpreter(allocator, &state), pefResolver(allocator, fragmentManager)
 	{
-		MachineStateInit(&state);
 		AddLibraryResolver(pefResolver);
 	}
 	

@@ -35,8 +35,7 @@ static char classChars[] = {
 
 static void loadTest(const std::string& path)
 {
-	MachineState state;
-	MachineStateInit(&state);
+	PPCVM::MachineState state;
 	
 	CFM::FragmentManager fragmentManager;
 	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
@@ -98,10 +97,10 @@ static void disassemble(const std::string& path)
 		
 		const uint32_t totalInstructions = section.Size() / 4;
 		const Common::UInt32* instructions = reinterpret_cast<const Common::UInt32*>(section.Data);
-		PPCVM::Disassembler::DisassembledInstruction instruction;
+		PPCVM::FrankWille::DisassembledInstruction instruction;
 		for (uint32_t i = 0; i < totalInstructions; i++)
 		{
-			PPCVM::Disassembler::Disassemble(instructions[i], instruction);
+			PPCVM::FrankWille::Disassemble(instructions[i], instruction);
 			std::cout << std::left << std::setw(10) << instruction.Opcode << ' ' << instruction.Arguments << endline;
 		}
 	}
