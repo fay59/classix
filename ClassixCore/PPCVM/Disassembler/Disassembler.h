@@ -1,38 +1,48 @@
 //
 //  Disassembler.h
-//  pefdump
+//  Classix
 //
-//  Created by Félix on 2012-11-02.
+//  Created by Félix on 2012-11-11.
 //  Copyright (c) 2012 Félix. All rights reserved.
 //
 
-#ifndef __pefdump__Disassembler__
-#define __pefdump__Disassembler__
+#ifndef __Classix__Disassembler__
+#define __Classix__Disassembler__
 
+#include "BigEndian.h"
+#include "IAllocator.h"
 #include "Instruction.h"
-#include <string>
-#include <iostream>
+#include "InstructionRange.h"
+#include <map>
 
 namespace PPCVM
 {
-	namespace Disassembler
+	namespace Disassembly
 	{
-		struct DisassembledInstruction
+		class Disassembler
 		{
-			std::string Opcode;
-			std::string Arguments;
+			const Common::UInt32* begin;
+			const Common::UInt32* end;
 			
-			DisassembledInstruction();
-			DisassembledInstruction(const std::string& opcode, const std::string& argument);
+			std::map<const Common::UInt32*, InstructionRange> labels;
+			
+			void bcx(Instruction inst);
+			void bx(Instruction inst);
+			void bcctrx(Instruction inst);
+			void bclrx(Instruction inst);
+			
+		public:
+			typedef std::map<const Common::UInt32*, InstructionRange>::iterator iterator;
+			typedef std::map<const Common::UInt32*, InstructionRange>::const_iterator const_iterator;
+			
+			Disassembler(Common::IAllocator* allocator, const Common::UInt32* begin, const Common::UInt32* end);
+			
+			iterator Begin();
+			iterator End();
+			const_iterator Begin() const;
+			const_iterator End() const;
 		};
-		
-		DisassembledInstruction Disassemble(uint32_t instruction);
-		DisassembledInstruction Disassemble(Instruction instruction);
-		bool Disassemble(uint32_t instruction, DisassembledInstruction& into);
-		bool Disassemble(Instruction instruction, DisassembledInstruction& into);
-	};
+	}
 }
 
-std::ostream& operator<<(std::ostream& into, const PPCVM::Disassembler::DisassembledInstruction& inst);
-
-#endif /* defined(__pefdump__Disassembler__) */
+#endif /* defined(__Classix__Disassembler__) */

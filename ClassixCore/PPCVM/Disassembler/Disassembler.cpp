@@ -1,65 +1,67 @@
 //
 //  Disassembler.cpp
-//  pefdump
+//  Classix
 //
-//  Created by Félix on 2012-11-02.
+//  Created by Félix on 2012-11-11.
 //  Copyright (c) 2012 Félix. All rights reserved.
 //
 
 #include "Disassembler.h"
+#include <cassert>
 
-extern "C" {
-#include "ppc_disasm.h"
-}
-
-PPCVM::Disassembler::DisassembledInstruction::DisassembledInstruction() {}
-
-PPCVM::Disassembler::DisassembledInstruction::DisassembledInstruction(const std::string& opcode, const std::string& operands)
-: Opcode(opcode), Arguments(operands)
-{ }
-
-PPCVM::Disassembler::DisassembledInstruction PPCVM::Disassembler::Disassemble(Instruction instruction)
+namespace PPCVM
 {
-	return Disassemble(instruction.hex);
-}
-
-PPCVM::Disassembler::DisassembledInstruction PPCVM::Disassembler::Disassemble(uint32_t instruction)
-{
-	DisassembledInstruction disassembly;
-	if (Disassemble(instruction, disassembly))
-		return disassembly;
-	
-	throw std::logic_error("could not disassemble instruction");
-}
-
-bool PPCVM::Disassembler::Disassemble(Instruction instruction, DisassembledInstruction& into)
-{
-	return Disassemble(instruction.hex, into);
-}
-
-bool PPCVM::Disassembler::Disassemble(uint32_t instruction, DisassembledInstruction& into)
-{
-	// arrays sized accordingly to ppc_disasm.h
-	char opcodeBuffer[10];
-	char operandsBuffer[24];
-	
-	DisasmPara_PPC params;
-	params.instr = &instruction;
-	params.iaddr = &instruction;
-	params.opcode = opcodeBuffer;
-	params.operands = operandsBuffer;
-	
-	void* result = PPC_Disassemble(&params);
-	if (result == nullptr)
-		return false;
-	
-	into.Opcode = opcodeBuffer;
-	into.Arguments = operandsBuffer;
-	return true;
-}
-
-std::ostream& operator<<(std::ostream& into, const PPCVM::Disassembler::DisassembledInstruction& inst)
-{
-	into << inst.Opcode << '\t' << inst.Arguments;
-	return into;
+	namespace Disassembly
+	{
+		Disassembler::Disassembler(Common::IAllocator* allocator, const Common::UInt32* begin, const Common::UInt32* end)
+		: begin(begin), end(end)
+		{
+			assert(begin <= end && "End before begin");
+			for (auto iter = begin; iter != end; iter++)
+			{
+				Instruction instruction = iter->Get();
+				switch (instruction.OPCD)
+				{
+					case 16: bcx(instruction); break;
+					case 18: bx(instruction); break;
+					case 19:
+						switch (instruction.SUBOP10)
+						{
+							case 16: bclrx(instruction); break;
+							case 528: bcctrx(instruction); break;
+						}
+						break;
+				}
+			}
+			
+			for (auto iter = Begin(); iter != End(); iter++)
+			{
+				auto next = iter;
+				next++;
+				
+				const Common::UInt32* labelEnd = next == End() ? end : next->first;
+				iter->second.SetEnd(labelEnd);
+			}
+		}
+		
+		Disassembler::iterator Disassembler::Begin()
+		{
+			return labels.begin();
+		}
+		
+		Disassembler::iterator Disassembler::End()
+		{
+			return labels.end();
+		}
+		
+		Disassembler::const_iterator Disassembler::Begin() const
+		{
+			return labels.begin();
+		}
+		
+		Disassembler::const_iterator Disassembler::End() const
+		{
+			return labels.end();
+		}
+	}
 }
