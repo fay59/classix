@@ -50,6 +50,22 @@ namespace Common
 		}
 	}
 	
+	void NativeAllocator::PrintParentZone(intptr_t address) const
+	{
+		const void* targetAddress = const_cast<NativeAllocator*>(this)->ToPointer<const void>(address);
+		for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
+		{
+			const auto& range = iter->second;
+			if (range.end < targetAddress)
+				continue;
+			
+			if (range.start > targetAddress)
+				break;
+			
+			std::cout << range.start << " - " << range.end << ": " << range.name << std::endl;
+		}
+	}
+	
 	NativeAllocator::~NativeAllocator()
 	{ }
 }

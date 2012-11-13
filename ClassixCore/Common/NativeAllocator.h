@@ -37,6 +37,7 @@ namespace Common
 		virtual void Deallocate(void* address);
 		
 		void PrintMemoryMap() const;
+		void PrintParentZone(intptr_t address) const;
 		
 		virtual ~NativeAllocator();
 	};
