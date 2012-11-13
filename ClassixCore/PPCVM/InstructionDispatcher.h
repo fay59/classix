@@ -21,7 +21,9 @@ namespace PPCVM
 	public:
 		inline void Dispatch(Instruction inst)
 		{
-			std::cerr << '\t' << Disassembler::Disassemble(inst) << std::endl;
+#ifdef DEBUG_DISASSEMBLE
+			std::cerr << '\t' << FrankWille::Disassemble(inst) << std::endl;
+#endif
 			
 			DispatchableMethod method = nullptr;
 			switch (inst.OPCD)

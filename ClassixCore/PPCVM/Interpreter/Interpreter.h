@@ -32,35 +32,35 @@ namespace PPCVM
 			void unknown(Instruction inst);
 
 			// Floating Point Instructions
-			void faddsx(Instruction inst);
-			void fdivsx(Instruction inst);
-			void fmaddsx(Instruction inst);
-			void fmsubsx(Instruction inst);
-			void fmulsx(Instruction inst);
-			void fnmaddsx(Instruction inst);
-			void fnmsubsx(Instruction inst);
-			void fresx(Instruction inst);
-			void fsqrtsx(Instruction inst);
-			void fsubsx(Instruction inst);
 			void fabsx(Instruction inst);
+			void faddsx(Instruction inst);
+			void faddx(Instruction inst);
 			void fcmpo(Instruction inst);
 			void fcmpu(Instruction inst);
 			void fctiwx(Instruction inst);
 			void fctiwzx(Instruction inst);
+			void fdivsx(Instruction inst);
+			void fdivx(Instruction inst);
+			void fmaddsx(Instruction inst);
+			void fmaddx(Instruction inst);
 			void fmrx(Instruction inst);
+			void fmsubsx(Instruction inst);
+			void fmsubx(Instruction inst);
+			void fmulsx(Instruction inst);
+			void fmulx(Instruction inst);
 			void fnabsx(Instruction inst);
 			void fnegx(Instruction inst);
-			void frspx(Instruction inst);
-			void faddx(Instruction inst);
-			void fdivx(Instruction inst);
-			void fmaddx(Instruction inst);
-			void fmsubx(Instruction inst);
-			void fmulx(Instruction inst);
+			void fnmaddsx(Instruction inst);
 			void fnmaddx(Instruction inst);
+			void fnmsubsx(Instruction inst);
 			void fnmsubx(Instruction inst);
+			void fresx(Instruction inst);
+			void frspx(Instruction inst);
 			void frsqrtex(Instruction inst);
 			void fselx(Instruction inst);
+			void fsqrtsx(Instruction inst);
 			void fsqrtx(Instruction inst);
+			void fsubsx(Instruction inst);
 			void fsubx(Instruction inst);
 
 			// Integer Instructions
@@ -213,11 +213,11 @@ namespace PPCVM
 			// supervisor mode (not implemented)
 			void dcba(Instruction inst);
 			void dcbf(Instruction inst);
+			void dcbi(Instruction inst);
 			void dcbst(Instruction inst);
 			void dcbt(Instruction inst);
 			void dcbtst(Instruction inst);
 			void dcbz(Instruction inst);
-			void dcbi(Instruction inst);
 			void eciwx(Instruction inst);
 			void ecowx(Instruction inst);
 			void icbi(Instruction inst);

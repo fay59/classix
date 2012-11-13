@@ -3,6 +3,8 @@
 
 namespace
 {
+	using namespace PPCVM;
+	
 	inline void UpdateCRx(MachineState* state, int x, uint32_t value)
 	{
 		uint32_t result;
@@ -26,12 +28,15 @@ namespace
 		return b > ~a;
 	}
 	
-	inline uint32_t Mask(uint32_t mb, uint32_t me)
+	inline uint32_t Mask(uint32_t mStart, uint32_t mStop)
 	{
-		uint32_t begin = 0xFFFFFFFF >> mb;
-		uint32_t end = me < 31 ? (0xFFFFFFFF >> (me + 1)) : 0;
+		uint32_t begin = 0xFFFFFFFF >> mStart;
+		// this is *probably* not necessary, since mStop is always encoded on 5 bits it cannot be greater than 31,
+		// but I'm scared to touch that code...
+		// hopefully, llvm is able to optimize that correctly anyways
+		uint32_t end = mStop < 31 ? (0xFFFFFFFF >> (mStop + 1)) : 0;
 		uint32_t mask = begin ^ end;
-		return me < mb ? ~mask : mask;
+		return mStop < mStart ? ~mask : mask;
 	}
 	
 	template<typename IntType>
@@ -369,8 +374,10 @@ namespace PPCVM
 
 		void Interpreter::rlwinmx(Instruction inst)
 		{
-			uint32_t mask = Mask(inst.MB,inst.ME);
-			state->gpr[inst.RA] = RotateLeft(state->gpr[inst.RS],inst.SH) & mask;
+			uint32_t n = inst.SH;
+			uint32_t r = RotateLeft(state->gpr[inst.RS], n);
+			uint32_t m = Mask(inst.MB, inst.ME);
+			state->gpr[inst.RA] = r & m;
 			if (inst.Rc) UpdateCR0(state, state->gpr[inst.RA]);
 		}
 

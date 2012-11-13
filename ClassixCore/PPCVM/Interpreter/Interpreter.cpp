@@ -3,6 +3,7 @@
 #include "NativeCall.h"
 #include <iostream>
 #include <cassert>
+#include <dlfcn.h>
 
 #ifdef DEBUG
 static uint8_t _writeBucket_;
@@ -13,6 +14,8 @@ static uint8_t _writeBucket_;
 
 namespace
 {
+	using namespace PPCVM;
+	
 	// If the interpreter reaches the address of that symbol, it knows that it needs to stop interpreting.
 	uint32_t EndLocation = 0xdeaddead;
 	
@@ -40,6 +43,18 @@ namespace
 		return (state->cr[bit >> 2] >> (3 - (bit & 3))) & 1;
 	}
 	
+	const char* BaseName(const char* path)
+	{
+		const char* lastPathComponent = path;
+		while (*path != 0)
+		{
+			if (*path == '/')
+				lastPathComponent = path + 1;
+			path++;
+		}
+		return lastPathComponent;
+	}
+	
 	enum 
 	{
 		BO_BRANCH_IF_CTR_0		=  2, // 3
@@ -65,8 +80,8 @@ namespace PPCVM
 
 		void Interpreter::unknown(Instruction inst)
 		{
-			Disassembler::DisassembledInstruction disassembly;
-			if (Disassembler::Disassemble(inst.hex, disassembly))
+			FrankWille::DisassembledInstruction disassembly;
+			if (FrankWille::Disassemble(inst.hex, disassembly))
 			{
 				Panic("Unknown instruction " + disassembly.Opcode + " " + disassembly.Arguments);
 			}
@@ -79,6 +94,25 @@ namespace PPCVM
 		const void* Interpreter::ExecuteNative(const NativeCall* function)
 		{
 			assert(function->Tag == NativeTag && "Call doesn't have native tag");
+			
+#ifdef DEBUG_TRACE_NATIVE
+			Dl_info symInfo;
+			if (dladdr((const void*)function->Callback, &symInfo) != 0)
+			{
+				if (symInfo.dli_sname != nullptr)
+				{
+					std::cerr << "\t> Calling into [" << BaseName(symInfo.dli_fname) << "::" << symInfo.dli_sname << "]" << std::endl;
+				}
+				else
+				{
+					std::cerr << "\t> Calling into unidentified symbol from [" << symInfo.dli_fname << "]" << std::endl;
+				}
+			}
+			else
+			{
+				std::cerr << "\t> Calling into unknown native function" << std::endl;
+			}
+#endif
 			
 			void* libGlobals = allocator->ToPointer<void>(state->r2);
 			function->Callback(libGlobals, state);

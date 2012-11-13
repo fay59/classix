@@ -9,25 +9,25 @@
 #include "MachineState.h"
 #include <cstring>
 
-extern "C" void MachineStateInit(MachineState* state)
+namespace PPCVM
 {
-	memset(state, 0, sizeof *state);
-}
-
-extern "C" void MachineStateSetCR(MachineState* state, uint32_t value)
-{
-	for (int i = 0; i < 8; i++)
+	MachineState::MachineState()
 	{
-		state->cr[i] = (value >> (28 - i * 4)) & 0xf;
+		memset(this, 0, sizeof *this);
 	}
-}
 
-extern "C" uint32_t MachineStateGetCR(MachineState* state)
-{
-	uint32_t cr = state->cr[0] << 28;
-	for (int i = 0; i < 8; i++)
+	void MachineState::SetCR(uint32_t value)
 	{
-		cr |= state->cr[i] << (28 - i * 4);
+		for (int i = 0; i < 8; i++)
+			cr[i] = (value >> (28 - i * 4)) & 0xf;
 	}
-	return cr;
+
+	uint32_t MachineState::GetCR() const
+	{
+		uint32_t crValue = cr[0] << 28;
+		for (int i = 0; i < 8; i++)
+			crValue |= cr[i] << (28 - i * 4);
+		
+		return crValue;
+	}
 }

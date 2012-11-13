@@ -3,6 +3,8 @@
 
 namespace
 {
+	using namespace PPCVM;
+	
 	inline bool GetCRBit(MachineState* state, int bit)
 	{
 		return (state->cr[bit >> 2] >> (3 - (bit & 3))) & 1;
@@ -97,7 +99,7 @@ namespace PPCVM
 
 		void Interpreter::mfcr(Instruction inst)
 		{
-			state->gpr[inst.RD] = MachineStateGetCR(state);
+			state->gpr[inst.RD] = state->GetCR();
 		}
 
 		void Interpreter::mffsx(Instruction inst)
@@ -138,7 +140,7 @@ namespace PPCVM
 			uint32_t crm = inst.CRM;
 			if (crm == 0xFF)
 			{
-				MachineStateSetCR(state, state->gpr[inst.RS]);
+				state->SetCR(state->gpr[inst.RS]);
 			}
 			else
 			{
@@ -148,7 +150,7 @@ namespace PPCVM
 					if (crm & (1 << i))
 						mask |= 0xF << (i*4);
 				}
-				MachineStateSetCR(state, (MachineStateGetCR(state) & ~mask) | (state->gpr[inst.RS] & mask));
+				state->SetCR((state->GetCR() & ~mask) | (state->gpr[inst.RS] & mask));
 			}
 		}
 
