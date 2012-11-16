@@ -252,7 +252,6 @@ namespace PPCVM
 			void bx(Instruction inst);
 			void sc(Instruction inst);
 
-			
 			// supervisor mode (not implemented)
 			void dcba(Instruction inst);
 			void dcbf(Instruction inst);
