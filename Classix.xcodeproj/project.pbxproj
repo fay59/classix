@@ -42,6 +42,8 @@
 		DC8301EF164FFD770079CE2D /* DyldLibraryResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301EC164FFD380079CE2D /* DyldLibraryResolver.cpp */; };
 		DC8301F3165006FB0079CE2D /* DyldSymbolResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F0165006D00079CE2D /* DyldSymbolResolver.cpp */; };
 		DC8301F7165010690079CE2D /* VirtualMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F5165010690079CE2D /* VirtualMachine.cpp */; };
+		DC83021C1650B2D70079CE2D /* Disassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021A1650B2D70079CE2D /* Disassembler.cpp */; };
+		DC83021F1650D1A60079CE2D /* InstructionRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021D1650D1A60079CE2D /* InstructionRange.cpp */; };
 		DC9D8D4D164F642000036FDD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC9D8D4C164F642000036FDD /* main.cpp */; };
 		DC9D8D4F164F645900036FDD /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 /* End PBXBuildFile section */
@@ -95,6 +97,10 @@
 		DC8301F416500BB60079CE2D /* SymbolType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SymbolType.h; path = ClassixCore/Libraries/SymbolType.h; sourceTree = SOURCE_ROOT; };
 		DC8301F5165010690079CE2D /* VirtualMachine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VirtualMachine.cpp; sourceTree = "<group>"; };
 		DC8301F6165010690079CE2D /* VirtualMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VirtualMachine.h; sourceTree = "<group>"; };
+		DC83021A1650B2D70079CE2D /* Disassembler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Disassembler.cpp; path = ClassixCore/PPCVM/Disassembler/Disassembler.cpp; sourceTree = SOURCE_ROOT; };
+		DC83021B1650B2D70079CE2D /* Disassembler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Disassembler.h; path = ClassixCore/PPCVM/Disassembler/Disassembler.h; sourceTree = SOURCE_ROOT; };
+		DC83021D1650D1A60079CE2D /* InstructionRange.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionRange.cpp; path = ClassixCore/PPCVM/Disassembler/InstructionRange.cpp; sourceTree = SOURCE_ROOT; };
+		DC83021E1650D1A60079CE2D /* InstructionRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionRange.h; path = ClassixCore/PPCVM/Disassembler/InstructionRange.h; sourceTree = SOURCE_ROOT; };
 		DC94F0FE163C4DA4004538C5 /* Unmangle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Unmangle.cpp; sourceTree = "<group>"; };
 		DC94F0FF163C4DA4004538C5 /* Unmangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unmangle.h; sourceTree = "<group>"; };
 		DC94F106163C80E8004538C5 /* SymbolResolutionException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SymbolResolutionException.cpp; sourceTree = "<group>"; };
@@ -222,6 +228,18 @@
 			name = Dyld;
 			sourceTree = "<group>";
 		};
+		DC8302191650B26D0079CE2D /* FrankWille */ = {
+			isa = PBXGroup;
+			children = (
+				DCA1E14F16438152008C3C8C /* Disassembler.cpp */,
+				DCA1E15016438152008C3C8C /* Disassembler.h */,
+				DCA1E14C16438149008C3C8C /* ppc_disasm.h */,
+				DCA1E14D16438149008C3C8C /* ppc_disasm.c */,
+			);
+			name = FrankWille;
+			path = ../../../ClassixCore/PPCVM/Disassembler/FrankWille;
+			sourceTree = "<group>";
+		};
 		DC84561F1634B7C6001E49E2 /* PEF */ = {
 			isa = PBXGroup;
 			children = (
@@ -294,10 +312,11 @@
 		DCA1E14B1643810E008C3C8C /* Disassembler */ = {
 			isa = PBXGroup;
 			children = (
-				DCA1E14F16438152008C3C8C /* Disassembler.cpp */,
-				DCA1E15016438152008C3C8C /* Disassembler.h */,
-				DCA1E14C16438149008C3C8C /* ppc_disasm.h */,
-				DCA1E14D16438149008C3C8C /* ppc_disasm.c */,
+				DC8302191650B26D0079CE2D /* FrankWille */,
+				DC83021A1650B2D70079CE2D /* Disassembler.cpp */,
+				DC83021B1650B2D70079CE2D /* Disassembler.h */,
+				DC83021D1650D1A60079CE2D /* InstructionRange.cpp */,
+				DC83021E1650D1A60079CE2D /* InstructionRange.h */,
 			);
 			path = Disassembler;
 			sourceTree = "<group>";
@@ -514,6 +533,8 @@
 			files = (
 				DC9D8D4D164F642000036FDD /* main.cpp in Sources */,
 				DC8301F7165010690079CE2D /* VirtualMachine.cpp in Sources */,
+				DC83021C1650B2D70079CE2D /* Disassembler.cpp in Sources */,
+				DC83021F1650D1A60079CE2D /* InstructionRange.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -577,8 +598,9 @@
 					"$(inherited)",
 				);
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
-					"ASMJIT_DEBUG=1",
 					"$(inherited)",
+					"DEBUG_TRACE_NATIVE=1",
+					"DEBUG_DISASSEMBLE=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

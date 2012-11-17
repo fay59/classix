@@ -159,17 +159,17 @@ namespace PPCVM
 #pragma mark -
 #define IMPL(x)	void InstructionRange::x(PPCVM::Instruction i)
 #define BODY(x, c)	IMPL(x) { c; }
-#define OP(name)	BODY(name, Emit(#name))
+#define OP(name)	BODY(name, Emit(i, #name))
 		void InstructionRange::unknown(PPCVM::Instruction i)
 		{
-			Emit(".word", hex(i.hex));
+			Emit(i, ".word", hex(i.hex));
 		}
 		
 #pragma mark -
 #pragma mark Floating Point Instructions
-#define FX2(name)	IMPL(name##x) { Emit(opX(#name, i.RC), f(i.RD), f(i.RB)); }
-#define FX3(name)	IMPL(name##x) { Emit(opX(#name, i.RC), f(i.RD), f(i.RA), f(i.RB)); }
-#define FX4(name)	IMPL(name##x) { Emit(opX(#name, i.RC), f(i.RD), f(i.RA), f(i.RC), f(i.RB)); }
+#define FX2(name)	IMPL(name##x) { Emit(i, opX(#name, i.RC), f(i.RD), f(i.RB)); }
+#define FX3(name)	IMPL(name##x) { Emit(i, opX(#name, i.RC), f(i.RD), f(i.RA), f(i.RB)); }
+#define FX4(name)	IMPL(name##x) { Emit(i, opX(#name, i.RC), f(i.RD), f(i.RA), f(i.RC), f(i.RB)); }
 #define FX2S(name)	FX2(name) FX2(name##s)
 #define FX3S(name)	FX3(name) FX3(name##s)
 #define FX2Z(name)	FX2(name) FX2(name##z)
@@ -180,12 +180,12 @@ namespace PPCVM
 		
 		IMPL(fcmpo)
 		{
-			Emit("fcmpo", cr(i.CRFD), f(i.RA), f(i.RB));
+			Emit(i, "fcmpo", cr(i.CRFD), f(i.RA), f(i.RB));
 		}
 		
 		IMPL(fcmpu)
 		{
-			Emit("fcmpu", cr(i.CRFD), f(i.RA), f(i.RB));
+			Emit(i, "fcmpu", cr(i.CRFD), f(i.RA), f(i.RB));
 		}
 		
 		FX2Z(fctiw);
@@ -207,15 +207,15 @@ namespace PPCVM
 		
 #pragma mark -
 #pragma mark Integer Instructions
-#define IADA(name)	BODY(name##x, Emit(opXO(#name, i.RC, i.OE), g(i.RD), g(i.RA)))
-#define ILRR(name, a, b) BODY(name##x, Emit(opX(#name, i.RC), g(i.R##a), g(i.R##b)))
-#define ILRRR(name, a, b, c) BODY(name##x, Emit(opX(#name, i.RC), g(i.R##a), g(i.R##b), g(i.R##c)))
+#define IADA(name)	BODY(name##x, Emit(i, opXO(#name, i.RC, i.OE), g(i.RD), g(i.RA)))
+#define ILRR(name, a, b) BODY(name##x, Emit(i, opX(#name, i.RC), g(i.R##a), g(i.R##b)))
+#define ILRRR(name, a, b, c) BODY(name##x, Emit(i, opX(#name, i.RC), g(i.R##a), g(i.R##b), g(i.R##c)))
 #define ILDAB(name) ILRRR(name, D, A, B)
-#define IADAB(name)	IMPL(name##x) { Emit(opXO(#name, i.RC, i.OE), g(i.RD), g(i.RA), g(i.RB)); }
-#define ILASB(name)	BODY(name##x, Emit(opX(#name, i.RC), g(i.RA), g(i.RS), g(i.RB)))
-#define IADAI(name, dname)	BODY(name, Emit(#dname, g(i.RD), g(i.RA), hex(i.SIMM_16)))
-#define ICMP(name, to)	IMPL(name) { if (i.L) unknown(i); else if (i.CRFD == 0) Emit(#name "d", g(i.RA), to); else if (i.CRFD == 3) Emit(#name "w", g(i.RA), to); else Emit(#name, cr(i.CRFD), g(i.RA), to); }
-#define IROT(name)	BODY(name##x, Emit(opX(#name, i.RC), g(i.RA), g(i.RS), hex(i.SH), hex(i.MB), hex(i.ME)))
+#define IADAB(name)	IMPL(name##x) { Emit(i, opXO(#name, i.RC, i.OE), g(i.RD), g(i.RA), g(i.RB)); }
+#define ILASB(name)	BODY(name##x, Emit(i, opX(#name, i.RC), g(i.RA), g(i.RS), g(i.RB)))
+#define IADAI(name, dname)	BODY(name, Emit(i, #dname, g(i.RD), g(i.RA), hex(i.SIMM_16)))
+#define ICMP(name, to)	IMPL(name) { if (i.L) unknown(i); else if (i.CRFD == 0) Emit(i, #name "d", g(i.RA), to); else if (i.CRFD == 3) Emit(i, #name "w", g(i.RA), to); else Emit(i, #name, cr(i.CRFD), g(i.RA), to); }
+#define IROT(name)	BODY(name##x, Emit(i, opX(#name, i.RC), g(i.RA), g(i.RS), hex(i.SH), hex(i.MB), hex(i.ME)))
 		
 		IADAB(addc);
 		IADAB(adde);
@@ -228,8 +228,8 @@ namespace PPCVM
 		IADAB(add);
 		ILASB(and);
 		ILASB(andc);
-		BODY(andi_rc, Emit("andi.", g(i.RA), g(i.RS), hex(i.UIMM)));
-		BODY(andis_rc, Emit("andis.", g(i.RA), g(i.RS), hex(i.UIMM)));
+		BODY(andi_rc, Emit(i, "andi.", g(i.RA), g(i.RS), hex(i.UIMM)));
+		BODY(andis_rc, Emit(i, "andis.", g(i.RA), g(i.RS), hex(i.UIMM)));
 		
 		ICMP(cmp, g(i.RB));
 		ICMP(cmpi, hex(i.SIMM_16));
@@ -254,8 +254,8 @@ namespace PPCVM
 		ILASB(nor);
 		ILASB(or);
 		ILASB(orc);
-		BODY(ori, Emit("ori", g(i.RA), g(i.RS), g(i.UIMM)));
-		BODY(oris, Emit("oris", g(i.RA), g(i.RS), g(i.UIMM)));
+		BODY(ori, Emit(i, "ori", g(i.RA), g(i.RS), g(i.UIMM)));
+		BODY(oris, Emit(i, "oris", g(i.RA), g(i.RS), g(i.UIMM)));
 		
 		IROT(rlwimi);
 		IROT(rlwinm); // TODO simplified mnemonics (8-164)
@@ -263,41 +263,41 @@ namespace PPCVM
 		
 		ILASB(slw);
 		ILASB(sraw);
-		BODY(srawix, Emit(opX("srawi", i.RC), g(i.RA), g(i.RS), hex(i.SH)));
+		BODY(srawix, Emit(i, opX("srawi", i.RC), g(i.RA), g(i.RS), hex(i.SH)));
 		ILASB(srw);
 		
 		IADAB(subf);
 		IADAB(subfc);
 		IADAB(subfe);
-		BODY(subfic, Emit("subfic", g(i.RD), g(i.RA), hex(i.SIMM_16)));
+		BODY(subfic, Emit(i, "subfic", g(i.RD), g(i.RA), hex(i.SIMM_16)));
 		IADA(subfme);
 		IADA(subfze);
 		
 		IMPL(tw)
 		{
 			if (i.TO == 4)
-				Emit("tweq", g(i.RA), g(i.RB));
+				Emit(i, "tweq", g(i.RA), g(i.RB));
 			else if (i.TO == 5)
-				Emit("twge", g(i.RA), g(i.RB));
+				Emit(i, "twge", g(i.RA), g(i.RB));
 			else if (i.TO == 31 && i.RA == 0 && i.RB == 0)
-				Emit("trap");
+				Emit(i, "trap");
 			else
-				Emit("tw", hex(i.TO), g(i.RA), g(i.RB));
+				Emit(i, "tw", hex(i.TO), g(i.RA), g(i.RB));
 		}
 		
 		IMPL(twi)
 		{
 			if (i.TO == 8)
-				Emit("twgti", g(i.RA), hex(i.SIMM_16));
+				Emit(i, "twgti", g(i.RA), hex(i.SIMM_16));
 			else if (i.TO == 6)
-				Emit("twllei", g(i.RA), hex(i.SIMM_16));
+				Emit(i, "twllei", g(i.RA), hex(i.SIMM_16));
 			else
-				Emit("twi", hex(i.TO), g(i.RA), hex(i.SIMM_16));
+				Emit(i, "twi", hex(i.TO), g(i.RA), hex(i.SIMM_16));
 		}
 		
 		ILASB(xor);
-		BODY(xori, Emit("xori", g(i.RA), g(i.RS), hex(i.UIMM)));
-		BODY(xoris, Emit("xori", g(i.RA), g(i.RS), hex(i.UIMM)));
+		BODY(xori, Emit(i, "xori", g(i.RA), g(i.RS), hex(i.UIMM)));
+		BODY(xoris, Emit(i, "xori", g(i.RA), g(i.RS), hex(i.UIMM)));
 		
 #pragma mark -
 #pragma mark Load/Store
@@ -305,10 +305,10 @@ namespace PPCVM
 #define ADDRU			offset(i.RA, i.SIMM_16)
 #define ADDRX			i.RA == 0 ? g(i.RB) : (g(i.RA)+'+'+g(i.RB))
 #define ADDRUX			g(i.RA)+'+'+g(i.RB)
-#define LOADI_(name, addr)			BODY(name, Emit(#name, g(i.RD), addr))
-#define LOADI(name)					BODY(name, Emit(#name, g(i.RD), ADDR)) LOADI_(name##x, ADDRX) LOADI_(name##u, ADDRU) LOADI_(name##ux, ADDRUX)
-#define LOADF_(name, addr)			BODY(name, Emit(#name, f(i.RD), addr))
-#define LOADF(name)					BODY(name, Emit(#name, f(i.RD), ADDR)) LOADF_(name##x, ADDRX) LOADF_(name##u, ADDRU) LOADF_(name##ux, ADDRUX)
+#define LOADI_(name, addr)			BODY(name, Emit(i, #name, g(i.RD), addr))
+#define LOADI(name)					BODY(name, Emit(i, #name, g(i.RD), ADDR)) LOADI_(name##x, ADDRX) LOADI_(name##u, ADDRU) LOADI_(name##ux, ADDRUX)
+#define LOADF_(name, addr)			BODY(name, Emit(i, #name, f(i.RD), addr))
+#define LOADF(name)					BODY(name, Emit(i, #name, f(i.RD), ADDR)) LOADF_(name##x, ADDRX) LOADF_(name##u, ADDRU) LOADF_(name##ux, ADDRUX)
 		
 		OP(eieio);
 		LOADI(lbz);
@@ -318,27 +318,27 @@ namespace PPCVM
 		LOADI_(lhbrx, ADDRX);
 		LOADI(lhz);
 		LOADI_(lmw, ADDR);
-		BODY(lswi, Emit("lswi", g(i.RD), g(i.RA), hex(i.NB)));
-		BODY(lswx, Emit("lswx", g(i.RD), g(i.RA), g(i.RB)));
+		BODY(lswi, Emit(i, "lswi", g(i.RD), g(i.RA), hex(i.NB)));
+		BODY(lswx, Emit(i, "lswx", g(i.RD), g(i.RA), g(i.RB)));
 		LOADI_(lwarx, ADDRX);
 		LOADI_(lwbrx, ADDRX);
 		LOADI(lwz);
 		LOADI(stb);
 		LOADI(stfd);
-		BODY(stfiwx, Emit("stfiwx", f(i.RD), g(i.RA), g(i.RB)));
+		BODY(stfiwx, Emit(i, "stfiwx", f(i.RD), g(i.RA), g(i.RB)));
 		LOADI(stfs);
 		LOADI(sth);
 		LOADI_(sthbrx, ADDRX);
 		LOADI_(stmw, ADDR);
-		BODY(stswi, Emit("stswi", g(i.RD), g(i.RA), hex(i.NB)));
-		BODY(stswx, Emit("stswx", g(i.RD), g(i.RA), g(i.RB)));
+		BODY(stswi, Emit(i, "stswi", g(i.RD), g(i.RA), hex(i.NB)));
+		BODY(stswx, Emit(i, "stswx", g(i.RD), g(i.RA), g(i.RB)));
 		LOADI(stw);
 		LOADI_(stwbrx, ADDRX);
-		BODY(stwcxd, Emit("stwcx.", g(i.RD), ADDRX));
+		BODY(stwcxd, Emit(i, "stwcx.", g(i.RD), ADDRX));
 		
 #pragma mark -
 #pragma mark System Registers
-#define CROP(name)	BODY(name, Emit(#name, cr(i.CRBD), cr(i.CRBA), cr(i.CRBB)))
+#define CROP(name)	BODY(name, Emit(i, #name, cr(i.CRBD), cr(i.CRBA), cr(i.CRBB)))
 		
 		CROP(crand);
 		CROP(crandc);
@@ -350,11 +350,11 @@ namespace PPCVM
 		CROP(crxor);
 		OP(isync);
 		
-		BODY(mcrf, Emit("mcrfs", cr(i.CRFD), cr(i.CRFD_5)));
-		BODY(mcrfs, Emit("mcrfs", cr(i.CRFD), cr(i.CRFD_5)));
-		BODY(mcrxr, Emit("mcrxr", cr(i.CRFD)));
-		BODY(mfcr, Emit("mfcr", g(i.RD)));
-		BODY(mffsx, Emit(opX("mffs", i.RC), f(i.RD)));
+		BODY(mcrf, Emit(i, "mcrfs", cr(i.CRFD), cr(i.CRFD_5)));
+		BODY(mcrfs, Emit(i, "mcrfs", cr(i.CRFD), cr(i.CRFD_5)));
+		BODY(mcrxr, Emit(i, "mcrxr", cr(i.CRFD)));
+		BODY(mfcr, Emit(i, "mfcr", g(i.RD)));
+		BODY(mffsx, Emit(i, opX("mffs", i.RC), f(i.RD)));
 		
 		IMPL(mfspr)
 		{
@@ -362,11 +362,11 @@ namespace PPCVM
 			uint8_t spr = (i.RB << 5) | i.RA;
 			switch (spr)
 			{
-				case 1: Emit("mfxer", d); return;
-				case 8: Emit("mflr", d); return;
-				case 9: Emit("mfctr", d); return;
+				case 1: Emit(i, "mfxer", d); return;
+				case 8: Emit(i, "mflr", d); return;
+				case 9: Emit(i, "mfctr", d); return;
 			}
-			Emit("mfspr", d, ::spr(spr));
+			Emit(i, "mfspr", d, ::spr(spr));
 		}
 		
 		IMPL(mftb)
@@ -374,18 +374,18 @@ namespace PPCVM
 			std::string d = g(i.RD);
 			uint8_t tbl = (i.RB << 5) | i.RA;
 			if (tbl == 268)
-				Emit("mftb", d);
+				Emit(i, "mftb", d);
 			else if (tbl == 269)
-				Emit("mftbu", d);
+				Emit(i, "mftbu", d);
 			else
 				unknown(i);
 		}
 		
-		BODY(mtcrf, Emit("mtcrf", cr(i.CRM), g(i.RS)));
-		BODY(mtfsb0x, Emit(opX("mtfsb0", i.RC), cr(i.CRBD)));
-		BODY(mtfsb1x, Emit(opX("mtfsb0", i.RC), cr(i.CRBD)));
-		BODY(mtfsfix, Emit(opX("mtfsfi", i.RC), cr(i.CRFD), hex(i.SR)));
-		BODY(mtfsfx, Emit(opX("mtfsf", i.RC), hex(i.FM), f(i.RB)));
+		BODY(mtcrf, Emit(i, "mtcrf", cr(i.CRM), g(i.RS)));
+		BODY(mtfsb0x, Emit(i, opX("mtfsb0", i.RC), cr(i.CRBD)));
+		BODY(mtfsb1x, Emit(i, opX("mtfsb0", i.RC), cr(i.CRBD)));
+		BODY(mtfsfix, Emit(i, opX("mtfsfi", i.RC), cr(i.CRFD), hex(i.SR)));
+		BODY(mtfsfx, Emit(i, opX("mtfsf", i.RC), hex(i.FM), f(i.RB)));
 		
 		IMPL(mtspr)
 		{
@@ -393,11 +393,11 @@ namespace PPCVM
 			uint8_t spr = (i.RB << 5) | i.RA;
 			switch (spr)
 			{
-				case 1: Emit("mtxer", d); return;
-				case 8: Emit("mtlr", d); return;
-				case 9: Emit("mtctr", d); return;
+				case 1: Emit(i, "mtxer", d); return;
+				case 8: Emit(i, "mtlr", d); return;
+				case 9: Emit(i, "mtctr", d); return;
 			}
-			Emit("mtspr", d, ::spr(spr));
+			Emit(i, "mtspr", d, ::spr(spr));
 		}
 		
 		OP(rfi);
@@ -408,24 +408,28 @@ namespace PPCVM
 #pragma mark Branching
 		IMPL(bcctrx)
 		{
-			if (i.BO == 12 && i.BI == 0)
-				Emit(opLK("bltctr", i.LK));
+			if ((i.BO & 0b10100) == 0b10100)
+				Emit(i, opLK("bctr", i.LK));
+			else if (i.BO == 12 && i.BI == 0)
+				Emit(i, opLK("bltctr", i.LK));
 			else if (i.BO == 4 && i.BI == 10)
-				Emit(opLK("bnectr", i.LK), "cr2");
+				Emit(i, opLK("bnectr", i.LK), "cr2");
 			else
-				Emit(opLK("bcctr", i.LK), hex(i.BO), hex(i.BI));
+				Emit(i, opLK("bcctr", i.LK), hex(i.BO), hex(i.BI));
 		}
 		
 		IMPL(bclrx)
 		{
-			if (i.BO == 12 && i.BI == 0)
-				Emit(opLK("bltlr", i.LK));
+			if ((i.BO & 0b10100) == 0b10100)
+				Emit(i, opLK("blr", i.LK));
+			else if (i.BO == 12 && i.BI == 0)
+				Emit(i, opLK("bltlr", i.LK));
 			else if (i.BO == 4 && i.BI == 10)
-				Emit(opLK("bnelr", i.LK), "cr2");
+				Emit(i, opLK("bnelr", i.LK), "cr2");
 			else if (i.BO == 16 && i.BI == 0)
-				Emit(opLK("bdnzlr", i.LK));
+				Emit(i, opLK("bdnzlr", i.LK));
 			else
-				Emit(opLK("bclr", i.LK), hex(i.BO), hex(i.BI));
+				Emit(i, opLK("bclr", i.LK), hex(i.BO), hex(i.BI));
 		}
 		
 		IMPL(bcx)
@@ -434,15 +438,17 @@ namespace PPCVM
 			if (i.LK) suffix += 'l';
 			if (i.AA) suffix += 'a';
 			
-			std::string target = hex(i.SIMM_16 & ~3);
-			if (i.BO == 12 && i.BI == 0)
-				Emit("blt" + suffix, target);
+			std::string target = hex(i.BD << 2);
+			if ((i.BO & 0b10100) == 0b10100)
+				Emit(i, "blt" + suffix, target);
+			else if (i.BO == 12 && i.BI == 0)
+				Emit(i, "blt" + suffix, target);
 			else if (i.BO == 4 && i.BI == 10)
-				Emit("bne" + suffix, "cr2", target);
+				Emit(i, "bne" + suffix, "cr2", target);
 			else if (i.BO == 16 && i.BI == 0)
-				Emit("bdnz" + suffix, target);
+				Emit(i, "bdnz" + suffix, target);
 			else
-				Emit("bc" + suffix, hex(i.BO), hex(i.BI), target);
+				Emit(i, "bc" + suffix, hex(i.BO), hex(i.BI), target);
 		}
 		
 		IMPL(bx)
@@ -451,15 +457,15 @@ namespace PPCVM
 			if (i.LK) suffix += 'l';
 			if (i.AA) suffix += 'a';
 			
-			Emit("b" + suffix, hex(i.LI & ~3));
+			Emit(i, "b" + suffix, hex(i.LI << 2));
 		}
 		
 		OP(sc);
 		
 #pragma mark -
 #pragma mark Supervisor Mode
-#define DCB(name)	BODY(name, Emit(#name, g(i.RA), g(i.RB)))
-#define A(name) BODY(name, Emit(#name, g(i.RA)))
+#define DCB(name)	BODY(name, Emit(i, #name, g(i.RA), g(i.RB)))
+#define A(name) BODY(name, Emit(i, #name, g(i.RA)))
 		DCB(dcba);
 		DCB(dcbf);
 		DCB(dcbt);
@@ -468,15 +474,15 @@ namespace PPCVM
 		DCB(dcbz);
 		DCB(dcbi);
 		
-		BODY(eciwx, Emit("eciwx", g(i.RD), g(i.RA), g(i.RB)));
-		BODY(ecowx, Emit("ecowx", g(i.RS), g(i.RA), g(i.RB)));
+		BODY(eciwx, Emit(i, "eciwx", g(i.RD), g(i.RA), g(i.RB)));
+		BODY(ecowx, Emit(i, "ecowx", g(i.RS), g(i.RA), g(i.RB)));
 		DCB(icbi);
 		A(mfmsr);
-		BODY(mfsr, Emit("mfsr", g(i.RD), spr(i.SR)));
-		BODY(mfsrin, Emit("mfsrin", g(i.RD), g(i.RB)));
-		BODY(mtmsr, Emit("mtmsr", g(i.RS)));
-		BODY(mtsr, Emit("mtsr", spr(i.SR), g(i.RD)));
-		BODY(mtsrin, Emit("mfsrin", g(i.RS), g(i.RB)));
+		BODY(mfsr, Emit(i, "mfsr", g(i.RD), spr(i.SR)));
+		BODY(mfsrin, Emit(i, "mfsrin", g(i.RD), g(i.RB)));
+		BODY(mtmsr, Emit(i, "mtmsr", g(i.RS)));
+		BODY(mtsr, Emit(i, "mtsr", spr(i.SR), g(i.RD)));
+		BODY(mtsrin, Emit(i, "mfsrin", g(i.RS), g(i.RB)));
 		OP(tlbia);
 		OP(tlbie);
 		OP(tlbsync);

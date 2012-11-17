@@ -96,21 +96,24 @@ namespace PPCVM
 			assert(function->Tag == NativeTag && "Call doesn't have native tag");
 			
 #ifdef DEBUG_TRACE_NATIVE
-			Dl_info symInfo;
-			if (dladdr((const void*)function->Callback, &symInfo) != 0)
+			if (getenv("DEBUG_TRACE_NATIVE"))
 			{
-				if (symInfo.dli_sname != nullptr)
+				Dl_info symInfo;
+				if (dladdr((const void*)function->Callback, &symInfo) != 0)
 				{
-					std::cerr << "\t> Calling into [" << BaseName(symInfo.dli_fname) << "::" << symInfo.dli_sname << "]" << std::endl;
+					if (symInfo.dli_sname != nullptr)
+					{
+						std::cerr << "\t> Calling into [" << BaseName(symInfo.dli_fname) << "::" << symInfo.dli_sname << "]" << std::endl;
+					}
+					else
+					{
+						std::cerr << "\t> Calling into unidentified symbol from [" << symInfo.dli_fname << "]" << std::endl;
+					}
 				}
 				else
 				{
-					std::cerr << "\t> Calling into unidentified symbol from [" << symInfo.dli_fname << "]" << std::endl;
+					std::cerr << "\t> Calling into unknown native function" << std::endl;
 				}
-			}
-			else
-			{
-				std::cerr << "\t> Calling into unknown native function" << std::endl;
 			}
 #endif
 			
@@ -181,7 +184,7 @@ namespace PPCVM
 				if (inst.LK)
 					state->lr = address + 4;
 					
-				intptr_t target = SignExt16(inst.BD << 2);
+				intptr_t target = SignExt16(inst.BD << 2) + 4;
 				if (!inst.AA)
 					target += address;
 				branchAddress = reinterpret_cast<const void*>(target);

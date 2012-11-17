@@ -26,10 +26,10 @@ namespace PPCVM
 			
 			std::map<const Common::UInt32*, InstructionRange> labels;
 			
-			void bcx(Instruction inst);
-			void bx(Instruction inst);
-			void bcctrx(Instruction inst);
-			void bclrx(Instruction inst);
+			void bcx(Common::IAllocator* allocator, const Common::UInt32* address);
+			void bx(Common::IAllocator* allocator, const Common::UInt32* address);
+			void bcctrx(Common::IAllocator* allocator, const Common::UInt32* address);
+			void bclrx(Common::IAllocator* allocator, const Common::UInt32* address);
 			
 		public:
 			typedef std::map<const Common::UInt32*, InstructionRange>::iterator iterator;

@@ -22,7 +22,10 @@ namespace PPCVM
 		inline void Dispatch(Instruction inst)
 		{
 #ifdef DEBUG_DISASSEMBLE
-			std::cerr << '\t' << FrankWille::Disassemble(inst) << std::endl;
+			if (getenv("DEBUG_DISASSEMBLE"))
+			{
+				std::cerr << '\t' << FrankWille::Disassemble(inst) << std::endl;
+			}
 #endif
 			
 			DispatchableMethod method = nullptr;

@@ -22,13 +22,13 @@ namespace PPCVM
 				Instruction instruction = iter->Get();
 				switch (instruction.OPCD)
 				{
-					case 16: bcx(instruction); break;
-					case 18: bx(instruction); break;
+					case 16: bcx(allocator, iter); break;
+					case 18: bx(allocator, iter); break;
 					case 19:
 						switch (instruction.SUBOP10)
 						{
-							case 16: bclrx(instruction); break;
-							case 528: bcctrx(instruction); break;
+							case 16: bclrx(allocator, iter); break;
+							case 528: bcctrx(allocator, iter); break;
 						}
 						break;
 				}
@@ -42,6 +42,52 @@ namespace PPCVM
 				const Common::UInt32* labelEnd = next == End() ? end : next->first;
 				iter->second.SetEnd(labelEnd);
 			}
+		}
+		
+		void Disassembler::bx(Common::IAllocator* allocator, const Common::UInt32* address)
+		{
+			Instruction inst = address->Get();
+			address++;
+			
+			if (inst.LK == 0)
+				labels.insert(std::make_pair(address, InstructionRange(allocator, address)));
+			
+			const Common::UInt32* target = address + inst.LI;
+			labels.insert(std::make_pair(target, InstructionRange(allocator, target)));
+		}
+		
+		void Disassembler::bcx(Common::IAllocator *allocator, const Common::UInt32 *address)
+		{
+			Instruction inst = address->Get();
+			address++;
+			
+			if (inst.LK == 0 && (inst.BO & 0b10100) == 0b10100)
+				labels.insert(std::make_pair(address, InstructionRange(allocator, address)));
+			
+			const Common::UInt32* target = address + inst.BD;
+			labels.insert(std::make_pair(target, InstructionRange(allocator, target)));
+		}
+		
+		void Disassembler::bcctrx(Common::IAllocator *allocator, const Common::UInt32 *address)
+		{
+			Instruction inst = address->Get();
+			address++;
+			
+			if (inst.LK == 0 && (inst.BO & 0b10100) == 0b10100)
+				labels.insert(std::make_pair(address, InstructionRange(allocator, address)));
+			
+			// indirect branch, no idea where this is going.
+		}
+		
+		void Disassembler::bclrx(Common::IAllocator *allocator, const Common::UInt32 *address)
+		{
+			Instruction inst = address->Get();
+			address++;
+			
+			if (inst.LK == 0 && (inst.BO & 0b10100) == 0b10100)
+				labels.insert(std::make_pair(address, InstructionRange(allocator, address)));
+			
+			// indirect branch, most likely a return
 		}
 		
 		Disassembler::iterator Disassembler::Begin()

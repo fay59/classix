@@ -24,13 +24,14 @@ namespace PPCVM
 	{
 		struct DisassembledOpcode
 		{
+			Instruction Instruction;
 			std::string Opcode;
 			std::vector<std::string> Arguments;
 			std::string Complement;
 			
 			template<typename... TParams>
-			DisassembledOpcode(const std::string& opcode, TParams... arguments)
-			: Opcode(opcode)
+			DisassembledOpcode(union Instruction instruction, const std::string& opcode, TParams... arguments)
+			: Instruction(instruction), Opcode(opcode)
 			{
 				AddArguments(arguments...);
 			}
@@ -65,9 +66,9 @@ namespace PPCVM
 			const PEF::TransitionVector* r12;
 			
 			template<typename... TParams>
-			void Emit(TParams... params)
+			void Emit(Instruction i, TParams... params)
 			{
-				Opcodes.emplace_back(params...);
+				Opcodes.emplace_back(i, params...);
 			}
 			
 		public:

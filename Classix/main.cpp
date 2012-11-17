@@ -125,7 +125,7 @@ static void runMPW(const std::string& path, int argc, const char* argv[], const 
 
 int main(int argc, const char* argv[], const char* envp[])
 {
-	if (argc != 3)
+	if (argc < 3)
 	{
 		std::cerr << "usage: Classix -o file # tries to load fragment" << std::endl;
 		std::cerr << "       Classix -e file # tries to list exports" << std::endl;

@@ -55,7 +55,7 @@ namespace PPCVM
 		{     
 			uint32_t LK_2		:	1;
 			uint32_t AA_2		:	1;
-			uint32_t BD			:	14;
+			int32_t BD			:	14;
 			uint32_t BI			:	5;
 			uint32_t BO			:	5;
 			uint32_t OPCD_6		:	6;
@@ -240,7 +240,7 @@ namespace PPCVM
 		struct 
 		{
 			uint32_t dummyX		:   11;
-			uint32_t NB			: 5;
+			uint32_t NB			:	5;
 		};
 	};
 }
