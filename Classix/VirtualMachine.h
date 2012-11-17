@@ -76,6 +76,7 @@ namespace Classix
 			{
 				std::string argument = *iter;
 				AppendInteger(argumentName, argIndex);
+				argIndex++;
 				Common::AutoAllocation allocation = vm.allocator->AllocateAuto(argumentName, argument.length());
 				std::copy(argument.begin(), argument.end(), static_cast<char*>(*allocation));
 				
@@ -101,6 +102,7 @@ namespace Classix
 			{
 				std::string argument = *iter;
 				AppendInteger(argumentName, argIndex);
+				argIndex++;
 				Common::AutoAllocation allocation = vm.allocator->AllocateAuto(argumentName, argument.length());
 				std::copy(argument.begin(), argument.end(), static_cast<char*>(*allocation));
 				

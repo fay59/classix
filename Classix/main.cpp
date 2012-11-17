@@ -156,7 +156,7 @@ int main(int argc, const char* argv[], const char* envp[])
 		else if (mode == "-r")
 			run(path);
 		else if (mode == "-mpw")
-			runMPW(path, argc - 3, argv + 3, envp);
+			runMPW(path, argc - 2, argv + 2, envp);
 	}
 	catch (std::exception& error)
 	{

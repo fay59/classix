@@ -18,8 +18,8 @@ Common::AutoAllocation::AutoAllocation(AutoAllocation&& that)
 : allocator(that.allocator)
 {
 	address = that.address;
-	allocator = nullptr;
-	address = nullptr;
+	that.allocator = nullptr;
+	that.address = nullptr;
 }
 
 void* Common::AutoAllocation::operator*()
