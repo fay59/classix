@@ -17,6 +17,8 @@ namespace PPCVM
 		: begin(begin), end(end)
 		{
 			assert(begin <= end && "End before begin");
+			
+			labels.insert(std::make_pair(begin, InstructionRange(allocator, begin)));
 			for (auto iter = begin; iter != end; iter++)
 			{
 				Instruction instruction = iter->Get();
@@ -40,41 +42,50 @@ namespace PPCVM
 				next++;
 				
 				const Common::UInt32* labelEnd = next == End() ? end : next->first;
-				iter->second.SetEnd(labelEnd);
+				iter->second.CompleteRange(begin, labelEnd);
 			}
 		}
 		
 		void Disassembler::bx(Common::IAllocator* allocator, const Common::UInt32* address)
 		{
 			Instruction inst = address->Get();
-			address++;
-			
 			if (inst.LK == 0)
-				labels.insert(std::make_pair(address, InstructionRange(allocator, address)));
+			{
+				const Common::UInt32* lr = address + 1;
+				labels.insert(std::make_pair(lr, InstructionRange(allocator, lr)));
+			}
 			
-			const Common::UInt32* target = address + inst.LI;
-			labels.insert(std::make_pair(target, InstructionRange(allocator, target)));
+			const Common::UInt32* target = inst.AA
+				? allocator->ToPointer<const Common::UInt32>(inst.LI << 2)
+				: address + inst.LI;
+			auto iter = labels.insert(std::make_pair(target, InstructionRange(allocator, target))).first;
+			iter->second.IsFunction |= inst.LK;
 		}
 		
 		void Disassembler::bcx(Common::IAllocator *allocator, const Common::UInt32 *address)
 		{
 			Instruction inst = address->Get();
-			address++;
-			
 			if (inst.LK == 0 && (inst.BO & 0b10100) == 0b10100)
-				labels.insert(std::make_pair(address, InstructionRange(allocator, address)));
+			{
+				const Common::UInt32* lr = address + 1;
+				labels.insert(std::make_pair(lr, InstructionRange(allocator, lr)));
+			}
 			
-			const Common::UInt32* target = address + inst.BD;
-			labels.insert(std::make_pair(target, InstructionRange(allocator, target)));
+			const Common::UInt32* target = inst.AA
+				? allocator->ToPointer<const Common::UInt32>(inst.BD << 2)
+				: address + inst.BD;
+			auto iter = labels.insert(std::make_pair(target, InstructionRange(allocator, target))).first;
+			iter->second.IsFunction |= inst.LK;
 		}
 		
 		void Disassembler::bcctrx(Common::IAllocator *allocator, const Common::UInt32 *address)
 		{
 			Instruction inst = address->Get();
-			address++;
-			
 			if (inst.LK == 0 && (inst.BO & 0b10100) == 0b10100)
-				labels.insert(std::make_pair(address, InstructionRange(allocator, address)));
+			{
+				const Common::UInt32* lr = address + 1;
+				labels.insert(std::make_pair(lr, InstructionRange(allocator, lr)));
+			}
 			
 			// indirect branch, no idea where this is going.
 		}
@@ -82,12 +93,53 @@ namespace PPCVM
 		void Disassembler::bclrx(Common::IAllocator *allocator, const Common::UInt32 *address)
 		{
 			Instruction inst = address->Get();
-			address++;
-			
 			if (inst.LK == 0 && (inst.BO & 0b10100) == 0b10100)
-				labels.insert(std::make_pair(address, InstructionRange(allocator, address)));
+			{
+				const Common::UInt32* lr = address + 1;
+				labels.insert(std::make_pair(lr, InstructionRange(allocator, lr)));
+			}
 			
 			// indirect branch, most likely a return
+		}
+		
+		InstructionRange* Disassembler::FindRange(const Common::UInt32 *address)
+		{
+			auto iter = labels.find(address);
+			if (iter != labels.end())
+				return &iter->second;
+			
+			for (auto& range : labels)
+			{
+				if (range.first > address)
+					break;
+				
+				if (range.second.End < address)
+					continue;
+				
+				return &range.second;
+			}
+			
+			return nullptr;
+		}
+		
+		const InstructionRange* Disassembler::FindRange(const Common::UInt32 *address) const
+		{
+			auto iter = labels.find(address);
+			if (iter != labels.end())
+				return &iter->second;
+			
+			for (auto& range : labels)
+			{
+				if (range.first > address)
+					break;
+				
+				if (range.second.End < address)
+					continue;
+				
+				return &range.second;
+			}
+			
+			return nullptr;
 		}
 		
 		Disassembler::iterator Disassembler::Begin()

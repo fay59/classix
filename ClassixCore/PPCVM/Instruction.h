@@ -48,7 +48,7 @@ namespace PPCVM
 		{
 			uint32_t LK			:	1;
 			uint32_t AA			:	1;
-			uint32_t LI			:	24;
+			int32_t LI			:	24;
 			uint32_t OPCD_5		:	6;
 		};
 		struct

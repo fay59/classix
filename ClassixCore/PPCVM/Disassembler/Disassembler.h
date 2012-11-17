@@ -37,6 +37,9 @@ namespace PPCVM
 			
 			Disassembler(Common::IAllocator* allocator, const Common::UInt32* begin, const Common::UInt32* end);
 			
+			InstructionRange* FindRange(const Common::UInt32* address);
+			const InstructionRange* FindRange(const Common::UInt32* address) const;
+			
 			iterator Begin();
 			iterator End();
 			const_iterator Begin() const;

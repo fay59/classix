@@ -35,17 +35,17 @@
 		DC717073164F6648008D767E /* IntegerInstructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7273FC16471CD800DA17E5 /* IntegerInstructions.cpp */; };
 		DC717074164F6648008D767E /* LoadStoreInstructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7273FF16471CD800DA17E5 /* LoadStoreInstructions.cpp */; };
 		DC717075164F6648008D767E /* SystemRegisterInstructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC72740016471CD800DA17E5 /* SystemRegisterInstructions.cpp */; };
-		DC717076164F664E008D767E /* Disassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA1E14F16438152008C3C8C /* Disassembler.cpp */; };
-		DC717077164F664E008D767E /* ppc_disasm.c in Sources */ = {isa = PBXBuildFile; fileRef = DCA1E14D16438149008C3C8C /* ppc_disasm.c */; };
 		DC787EAE164F68E30010A288 /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC787EB2164F6A910010A288 /* StdCLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC787EB0164F6A810010A288 /* StdCLib.cpp */; };
 		DC8301EF164FFD770079CE2D /* DyldLibraryResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301EC164FFD380079CE2D /* DyldLibraryResolver.cpp */; };
 		DC8301F3165006FB0079CE2D /* DyldSymbolResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F0165006D00079CE2D /* DyldSymbolResolver.cpp */; };
 		DC8301F7165010690079CE2D /* VirtualMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F5165010690079CE2D /* VirtualMachine.cpp */; };
-		DC83021C1650B2D70079CE2D /* Disassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021A1650B2D70079CE2D /* Disassembler.cpp */; };
-		DC83021F1650D1A60079CE2D /* InstructionRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021D1650D1A60079CE2D /* InstructionRange.cpp */; };
 		DC9D8D4D164F642000036FDD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC9D8D4C164F642000036FDD /* main.cpp */; };
 		DC9D8D4F164F645900036FDD /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
+		DCE0A8A9165732CC0092CEBC /* InstructionDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE0A8A7165732860092CEBC /* InstructionDispatcher.cpp */; };
+		DCE0A8AA165733B00092CEBC /* InstructionRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021D1650D1A60079CE2D /* InstructionRange.cpp */; };
+		DCE0A8AB165733B50092CEBC /* Disassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021A1650B2D70079CE2D /* Disassembler.cpp */; };
+		DCE0A8AF1657651D0092CEBC /* DisassembledOpcode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE0A8AC16575A160092CEBC /* DisassembledOpcode.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -112,10 +112,6 @@
 		DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libClassixCore.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC9D8D4C164F642000036FDD /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DC9D8D4E164F644200036FDD /* Classix.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Classix.1; sourceTree = "<group>"; };
-		DCA1E14C16438149008C3C8C /* ppc_disasm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ppc_disasm.h; sourceTree = "<group>"; };
-		DCA1E14D16438149008C3C8C /* ppc_disasm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ppc_disasm.c; sourceTree = "<group>"; };
-		DCA1E14F16438152008C3C8C /* Disassembler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Disassembler.cpp; sourceTree = "<group>"; };
-		DCA1E15016438152008C3C8C /* Disassembler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Disassembler.h; sourceTree = "<group>"; };
 		DCA6DBF81638451400BFA046 /* IAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IAllocator.cpp; sourceTree = "<group>"; };
 		DCA6DBF91638451400BFA046 /* IAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAllocator.h; sourceTree = "<group>"; };
 		DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NativeAllocator.cpp; sourceTree = "<group>"; };
@@ -126,6 +122,9 @@
 		DCB00BA0163B933B003C88CA /* Endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Endian.h; sourceTree = "<group>"; };
 		DCB00BA1163B9367003C88CA /* BigEndian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigEndian.h; sourceTree = "<group>"; };
 		DCC3DC3016338A7900792F4A /* Classix */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Classix; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCE0A8A7165732860092CEBC /* InstructionDispatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionDispatcher.cpp; path = ClassixCore/PPCVM/InstructionDispatcher.cpp; sourceTree = SOURCE_ROOT; };
+		DCE0A8AC16575A160092CEBC /* DisassembledOpcode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DisassembledOpcode.cpp; path = ClassixCore/PPCVM/Disassembler/DisassembledOpcode.cpp; sourceTree = SOURCE_ROOT; };
+		DCE0A8AD16575A160092CEBC /* DisassembledOpcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DisassembledOpcode.h; path = ClassixCore/PPCVM/Disassembler/DisassembledOpcode.h; sourceTree = SOURCE_ROOT; };
 		DCF3599616384E1400EC1A95 /* Container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Container.cpp; sourceTree = "<group>"; };
 		DCF3599716384E1400EC1A95 /* Container.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
 		DCF3599A16384E1400EC1A95 /* Export.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Export.cpp; sourceTree = "<group>"; };
@@ -207,6 +206,7 @@
 			children = (
 				DC72740B1647208800DA17E5 /* Instruction.h */,
 				DC72740A16471FF100DA17E5 /* InstructionDispatcher.h */,
+				DCE0A8A7165732860092CEBC /* InstructionDispatcher.cpp */,
 				DC72740F1647350C00DA17E5 /* FloatingPointStatus.h */,
 				DCB00B9D163B6DAD003C88CA /* MachineState.cpp */,
 				DCB00B9E163B6DAD003C88CA /* MachineState.h */,
@@ -226,18 +226,6 @@
 				DC8301F1165006D00079CE2D /* DyldSymbolResolver.h */,
 			);
 			name = Dyld;
-			sourceTree = "<group>";
-		};
-		DC8302191650B26D0079CE2D /* FrankWille */ = {
-			isa = PBXGroup;
-			children = (
-				DCA1E14F16438152008C3C8C /* Disassembler.cpp */,
-				DCA1E15016438152008C3C8C /* Disassembler.h */,
-				DCA1E14C16438149008C3C8C /* ppc_disasm.h */,
-				DCA1E14D16438149008C3C8C /* ppc_disasm.c */,
-			);
-			name = FrankWille;
-			path = ../../../ClassixCore/PPCVM/Disassembler/FrankWille;
 			sourceTree = "<group>";
 		};
 		DC84561F1634B7C6001E49E2 /* PEF */ = {
@@ -312,11 +300,12 @@
 		DCA1E14B1643810E008C3C8C /* Disassembler */ = {
 			isa = PBXGroup;
 			children = (
-				DC8302191650B26D0079CE2D /* FrankWille */,
 				DC83021A1650B2D70079CE2D /* Disassembler.cpp */,
 				DC83021B1650B2D70079CE2D /* Disassembler.h */,
 				DC83021D1650D1A60079CE2D /* InstructionRange.cpp */,
 				DC83021E1650D1A60079CE2D /* InstructionRange.h */,
+				DCE0A8AC16575A160092CEBC /* DisassembledOpcode.cpp */,
+				DCE0A8AD16575A160092CEBC /* DisassembledOpcode.h */,
 			);
 			path = Disassembler;
 			sourceTree = "<group>";
@@ -520,10 +509,12 @@
 				DC717073164F6648008D767E /* IntegerInstructions.cpp in Sources */,
 				DC717074164F6648008D767E /* LoadStoreInstructions.cpp in Sources */,
 				DC717075164F6648008D767E /* SystemRegisterInstructions.cpp in Sources */,
-				DC717076164F664E008D767E /* Disassembler.cpp in Sources */,
-				DC717077164F664E008D767E /* ppc_disasm.c in Sources */,
 				DC8301EF164FFD770079CE2D /* DyldLibraryResolver.cpp in Sources */,
 				DC8301F3165006FB0079CE2D /* DyldSymbolResolver.cpp in Sources */,
+				DCE0A8A9165732CC0092CEBC /* InstructionDispatcher.cpp in Sources */,
+				DCE0A8AA165733B00092CEBC /* InstructionRange.cpp in Sources */,
+				DCE0A8AB165733B50092CEBC /* Disassembler.cpp in Sources */,
+				DCE0A8AF1657651D0092CEBC /* DisassembledOpcode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -533,8 +524,6 @@
 			files = (
 				DC9D8D4D164F642000036FDD /* main.cpp in Sources */,
 				DC8301F7165010690079CE2D /* VirtualMachine.cpp in Sources */,
-				DC83021C1650B2D70079CE2D /* Disassembler.cpp in Sources */,
-				DC83021F1650D1A60079CE2D /* InstructionRange.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

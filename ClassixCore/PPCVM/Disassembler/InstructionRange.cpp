@@ -8,87 +8,45 @@
 
 #include "InstructionRange.h"
 #include <cassert>
-#include <sstream>
+#include <cstring>
 
 namespace
 {
-	const char* numbers[] = {
-		"0", "1", "2", "3", "4", "5", "6", "7", "8",
-		"9", "10", "11", "12", "13", "14", "15", "16",
-		"17", "18", "19", "20", "21", "22", "23", "24",
-		"25", "26", "27", "28", "29", "30", "31"
-	};
+	using namespace PPCVM::Disassembly;
 	
-	const char* sprList[1024] = {
-		[1] = "xer",
-		[8] = "lr",
-		[9] = "ctr",
-		[18] = "dsisr",
-		[19] = "dar",
-		[22] = "dec",
-		[25] = "sdr1",
-		[26] = "srr0",
-		[27] = "srr1",
-		[272] = "sprg0",
-		[273] = "sprg1",
-		[274] = "sprg2",
-		[275] = "sprg3",
-		[282] = "ear",
-		[287] = "pvr",
-		[528] = "ibat0u",
-		[529] = "ibat0l",
-		[530] = "ibat1u",
-		[531] = "ibat1l",
-		[532] = "ibat2u",
-		[533] = "ibat2l",
-		[534] = "ibat3u",
-		[535] = "ibat3l",
-		[536] = "dbat0u",
-		[537] = "dbat0l",
-		[538] = "dbat1u",
-		[539] = "dbat1l",
-		[540] = "dbat2u",
-		[541] = "dbat2l",
-		[542] = "dbat3u",
-		[543] = "dbat3l",
-		[1013] = "dabr",
-	};
-	
-	std::string spr(uint32_t reg)
+	OpcodeArgument spr(uint16_t reg)
 	{
-		if (const char* sprName = sprList[reg])
-			return sprName;
-		
-		return std::string("spr") + numbers[reg];
+		return OpcodeArgument::SPR(reg);
 	}
 	
-	std::string g(uint32_t reg)
+	OpcodeArgument g(uint8_t reg)
 	{
-		return std::string("r") + numbers[reg];
+		return OpcodeArgument::GPR(reg);
 	}
 	
-	std::string f(uint32_t reg)
+	OpcodeArgument f(uint8_t reg)
 	{
-		return std::string("fr") + numbers[reg];
+		return OpcodeArgument::FPR(reg);
 	}
 	
-	std::string cr(uint32_t cr)
+	OpcodeArgument cr(uint8_t cr)
 	{
-		return std::string("crf") + static_cast<char>('0' + cr);
+		return OpcodeArgument::CR(cr);
 	}
 	
-	std::string hex(uint32_t h)
+	OpcodeArgument hex(uint32_t h)
 	{
-		std::stringstream ss;
-		ss << "0x" << std::hex << h;
-		return ss.str();
+		return OpcodeArgument::Literal(h);
 	}
 	
-	std::string hex(int32_t h)
+	OpcodeArgument hex(int32_t h)
 	{
-		if (h < 0)
-			return '-' + hex(static_cast<uint32_t>(abs(h)));
-		return hex(static_cast<uint32_t>(h));
+		return OpcodeArgument::Literal(h);
+	}
+	
+	OpcodeArgument offset(int32_t offset)
+	{
+		return OpcodeArgument::Offset(offset);
 	}
 	
 	std::string opX(const std::string& x, bool setsFlags)
@@ -113,54 +71,49 @@ namespace
 			return x + 'l';
 		return x;
 	}
-	
-	std::string offset(uint32_t r, int32_t offset)
-	{
-		std::stringstream ss;
-		ss << hex(offset) << '(' << g(r) << ')';
-		return ss.str();
-	}
 }
 
 namespace PPCVM
 {
 	namespace Disassembly
 	{
-		std::ostream& operator<<(std::ostream& into, const DisassembledOpcode& opcode)
+		DisassembledOpcode InstructionDecoder::Decode(PPCVM::Instruction i)
 		{
-			into << opcode.Opcode << '\t';
-			
-			auto iter = opcode.Arguments.cbegin();
-			if (iter != opcode.Arguments.cend())
-				into << *iter;
-			
-			for (iter++; iter != opcode.Arguments.cend(); iter++)
-				into << ", " << *iter;
-			
-			if (opcode.Complement.length() > 0)
-				into << " <" << opcode.Complement << '>';
-			return into;
+			InstructionDecoder decoder;
+			decoder.Dispatch(i);
+			return decoder.Opcode;
 		}
 		
 		InstructionRange::InstructionRange(Common::IAllocator* allocator, const Common::UInt32* begin)
 		: Begin(begin), End(nullptr), allocator(allocator), r12(nullptr)
 		{ }
 		
-		void InstructionRange::SetEnd(const Common::UInt32 *end)
+		void InstructionRange::CompleteRange(const Common::UInt32 *base, const Common::UInt32 *end)
 		{
 			assert(end >= Begin && "End before Begin");
 			End = end;
 			
+			char functionName[] = ".fn00000000";
+			sprintf(functionName + 1, "%s%08x",
+					IsFunction ? "fn" : "lb",
+					static_cast<uint32_t>((Begin - base) * sizeof *Begin));
+			
+			Name = functionName;
+			
+			InstructionDecoder decoder;
 			Opcodes.reserve(End - Begin);
 			for (auto iter = Begin; iter != End; iter++)
-				Dispatch(PPCVM::Instruction(*iter));
+			{
+				decoder.Dispatch(PPCVM::Instruction(*iter));
+				Opcodes.push_back(decoder.Opcode);
+			}
 		}
 		
 #pragma mark -
-#define IMPL(x)	void InstructionRange::x(PPCVM::Instruction i)
+#define IMPL(x)	void InstructionDecoder::x(PPCVM::Instruction i)
 #define BODY(x, c)	IMPL(x) { c; }
 #define OP(name)	BODY(name, Emit(i, #name))
-		void InstructionRange::unknown(PPCVM::Instruction i)
+		void InstructionDecoder::unknown(PPCVM::Instruction i)
 		{
 			Emit(i, ".word", hex(i.hex));
 		}
@@ -254,8 +207,8 @@ namespace PPCVM
 		ILASB(nor);
 		ILASB(or);
 		ILASB(orc);
-		BODY(ori, Emit(i, "ori", g(i.RA), g(i.RS), g(i.UIMM)));
-		BODY(oris, Emit(i, "oris", g(i.RA), g(i.RS), g(i.UIMM)));
+		BODY(ori, Emit(i, "ori", g(i.RA), g(i.RS), hex(i.UIMM)));
+		BODY(oris, Emit(i, "oris", g(i.RA), g(i.RS), hex(i.UIMM)));
 		
 		IROT(rlwimi);
 		IROT(rlwinm); // TODO simplified mnemonics (8-164)
@@ -301,10 +254,10 @@ namespace PPCVM
 		
 #pragma mark -
 #pragma mark Load/Store
-#define ADDR			i.RA == 0 ? hex(i.SIMM_16) : offset(i.RA, i.SIMM_16)
-#define ADDRU			offset(i.RA, i.SIMM_16)
-#define ADDRX			i.RA == 0 ? g(i.RB) : (g(i.RA)+'+'+g(i.RB))
-#define ADDRUX			g(i.RA)+'+'+g(i.RB)
+#define ADDR			offset(i.SIMM_16), i.RA == 0 ? OpcodeArgument() : g(i.RA)
+#define ADDRU			offset(i.SIMM_16), g(i.RA)
+#define ADDRX			g(i.RB), i.RA == 0 ? OpcodeArgument() : g(i.RA)
+#define ADDRUX			g(i.RB), g(i.RA)
 #define LOADI_(name, addr)			BODY(name, Emit(i, #name, g(i.RD), addr))
 #define LOADI(name)					BODY(name, Emit(i, #name, g(i.RD), ADDR)) LOADI_(name##x, ADDRX) LOADI_(name##u, ADDRU) LOADI_(name##ux, ADDRUX)
 #define LOADF_(name, addr)			BODY(name, Emit(i, #name, f(i.RD), addr))
@@ -358,7 +311,7 @@ namespace PPCVM
 		
 		IMPL(mfspr)
 		{
-			std::string d = g(i.RD);
+			OpcodeArgument d = g(i.RD);
 			uint8_t spr = (i.RB << 5) | i.RA;
 			switch (spr)
 			{
@@ -371,7 +324,7 @@ namespace PPCVM
 		
 		IMPL(mftb)
 		{
-			std::string d = g(i.RD);
+			OpcodeArgument d = g(i.RD);
 			uint8_t tbl = (i.RB << 5) | i.RA;
 			if (tbl == 268)
 				Emit(i, "mftb", d);
@@ -389,7 +342,7 @@ namespace PPCVM
 		
 		IMPL(mtspr)
 		{
-			std::string d = g(i.RD);
+			OpcodeArgument d = g(i.RD);
 			uint8_t spr = (i.RB << 5) | i.RA;
 			switch (spr)
 			{
@@ -413,7 +366,7 @@ namespace PPCVM
 			else if (i.BO == 12 && i.BI == 0)
 				Emit(i, opLK("bltctr", i.LK));
 			else if (i.BO == 4 && i.BI == 10)
-				Emit(i, opLK("bnectr", i.LK), "cr2");
+				Emit(i, opLK("bnectr", i.LK), cr(2));
 			else
 				Emit(i, opLK("bcctr", i.LK), hex(i.BO), hex(i.BI));
 		}
@@ -425,7 +378,7 @@ namespace PPCVM
 			else if (i.BO == 12 && i.BI == 0)
 				Emit(i, opLK("bltlr", i.LK));
 			else if (i.BO == 4 && i.BI == 10)
-				Emit(i, opLK("bnelr", i.LK), "cr2");
+				Emit(i, opLK("bnelr", i.LK), cr(2));
 			else if (i.BO == 16 && i.BI == 0)
 				Emit(i, opLK("bdnzlr", i.LK));
 			else
@@ -438,13 +391,13 @@ namespace PPCVM
 			if (i.LK) suffix += 'l';
 			if (i.AA) suffix += 'a';
 			
-			std::string target = hex(i.BD << 2);
+			OpcodeArgument target = hex(i.BD << 2);
 			if ((i.BO & 0b10100) == 0b10100)
 				Emit(i, "blt" + suffix, target);
 			else if (i.BO == 12 && i.BI == 0)
 				Emit(i, "blt" + suffix, target);
 			else if (i.BO == 4 && i.BI == 10)
-				Emit(i, "bne" + suffix, "cr2", target);
+				Emit(i, "bne" + suffix, cr(2), target);
 			else if (i.BO == 16 && i.BI == 0)
 				Emit(i, "bdnz" + suffix, target);
 			else

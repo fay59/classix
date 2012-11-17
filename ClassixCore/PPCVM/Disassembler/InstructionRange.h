@@ -17,40 +17,18 @@
 #include "BigEndian.h"
 #include "IAllocator.h"
 #include "Structures.h"
+#include "DisassembledOpcode.h"
 
 namespace PPCVM
 {
 	namespace Disassembly
 	{
-		struct DisassembledOpcode
+		class InstructionRange
 		{
-			Instruction Instruction;
-			std::string Opcode;
-			std::vector<std::string> Arguments;
-			std::string Complement;
+			Common::IAllocator* allocator;
+			const PEF::TransitionVector* r12;
 			
-			template<typename... TParams>
-			DisassembledOpcode(union Instruction instruction, const std::string& opcode, TParams... arguments)
-			: Instruction(instruction), Opcode(opcode)
-			{
-				AddArguments(arguments...);
-			}
-			
-		private:
-			template<typename... TParams>
-			void AddArguments(const std::string& arg, TParams... args)
-			{
-				Arguments.push_back(arg);
-				AddArguments(args...);
-			}
-			
-			void AddArguments() {}
-		};
-		
-		std::ostream& operator<<(std::ostream& into, const DisassembledOpcode& opcode);
-		
-		struct InstructionRange : public InstructionDispatcher<InstructionRange>
-		{
+		public:
 			std::string Name;
 			bool IsFunction;
 			const Common::UInt32* Begin;
@@ -59,19 +37,24 @@ namespace PPCVM
 			
 			InstructionRange(Common::IAllocator* allocator, const Common::UInt32* begin);
 			
-			void SetEnd(const Common::UInt32* end);
+			void CompleteRange(const Common::UInt32* base, const Common::UInt32* end);
+		};
+		
+		class InstructionDecoder : public InstructionDispatcher<InstructionDecoder>
+		{
+		public:
+			DisassembledOpcode Opcode;
 			
 		private:
-			Common::IAllocator* allocator;
-			const PEF::TransitionVector* r12;
-			
 			template<typename... TParams>
-			void Emit(Instruction i, TParams... params)
+			void Emit(Instruction i, const std::string& name, TParams... params)
 			{
-				Opcodes.emplace_back(i, params...);
+				Opcode = DisassembledOpcode(i, name, params...);
 			}
 			
 		public:
+			static DisassembledOpcode Decode(Instruction i);
+			
 			void unknown(Instruction inst);
 			
 			// Floating Point Instructions
@@ -252,7 +235,7 @@ namespace PPCVM
 			void bcx(Instruction inst);
 			void bx(Instruction inst);
 			void sc(Instruction inst);
-
+			
 			// supervisor mode (not implemented)
 			void dcba(Instruction inst);
 			void dcbf(Instruction inst);

@@ -2,7 +2,6 @@
 #define INSTRUCTIONDISPATCHER_H
 
 #include "Instruction.h"
-#include "Disassembler.h"
 #include <iostream>
 
 namespace PPCVM
@@ -18,14 +17,14 @@ namespace PPCVM
 		static DispatchableMethod table59[32];
 		static DispatchableMethod table63[1024];
 		
+		static void DisassembleIfAsked(Instruction inst);
+		
 	public:
-		inline void Dispatch(Instruction inst)
+		void Dispatch(Instruction inst)
 		{
 #ifdef DEBUG_DISASSEMBLE
-			if (getenv("DEBUG_DISASSEMBLE"))
-			{
-				std::cerr << '\t' << FrankWille::Disassemble(inst) << std::endl;
-			}
+			void DisassembleIfAsked(Instruction inst);
+			DisassembleIfAsked(inst);
 #endif
 			
 			DispatchableMethod method = nullptr;

@@ -96,12 +96,40 @@ static void disassemble(const std::string& path)
 		std::cout << ": " << endline;
 		
 		const uint32_t totalInstructions = section.Size() / 4;
-		const Common::UInt32* instructions = reinterpret_cast<const Common::UInt32*>(section.Data);
-		PPCVM::FrankWille::DisassembledInstruction instruction;
-		for (uint32_t i = 0; i < totalInstructions; i++)
+		const Common::UInt32* begin = reinterpret_cast<const Common::UInt32*>(section.Data);
+		const Common::UInt32* end = begin + totalInstructions;
+		PPCVM::Disassembly::Disassembler disasm(Common::NativeAllocator::Instance, begin, end);
+		for (auto iter = disasm.Begin(); iter != disasm.End(); iter++)
 		{
-			PPCVM::FrankWille::Disassemble(instructions[i], instruction);
-			std::cout << std::left << std::setw(10) << instruction.Opcode << ' ' << instruction.Arguments << endline;
+			auto& section = iter->second;
+			if (section.Begin != section.End)
+			{
+				std::cout << "\t\t" << (section.IsFunction ? ".fn" : ".lb");
+				std::cout << std::setw(8) << std::right << std::setfill('0') << std::hex;
+				std::cout << (section.Begin - begin) * sizeof *begin << ":" << endline;
+				
+				for (size_t i = 0; i < section.Opcodes.size(); i++)
+				{
+					auto& opcode = section.Opcodes[i];
+					
+					std::cout << std::setw(8) << std::setfill('0') << std::right << std::hex;
+					std::cout << (section.Begin + i - begin) * sizeof *begin << ' ';
+					std::cout << '\t' << std::setw(12) << std::setfill(' ') << std::left << opcode.Opcode;
+					std::cout << std::setw(24) << opcode.ArgumentsString();
+					int opcd = opcode.Instruction.OPCD;
+					if (opcd == 16 || opcd == 18)
+					{
+						const Common::UInt32* targetAddress = section.Begin + i + opcode.Arguments.back().Value / 4;
+						if (auto sectionResult = disasm.FindRange(targetAddress))
+							std::cout << '<' << sectionResult->Name << '>';
+						else
+							std::cout << "<unknown>";
+					}
+					std::cout << endline;
+				}
+				
+				std::cout << std::endl;
+			}
 		}
 	}
 }

@@ -2,6 +2,7 @@
 #include "Disassembler.h"
 #include "NativeCall.h"
 #include <iostream>
+#include <sstream>
 #include <cassert>
 #include <dlfcn.h>
 
@@ -80,15 +81,9 @@ namespace PPCVM
 
 		void Interpreter::unknown(Instruction inst)
 		{
-			FrankWille::DisassembledInstruction disassembly;
-			if (FrankWille::Disassemble(inst.hex, disassembly))
-			{
-				Panic("Unknown instruction " + disassembly.Opcode + " " + disassembly.Arguments);
-			}
-			else
-			{
-				Panic("Unknown instruction");
-			}
+			std::stringstream ss;
+			ss << "Unknown instruction " << Disassembly::InstructionDecoder::Decode(inst);
+			Panic(ss.str());
 		}
 		
 		const void* Interpreter::ExecuteNative(const NativeCall* function)
