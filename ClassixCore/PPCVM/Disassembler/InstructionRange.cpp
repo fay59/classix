@@ -14,6 +14,11 @@ namespace
 {
 	using namespace PPCVM::Disassembly;
 	
+	const char* conditions[] = {
+		"lt", "gt", "eq", "so",
+		"ge", "le", "ne", "ns"
+	};
+	
 	OpcodeArgument spr(uint16_t reg)
 	{
 		return OpcodeArgument::SPR(reg);
@@ -47,6 +52,25 @@ namespace
 	OpcodeArgument offset(int32_t offset)
 	{
 		return OpcodeArgument::Offset(offset);
+	}
+	
+	bool HasFlag(int value, int mask)
+	{
+		return (value & mask) == mask;
+	}
+	
+	std::string branchName(int bo, int bi)
+	{
+		std::string ctrCondition = HasFlag(bo, 0b100) ? "" : HasFlag(bo, 0b10) ? "dz" : "dnz";
+		if (HasFlag(bo, 0b10000))
+		{
+			return ctrCondition;
+		}
+		else
+		{
+			int conditionIndex = (bi & 3) | (HasFlag(bo, 0b1000) << 2);
+			return ctrCondition + conditions[conditionIndex];
+		}
 	}
 	
 	std::string opX(const std::string& x, bool setsFlags)
@@ -361,47 +385,37 @@ namespace PPCVM
 #pragma mark Branching
 		IMPL(bcctrx)
 		{
-			if ((i.BO & 0b10100) == 0b10100)
-				Emit(i, opLK("bctr", i.LK));
-			else if (i.BO == 12 && i.BI == 0)
-				Emit(i, opLK("bltctr", i.LK));
-			else if (i.BO == 4 && i.BI == 10)
-				Emit(i, opLK("bnectr", i.LK), cr(2));
+			std::string opcode = opLK("b" + branchName(i.BO, i.BI) + "ctr", i.LK);
+			int crN = i.BI >> 2;
+			if (crN == 0)
+				Emit(i, opcode);
 			else
-				Emit(i, opLK("bcctr", i.LK), hex(i.BO), hex(i.BI));
+				Emit(i, opcode, cr(crN));
 		}
 		
 		IMPL(bclrx)
 		{
-			if ((i.BO & 0b10100) == 0b10100)
-				Emit(i, opLK("blr", i.LK));
-			else if (i.BO == 12 && i.BI == 0)
-				Emit(i, opLK("bltlr", i.LK));
-			else if (i.BO == 4 && i.BI == 10)
-				Emit(i, opLK("bnelr", i.LK), cr(2));
-			else if (i.BO == 16 && i.BI == 0)
-				Emit(i, opLK("bdnzlr", i.LK));
+			std::string opcode = opLK("b" + branchName(i.BO, i.BI) + "lr", i.LK);
+			int crN = i.BI >> 2;
+			if (crN == 0)
+				Emit(i, opcode);
 			else
-				Emit(i, opLK("bclr", i.LK), hex(i.BO), hex(i.BI));
+				Emit(i, opcode, cr(crN));
 		}
 		
 		IMPL(bcx)
 		{
-			std::string suffix;
-			if (i.LK) suffix += 'l';
-			if (i.AA) suffix += 'a';
-			
 			OpcodeArgument target = hex(i.BD << 2);
-			if ((i.BO & 0b10100) == 0b10100)
-				Emit(i, "blt" + suffix, target);
-			else if (i.BO == 12 && i.BI == 0)
-				Emit(i, "blt" + suffix, target);
-			else if (i.BO == 4 && i.BI == 10)
-				Emit(i, "bne" + suffix, cr(2), target);
-			else if (i.BO == 16 && i.BI == 0)
-				Emit(i, "bdnz" + suffix, target);
+			std::string opcode = opLK("b" + branchName(i.BO, i.BI), i.LK);
+			
+			if (i.LK) opcode += 'l';
+			if (i.AA) opcode += 'a';
+			
+			int crN = i.BI >> 2;
+			if (crN == 0)
+				Emit(i, opcode, target);
 			else
-				Emit(i, "bc" + suffix, hex(i.BO), hex(i.BI), target);
+				Emit(i, opcode, cr(crN), target);
 		}
 		
 		IMPL(bx)
