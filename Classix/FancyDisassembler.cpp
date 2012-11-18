@@ -130,15 +130,15 @@ void FancyDisassembler::TryInitR2WithMainSymbol(Container& container)
 		case SectionType::Constant:
 		{
 			const uint8_t* vectorAddress = mainSection.Data + mainLocation.Offset;
-			const TransitionVector* entry = reinterpret_cast<const TransitionVector*>(vectorAddress);
-			const UInt32* realAddress = allocator->ToPointer<UInt32>(entry->EntryPoint);
+			const TransitionVector* vector = reinterpret_cast<const TransitionVector*>(vectorAddress);
+			const UInt32* realAddress = allocator->ToPointer<UInt32>(vector->EntryPoint);
 			
 			// find in which section the real address belongs
 			for (auto& pair : sections)
 			{
 				if (auto range = pair.second.disasm->FindRange(realAddress))
 				{
-					r2Values[range] = allocator->ToPointer<uint8_t>(entry->TableOfContents);
+					r2Values[range] = allocator->ToPointer<uint8_t>(vector->TableOfContents);
 					break;
 				}
 			}
@@ -150,39 +150,40 @@ void FancyDisassembler::TryInitR2WithMainSymbol(Container& container)
 
 void FancyDisassembler::ProcessRange(PPCVM::Disassembly::InstructionRange& range, const uint8_t *r2)
 {
+	uint32_t r12 = 0;
 	for (size_t i = 0; i < range.Opcodes.size(); i++)
 	{
 		auto& opcode = range.Opcodes[i];
 		// assume that each time we lwz something from r2 into r12 we're dealing with a transition vector
-		if (opcode.Opcode == "lwz")
+		if (opcode.Opcode == "lwz" && r2 != nullptr)
 		{
-			// don't do anything if r2 is null
-			if (r2 != nullptr)
+			if (opcode.Arguments[0].IsGPR(12) && opcode.Arguments[2].IsGPR(2))
 			{
-				if (opcode.Arguments[0].IsGPR(12) && opcode.Arguments[2].IsGPR(2))
-				{
-					const uint8_t* address = r2 + opcode.Arguments[1].Value;
-					const TransitionVector* target = reinterpret_cast<const TransitionVector*>(address);
-					const NativeCall* native = allocator->ToPointer<NativeCall>(target->EntryPoint);
-					if (native->Tag == PPCVM::Execution::NativeTag)
-					{
-						// if it's a native call, add the function name as metadata
-						Dl_info info;
-						if (dladdr(reinterpret_cast<void*>(native->Callback), &info))
-							metadata.insert(std::make_pair(range.Begin + i, info.dli_sname));
-					}
-					else
-					{
-						// this probably points to another section of the executable.
-						// I'm not too sure how it works because most applications only have
-						// one code section.
-						const UInt32* targetLabel = allocator->ToPointer<UInt32>(target->EntryPoint);
-						const uint8_t* targetToc = allocator->ToPointer<uint8_t>(target->TableOfContents);
-						
-						// For now, let's hope that this points to the same executable section.
-						TryFollowBranch(&range, range.Begin + i, targetLabel, targetToc);
-					}
-				}
+				int32_t offset = opcode.Arguments[1].Value;
+				r12 = *reinterpret_cast<const UInt32*>(r2 + offset);
+			}
+		}
+		else if (opcode.Opcode == "bctr")
+		{
+			const TransitionVector* target = allocator->ToPointer<TransitionVector>(r12);
+			const NativeCall* native = allocator->ToPointer<NativeCall>(target->EntryPoint);
+			if (native->Tag == PPCVM::Execution::NativeTag)
+			{
+				// if it's a native call, add the function name as metadata
+				Dl_info info;
+				if (dladdr(reinterpret_cast<void*>(native->Callback), &info))
+					metadata.insert(std::make_pair(range.Begin + i, info.dli_sname));
+			}
+			else
+			{
+				// this probably points to another section of the executable.
+				// I'm not too sure how it works because most applications only have
+				// one code section.
+				const UInt32* targetLabel = allocator->ToPointer<UInt32>(target->EntryPoint);
+				const uint8_t* targetToc = allocator->ToPointer<uint8_t>(target->TableOfContents);
+				
+				// For now, let's hope that this points to the same executable section.
+				TryFollowBranch(&range, range.Begin + i, targetLabel, targetToc);
 			}
 		}
 		// if it's a static branch, resolve it and propagate r2
