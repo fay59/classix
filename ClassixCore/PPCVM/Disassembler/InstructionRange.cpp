@@ -85,7 +85,7 @@ namespace PPCVM
 		}
 		
 		InstructionRange::InstructionRange(Common::IAllocator* allocator, const Common::UInt32* begin)
-		: Begin(begin), End(nullptr), allocator(allocator), r12(nullptr)
+		: Begin(begin), End(nullptr), allocator(allocator), TableOfContents(nullptr)
 		{ }
 		
 		void InstructionRange::CompleteRange(const Common::UInt32 *base, const Common::UInt32 *end)

@@ -46,6 +46,11 @@ namespace PPCVM
 			OpcodeArgument(OpcodeArgumentFormat format, int32_t value);
 			
 			std::string ToString() const;
+			
+			inline bool IsGPR(uint8_t gpr) { return Format == OpcodeArgumentFormat::GPR && Value == gpr; }
+			inline bool IsFPR(uint8_t fpr) { return Format == OpcodeArgumentFormat::FPR && Value == fpr; }
+			inline bool IsSPR(uint16_t spr) { return Format == OpcodeArgumentFormat::SPR && Value == spr; }
+			inline bool IsCR(uint8_t cr) { return Format == OpcodeArgumentFormat::CR && Value == cr; }
 		};
 		
 		struct DisassembledOpcode

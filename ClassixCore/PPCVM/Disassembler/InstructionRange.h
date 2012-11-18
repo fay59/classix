@@ -26,13 +26,13 @@ namespace PPCVM
 		class InstructionRange
 		{
 			Common::IAllocator* allocator;
-			const PEF::TransitionVector* r12;
 			
 		public:
 			std::string Name;
 			bool IsFunction;
 			const Common::UInt32* Begin;
 			const Common::UInt32* End;
+			const Common::UInt32* TableOfContents;
 			std::vector<DisassembledOpcode> Opcodes;
 			
 			InstructionRange(Common::IAllocator* allocator, const Common::UInt32* begin);

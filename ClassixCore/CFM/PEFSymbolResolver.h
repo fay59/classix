@@ -31,6 +31,9 @@ namespace CFM
 		PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, const std::string& filePath);
 		PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, Common::FileMapping&& mapping);
 		
+		PEF::Container& GetContainer();
+		const PEF::Container& GetContainer() const;
+		
 		virtual ResolvedSymbol GetInitAddress();
 		virtual ResolvedSymbol GetMainAddress();
 		virtual ResolvedSymbol GetTermAddress();

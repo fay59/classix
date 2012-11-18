@@ -142,6 +142,16 @@ namespace PPCVM
 			return nullptr;
 		}
 		
+		const Common::UInt32* Disassembler::StartAddress() const
+		{
+			return begin;
+		}
+		
+		const Common::UInt32* Disassembler::EndAddress() const
+		{
+			return end;
+		}
+		
 		Disassembler::iterator Disassembler::Begin()
 		{
 			return labels.begin();

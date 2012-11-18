@@ -40,6 +40,9 @@ namespace PPCVM
 			InstructionRange* FindRange(const Common::UInt32* address);
 			const InstructionRange* FindRange(const Common::UInt32* address) const;
 			
+			const Common::UInt32* StartAddress() const;
+			const Common::UInt32* EndAddress() const;
+			
 			iterator Begin();
 			iterator End();
 			const_iterator Begin() const;

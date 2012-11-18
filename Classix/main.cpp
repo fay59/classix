@@ -10,15 +10,21 @@
 #include <iostream>
 #include <iomanip>
 #include <memory>
+#include <map>
+#include <unordered_map>
+#include <unordered_set>
+#include <dlfcn.h>
 
 #include "FragmentManager.h"
 #include "PEFLibraryResolver.h"
+#include "PEFSymbolResolver.h"
 #include "DyldLibraryResolver.h"
 #include "VirtualMachine.h"
 #include "NativeAllocator.h"
 #include "FileMapping.h"
-#include "Unmangle.h"
 #include "Disassembler.h"
+#include "NativeCall.h"
+#include "FancyDisassembler.h"
 
 // be super-generous: apps on Mac OS 9, by default, have a 32 KB stack
 // but we give them 1 MB since messing with ApplLimit has no effect
@@ -35,8 +41,6 @@ static char classChars[] = {
 
 static void loadTest(const std::string& path)
 {
-	PPCVM::MachineState state;
-	
 	CFM::FragmentManager fragmentManager;
 	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
 	ClassixCore::DyldLibraryResolver dyldResolver(Common::NativeAllocator::Instance);
@@ -59,7 +63,7 @@ static void listExports(const std::string& path)
 	for (auto iter = exportTable.begin(); iter != exportTable.end(); iter++)
 	{
 		const PEF::ExportedSymbol* symbol = exportTable.Find(*iter);
-		std::cout << '[' << classChars[symbol->Class] << "] " << Common::Unmangle(symbol->SymbolName) << endline;
+		std::cout << '[' << classChars[symbol->Class] << "] " << symbol->SymbolName << endline;
 	}
 	std::cout << endline;
 }
@@ -74,63 +78,39 @@ static void listImports(const std::string& path)
 	{
 		std::cout << libIter->Name << ':' << endline;
 		for (auto& symbol : libIter->Symbols)
-			std::cout << "  [" << classChars[symbol.Class] << "] " << Common::Unmangle(symbol.Name) << endline;
+			std::cout << "  [" << classChars[symbol.Class] << "] " << symbol.Name << endline;
 		std::cout << endline;
 	}
 }
 
 static void disassemble(const std::string& path)
 {
-	Common::FileMapping mapping(path);
-	PEF::Container container(Common::NativeAllocator::Instance, mapping.begin(), mapping.end());
+	Common::IAllocator* allocator = Common::NativeAllocator::Instance;
+	CFM::FragmentManager fragmentManager;
+	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
+	ClassixCore::DyldLibraryResolver dyldResolver(allocator);
 	
-	for (uint32_t i = 0; i < container.Size(); i++)
+	dyldResolver.RegisterLibrary("StdCLib");
+	
+	fragmentManager.LibraryResolvers.push_back(&pefResolver);
+	fragmentManager.LibraryResolvers.push_back(&dyldResolver);
+	
+	if (fragmentManager.LoadContainer(path))
 	{
-		const PEF::InstantiableSection& section = container.GetSection(i);
-		if (section.GetSectionType() != PEF::SectionType::Code && section.GetSectionType() != PEF::SectionType::ExecutableData)
-			continue;
-		
-		std::cout << "Section " << i;
-		if (section.Name.length() != 0)
-			std::cout << " (" << section.Name << ")";
-		std::cout << ": " << endline;
-		
-		const uint32_t totalInstructions = section.Size() / 4;
-		const Common::UInt32* begin = reinterpret_cast<const Common::UInt32*>(section.Data);
-		const Common::UInt32* end = begin + totalInstructions;
-		PPCVM::Disassembly::Disassembler disasm(Common::NativeAllocator::Instance, begin, end);
-		for (auto iter = disasm.Begin(); iter != disasm.End(); iter++)
+		CFM::SymbolResolver* resolver = fragmentManager.GetSymbolResolver(path);
+		if (CFM::PEFSymbolResolver* pefResolver = dynamic_cast<CFM::PEFSymbolResolver*>(resolver))
 		{
-			auto& section = iter->second;
-			if (section.Begin != section.End)
-			{
-				std::cout << "\t\t" << (section.IsFunction ? ".fn" : ".lb");
-				std::cout << std::setw(8) << std::right << std::setfill('0') << std::hex;
-				std::cout << (section.Begin - begin) * sizeof *begin << ":" << endline;
-				
-				for (size_t i = 0; i < section.Opcodes.size(); i++)
-				{
-					auto& opcode = section.Opcodes[i];
-					
-					std::cout << std::setw(8) << std::setfill('0') << std::right << std::hex;
-					std::cout << (section.Begin + i - begin) * sizeof *begin << ' ';
-					std::cout << '\t' << std::setw(12) << std::setfill(' ') << std::left << opcode.Opcode;
-					std::cout << std::setw(24) << opcode.ArgumentsString();
-					int opcd = opcode.Instruction.OPCD;
-					if (opcd == 16 || opcd == 18)
-					{
-						const Common::UInt32* targetAddress = section.Begin + i + opcode.Arguments.back().Value / 4;
-						if (auto sectionResult = disasm.FindRange(targetAddress))
-							std::cout << '<' << sectionResult->Name << '>';
-						else
-							std::cout << "<unknown>";
-					}
-					std::cout << endline;
-				}
-				
-				std::cout << std::endl;
-			}
+			PEF::Container& container = pefResolver->GetContainer();
+			FancyDisassembler(allocator).Disassemble(container, std::cout);
 		}
+		else
+		{
+			std::cerr << path << " is loadable, but is not a PEF container" << std::endl;
+		}
+	}
+	else
+	{
+		std::cerr << "Couln't load " << path << std::endl;
 	}
 }
 

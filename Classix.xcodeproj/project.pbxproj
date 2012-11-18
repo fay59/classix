@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC4F9B521658328200E11153 /* FancyDisassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC4F9B501658328200E11153 /* FancyDisassembler.cpp */; };
 		DC71705A164F6618008D767E /* FileMapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC5E33C5163A496300944FFD /* FileMapping.cpp */; };
 		DC71705B164F6618008D767E /* IAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBF81638451400BFA046 /* IAllocator.cpp */; };
 		DC71705C164F6618008D767E /* NativeAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */; };
-		DC71705D164F6618008D767E /* Unmangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC94F0FE163C4DA4004538C5 /* Unmangle.cpp */; };
 		DC71705E164F6624008D767E /* Container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF3599616384E1400EC1A95 /* Container.cpp */; };
 		DC71705F164F6624008D767E /* Export.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF3599A16384E1400EC1A95 /* Export.cpp */; };
 		DC717060164F6624008D767E /* ImportedLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF3599C16384E1400EC1A95 /* ImportedLibrary.cpp */; };
@@ -69,6 +69,8 @@
 		DC40D0251635CABE008CA9BC /* LibraryResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryResolver.h; sourceTree = "<group>"; };
 		DC40D0271635CBD1008CA9BC /* PEFLibraryResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PEFLibraryResolver.cpp; sourceTree = "<group>"; };
 		DC40D0281635CBD1008CA9BC /* PEFLibraryResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEFLibraryResolver.h; sourceTree = "<group>"; };
+		DC4F9B501658328200E11153 /* FancyDisassembler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FancyDisassembler.cpp; sourceTree = "<group>"; };
+		DC4F9B511658328200E11153 /* FancyDisassembler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FancyDisassembler.h; sourceTree = "<group>"; };
 		DC5E33C5163A496300944FFD /* FileMapping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileMapping.cpp; sourceTree = "<group>"; };
 		DC5E33C6163A496300944FFD /* FileMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileMapping.h; sourceTree = "<group>"; };
 		DC6847C91638C258003E906D /* PEFRelocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PEFRelocator.cpp; sourceTree = "<group>"; };
@@ -101,8 +103,6 @@
 		DC83021B1650B2D70079CE2D /* Disassembler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Disassembler.h; path = ClassixCore/PPCVM/Disassembler/Disassembler.h; sourceTree = SOURCE_ROOT; };
 		DC83021D1650D1A60079CE2D /* InstructionRange.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionRange.cpp; path = ClassixCore/PPCVM/Disassembler/InstructionRange.cpp; sourceTree = SOURCE_ROOT; };
 		DC83021E1650D1A60079CE2D /* InstructionRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionRange.h; path = ClassixCore/PPCVM/Disassembler/InstructionRange.h; sourceTree = SOURCE_ROOT; };
-		DC94F0FE163C4DA4004538C5 /* Unmangle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Unmangle.cpp; sourceTree = "<group>"; };
-		DC94F0FF163C4DA4004538C5 /* Unmangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unmangle.h; sourceTree = "<group>"; };
 		DC94F106163C80E8004538C5 /* SymbolResolutionException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SymbolResolutionException.cpp; sourceTree = "<group>"; };
 		DC94F107163C80E8004538C5 /* SymbolResolutionException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolResolutionException.h; sourceTree = "<group>"; };
 		DC94F109163CC231004538C5 /* LibraryResolutionException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryResolutionException.cpp; sourceTree = "<group>"; };
@@ -281,6 +281,8 @@
 				DC9D8D4C164F642000036FDD /* main.cpp */,
 				DC8301F5165010690079CE2D /* VirtualMachine.cpp */,
 				DC8301F6165010690079CE2D /* VirtualMachine.h */,
+				DC4F9B501658328200E11153 /* FancyDisassembler.cpp */,
+				DC4F9B511658328200E11153 /* FancyDisassembler.h */,
 			);
 			path = Classix;
 			sourceTree = "<group>";
@@ -322,8 +324,6 @@
 				DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */,
 				DCA6DBFC1638460600BFA046 /* NativeAllocator.h */,
 				DC9D8D41164F2E2800036FDD /* STAllocator.h */,
-				DC94F0FE163C4DA4004538C5 /* Unmangle.cpp */,
-				DC94F0FF163C4DA4004538C5 /* Unmangle.h */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -484,7 +484,6 @@
 				DC71705A164F6618008D767E /* FileMapping.cpp in Sources */,
 				DC71705B164F6618008D767E /* IAllocator.cpp in Sources */,
 				DC71705C164F6618008D767E /* NativeAllocator.cpp in Sources */,
-				DC71705D164F6618008D767E /* Unmangle.cpp in Sources */,
 				DC71705E164F6624008D767E /* Container.cpp in Sources */,
 				DC71705F164F6624008D767E /* Export.cpp in Sources */,
 				DC717060164F6624008D767E /* ImportedLibrary.cpp in Sources */,
@@ -524,6 +523,7 @@
 			files = (
 				DC9D8D4D164F642000036FDD /* main.cpp in Sources */,
 				DC8301F7165010690079CE2D /* VirtualMachine.cpp in Sources */,
+				DC4F9B521658328200E11153 /* FancyDisassembler.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

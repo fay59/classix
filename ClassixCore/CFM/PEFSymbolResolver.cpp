@@ -60,6 +60,16 @@ namespace CFM
 		return Symbolize(address);
 	}
 	
+	PEF::Container& PEFSymbolResolver::GetContainer()
+	{
+		return container;
+	}
+	
+	const PEF::Container& PEFSymbolResolver::GetContainer() const
+	{
+		return container;
+	}
+	
 	ResolvedSymbol PEFSymbolResolver::GetInitAddress()
 	{
 		const LoaderHeader::SectionWithOffset& initInfo = container.LoaderSection()->Header->Init;
