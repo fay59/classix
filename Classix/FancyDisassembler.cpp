@@ -154,43 +154,47 @@ void FancyDisassembler::ProcessRange(PPCVM::Disassembly::InstructionRange& range
 	for (size_t i = 0; i < range.Opcodes.size(); i++)
 	{
 		auto& opcode = range.Opcodes[i];
-		// assume that each time we lwz something from r2 into r12 we're dealing with a transition vector
-		if (opcode.Opcode == "lwz" && r2 != nullptr)
-		{
-			if (opcode.Arguments[0].IsGPR(12) && opcode.Arguments[2].IsGPR(2))
-			{
-				int32_t offset = opcode.Arguments[1].Value;
-				r12 = *reinterpret_cast<const UInt32*>(r2 + offset);
-			}
-		}
-		else if (opcode.Opcode == "bctr")
-		{
-			const TransitionVector* target = allocator->ToPointer<TransitionVector>(r12);
-			const NativeCall* native = allocator->ToPointer<NativeCall>(target->EntryPoint);
-			if (native->Tag == PPCVM::Execution::NativeTag)
-			{
-				// if it's a native call, add the function name as metadata
-				Dl_info info;
-				if (dladdr(reinterpret_cast<void*>(native->Callback), &info))
-					metadata.insert(std::make_pair(range.Begin + i, info.dli_sname));
-			}
-			else
-			{
-				// this probably points to another section of the executable.
-				// I'm not too sure how it works because most applications only have
-				// one code section.
-				const UInt32* targetLabel = allocator->ToPointer<UInt32>(target->EntryPoint);
-				const uint8_t* targetToc = allocator->ToPointer<uint8_t>(target->TableOfContents);
-				
-				// For now, let's hope that this points to the same executable section.
-				TryFollowBranch(&range, range.Begin + i, targetLabel, targetToc);
-			}
-		}
 		// if it's a static branch, resolve it and propagate r2
-		else if (opcode.Instruction.OPCD == 16 || opcode.Instruction.OPCD == 18)
+		if (opcode.Instruction.OPCD == 16 || opcode.Instruction.OPCD == 18)
 		{
 			const UInt32* targetAddress = range.Begin + i + opcode.Arguments.back().Value / 4;
 			TryFollowBranch(&range, range.Begin + i, targetAddress, r2);
+		}
+		// otherwise, only act when r2 is not null
+		else if (r2 != nullptr)
+		{
+			// assume that each time we lwz something from r2 into r12 we're dealing with a transition vector
+			if (opcode.Opcode == "lwz")
+			{
+				if (opcode.Arguments[0].IsGPR(12) && opcode.Arguments[2].IsGPR(2))
+				{
+					int32_t offset = opcode.Arguments[1].Value;
+					r12 = *reinterpret_cast<const UInt32*>(r2 + offset);
+				}
+			}
+			else if (opcode.Opcode == "bctr")
+			{
+				const TransitionVector* target = allocator->ToPointer<TransitionVector>(r12);
+				const NativeCall* native = allocator->ToPointer<NativeCall>(target->EntryPoint);
+				if (native->Tag == PPCVM::Execution::NativeTag)
+				{
+					// if it's a native call, add the function name as metadata
+					Dl_info info;
+					if (dladdr(reinterpret_cast<void*>(native->Callback), &info))
+						metadata.insert(std::make_pair(range.Begin + i, info.dli_sname));
+				}
+				else
+				{
+					// this probably points to another section of the executable.
+					// I'm not too sure how it works because most applications only have
+					// one code section.
+					const UInt32* targetLabel = allocator->ToPointer<UInt32>(target->EntryPoint);
+					const uint8_t* targetToc = allocator->ToPointer<uint8_t>(target->TableOfContents);
+					
+					// For now, let's hope that this points to the same executable section.
+					TryFollowBranch(&range, range.Begin + i, targetLabel, targetToc);
+				}
+			}
 		}
 	}
 }
