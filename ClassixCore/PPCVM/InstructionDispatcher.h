@@ -22,11 +22,6 @@ namespace PPCVM
 	public:
 		void Dispatch(Instruction inst)
 		{
-#ifdef DEBUG_DISASSEMBLE
-			void DisassembleIfAsked(Instruction inst);
-			DisassembleIfAsked(inst);
-#endif
-			
 			DispatchableMethod method = nullptr;
 			switch (inst.OPCD)
 			{

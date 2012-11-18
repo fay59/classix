@@ -131,7 +131,15 @@ namespace PPCVM
 				}
 				else
 				{
-					Dispatch(instructionCode.Get());
+					Instruction inst = instructionCode.Get();
+#ifdef DEBUG_DISASSEMBLE
+					if (getenv("DEBUG_DISASSEMBLE"))
+					{
+						std::cerr << '\t' << Disassembly::InstructionDecoder::Decode(inst) << std::endl;
+					}
+#endif
+					
+					Dispatch(inst);
 					currentAddress++;
 				}
 			} while (branchAddress == nullptr);
@@ -179,7 +187,7 @@ namespace PPCVM
 				if (inst.LK)
 					state->lr = address + 4;
 					
-				intptr_t target = SignExt16(inst.BD << 2) + 4;
+				intptr_t target = SignExt16(inst.BD << 2);
 				if (!inst.AA)
 					target += address;
 				branchAddress = reinterpret_cast<const void*>(target);

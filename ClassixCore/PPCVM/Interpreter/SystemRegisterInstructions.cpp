@@ -7,16 +7,19 @@ namespace
 	
 	inline bool GetCRBit(MachineState* state, int bit)
 	{
-		return (state->cr[bit >> 2] >> (3 - (bit & 3))) & 1;
+		int crIndex = bit / 4;
+		int bitIndex = 3 - (bit & 3);
+		return (state->cr[crIndex] >> bitIndex) & 1;
 	}
 	
 	inline void SetCRBit(MachineState* state, int bit, bool value)
 	{
+		int bitIndex = bit / 4;
 		int bitValue = 8 >> (bit & 3);
 		if (value)
-			state->cr[bit >> 2] |= bitValue;
+			state->cr[bitIndex] |= bitValue;
 		else
-			state->cr[bit >> 2] &= ~bitValue;
+			state->cr[bitIndex] &= ~bitValue;
 	}
 	
 	inline int GetCRField(MachineState* state, int field)
@@ -92,7 +95,6 @@ namespace PPCVM
 
 		void Interpreter::mcrxr(Instruction inst)
 		{
-			// USES_XER
 			SetCRField(state, inst.CRFD, state->xer >> 28); 
 			state->xer &= ~0xF0000000; // clear 0-3
 		}
