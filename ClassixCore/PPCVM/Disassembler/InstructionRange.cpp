@@ -68,7 +68,7 @@ namespace
 		}
 		else
 		{
-			int conditionIndex = (bi & 3) | (HasFlag(bo, 0b1000) << 2);
+			int conditionIndex = (bi & 3) | (!HasFlag(bo, 0b1000) << 2);
 			return ctrCondition + conditions[conditionIndex];
 		}
 	}

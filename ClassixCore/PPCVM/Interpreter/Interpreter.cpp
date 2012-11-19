@@ -41,7 +41,7 @@ namespace
 	
 	inline bool GetCRBit(MachineState* state, int bit)
 	{
-		return (state->cr[bit >> 2] >> (3 - (bit & 3))) & 1;
+		return (state->cr[bit / 4] >> (3 - (bit & 3))) & 1;
 	}
 	
 	const char* BaseName(const char* path)
@@ -90,8 +90,8 @@ namespace PPCVM
 		{
 			assert(function->Tag == NativeTag && "Call doesn't have native tag");
 			
-#ifdef DEBUG_TRACE_NATIVE
-			if (getenv("DEBUG_TRACE_NATIVE"))
+#ifdef DEBUG_DISASSEMBLE
+			if (getenv("DEBUG_DISASSEMBLE"))
 			{
 				Dl_info symInfo;
 				if (dladdr((const void*)function->Callback, &symInfo) != 0)
@@ -119,6 +119,12 @@ namespace PPCVM
 
 		const void* Interpreter::ExecuteUntilBranch(const void* address)
 		{
+#ifdef DEBUG_DISASSEMBLE
+			if (getenv("DEBUG_DISASSEMBLE"))
+			{
+				std::cerr << "0x" << address << ":" << std::endl;
+			}
+#endif
 			currentAddress = reinterpret_cast<const Common::UInt32*>(address);
 			branchAddress = nullptr;
 			do
