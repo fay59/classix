@@ -40,7 +40,7 @@ namespace Classix
 	{
 		const char** envpEnd = envp;
 		while (*envpEnd != nullptr)
-			(*envpEnd)++;
+			envpEnd++;
 		
 		return this->operator()(argv, argv + argc, envp, envpEnd);
 	}

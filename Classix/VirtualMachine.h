@@ -100,13 +100,13 @@ namespace Classix
 			eraseBegin = environName.length();
 			for (TEnvironIterator iter = envBegin; iter != envEnd; iter++)
 			{
-				std::string argument = *iter;
-				AppendInteger(argumentName, argIndex);
+				std::string environmentSetting = *iter;
+				AppendInteger(environName, argIndex);
 				argIndex++;
-				Common::AutoAllocation allocation = vm.allocator->AllocateAuto(argumentName, argument.length());
-				std::copy(argument.begin(), argument.end(), static_cast<char*>(*allocation));
+				Common::AutoAllocation allocation = vm.allocator->AllocateAuto(argumentName, environmentSetting.length());
+				std::copy(environmentSetting.begin(), environmentSetting.end(), static_cast<char*>(*allocation));
 				
-				argumentName.erase(eraseBegin);
+				environName.erase(eraseBegin);
 				allocations.emplace_back(std::move(allocation));
 			}
 			
