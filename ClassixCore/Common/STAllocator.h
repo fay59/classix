@@ -12,6 +12,7 @@
 #include "IAllocator.h"
 #include <cstdint>
 #include <string>
+#include <memory>
 
 namespace Common
 {
@@ -22,7 +23,7 @@ namespace Common
 		friend class STAllocator;
 		
 		IAllocator* allocator;
-		const std::string* forcedNextName;
+		std::shared_ptr<std::string> nextName;
 		
 	public:
 		typedef T value_type;
@@ -33,26 +34,26 @@ namespace Common
 		typedef size_t size_type;
 		typedef ptrdiff_t difference_type;
 		
-		std::string NextName;
+		void SetNextName(const std::string& str)
+		{
+			*nextName = str;
+		}
 		
 		STAllocator(IAllocator* allocator)
-		: allocator(allocator), forcedNextName(nullptr)
+		: allocator(allocator), nextName(new std::string)
 		{ }
 		
 		template<typename U>
 		STAllocator(const STAllocator<U>& that)
-		: allocator(that.allocator)
-		{
-			forcedNextName = that.forcedNextName != nullptr ? that.forcedNextName : &that.NextName;
-		}
+		: allocator(that.allocator), nextName(that.nextName)
+		{ }
 		
 		pointer address(reference x) const { return &x; }
 		const_pointer address(const_reference x) const { return &x; }
 		
 		pointer allocate(size_type n, void* hint = nullptr)
 		{
-			const std::string* toUse = forcedNextName ? forcedNextName : &NextName;
-			pointer result = reinterpret_cast<pointer>(allocator->Allocate(*toUse, sizeof(T) * n));
+			pointer result = reinterpret_cast<pointer>(allocator->Allocate(*nextName, sizeof(T) * n));
 			return result;
 		}
 		
