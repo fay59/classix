@@ -44,7 +44,7 @@ namespace ClassixCore
 	
 	PEF::TransitionVector& DyldSymbolResolver::MakeTransitionVector(const std::string& symbolName, void* address)
 	{
-		stlAllocator.NextName = "Native Call Trampoline Block";
+		stlAllocator.SetNextName("Native Call Trampoline Block");
 		nativeCalls.emplace_back((NativeCallback)address);
 		NativeCall& call = nativeCalls.back();
 		
@@ -52,7 +52,7 @@ namespace ClassixCore
 		vector.EntryPoint = allocator->ToIntPtr(&call);
 		vector.TableOfContents = allocator->ToIntPtr(globals);
 		
-		stlAllocator.NextName = "Transition Vector [" + symbolName + "]";
+		stlAllocator.SetNextName("Transition Vector [" + symbolName + "]");
 		return *transitions.emplace(transitions.end(), vector);
 	}
 	

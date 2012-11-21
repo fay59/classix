@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'Classix Debugger' target in the 'Classix Debugger' project
+//
+
+#ifdef __OBJC__
+	#import <Cocoa/Cocoa.h>
+#endif

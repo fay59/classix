@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC4C644F165B62910097288E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC4C644E165B62910097288E /* Cocoa.framework */; };
+		DC4C6459165B62910097288E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6457165B62910097288E /* InfoPlist.strings */; };
+		DC4C645B165B62910097288E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC4C645A165B62910097288E /* main.m */; };
+		DC4C645F165B62910097288E /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = DC4C645D165B62910097288E /* Credits.rtf */; };
+		DC4C6462165B62910097288E /* CXDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC4C6461165B62910097288E /* CXDocument.mm */; };
+		DC4C6465165B62910097288E /* CXDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6463165B62910097288E /* CXDocument.xib */; };
+		DC4C6468165B62920097288E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6466165B62920097288E /* MainMenu.xib */; };
+		DC4C646D165B62B80097288E /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC4F9B521658328200E11153 /* FancyDisassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC4F9B501658328200E11153 /* FancyDisassembler.cpp */; };
 		DC71705A164F6618008D767E /* FileMapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC5E33C5163A496300944FFD /* FileMapping.cpp */; };
 		DC71705B164F6618008D767E /* IAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBF81638451400BFA046 /* IAllocator.cpp */; };
@@ -69,6 +77,20 @@
 		DC40D0251635CABE008CA9BC /* LibraryResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryResolver.h; sourceTree = "<group>"; };
 		DC40D0271635CBD1008CA9BC /* PEFLibraryResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PEFLibraryResolver.cpp; sourceTree = "<group>"; };
 		DC40D0281635CBD1008CA9BC /* PEFLibraryResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEFLibraryResolver.h; sourceTree = "<group>"; };
+		DC4C644B165B62910097288E /* Classix Debugger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Classix Debugger.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC4C644E165B62910097288E /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		DC4C6451165B62910097288E /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		DC4C6452165B62910097288E /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		DC4C6453165B62910097288E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		DC4C6456165B62910097288E /* Classix Debugger-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Classix Debugger-Info.plist"; sourceTree = "<group>"; };
+		DC4C6458165B62910097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DC4C645A165B62910097288E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		DC4C645C165B62910097288E /* Classix Debugger-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Classix Debugger-Prefix.pch"; sourceTree = "<group>"; };
+		DC4C645E165B62910097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		DC4C6460165B62910097288E /* CXDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXDocument.h; sourceTree = "<group>"; };
+		DC4C6461165B62910097288E /* CXDocument.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CXDocument.mm; sourceTree = "<group>"; };
+		DC4C6464165B62910097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/CXDocument.xib; sourceTree = "<group>"; };
+		DC4C6467165B62920097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		DC4F9B501658328200E11153 /* FancyDisassembler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FancyDisassembler.cpp; sourceTree = "<group>"; };
 		DC4F9B511658328200E11153 /* FancyDisassembler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FancyDisassembler.h; sourceTree = "<group>"; };
 		DC5E33C5163A496300944FFD /* FileMapping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileMapping.cpp; sourceTree = "<group>"; };
@@ -119,7 +141,6 @@
 		DCAB94021648B1CD00E9B4E1 /* NativeCall.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NativeCall.h; sourceTree = "<group>"; };
 		DCB00B9D163B6DAD003C88CA /* MachineState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MachineState.cpp; sourceTree = "<group>"; };
 		DCB00B9E163B6DAD003C88CA /* MachineState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachineState.h; sourceTree = "<group>"; };
-		DCB00BA0163B933B003C88CA /* Endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Endian.h; sourceTree = "<group>"; };
 		DCB00BA1163B9367003C88CA /* BigEndian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigEndian.h; sourceTree = "<group>"; };
 		DCC3DC3016338A7900792F4A /* Classix */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Classix; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCE0A8A7165732860092CEBC /* InstructionDispatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionDispatcher.cpp; path = ClassixCore/PPCVM/InstructionDispatcher.cpp; sourceTree = SOURCE_ROOT; };
@@ -144,6 +165,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		DC4C6448165B62910097288E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC4C646D165B62B80097288E /* libClassixCore.dylib in Frameworks */,
+				DC4C644F165B62910097288E /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DC787EA5164F68990010A288 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -170,6 +200,49 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DC4C644D165B62910097288E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DC4C644E165B62910097288E /* Cocoa.framework */,
+				DC4C6450165B62910097288E /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DC4C6450165B62910097288E /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DC4C6451165B62910097288E /* AppKit.framework */,
+				DC4C6452165B62910097288E /* CoreData.framework */,
+				DC4C6453165B62910097288E /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		DC4C6454165B62910097288E /* Classix Debugger */ = {
+			isa = PBXGroup;
+			children = (
+				DC4C6460165B62910097288E /* CXDocument.h */,
+				DC4C6461165B62910097288E /* CXDocument.mm */,
+				DC4C6463165B62910097288E /* CXDocument.xib */,
+				DC4C6466165B62920097288E /* MainMenu.xib */,
+				DC4C6455165B62910097288E /* Supporting Files */,
+			);
+			path = "Classix Debugger";
+			sourceTree = "<group>";
+		};
+		DC4C6455165B62910097288E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				DC4C6456165B62910097288E /* Classix Debugger-Info.plist */,
+				DC4C6457165B62910097288E /* InfoPlist.strings */,
+				DC4C645A165B62910097288E /* main.m */,
+				DC4C645C165B62910097288E /* Classix Debugger-Prefix.pch */,
+				DC4C645D165B62910097288E /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		DC7273E316471CB300DA17E5 /* Interpreter */ = {
 			isa = PBXGroup;
 			children = (
@@ -316,7 +389,6 @@
 			isa = PBXGroup;
 			children = (
 				DCB00BA1163B9367003C88CA /* BigEndian.h */,
-				DCB00BA0163B933B003C88CA /* Endian.h */,
 				DC5E33C5163A496300944FFD /* FileMapping.cpp */,
 				DC5E33C6163A496300944FFD /* FileMapping.h */,
 				DCA6DBF81638451400BFA046 /* IAllocator.cpp */,
@@ -342,6 +414,8 @@
 				DC9D8D4B164F63CD00036FDD /* Classix */,
 				DCC3DC3316338A7900792F4A /* ClassixCore */,
 				DC787EAC164F689F0010A288 /* Classix Libraries */,
+				DC4C6454165B62910097288E /* Classix Debugger */,
+				DC4C644D165B62910097288E /* Frameworks */,
 				DCC3DC3116338A7900792F4A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -352,6 +426,7 @@
 				DCC3DC3016338A7900792F4A /* Classix */,
 				DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */,
 				DC787EA8164F68990010A288 /* libStdCLib.dylib */,
+				DC4C644B165B62910097288E /* Classix Debugger.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -389,6 +464,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		DC4C644A165B62910097288E /* Classix Debugger */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC4C646B165B62920097288E /* Build configuration list for PBXNativeTarget "Classix Debugger" */;
+			buildPhases = (
+				DC4C6447165B62910097288E /* Sources */,
+				DC4C6448165B62910097288E /* Frameworks */,
+				DC4C6449165B62910097288E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Classix Debugger";
+			productName = "Classix Debugger";
+			productReference = DC4C644B165B62910097288E /* Classix Debugger.app */;
+			productType = "com.apple.product-type.application";
+		};
 		DC787EA7164F68990010A288 /* StdCLib */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = DC787EA9164F68990010A288 /* Build configuration list for PBXNativeTarget "StdCLib" */;
@@ -464,11 +556,35 @@
 				DCC3DC2F16338A7900792F4A /* Classix */,
 				DC9D8D46164F63AB00036FDD /* ClassixCore */,
 				DC787EA7164F68990010A288 /* StdCLib */,
+				DC4C644A165B62910097288E /* Classix Debugger */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		DC4C6449165B62910097288E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC4C6459165B62910097288E /* InfoPlist.strings in Resources */,
+				DC4C645F165B62910097288E /* Credits.rtf in Resources */,
+				DC4C6465165B62910097288E /* CXDocument.xib in Resources */,
+				DC4C6468165B62920097288E /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		DC4C6447165B62910097288E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC4C645B165B62910097288E /* main.m in Sources */,
+				DC4C6462165B62910097288E /* CXDocument.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DC787EA4164F68990010A288 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -529,7 +645,70 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXVariantGroup section */
+		DC4C6457165B62910097288E /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC4C6458165B62910097288E /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		DC4C645D165B62910097288E /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC4C645E165B62910097288E /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		DC4C6463165B62910097288E /* CXDocument.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC4C6464165B62910097288E /* en */,
+			);
+			name = CXDocument.xib;
+			sourceTree = "<group>";
+		};
+		DC4C6466165B62920097288E /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC4C6467165B62920097288E /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
+		DC4C6469165B62920097288E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Classix Debugger/Classix Debugger-Prefix.pch";
+				INFOPLIST_FILE = "Classix Debugger/Classix Debugger-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		DC4C646A165B62920097288E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Classix Debugger/Classix Debugger-Prefix.pch";
+				INFOPLIST_FILE = "Classix Debugger/Classix Debugger-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
 		DC787EAA164F68990010A288 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -647,6 +826,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		DC4C646B165B62920097288E /* Build configuration list for PBXNativeTarget "Classix Debugger" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC4C6469165B62920097288E /* Debug */,
+				DC4C646A165B62920097288E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		DC787EA9164F68990010A288 /* Build configuration list for PBXNativeTarget "StdCLib" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

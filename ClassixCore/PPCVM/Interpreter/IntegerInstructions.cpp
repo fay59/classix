@@ -7,13 +7,21 @@ namespace
 	
 	inline void UpdateCRx(MachineState* state, int x, uint32_t value)
 	{
+		// CR bits:
+		// d c b a (d: most significant)
+		// a: overflow
+		// b: eq
+		// c: lt
+		// d: gt
+		
 		uint32_t result;
 		if (value == 0)
-			result = 2;
-		else if ((value & 0x80000000) == 0)
-			result = 4;
+			result = 0b0010;
+		else if ((value & 0x80000000) == 0x80000000)
+			result = 0b1000;
 		else
-			result = 8;
+			result = 0b0100;
+		
 		result |= state->xer_so;
 		state->cr[x] = result;
 	}

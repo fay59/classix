@@ -9,41 +9,48 @@
 #ifndef __pefdump__BigEndian__
 #define __pefdump__BigEndian__
 
-#include "Endian.h"
+#include <libkern/OSByteOrder.h>
 
 namespace Common
 {
 	namespace CF
 	{
-		// taken from CoreFoundation
+		struct SwappedFloat32 { uint32_t v; };
+		struct SwappedFloat64 { uint64_t v; };
 		
-		typedef struct {uint32_t v;} SwappedFloat32;
-		typedef struct {uint64_t v;} SwappedFloat64;
-		
-		inline uint32_t SwapInt32(uint32_t arg) {
-#if CF_USE_OSBYTEORDER_H
-			return OSSwapInt32(arg);
-#else
-			uint32_t result;
-			result = ((arg & 0xFF) << 24) | ((arg & 0xFF00) << 8) | ((arg >> 8) & 0xFF00) | ((arg >> 24) & 0xFF);
-			return result;
-#endif
+		template<typename TIntType>
+		inline TIntType Identity(TIntType integer)
+		{
+			return integer;
 		}
 		
-		inline uint64_t SwapInt64(uint64_t arg) {
-#if CF_USE_OSBYTEORDER_H
-			return OSSwapInt64(arg);
-#else
-			union Swap {
-				uint64_t sv;
-				uint32_t ul[2];
-			} tmp, result;
-			tmp.sv = arg;
-			result.ul[0] = SwapInt32(tmp.ul[1]);
-			result.ul[1] = SwapInt32(tmp.ul[0]);
-			return result.sv;
-#endif
+		template<typename TInt>
+		inline TInt SwapInt(TInt arg)
+		{
+			static_assert(sizeof(TInt) == 2 || sizeof(TInt) == 4 || sizeof(TInt) == 8, "Unsupported type");
+			
+			switch (sizeof(TInt))
+			{
+				case 2: return OSSwapInt16(arg);
+				case 4: return OSSwapInt32(arg);
+				case 8: return OSSwapInt64(arg);
+			}
+			
+			// shut up the compiler; this can never happen
+			return 0;
 		}
+		
+#if __LITTLE_ENDIAN__
+#define	BigToHost		::Common::CF::SwapInt
+#define HostToBig		::Common::CF::SwapInt
+#define LittleToHost	::Common::CF::Identity
+#define HostToLittle	::Common::CF::Identity
+#else
+#define BigToHost		::Common::CF::Identity
+#define HostToBig		::Common::CF::Identity
+#define LittleToHost	::Common::CF::SwapInt
+#define HostToLittle	::Common::CF::SwapInt
+#endif
 		
 		inline SwappedFloat64 ConvertDoubleHostToSwapped(double arg) {
 			union Swap {
@@ -52,7 +59,7 @@ namespace Common
 			} result;
 			result.v = arg;
 #if __LITTLE_ENDIAN__
-			result.sv.v = SwapInt64(result.sv.v);
+			result.sv.v = SwapInt(result.sv.v);
 #endif
 			return result.sv;
 		}
@@ -64,7 +71,7 @@ namespace Common
 			} result;
 			result.sv = arg;
 #if __LITTLE_ENDIAN__
-			result.sv.v = SwapInt64(result.sv.v);
+			result.sv.v = SwapInt(result.sv.v);
 #endif
 			return result.v;
 		}
@@ -76,7 +83,7 @@ namespace Common
 			} result;
 			result.v = arg;
 #if __LITTLE_ENDIAN__
-			result.sv.v = SwapInt32(result.sv.v);
+			result.sv.v = SwapInt(result.sv.v);
 #endif
 			return result.sv;
 		}
@@ -88,164 +95,59 @@ namespace Common
 			} result;
 			result.sv = arg;
 #if __LITTLE_ENDIAN__
-			result.sv.v = SwapInt32(result.sv.v);
+			result.sv.v = SwapInt(result.sv.v);
 #endif
 			return result.v;
 		}
 	}
 	
-	struct UInt32
+	template<typename TTargetType, typename TNativeInt>
+	struct BigEndianIntBase
 	{
-		inline UInt32()
+		TNativeInt AsBigEndian;
+		
+		inline BigEndianIntBase()
+		: AsBigEndian(0)
+		{ }
+		
+		static inline TTargetType FromBigEndian(TNativeInt value)
 		{
-			AsBigEndian = 0;
+			TTargetType result;
+			result.AsBigEndian = value;
+			return result;
 		}
 		
-		static inline UInt32 FromBigEndian(uint32_t AsBigEndian)
+		inline TNativeInt Get() const
 		{
-			UInt32 value;
-			value.AsBigEndian = AsBigEndian;
-			return value;
+			return BigToHost(AsBigEndian);
 		}
 		
-		inline uint32_t Get() const
+		inline void Set(TNativeInt that)
 		{
-			return EndianU32_BtoN(AsBigEndian);
+			AsBigEndian = HostToBig(that);
 		}
 		
-		inline void Set(uint32_t asNativeEndian)
-		{
-			this->AsBigEndian = EndianU32_NtoB(asNativeEndian);
-		}
-		
-		inline UInt32& operator=(uint32_t that)
+		inline TTargetType& operator=(TNativeInt that)
 		{
 			Set(that);
-			return *this;
+			return static_cast<TTargetType&>(*this);
 		}
 		
-		inline operator uint32_t() const
+		inline operator TNativeInt() const
 		{
 			return Get();
 		}
-		
-		uint32_t AsBigEndian;
 	};
-	
-	struct SInt32
-	{
-		inline SInt32()
-		{
-			AsBigEndian = 0;
-		}
 		
-		inline SInt32 FromBigEndian(int32_t AsBigEndian)
-		{
-			SInt32 value;
-			value.AsBigEndian = AsBigEndian;
-			return value;
-		}
+#define BIGENDIAN_TYPE(name, type)	struct name : BigEndianIntBase<name, type> { name() {} name(type v) { Set(v); } }
+	BIGENDIAN_TYPE(SInt16, int16_t);
+	BIGENDIAN_TYPE(UInt16, uint16_t);
+	BIGENDIAN_TYPE(SInt32, int32_t);
+	BIGENDIAN_TYPE(UInt32, uint32_t);
+	BIGENDIAN_TYPE(SInt64, int64_t);
+	BIGENDIAN_TYPE(UInt64, uint64_t);
+#undef BIGENDIAN_TYPE
 		
-		inline int32_t Get() const
-		{
-			return EndianS32_BtoN(AsBigEndian);
-		}
-		
-		inline void Set(int32_t asNativeEndian)
-		{
-			this->AsBigEndian = EndianS32_NtoB(asNativeEndian);
-		}
-		
-		inline SInt32& operator=(int32_t that)
-		{
-			Set(that);
-			return *this;
-		}
-		
-		inline operator int32_t() const
-		{
-			return Get();
-		}
-		
-		int32_t AsBigEndian;
-	};
-	
-	struct UInt16
-	{
-		inline UInt16()
-		{
-			AsBigEndian = 0;
-		}
-		
-		inline UInt16 FromBigEndian(uint16_t AsBigEndian)
-		{
-			UInt16 value;
-			value.AsBigEndian = AsBigEndian;
-			return value;
-		}
-		
-		inline uint16_t Get() const
-		{
-			return EndianU16_BtoN(AsBigEndian);
-		}
-		
-		inline void Set(uint16_t asNativeEndian)
-		{
-			this->AsBigEndian = EndianU16_NtoB(asNativeEndian);
-		}
-		
-		inline UInt16& operator=(uint16_t that)
-		{
-			Set(that);
-			return *this;
-		}
-		
-		inline operator uint16_t() const
-		{
-			return Get();
-		}
-		
-		uint16_t AsBigEndian;
-	};
-	
-	struct SInt16
-	{
-		inline SInt16()
-		{
-			AsBigEndian = 0;
-		}
-		
-		inline SInt16 FromBigEndian(int16_t AsBigEndian)
-		{
-			SInt16 value;
-			value.AsBigEndian = AsBigEndian;
-			return value;
-		}
-		
-		inline int16_t Get() const
-		{
-			return EndianS16_BtoN(AsBigEndian);
-		}
-		
-		inline void Set(int16_t asNativeEndian)
-		{
-			this->AsBigEndian = EndianS16_NtoB(asNativeEndian);
-		}
-		
-		inline SInt16& operator=(int16_t that)
-		{
-			Set(that);
-			return *this;
-		}
-		
-		inline operator int16_t() const
-		{
-			return Get();
-		}
-		
-		int16_t AsBigEndian;
-	};
-	
 	struct Real32
 	{
 		inline Real32()

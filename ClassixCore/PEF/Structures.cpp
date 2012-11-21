@@ -38,12 +38,12 @@ namespace
 	
 	inline time_t MacTimeToUNIXTime(uint32_t macDate)
 	{
-		return EndianU32_BtoN(macDate) - macUNIXTimeOffset;
+		return BigToHost(macDate) - macUNIXTimeOffset;
 	}
 	
 	inline uint32_t UNIXTimeToMacTime(time_t unixDate)
 	{
-		return EndianU32_NtoB(static_cast<uint32_t>(unixDate + macUNIXTimeOffset));
+		return BigToHost(static_cast<uint32_t>(unixDate + macUNIXTimeOffset));
 	}
 	
 	inline uint32_t MacTime()
