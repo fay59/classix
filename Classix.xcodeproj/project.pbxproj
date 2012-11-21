@@ -344,7 +344,8 @@
 				DC94F109163CC231004538C5 /* LibraryResolutionException.cpp */,
 				DC94F10A163CC232004538C5 /* LibraryResolutionException.h */,
 			);
-			path = CFM;
+			name = CFM;
+			path = ../ClassixCore/CFM;
 			sourceTree = "<group>";
 		};
 		DC9D8D4B164F63CD00036FDD /* Classix */ = {
@@ -440,8 +441,7 @@
 				DC82A9B91636F4E100EAEDCD /* PPCVM */,
 				DCB00B95163B6B76003C88CA /* Libraries */,
 			);
-			name = ClassixCore;
-			path = CLassixCore;
+			path = ClassixCore;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

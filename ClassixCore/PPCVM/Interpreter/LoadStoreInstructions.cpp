@@ -156,7 +156,7 @@ namespace PPCVM
 		void Interpreter::lhbrx(Instruction inst)
 		{
 			uint16_t halfWord = *GetEffectivePointerX<uint16_t>(allocator, state, inst);
-			state->gpr[inst.RD] = EndianU16_LtoN(halfWord);
+			state->gpr[inst.RD] = HostToLittle(halfWord);
 		}
 		
 		void Interpreter::lhz(Instruction inst)
@@ -271,7 +271,7 @@ namespace PPCVM
 		void Interpreter::lwbrx(Instruction inst)
 		{
 			uint32_t word = *GetEffectivePointerX<uint32_t>(allocator, state, inst);
-			state->gpr[inst.RD] = EndianU32_NtoL(word);
+			state->gpr[inst.RD] = HostToLittle(word);
 		}
 		
 		void Interpreter::lwz(Instruction inst)
@@ -386,7 +386,7 @@ namespace PPCVM
 		
 		void Interpreter::sthbrx(Instruction inst)
 		{
-			uint16_t halfWord = EndianU16_NtoL(static_cast<uint16_t>(state->gpr[inst.RS]));
+			uint16_t halfWord = HostToLittle(static_cast<uint16_t>(state->gpr[inst.RS]));
 			*GetEffectivePointerX<uint16_t>(allocator, state, inst) = halfWord;
 		}
 		
@@ -478,7 +478,7 @@ namespace PPCVM
 		
 		void Interpreter::stwbrx(Instruction inst)
 		{
-			*GetEffectivePointerX<uint32_t>(allocator, state, inst) = EndianU32_NtoL(state->gpr[inst.RS]);
+			*GetEffectivePointerX<uint32_t>(allocator, state, inst) = HostToLittle(state->gpr[inst.RS]);
 		}
 		
 		void Interpreter::stwcxd(Instruction inst)
