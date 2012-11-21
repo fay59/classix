@@ -24,8 +24,13 @@ namespace Common
 		FileMapping(FileMapping&& that);
 		FileMapping(int fd);
 		
+		long long size() const;
+		
 		void* begin();
 		void* end();
+		
+		const void* begin() const;
+		const void* end() const;
 		
 		~FileMapping();
 	};

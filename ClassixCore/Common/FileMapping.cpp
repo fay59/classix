@@ -50,6 +50,11 @@ namespace Common
 		that.address = nullptr;
 		that.fileSize = 0;
 	}
+	
+	long long FileMapping::size() const
+	{
+		return fileSize;
+	}
 
 	void* FileMapping::begin()
 	{
@@ -59,6 +64,16 @@ namespace Common
 	void* FileMapping::end()
 	{
 		return static_cast<uint8_t*>(address) + fileSize;
+	}
+	
+	const void* FileMapping::begin() const
+	{
+		return address;
+	}
+	
+	const void* FileMapping::end() const
+	{
+		return static_cast<const uint8_t*>(address) + fileSize;
 	}
 
 	FileMapping::~FileMapping()
