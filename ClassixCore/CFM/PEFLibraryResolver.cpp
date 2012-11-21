@@ -8,6 +8,7 @@
 
 #include "PEFLibraryResolver.h"
 #include "PEFSymbolResolver.h"
+#include "LibraryResolutionException.h"
 #include <unistd.h>
 #include <sys/fcntl.h>
 
@@ -43,7 +44,15 @@ namespace CFM
 			return nullptr;
 		
 		Common::FileMapping mapping(file.fd);
-		return new PEFSymbolResolver(allocator, cfm, std::move(mapping));
+		try
+		{
+			return new PEFSymbolResolver(allocator, cfm, std::move(mapping));
+		}
+		catch (LibraryResolutionException& ex)
+		{
+			std::cerr << ex.what() << std::endl;
+			return nullptr;
+		}
 	}
 	
 	PEFLibraryResolver::~PEFLibraryResolver()
