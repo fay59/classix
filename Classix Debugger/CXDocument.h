@@ -10,6 +10,15 @@
 
 struct ClassixCoreVM;
 
+extern NSString* CXErrorDomain;
+extern NSString* CXErrorFileURL;
+
+enum CXErrorCode
+{
+	CXErrorCodeNotLocalURL = 1,
+	CXErrorCodeFileNotLoadable = 2
+};
+
 @interface CXDocument : NSDocument
 {
 	struct ClassixCoreVM* vm;
