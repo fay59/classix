@@ -56,7 +56,7 @@ namespace PPCVM
 		
 		void SectionDisassembler::WriteTo(DisassemblyWriter& writer, MetadataMap metadata) const
 		{
-			writer.EnterSection(section);
+			writer.EnterSection(section, sectionNumber);
 			
 			for (auto iter = disasm->Begin(); iter != disasm->End(); iter++)
 			{

@@ -18,9 +18,9 @@ OStreamDisassemblyWriter::OStreamDisassemblyWriter(std::ostream& into)
 : into(into)
 { }
 
-void OStreamDisassemblyWriter::EnterSection(const PEF::InstantiableSection& section)
+void OStreamDisassemblyWriter::EnterSection(const PEF::InstantiableSection& section, uint32_t sectionIndex)
 {
-	into << "Section " << section.Name << ":" << endline;
+	into << "Section " << section.Name << " (" << sectionIndex << "):" << endline;
 }
 
 void OStreamDisassemblyWriter::EnterLabel(const PPCVM::Disassembly::InstructionRange &label, intptr_t labelAddress)

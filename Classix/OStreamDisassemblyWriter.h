@@ -20,7 +20,7 @@ class OStreamDisassemblyWriter : public PPCVM::Disassembly::DisassemblyWriter
 public:
 	OStreamDisassemblyWriter(std::ostream& into);
 	
-	virtual void EnterSection(const PEF::InstantiableSection& section);
+	virtual void EnterSection(const PEF::InstantiableSection& section, uint32_t sectionIndex);
 	virtual void EnterLabel(const PPCVM::Disassembly::InstructionRange& label, intptr_t labelAddress);
 	virtual void VisitOpcode(const PPCVM::Disassembly::DisassembledOpcode& opcode, intptr_t opcodeAddress, const std::string* metadata);
 	

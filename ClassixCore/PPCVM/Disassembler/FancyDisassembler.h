@@ -70,7 +70,7 @@ namespace PPCVM
 		class DisassemblyWriter
 		{
 		public:
-			virtual void EnterSection(const PEF::InstantiableSection& section) = 0;
+			virtual void EnterSection(const PEF::InstantiableSection& section, uint32_t sectionIndex) = 0;
 			virtual void EnterLabel(const InstructionRange& label, intptr_t labelAddress) = 0;
 			virtual void VisitOpcode(const DisassembledOpcode& opcode, intptr_t opcodeAddress, const std::string* metadata) = 0;
 			
