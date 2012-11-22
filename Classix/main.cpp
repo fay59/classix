@@ -25,6 +25,7 @@
 #include "Disassembler.h"
 #include "NativeCall.h"
 #include "FancyDisassembler.h"
+#include "OStreamDisassemblyWriter.h"
 
 // be super-generous: apps on Mac OS 9, by default, have a 32 KB stack
 // but we give them 1 MB since messing with ApplLimit has no effect
@@ -101,7 +102,8 @@ static void disassemble(const std::string& path)
 		if (CFM::PEFSymbolResolver* pefResolver = dynamic_cast<CFM::PEFSymbolResolver*>(resolver))
 		{
 			PEF::Container& container = pefResolver->GetContainer();
-			FancyDisassembler(allocator).Disassemble(container, std::cout);
+			OStreamDisassemblyWriter writer(std::cout);
+			PPCVM::Disassembly::FancyDisassembler(allocator).Disassemble(container, writer);
 		}
 		else
 		{

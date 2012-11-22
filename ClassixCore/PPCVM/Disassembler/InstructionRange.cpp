@@ -118,9 +118,9 @@ namespace PPCVM
 			End = end;
 			
 			char functionName[] = ".fn00000000";
-			sprintf(functionName + 1, "%s%08x",
+			sprintf(functionName + 1, "%s%08lx",
 					IsFunction ? "fn" : "lb",
-					static_cast<uint32_t>((Begin - base) * sizeof *Begin));
+					allocator->ToIntPtr(Begin));
 			
 			Name = functionName;
 			
