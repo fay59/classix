@@ -28,7 +28,6 @@ namespace PPCVM
 		};
 		
 		double fpr[32];
-		uint32_t pc;
 		uint8_t cr[8];
 		
 		// system registers
