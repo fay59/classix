@@ -61,17 +61,14 @@ namespace Common
 		virtual uint8_t* Allocate(const std::string& zoneName, size_t size) = 0;
 		virtual void Deallocate(void* address) = 0;
 		virtual const std::string* GetRegionOfAllocation(const void* address) = 0;
+		virtual const std::string* GetRegionOfAllocation(intptr_t address) = 0;
+		
 		virtual bool IsAllocated(const void* address); // default implementation: GetRegionOfAddress(address) != nullptr
 		
 #pragma mark -
-		inline const std::string* GetRegionOfAllocation(intptr_t address)
-		{
-			return GetRegionOfAllocation(ToPointer<const void>(address));
-		}
-		
 		inline bool IsAllocated(intptr_t address)
 		{
-			return GetRegionOfAllocation(ToPointer<const void>(address));
+			return GetRegionOfAllocation(address) != nullptr;
 		}
 		
 		inline const uint8_t* GetBaseAddress() const

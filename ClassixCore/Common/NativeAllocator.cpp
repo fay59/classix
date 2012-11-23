@@ -44,25 +44,30 @@ namespace Common
 	uint8_t* NativeAllocator::Allocate(const std::string& reason, size_t size)
 	{
 		uint8_t* allocation = static_cast<uint8_t*>(malloc(size));
-		ranges[allocation] = AllocatedRange(allocation, allocation + size, reason);
+		intptr_t address = ToIntPtr(allocation);
+		ranges[address] = AllocatedRange(allocation, allocation + size, reason);
 		return allocation;
 	}
 	
 	void NativeAllocator::Deallocate(void* address)
 	{
-		ranges.erase(address);
-		free(address);
+		auto iter = ranges.find(ToIntPtr(address));
+		if (iter != ranges.end())
+		{
+			free(iter->second.start);
+			ranges.erase(iter);
+		}
 	}
 	
-	const NativeAllocator::AllocatedRange* NativeAllocator::GetAllocationRange(const void *address) const
+	const NativeAllocator::AllocatedRange* NativeAllocator::GetAllocationRange(intptr_t address)
 	{
 		for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
 		{
 			const auto& range = iter->second;
-			if (range.end < address)
+			if (ToIntPtr(range.end) < address)
 				continue;
 			
-			if (range.start > address)
+			if (ToIntPtr(range.start) > address)
 				break;
 			
 			return &range;
@@ -70,13 +75,18 @@ namespace Common
 		return nullptr;
 	}
 	
-	const std::string* NativeAllocator::GetRegionOfAllocation(const void *address)
+	const std::string* NativeAllocator::GetRegionOfAllocation(const void* address)
+	{
+		return GetRegionOfAllocation(ToIntPtr(address));
+	}
+	
+	const std::string* NativeAllocator::GetRegionOfAllocation(intptr_t address)
 	{
 		auto range = GetAllocationRange(address);
 		return range == nullptr ? nullptr : &range->name;
 	}
 	
-	void NativeAllocator::PrintMemoryMap() const
+	void NativeAllocator::PrintMemoryMap()
 	{
 		for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
 		{
@@ -85,9 +95,9 @@ namespace Common
 		}
 	}
 	
-	void NativeAllocator::PrintParentZone(intptr_t address) const
+	void NativeAllocator::PrintParentZone(intptr_t address)
 	{
-		auto range = GetAllocationRange(const_cast<NativeAllocator*>(this)->ToPointer<const void>(address));
+		auto range = GetAllocationRange(address);
 		if (range == nullptr)
 			std::cout << address << " was not allocated" << std::endl;
 		else
