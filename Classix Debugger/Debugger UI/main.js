@@ -171,6 +171,9 @@ function ShowDisassembly(assembly)
 	function doLabel(i)
 	{
 		var label = assembly[i];
+		if (label.instructions.length == 0)
+			return;
+		
 		var firstLetters = label.label.substr(0, 2);
 		var labelName = (firstLetters == "fn" || firstLetters == "lb") ? "." + label.label : label.label;
 		var tr = CreateElement("tr", {}, [

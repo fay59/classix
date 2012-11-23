@@ -18,6 +18,11 @@ POSIX-compliant platform.) This allows Classix to use native functions to do the
 library work, making the whole thing much, making it potentially much faster
 than a classic virtual machine with a CPU emulator.
 
+Classix is currently licensed under the GPL v3.0 license as a legal requirement
+(it uses [Dolphin][5] code, which is itself GPL). The license may be changed to
+something less restrictive in the future if we make the interpreter different
+enough from Dolphin's.
+
 Using Classix
 -------------
 
@@ -25,8 +30,8 @@ Classix is still under heavy development and nothing useful can be done with it
 right now. If you're not a developer, you're not going to be interested in
 getting it right now.
 
-The State of the Project
-------------------------
+State of the Project
+--------------------
 
 Classix is currently able to do _some_ of the work of the Code Fragment Manager,
 the [system component responsible for loading executables and running them][4].
@@ -67,8 +72,8 @@ application that serves as a debugging GUI (because debugging PowerPC
 applications from within lldb in Xcode is a real pain). The project also
 includes an incomplete implementation of the _StdCLib_ Mac OS 9 shared library.
 
-The TODO List
--------------
+TODO List
+---------
 
 * Mac OS Classic documentation is _extremely_ hard to find. Recently, Apple
   pulled the MPW environment from its website, making it a lot harder to do
