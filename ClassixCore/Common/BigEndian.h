@@ -114,18 +114,20 @@ namespace Common
 		}
 	}
 	
-	template<typename TTargetType, typename TNativeInt>
-	struct BigEndianIntBase
+	template<typename TNativeInt>
+	struct BigEndianInt
 	{
+		typedef BigEndianInt<TNativeInt> self;
+		
 		TNativeInt AsBigEndian;
 		
-		inline BigEndianIntBase()
+		inline BigEndianInt()
 		: AsBigEndian(0)
 		{ }
 		
-		static inline TTargetType FromBigEndian(TNativeInt value)
+		static inline self FromBigEndian(TNativeInt value)
 		{
-			TTargetType result;
+			self result;
 			result.AsBigEndian = value;
 			return result;
 		}
@@ -140,10 +142,10 @@ namespace Common
 			AsBigEndian = HostToBig(that);
 		}
 		
-		inline TTargetType& operator=(TNativeInt that)
+		inline self& operator=(TNativeInt that)
 		{
 			Set(that);
-			return static_cast<TTargetType&>(*this);
+			return *this;
 		}
 		
 		inline operator TNativeInt() const
@@ -152,14 +154,12 @@ namespace Common
 		}
 	};
 		
-#define BIGENDIAN_TYPE(name, type)	struct name : BigEndianIntBase<name, type> { name() {} name(type v) { Set(v); } }
-	BIGENDIAN_TYPE(SInt16, int16_t);
-	BIGENDIAN_TYPE(UInt16, uint16_t);
-	BIGENDIAN_TYPE(SInt32, int32_t);
-	BIGENDIAN_TYPE(UInt32, uint32_t);
-	BIGENDIAN_TYPE(SInt64, int64_t);
-	BIGENDIAN_TYPE(UInt64, uint64_t);
-#undef BIGENDIAN_TYPE
+	typedef BigEndianInt<int16_t>	SInt16;
+	typedef BigEndianInt<uint16_t>	UInt16;
+	typedef BigEndianInt<int32_t>	SInt32;
+	typedef BigEndianInt<uint32_t>	UInt32;
+	typedef BigEndianInt<int64_t>	SInt64;
+	typedef BigEndianInt<uint64_t>	UInt64;
 		
 	struct Real32
 	{
