@@ -21,45 +21,53 @@
 
 #include "IAllocator.h"
 
-Common::AutoAllocation::AutoAllocation(IAllocator* allocator, size_t size, const std::string& zoneName)
-: allocator(allocator)
+namespace Common
 {
-	address = allocator->Allocate(zoneName, size);
-}
+	AutoAllocation::AutoAllocation(IAllocator* allocator, size_t size, const std::string& zoneName)
+	: allocator(allocator)
+	{
+		address = allocator->Allocate(zoneName, size);
+	}
 
-Common::AutoAllocation::AutoAllocation(AutoAllocation&& that)
-: allocator(that.allocator)
-{
-	address = that.address;
-	that.allocator = nullptr;
-	that.address = nullptr;
-}
+	AutoAllocation::AutoAllocation(AutoAllocation&& that)
+	: allocator(that.allocator)
+	{
+		address = that.address;
+		that.allocator = nullptr;
+		that.address = nullptr;
+	}
 
-void* Common::AutoAllocation::operator*()
-{
-	return address;
-}
+	void* AutoAllocation::operator*()
+	{
+		return address;
+	}
 
-const void* Common::AutoAllocation::operator*() const
-{
-	return address;
-}
+	const void* AutoAllocation::operator*() const
+	{
+		return address;
+	}
 
-uint32_t Common::AutoAllocation::GetVirtualAddress() const
-{
-	return allocator->ToIntPtr(address);
-}
+	uint32_t AutoAllocation::GetVirtualAddress() const
+	{
+		return allocator->ToIntPtr(address);
+	}
 
-Common::AutoAllocation::~AutoAllocation()
-{
-	if (allocator != nullptr && address != nullptr)
-		allocator->Deallocate(address);
-}
+	AutoAllocation::~AutoAllocation()
+	{
+		if (allocator != nullptr && address != nullptr)
+			allocator->Deallocate(address);
+	}
 
-Common::AutoAllocation Common::IAllocator::AllocateAuto(const std::string& zoneName, size_t size)
-{
-	return AutoAllocation(this, size, zoneName);
-}
+	AutoAllocation IAllocator::AllocateAuto(const std::string& zoneName, size_t size)
+	{
+		return AutoAllocation(this, size, zoneName);
+	}
+	
+	bool IAllocator::IsAllocated(const void *address)
+	{
+		return GetRegionOfAllocation(address) != nullptr;
+	}
 
-Common::IAllocator::~IAllocator()
-{ }
+	IAllocator::~IAllocator()
+	{ }
+}

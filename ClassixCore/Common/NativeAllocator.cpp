@@ -54,6 +54,28 @@ namespace Common
 		free(address);
 	}
 	
+	const NativeAllocator::AllocatedRange* NativeAllocator::GetAllocationRange(const void *address) const
+	{
+		for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
+		{
+			const auto& range = iter->second;
+			if (range.end < address)
+				continue;
+			
+			if (range.start > address)
+				break;
+			
+			return &range;
+		}
+		return nullptr;
+	}
+	
+	const std::string* NativeAllocator::GetRegionOfAllocation(const void *address)
+	{
+		auto range = GetAllocationRange(address);
+		return range == nullptr ? nullptr : &range->name;
+	}
+	
 	void NativeAllocator::PrintMemoryMap() const
 	{
 		for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
@@ -65,18 +87,11 @@ namespace Common
 	
 	void NativeAllocator::PrintParentZone(intptr_t address) const
 	{
-		const void* targetAddress = const_cast<NativeAllocator*>(this)->ToPointer<const void>(address);
-		for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
-		{
-			const auto& range = iter->second;
-			if (range.end < targetAddress)
-				continue;
-			
-			if (range.start > targetAddress)
-				break;
-			
-			std::cout << range.start << " - " << range.end << ": " << range.name << std::endl;
-		}
+		auto range = GetAllocationRange(const_cast<NativeAllocator*>(this)->ToPointer<const void>(address));
+		if (range == nullptr)
+			std::cout << address << " was not allocated" << std::endl;
+		else
+			std::cout << range->start << " - " << range->end << ": " << range->name << std::endl;
 	}
 	
 	NativeAllocator::~NativeAllocator()

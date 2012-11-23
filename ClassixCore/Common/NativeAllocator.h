@@ -41,6 +41,8 @@ namespace Common
 		
 		std::map<void*, AllocatedRange> ranges;
 		
+		const AllocatedRange* GetAllocationRange(const void* address) const;
+		
 	public:
 		static NativeAllocator* Instance;
 		
@@ -48,6 +50,7 @@ namespace Common
 		
 		virtual uint8_t* Allocate(const std::string& reason, size_t size);
 		virtual void Deallocate(void* address);
+		virtual const std::string* GetRegionOfAllocation(const void* address);
 		
 		void PrintMemoryMap() const;
 		void PrintParentZone(intptr_t address) const;

@@ -32,15 +32,6 @@
 #import "CXDocument.h"
 #import "CXDocumentController.h"
 
-// TODO this is ugly and not thread-safe, but a pain to fix in 32-bits assembly
-// With 64-bits x86, we have enough registers to save jumpTarget into some random
-// register and then access the address throug ctx (which really is a ucontext pointer).
-sigjmp_buf jumpTarget;
-static void onSigSegv(int signal, struct __siginfo*, void* ctx)
-{
-	siglongjmp(jumpTarget, 1);
-}
-
 NSString* CXErrorDomain = @"Classix Error Domain";
 NSString* CXErrorFileURL = @"File URL";
 
@@ -252,31 +243,20 @@ struct ClassixCoreVM
 	{
 		if (arguments.count != 2) return nil;
 		
-		// this one is...ugly
 		intptr_t begin = [[arguments objectAtIndex:0] integerValue];
 		intptr_t count = [[arguments objectAtIndex:1] integerValue];
-		uint8_t* bytes = vm->allocator->ToPointer<uint8_t>(begin);
 		
-		// check that the range is readable
-		if (sigsetjmp(jumpTarget, 1) == 0)
+		// check that the range was allocated
+		// this is a cheap, inaccurate check because it only verifies that the two ends of the memory range lie inside
+		// any allocated memory range, and not even necessarily the same, but in practice it should be "good enough".
+		intptr_t end = begin + count;
+		
+		if (vm->allocator->IsAllocated(begin) && vm->allocator->IsAllocated(end))
 		{
-			struct sigaction segvAction, oldAction;
-			segvAction.sa_flags = SA_RESETHAND;
-			segvAction.sa_sigaction = onSigSegv;
-			sigemptyset(&segvAction.sa_mask);
-			sigaddset(&segvAction.sa_mask, SIGINT);
-			sigaddset(&segvAction.sa_mask, SIGALRM);
-			sigaddset(&segvAction.sa_mask, SIGTERM);
-			sigaction(SIGSEGV, &segvAction, &oldAction);
-			
-			// (volatile ensures the compiler won't optimize away the reads as trivial)
-			volatile uint8_t readTarget;
-			for (size_t i = 0; i < count; i++)
-				readTarget = bytes[i];
-			
-			sigaction(SIGSEGV, &oldAction, NULL);
+			uint8_t* bytes = vm->allocator->ToPointer<uint8_t>(begin);
 			return [NSData dataWithBytes:bytes length:count];
 		}
+		
 		return nil;
 	}
 	return nil;

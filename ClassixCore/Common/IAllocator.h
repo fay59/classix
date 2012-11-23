@@ -24,6 +24,7 @@
 
 #include <cstdint>
 #include <cstddef>
+#include <cassert>
 #include <string>
 
 namespace Common
@@ -48,20 +49,35 @@ namespace Common
 		~AutoAllocation();
 	};
 	
+#pragma mark -
 	// we're not using C++ allocators because we're really more interested in creating big flat memory zones
 	// than actualy creating objects; and besides, we don't want to virally add templates to anything that needs
 	// to allocate memory.
 	class IAllocator
 	{
 	public:
+#pragma mark Virtual Interface
 		virtual uint8_t* GetBaseAddress() = 0;
+		virtual uint8_t* Allocate(const std::string& zoneName, size_t size) = 0;
+		virtual void Deallocate(void* address) = 0;
+		virtual const std::string* GetRegionOfAllocation(const void* address) = 0;
+		virtual bool IsAllocated(const void* address); // default implementation: GetRegionOfAddress(address) != nullptr
+		
+#pragma mark -
+		inline const std::string* GetRegionOfAllocation(intptr_t address)
+		{
+			return GetRegionOfAllocation(ToPointer<const void>(address));
+		}
+		
+		inline bool IsAllocated(intptr_t address)
+		{
+			return GetRegionOfAllocation(ToPointer<const void>(address));
+		}
+		
 		inline const uint8_t* GetBaseAddress() const
 		{
 			return const_cast<IAllocator*>(this)->GetBaseAddress();
 		}
-		
-		virtual uint8_t* Allocate(const std::string& zoneName, size_t size) = 0;
-		virtual void Deallocate(void* address) = 0;
 		
 		AutoAllocation AllocateAuto(const std::string& zoneName, size_t size);
 		
@@ -82,13 +98,8 @@ namespace Common
 		template<typename T>
 		T* ToPointer(intptr_t value)
 		{
+			assert(IsAllocated(value) && IsAllocated(value + sizeof(T) - 1) && "dereferencing memory that was not allocated");
 			return reinterpret_cast<T*>(GetBaseAddress() + value);
-		}
-		
-		template<typename T>
-		T ToFunctionPointer(intptr_t value)
-		{
-			return reinterpret_cast<T>(GetBaseAddress() + value);
 		}
 		
 		template<typename T>
