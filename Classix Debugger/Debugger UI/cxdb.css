@@ -58,7 +58,7 @@ nav select {
 	margin: 0px;
 	padding: 0px;
 	margin-top: -1px;
-	margin-bottom: -1px;
+	margin-bottom: -2px;
 }
 
 #disasm td:nth-child(3) {

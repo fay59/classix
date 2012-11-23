@@ -196,18 +196,25 @@ function ShowDisassembly(assembly)
 				}
 			}
 			
-			var targetTdContents = "";
+			var targetTdContents = [];
 			if (inst.target != null)
-				targetTdContents = CreateElement("a", {href: "#" + inst.target}, [inst.target]);
+				targetTdContents.push(CreateElement("a", {href: "#" + inst.target}, [inst.target]));
 			
-			var tr = CreateElement("tr", {id: "i" + inst.location}, [
-				CreateElement("td", {}, [inst.location]),
+			var tr = CreateElement("tr", {id: "i" + inst.location.toString(16)}, [
+				CreateElement("td", {}, [inst.location.toString(16)]),
 				CreateElement("td", {}, []),
 				CreateElement("td", {}, [inst.code.toString(16)]),
 				CreateElement("td", {}, [inst.opcode]),
 				argumentsTd,
-				CreateElement("td", {}, [targetTdContents])
+				CreateElement("td", {}, targetTdContents)
 			]);
+			
+			if (inst.location == currentAddress)
+			{
+				var eip = CreateElement("img", {src: "cxdb:resource/execution-cursor.png", alt: "Current instruction"}, []);
+				tr.classList.add("current");
+				tr.childNodes[1].appendChild(eip);
+			}
 			
 			table.appendChild(tr);
 		}
