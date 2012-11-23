@@ -140,12 +140,6 @@ namespace PPCVM
 
 		const void* Interpreter::ExecuteUntilBranch(const void* address)
 		{
-#ifdef DEBUG_DISASSEMBLE
-			if (getenv("DEBUG_DISASSEMBLE"))
-			{
-				std::cerr << "0x" << address << ":" << std::endl;
-			}
-#endif
 			currentAddress = reinterpret_cast<const Common::UInt32*>(address);
 			branchAddress = nullptr;
 			do
@@ -159,18 +153,32 @@ namespace PPCVM
 				else
 				{
 					Instruction inst = instructionCode.Get();
-#ifdef DEBUG_DISASSEMBLE
-					if (getenv("DEBUG_DISASSEMBLE"))
-					{
-						std::cerr << '\t' << Disassembly::InstructionDecoder::Decode(inst) << std::endl;
-					}
-#endif
-					
 					Dispatch(inst);
 					currentAddress++;
 				}
 			} while (branchAddress == nullptr);
 			return branchAddress;
+		}
+		
+		const void* Interpreter::ExecuteOne(const void *address)
+		{
+			currentAddress = reinterpret_cast<const Common::UInt32*>(address);
+			branchAddress = nullptr;
+			
+			const Common::UInt32& instructionCode = *currentAddress;
+			if (instructionCode.AsBigEndian == NativeTag)
+			{
+				const NativeCall* call = static_cast<const NativeCall*>(address);
+				branchAddress = ExecuteNative(call);
+			}
+			else
+			{
+				Instruction inst = instructionCode.Get();
+				Dispatch(inst);
+				currentAddress++;
+			}
+			
+			return branchAddress == nullptr ? currentAddress : branchAddress;
 		}
 
 		void Interpreter::Execute(const void* address)

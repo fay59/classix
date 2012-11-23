@@ -47,6 +47,10 @@ namespace PPCVM
 			Interpreter(Common::IAllocator* allocator, MachineState* state);
 			
 			void Execute(const void* address);
+			const void* ExecuteOne(const void* address);
+			
+			template<typename TBreakpointSet>
+			const void* ExecuteUntil(const void* address, const TBreakpointSet& breakpoints);
 			
 			// problems
 			void Panic(const std::string& errorMessage);
@@ -253,6 +257,38 @@ namespace PPCVM
 			void tlbie(Instruction inst);
 			void tlbsync(Instruction inst);
 		};
+		
+		template<typename TBreakpointSet>
+		const void* Interpreter::ExecuteUntil(const void *address, const TBreakpointSet &breakpoints)
+		{
+			currentAddress = reinterpret_cast<const Common::UInt32*>(address);
+			branchAddress = nullptr;
+			
+			do
+			{
+				const Common::UInt32& instructionCode = *currentAddress;
+				
+				if (instructionCode.AsBigEndian == NativeTag)
+				{
+					const NativeCall* call = static_cast<const NativeCall*>(address);
+					branchAddress = ExecuteNative(call);
+				}
+				else
+				{
+					Instruction inst = instructionCode.Get();
+					Dispatch(inst);
+					currentAddress++;
+				}
+				
+				if (branchAddress != nullptr)
+				{
+					currentAddress = reinterpret_cast<const Common::UInt32*>(branchAddress);
+					branchAddress = nullptr;
+				}
+			}
+			while (breakpoints.count(currentAddress) == 0);
+			return currentAddress;
+		}
 	}
 }
 
