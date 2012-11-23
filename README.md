@@ -15,8 +15,8 @@ meant to be a _compatibility layer_, like [Wine][3], that will run Mac OS 9
 inside the native desktop environment we love. (Focus is currently given to Mac
 OS X development, but the Classix core should be easy to port to any other
 POSIX-compliant platform.) This allows Classix to use native functions to do the
-library work, making the whole thing much, making it potentially much faster
-than a classic virtual machine with a CPU emulator.
+library work, making it potentially much faster than a classic virtual machine
+with a CPU emulator.
 
 Classix is currently licensed under the GPL v3.0 license as a legal requirement
 (it uses [Dolphin][5] code, which is itself GPL). The license may be changed to
@@ -28,7 +28,7 @@ Using Classix
 
 Classix is still under heavy development and nothing useful can be done with it
 right now. If you're not a developer, you're not going to be interested in
-getting it right now.
+getting it at the moment.
 
 State of the Project
 --------------------
