@@ -1,5 +1,5 @@
 //
-// DyldLibraryResolver.h
+// DlfcnLibraryResolver.h
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,8 +19,8 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __Classix__DyldLibraryResolver__
-#define __Classix__DyldLibraryResolver__
+#ifndef __Classix__DlfcnLibraryResolver__
+#define __Classix__DlfcnLibraryResolver__
 
 #include <string>
 #include <unordered_map>
@@ -29,11 +29,11 @@
 #include "MachineState.h"
 #include "IAllocator.h"
 #include "SymbolType.h"
-#include "DyldSymbolResolver.h"
+#include "DlfcnSymbolResolver.h"
 
 namespace ClassixCore
 {
-	struct DyldLibrary
+	struct DlfcnLibrary
 	{
 	private:
 		void* dlHandle;
@@ -48,32 +48,32 @@ namespace ClassixCore
 		LookupFunction Lookup;
 		FinitFunction Finit;
 		
-		DyldLibrary(const std::string& Name, InitFunction init, LookupFunction lookup, FinitFunction finit);
-		DyldLibrary(const std::string& path);
-		DyldLibrary(const DyldLibrary& that) = delete;
-		DyldLibrary(DyldLibrary&& that);
+		DlfcnLibrary(const std::string& Name, InitFunction init, LookupFunction lookup, FinitFunction finit);
+		DlfcnLibrary(const std::string& path);
+		DlfcnLibrary(const DlfcnLibrary& that) = delete;
+		DlfcnLibrary(DlfcnLibrary&& that);
 		
-		~DyldLibrary();
+		~DlfcnLibrary();
 	};
 	
-	class DyldSymbolResolver;
+	class DlfcnSymbolResolver;
 	
-	class DyldLibraryResolver : public CFM::LibraryResolver
+	class DlfcnLibraryResolver : public CFM::LibraryResolver
 	{
 		Common::IAllocator* allocator;
-		std::unordered_map<std::string, DyldLibrary> libraries;
-		std::deque<DyldSymbolResolver> resolvers;
+		std::unordered_map<std::string, DlfcnLibrary> libraries;
+		std::deque<DlfcnSymbolResolver> resolvers;
 		
 	public:
-		DyldLibraryResolver(Common::IAllocator* allocator);
+		DlfcnLibraryResolver(Common::IAllocator* allocator);
 		
 		void RegisterLibrary(const std::string& cfmName);
 		void RegisterLibrary(const std::string& cfmName, const std::string& path);
-		void RegisterLibrary(const std::string& cfmName, DyldLibrary&& library);
+		void RegisterLibrary(const std::string& cfmName, DlfcnLibrary&& library);
 		
 		virtual CFM::SymbolResolver* ResolveLibrary(const std::string& name);
-		virtual ~DyldLibraryResolver();
+		virtual ~DlfcnLibraryResolver();
 	};
 }
 
-#endif /* defined(__Classix__DyldLibraryResolver__) */
+#endif /* defined(__Classix__DlfcnLibraryResolver__) */

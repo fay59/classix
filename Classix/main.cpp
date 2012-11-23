@@ -31,7 +31,7 @@
 #include "FragmentManager.h"
 #include "PEFLibraryResolver.h"
 #include "PEFSymbolResolver.h"
-#include "DyldLibraryResolver.h"
+#include "DlfcnLibraryResolver.h"
 #include "VirtualMachine.h"
 #include "NativeAllocator.h"
 #include "FileMapping.h"
@@ -57,12 +57,12 @@ static void loadTest(const std::string& path)
 {
 	CFM::FragmentManager fragmentManager;
 	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
-	ClassixCore::DyldLibraryResolver dyldResolver(Common::NativeAllocator::Instance);
+	ClassixCore::DlfcnLibraryResolver dlfcnResolver(Common::NativeAllocator::Instance);
 	
-	dyldResolver.RegisterLibrary("StdCLib");
+	dlfcnResolver.RegisterLibrary("StdCLib");
 	
 	fragmentManager.LibraryResolvers.push_back(&pefResolver);
-	fragmentManager.LibraryResolvers.push_back(&dyldResolver);
+	fragmentManager.LibraryResolvers.push_back(&dlfcnResolver);
 	
 	fragmentManager.LoadContainer(path);
 }
@@ -102,12 +102,12 @@ static void disassemble(const std::string& path)
 	Common::IAllocator* allocator = Common::NativeAllocator::Instance;
 	CFM::FragmentManager fragmentManager;
 	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
-	ClassixCore::DyldLibraryResolver dyldResolver(allocator);
+	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator);
 	
-	dyldResolver.RegisterLibrary("StdCLib");
+	dlfcnResolver.RegisterLibrary("StdCLib");
 	
 	fragmentManager.LibraryResolvers.push_back(&pefResolver);
-	fragmentManager.LibraryResolvers.push_back(&dyldResolver);
+	fragmentManager.LibraryResolvers.push_back(&dlfcnResolver);
 	
 	if (fragmentManager.LoadContainer(path))
 	{
@@ -136,11 +136,11 @@ static void run(const std::string& path)
 
 static void runMPW(const std::string& path, int argc, const char* argv[], const char* envp[])
 {
-	ClassixCore::DyldLibraryResolver dyldResolver(Common::NativeAllocator::Instance);
-	dyldResolver.RegisterLibrary("StdCLib");
+	ClassixCore::DlfcnLibraryResolver dlfcnResolver(Common::NativeAllocator::Instance);
+	dlfcnResolver.RegisterLibrary("StdCLib");
 	
 	Classix::VirtualMachine vm(Common::NativeAllocator::Instance);
-	vm.AddLibraryResolver(dyldResolver);
+	vm.AddLibraryResolver(dlfcnResolver);
 	
 	auto stub = vm.LoadMainContainer(path);
 	stub(argc, argv, envp);

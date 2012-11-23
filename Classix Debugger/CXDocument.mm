@@ -24,7 +24,7 @@
 #include "NativeAllocator.h"
 #include "PEFLibraryResolver.h"
 #include "Interpreter.h"
-#include "DyldLibraryResolver.h"
+#include "DlfcnLibraryResolver.h"
 #include "FancyDisassembler.h"
 #include "CXObjcDisassemblyWriter.h"
 
@@ -52,7 +52,7 @@ struct ClassixCoreVM
 	PPCVM::MachineState state;
 	CFM::FragmentManager cfm;
 	CFM::PEFLibraryResolver pefResolver;
-	ClassixCore::DyldLibraryResolver dyldResolver;
+	ClassixCore::DlfcnLibraryResolver dlfcnResolver;
 	PPCVM::Execution::Interpreter interp;
 	PEF::Container* container;
 	
@@ -63,14 +63,14 @@ struct ClassixCoreVM
 	, state()
 	, cfm()
 	, pefResolver(allocator, cfm)
-	, dyldResolver(allocator)
+	, dlfcnResolver(allocator)
 	, interp(allocator, &state)
 	, container(nullptr)
 	, nextPC(0)
 	{
-		dyldResolver.RegisterLibrary("StdCLib");
+		dlfcnResolver.RegisterLibrary("StdCLib");
 		cfm.LibraryResolvers.push_back(&pefResolver);
-		cfm.LibraryResolvers.push_back(&dyldResolver);
+		cfm.LibraryResolvers.push_back(&dlfcnResolver);
 	}
 	
 	bool LoadContainer(const std::string& path)

@@ -1,5 +1,5 @@
 //
-// DyldLibraryResolver.cpp
+// DlfcnLibraryResolver.cpp
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -20,8 +20,8 @@
 //
 
 #include <dlfcn.h>
-#include "DyldLibraryResolver.h"
-#include "DyldSymbolResolver.h"
+#include "DlfcnLibraryResolver.h"
+#include "DlfcnSymbolResolver.h"
 
 namespace ClassixCore
 {
@@ -35,7 +35,7 @@ namespace ClassixCore
 		}
 	}
 	
-	DyldLibrary::DyldLibrary(const std::string& name, InitFunction init, LookupFunction lookup, FinitFunction finit)
+	DlfcnLibrary::DlfcnLibrary(const std::string& name, InitFunction init, LookupFunction lookup, FinitFunction finit)
 	: Name(name)
 	{
 		Init = init;
@@ -44,7 +44,7 @@ namespace ClassixCore
 		dlHandle = nullptr;
 	}
 	
-	DyldLibrary::DyldLibrary(DyldLibrary&& that)
+	DlfcnLibrary::DlfcnLibrary(DlfcnLibrary&& that)
 	{
 		Init = that.Init;
 		Lookup = that.Lookup;
@@ -53,7 +53,7 @@ namespace ClassixCore
 		that.dlHandle = nullptr;
 	}
 	
-	DyldLibrary::DyldLibrary(const std::string& path)
+	DlfcnLibrary::DlfcnLibrary(const std::string& path)
 	{
 		dlHandle = dlopen(path.c_str(), RTLD_LOCAL | RTLD_LAZY);
 		if (dlHandle == nullptr)
@@ -70,31 +70,31 @@ namespace ClassixCore
 			throw std::logic_error("Incomplete library");
 	}
 	
-	DyldLibrary::~DyldLibrary()
+	DlfcnLibrary::~DlfcnLibrary()
 	{
 		dlclose(dlHandle);
 	}
 	
-	DyldLibraryResolver::DyldLibraryResolver(Common::IAllocator* allocator)
+	DlfcnLibraryResolver::DlfcnLibraryResolver(Common::IAllocator* allocator)
 	: allocator(allocator)
 	{ }
 	
-	void DyldLibraryResolver::RegisterLibrary(const std::string& cfmName)
+	void DlfcnLibraryResolver::RegisterLibrary(const std::string& cfmName)
 	{
-		RegisterLibrary(cfmName, DyldLibrary("lib" + cfmName + ".dylib"));
+		RegisterLibrary(cfmName, DlfcnLibrary("lib" + cfmName + ".dylib"));
 	}
 	
-	void DyldLibraryResolver::RegisterLibrary(const std::string& cfmName, const std::string& path)
+	void DlfcnLibraryResolver::RegisterLibrary(const std::string& cfmName, const std::string& path)
 	{
-		RegisterLibrary(cfmName, DyldLibrary(path));
+		RegisterLibrary(cfmName, DlfcnLibrary(path));
 	}
 	
-	void DyldLibraryResolver::RegisterLibrary(const std::string& cfmName, DyldLibrary&& library)
+	void DlfcnLibraryResolver::RegisterLibrary(const std::string& cfmName, DlfcnLibrary&& library)
 	{
 		libraries.emplace(std::make_pair(cfmName, std::move(library)));
 	}
 	
-	CFM::SymbolResolver* DyldLibraryResolver::ResolveLibrary(const std::string& name)
+	CFM::SymbolResolver* DlfcnLibraryResolver::ResolveLibrary(const std::string& name)
 	{
 		auto iter = libraries.find(name);
 		if (iter == libraries.end())
@@ -104,6 +104,6 @@ namespace ClassixCore
 		return &resolvers.back();
 	}
 	
-	DyldLibraryResolver::~DyldLibraryResolver()
+	DlfcnLibraryResolver::~DlfcnLibraryResolver()
 	{ }
 }

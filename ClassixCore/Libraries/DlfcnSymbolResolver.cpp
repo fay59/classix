@@ -1,5 +1,5 @@
 //
-// DyldSymbolResolver.cpp
+// DlfcnSymbolResolver.cpp
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,12 +19,12 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#include "DyldSymbolResolver.h"
-#include "DyldLibraryResolver.h"
+#include "DlfcnSymbolResolver.h"
+#include "DlfcnLibraryResolver.h"
 
 namespace ClassixCore
 {
-	DyldSymbolResolver::DyldSymbolResolver(Common::IAllocator* allocator, const DyldLibrary& library)
+	DlfcnSymbolResolver::DlfcnSymbolResolver(Common::IAllocator* allocator, const DlfcnLibrary& library)
 	: library(library)
 	, allocator(allocator)
 	, stlAllocator(allocator)
@@ -34,28 +34,28 @@ namespace ClassixCore
 		globals = library.Init(allocator);
 	}
 	
-	ResolvedSymbol DyldSymbolResolver::GetInitAddress()
+	ResolvedSymbol DlfcnSymbolResolver::GetInitAddress()
 	{
 		return ResolvedSymbol::Invalid;
 	}
 	
-	ResolvedSymbol DyldSymbolResolver::GetMainAddress()
+	ResolvedSymbol DlfcnSymbolResolver::GetMainAddress()
 	{
 		return ResolvedSymbol::Invalid;
 	}
 	
-	ResolvedSymbol DyldSymbolResolver::GetTermAddress()
+	ResolvedSymbol DlfcnSymbolResolver::GetTermAddress()
 	{
 		return ResolvedSymbol::Invalid;
 	}
 	
-	ResolvedSymbol& DyldSymbolResolver::CacheSymbol(const std::string& name, void* address)
+	ResolvedSymbol& DlfcnSymbolResolver::CacheSymbol(const std::string& name, void* address)
 	{
 		intptr_t ppcAddress = allocator->ToIntPtr(address);
 		return symbols.emplace(std::make_pair(name, ResolvedSymbol::IntelSymbol(ppcAddress))).first->second;
 	}
 	
-	PEF::TransitionVector& DyldSymbolResolver::MakeTransitionVector(const std::string& symbolName, void* address)
+	PEF::TransitionVector& DlfcnSymbolResolver::MakeTransitionVector(const std::string& symbolName, void* address)
 	{
 		stlAllocator.SetNextName("Native Call Trampoline Block");
 		nativeCalls.emplace_back((NativeCallback)address);
@@ -69,7 +69,7 @@ namespace ClassixCore
 		return *transitions.emplace(transitions.end(), vector);
 	}
 	
-	ResolvedSymbol DyldSymbolResolver::ResolveSymbol(const std::string& name)
+	ResolvedSymbol DlfcnSymbolResolver::ResolveSymbol(const std::string& name)
 	{
 		// do we have a cached version?
 		auto iter = symbols.find(name);
@@ -93,6 +93,6 @@ namespace ClassixCore
 		}
 	}
 	
-	DyldSymbolResolver::~DyldSymbolResolver()
+	DlfcnSymbolResolver::~DlfcnSymbolResolver()
 	{ }
 }

@@ -17,6 +17,8 @@ nav select {
 	margin: 5px;
 }
 
+#flow { float: right; }
+
 #disasm {
 	margin: 0px;
 	padding: 0px;

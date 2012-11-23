@@ -1,5 +1,5 @@
 //
-// DyldSymbolResolver.h
+// DlfcnSymbolResolver.h
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,8 +19,8 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __Classix__DyldSymbolResolver__
-#define __Classix__DyldSymbolResolver__
+#ifndef __Classix__DlfcnSymbolResolver__
+#define __Classix__DlfcnSymbolResolver__
 
 #include <string>
 #include <unordered_map>
@@ -37,11 +37,11 @@ namespace ClassixCore
 	using namespace CFM;
 	using namespace PPCVM::Execution;
 	
-	class DyldLibrary;
+	class DlfcnLibrary;
 	
-	class DyldSymbolResolver : public SymbolResolver
+	class DlfcnSymbolResolver : public SymbolResolver
 	{
-		const DyldLibrary& library;
+		const DlfcnLibrary& library;
 		void* globals;
 		
 		// symbol cache
@@ -55,15 +55,15 @@ namespace ClassixCore
 		PEF::TransitionVector& MakeTransitionVector(const std::string& symbolName, void* address);
 		
 	public:
-		DyldSymbolResolver(Common::IAllocator* allocator, const DyldLibrary& library);
+		DlfcnSymbolResolver(Common::IAllocator* allocator, const DlfcnLibrary& library);
 		
 		virtual ResolvedSymbol GetInitAddress();
 		virtual ResolvedSymbol GetMainAddress();
 		virtual ResolvedSymbol GetTermAddress();
 		
 		virtual ResolvedSymbol ResolveSymbol(const std::string& name);
-		virtual ~DyldSymbolResolver();
+		virtual ~DlfcnSymbolResolver();
 	};
 }
 
-#endif /* defined(__Classix__DyldSymbolResolver__) */
+#endif /* defined(__Classix__DlfcnSymbolResolver__) */
