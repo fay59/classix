@@ -1,5 +1,4 @@
-Classix, a Mac OS 9 Compatibility Layer
-=======================================
+# Classix, a Mac OS 9 Compatibility Layer
 
 The Classix project's goal is to make it possible to run Classic applications
 under Mac OS X again. Apple officially removed Classic environment support from
@@ -23,15 +22,13 @@ Classix is currently licensed under the GPL v3.0 license as a legal requirement
 something less restrictive in the future if we make the interpreter different
 enough from Dolphin's.
 
-Using Classix
--------------
+## Using Classix
 
 Classix is still under heavy development and nothing useful can be done with it
 right now. If you're not a developer, you're not going to be interested in
 getting it at the moment.
 
-State of the Project
---------------------
+## State of the Project
 
 Classix is currently able to do _some_ of the work of the Code Fragment Manager,
 the [system component responsible for loading executables and running them][4].
@@ -50,8 +47,7 @@ It is currently possible to run very simple programs inside Classix, like "Hello
 World" programs. However, interpreter bugs (most likely introduced by us) causes
 anything non-trivial to fail.
 
-General Design of the Project
------------------------------
+## General Design of the Project
 
 Classix is implemented as a library, `ClassixCore`, that projects link against.
 This library is programmed in C++11. Global state is strictly forbidden, and up
@@ -72,8 +68,51 @@ application that serves as a debugging GUI (because debugging PowerPC
 applications from within lldb in Xcode is a real pain). The project also
 includes an incomplete implementation of the _StdCLib_ Mac OS 9 shared library.
 
-TODO List
----------
+### Memory Management
+
+Classes that need to be able to allocate memory visible to the emulator pass
+around an `IAllocator` instance. An `IAllocator`'s responsibility is to allocate
+and deallocate memory in the address range that the PowerPC emulator need to be
+able to access. Right now, the only allocator is the native allocator, that
+simply uses `malloc` and `free`, and it only works on 32-bits platforms because
+of that.
+
+There are a number of services that clients can use to ease memory management.
+The `IAllocator` class can return a RAII-style allocation object that frees the
+allocated memory when it goes out of scope, and there is a `STAllocator` class
+that can be used as a STL allocator. Extra care is required when using, though:
+you _cannot_ afford to reallocate a block of memory, since that would change its
+address and wreck havoc, so limit its use to containers of a fixed size, or
+containers that don't move their contents when they resize (like `deque`s and
+`list`s).
+
+### Resolving Symbols
+
+One of the biggest design challenges is to resolve symbols referenced inside PEF
+executable files. Since some of these symbols are from other PEF files but some
+are provided by the native environment, our implementation of the Code Fragment
+Manager should be able to link to either type, and the component responsible for
+execution should know how to make the transition.
+
+Right now, there are _symbol resolvers_ that tell the Code Fragment Manager
+where is a given symbol, and from which "universe" it is (PowerPC or native).
+Resolvers for native symbols create a structure with a header that can't be
+mistaken for a PowerPC instruction, and the CFM tells the symbol is located at
+that struct. When the interpreter finds the header, it knows it has to perform
+a transition to native code.
+
+Symbol resolvers are created by _library resolvers_. A library resolver takes a
+library name, and tries to return a symbol resolver for that name if it can. The
+PEF library resolver searches for a PEF executable file with the given name and
+loads it; the `dlfcn` library resolver, as its name implies, uses `dlfcn` to
+load native libraries and link them to the PowerPC code. (These libraries need
+to respect a certain number of conventions to be compatible. This means that
+most Mac OS libraries that made it from Mac OS 9 to Mac OS X will still need a
+thin wrapper to be usable from Classix.)
+
+## TODO List
+
+These are some of the things that need to be done:
 
 * Mac OS Classic documentation is _extremely_ hard to find. Recently, Apple
   pulled the MPW environment from its website, making it a lot harder to do
@@ -96,6 +135,13 @@ TODO List
   libraries, and we need unit tests for libraries too.
 * The graphical debugger is a work in progress. Right now, it can display
   disassembly and that's it.
+* The execution system could use a redesign because the interpreter is too
+  central to it. That will make it difficult to implement a m68k interpreter on
+  the top of the current design. We really should change the way function calls
+  work, but it's not clear how clean that would be without at least *some*
+  just-in-time compilation.
+
+Of course, any kind of help is appreciated.
 
  [1]: http://www.dosbox.com/
  [2]: http://boxerapp.com/
