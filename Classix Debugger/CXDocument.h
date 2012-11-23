@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <WebKit/WebKit.h>
 
 struct ClassixCoreVM;
 
@@ -22,7 +23,12 @@ enum CXErrorCode
 @interface CXDocument : NSDocument
 {
 	struct ClassixCoreVM* vm;
+	WebView* disassemblyView;
 	NSData* execData;
 }
+
+@property (assign) IBOutlet WebView* disassemblyView;
+
+-(id)executeCommand:(NSString*)command arguments:(NSArray*)arguments;
 
 @end

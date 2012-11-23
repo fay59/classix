@@ -117,8 +117,8 @@ namespace PPCVM
 			assert(end >= Begin && "End before Begin");
 			End = end;
 			
-			char functionName[] = ".fn00000000";
-			sprintf(functionName + 1, "%s%08lx",
+			char functionName[] = "fn00000000";
+			sprintf(functionName, "%s%08lx",
 					IsFunction ? "fn" : "lb",
 					allocator->ToIntPtr(Begin));
 			

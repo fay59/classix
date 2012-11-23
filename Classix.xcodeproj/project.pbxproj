@@ -7,6 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC0D42A3165ED0ED00883586 /* CXJSDebug.m in Sources */ = {isa = PBXBuildFile; fileRef = DC0D42A2165ED0ED00883586 /* CXJSDebug.m */; };
+		DC0D42A7165EDC4600883586 /* FancyDisassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC0D42A5165EDC4600883586 /* FancyDisassembler.cpp */; };
+		DC0D42A8165EDC4600883586 /* FancyDisassembler.h in Headers */ = {isa = PBXBuildFile; fileRef = DC0D42A6165EDC4600883586 /* FancyDisassembler.h */; };
+		DC0D42AB165EDDBB00883586 /* OStreamDisassemblyWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC0D42A9165EDDBB00883586 /* OStreamDisassemblyWriter.cpp */; };
+		DC0D42B3165EE4F500883586 /* CXObjcDisassemblyWriter.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC0D42B1165EE4F400883586 /* CXObjcDisassemblyWriter.mm */; };
+		DC264EA7165DF76A00C86BDD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC264EA6165DF76A00C86BDD /* WebKit.framework */; };
+		DC264EAC165DFFEB00C86BDD /* main.js in Sources */ = {isa = PBXBuildFile; fileRef = DC264EAA165DFFEB00C86BDD /* main.js */; };
+		DC264EAD165DFFEB00C86BDD /* cxdb.css in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAB165DFFEB00C86BDD /* cxdb.css */; };
+		DC264EAF165DFFF800C86BDD /* cxdb.xhtml in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAE165DFFF800C86BDD /* cxdb.xhtml */; };
+		DC264EB1165E012B00C86BDD /* execution-cursor.png in Resources */ = {isa = PBXBuildFile; fileRef = DC264EB0165E012B00C86BDD /* execution-cursor.png */; };
+		DC264EB3165E022300C86BDD /* cxdb.js in Sources */ = {isa = PBXBuildFile; fileRef = DC264EB2165E022300C86BDD /* cxdb.js */; };
 		DC4C644F165B62910097288E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC4C644E165B62910097288E /* Cocoa.framework */; };
 		DC4C6459165B62910097288E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6457165B62910097288E /* InfoPlist.strings */; };
 		DC4C645B165B62910097288E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC4C645A165B62910097288E /* main.m */; };
@@ -15,7 +26,6 @@
 		DC4C6465165B62910097288E /* CXDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6463165B62910097288E /* CXDocument.xib */; };
 		DC4C6468165B62920097288E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6466165B62920097288E /* MainMenu.xib */; };
 		DC4C646D165B62B80097288E /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
-		DC4F9B521658328200E11153 /* FancyDisassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC4F9B501658328200E11153 /* FancyDisassembler.cpp */; };
 		DC71705A164F6618008D767E /* FileMapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC5E33C5163A496300944FFD /* FileMapping.cpp */; };
 		DC71705B164F6618008D767E /* IAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBF81638451400BFA046 /* IAllocator.cpp */; };
 		DC71705C164F6618008D767E /* NativeAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */; };
@@ -50,6 +60,11 @@
 		DC8301F7165010690079CE2D /* VirtualMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F5165010690079CE2D /* VirtualMachine.cpp */; };
 		DC9D8D4D164F642000036FDD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC9D8D4C164F642000036FDD /* main.cpp */; };
 		DC9D8D4F164F645900036FDD /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
+		DC9E43BF165E896A00AAC682 /* CXDBURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9E43BE165E896A00AAC682 /* CXDBURLProtocol.m */; };
+		DC9E43C3165E8E6900AAC682 /* CXDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9E43C2165E8E6900AAC682 /* CXDocumentController.m */; };
+		DC9E43C7165E9E9B00AAC682 /* cxdb.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EB2165E022300C86BDD /* cxdb.js */; };
+		DC9E43C8165E9E9D00AAC682 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAA165DFFEB00C86BDD /* main.js */; };
+		DC9E43CB165EA22400AAC682 /* CXJSONEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9E43CA165EA22400AAC682 /* CXJSONEncode.m */; };
 		DCE0A8A9165732CC0092CEBC /* InstructionDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE0A8A7165732860092CEBC /* InstructionDispatcher.cpp */; };
 		DCE0A8AA165733B00092CEBC /* InstructionRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021D1650D1A60079CE2D /* InstructionRange.cpp */; };
 		DCE0A8AB165733B50092CEBC /* Disassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021A1650B2D70079CE2D /* Disassembler.cpp */; };
@@ -69,6 +84,20 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DC0D42A1165ED0ED00883586 /* CXJSDebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXJSDebug.h; sourceTree = "<group>"; };
+		DC0D42A2165ED0ED00883586 /* CXJSDebug.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXJSDebug.m; sourceTree = "<group>"; };
+		DC0D42A5165EDC4600883586 /* FancyDisassembler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FancyDisassembler.cpp; sourceTree = "<group>"; };
+		DC0D42A6165EDC4600883586 /* FancyDisassembler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FancyDisassembler.h; sourceTree = "<group>"; };
+		DC0D42A9165EDDBB00883586 /* OStreamDisassemblyWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OStreamDisassemblyWriter.cpp; sourceTree = "<group>"; };
+		DC0D42AA165EDDBB00883586 /* OStreamDisassemblyWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OStreamDisassemblyWriter.h; sourceTree = "<group>"; };
+		DC0D42B1165EE4F400883586 /* CXObjcDisassemblyWriter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CXObjcDisassemblyWriter.mm; sourceTree = "<group>"; };
+		DC0D42B2165EE4F400883586 /* CXObjcDisassemblyWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXObjcDisassemblyWriter.h; sourceTree = "<group>"; };
+		DC264EA6165DF76A00C86BDD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		DC264EAA165DFFEB00C86BDD /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
+		DC264EAB165DFFEB00C86BDD /* cxdb.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = cxdb.css; sourceTree = "<group>"; };
+		DC264EAE165DFFF800C86BDD /* cxdb.xhtml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = cxdb.xhtml; sourceTree = "<group>"; };
+		DC264EB0165E012B00C86BDD /* execution-cursor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "execution-cursor.png"; sourceTree = "<group>"; };
+		DC264EB2165E022300C86BDD /* cxdb.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = cxdb.js; sourceTree = "<group>"; };
 		DC40D0191635B125008CA9BC /* SymbolResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SymbolResolver.cpp; sourceTree = "<group>"; };
 		DC40D01A1635B125008CA9BC /* SymbolResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolResolver.h; sourceTree = "<group>"; };
 		DC40D01D1635B4A0008CA9BC /* PEFSymbolResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PEFSymbolResolver.cpp; sourceTree = "<group>"; };
@@ -91,8 +120,6 @@
 		DC4C6461165B62910097288E /* CXDocument.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CXDocument.mm; sourceTree = "<group>"; };
 		DC4C6464165B62910097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/CXDocument.xib; sourceTree = "<group>"; };
 		DC4C6467165B62920097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		DC4F9B501658328200E11153 /* FancyDisassembler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FancyDisassembler.cpp; sourceTree = "<group>"; };
-		DC4F9B511658328200E11153 /* FancyDisassembler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FancyDisassembler.h; sourceTree = "<group>"; };
 		DC5E33C5163A496300944FFD /* FileMapping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileMapping.cpp; sourceTree = "<group>"; };
 		DC5E33C6163A496300944FFD /* FileMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileMapping.h; sourceTree = "<group>"; };
 		DC6847C91638C258003E906D /* PEFRelocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PEFRelocator.cpp; sourceTree = "<group>"; };
@@ -134,6 +161,12 @@
 		DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libClassixCore.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC9D8D4C164F642000036FDD /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DC9D8D4E164F644200036FDD /* Classix.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Classix.1; sourceTree = "<group>"; };
+		DC9E43BD165E896A00AAC682 /* CXDBURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXDBURLProtocol.h; sourceTree = "<group>"; };
+		DC9E43BE165E896A00AAC682 /* CXDBURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXDBURLProtocol.m; sourceTree = "<group>"; };
+		DC9E43C1165E8E6900AAC682 /* CXDocumentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXDocumentController.h; sourceTree = "<group>"; };
+		DC9E43C2165E8E6900AAC682 /* CXDocumentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXDocumentController.m; sourceTree = "<group>"; };
+		DC9E43C9165EA20300AAC682 /* CXJSONEncode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXJSONEncode.h; sourceTree = "<group>"; };
+		DC9E43CA165EA22400AAC682 /* CXJSONEncode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXJSONEncode.m; sourceTree = "<group>"; };
 		DCA6DBF81638451400BFA046 /* IAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IAllocator.cpp; sourceTree = "<group>"; };
 		DCA6DBF91638451400BFA046 /* IAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAllocator.h; sourceTree = "<group>"; };
 		DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NativeAllocator.cpp; sourceTree = "<group>"; };
@@ -169,6 +202,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC264EA7165DF76A00C86BDD /* WebKit.framework in Frameworks */,
 				DC4C646D165B62B80097288E /* libClassixCore.dylib in Frameworks */,
 				DC4C644F165B62910097288E /* Cocoa.framework in Frameworks */,
 			);
@@ -200,9 +234,47 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DC0D42AF165EE4C100883586 /* Document Architecture */ = {
+			isa = PBXGroup;
+			children = (
+				DC4C6460165B62910097288E /* CXDocument.h */,
+				DC4C6461165B62910097288E /* CXDocument.mm */,
+				DC9E43C1165E8E6900AAC682 /* CXDocumentController.h */,
+				DC9E43C2165E8E6900AAC682 /* CXDocumentController.m */,
+			);
+			name = "Document Architecture";
+			sourceTree = "<group>";
+		};
+		DC0D42B0165EE4CF00883586 /* WebView Glue */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E43BD165E896A00AAC682 /* CXDBURLProtocol.h */,
+				DC9E43BE165E896A00AAC682 /* CXDBURLProtocol.m */,
+				DC9E43C9165EA20300AAC682 /* CXJSONEncode.h */,
+				DC9E43CA165EA22400AAC682 /* CXJSONEncode.m */,
+				DC0D42A1165ED0ED00883586 /* CXJSDebug.h */,
+				DC0D42A2165ED0ED00883586 /* CXJSDebug.m */,
+			);
+			name = "WebView Glue";
+			sourceTree = "<group>";
+		};
+		DC264EA9165DFFD300C86BDD /* Debugger Web UI */ = {
+			isa = PBXGroup;
+			children = (
+				DC264EB0165E012B00C86BDD /* execution-cursor.png */,
+				DC264EAE165DFFF800C86BDD /* cxdb.xhtml */,
+				DC264EAB165DFFEB00C86BDD /* cxdb.css */,
+				DC264EAA165DFFEB00C86BDD /* main.js */,
+				DC264EB2165E022300C86BDD /* cxdb.js */,
+			);
+			name = "Debugger Web UI";
+			path = "Debugger UI";
+			sourceTree = "<group>";
+		};
 		DC4C644D165B62910097288E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DC264EA6165DF76A00C86BDD /* WebKit.framework */,
 				DC4C644E165B62910097288E /* Cocoa.framework */,
 				DC4C6450165B62910097288E /* Other Frameworks */,
 			);
@@ -222,8 +294,11 @@
 		DC4C6454165B62910097288E /* Classix Debugger */ = {
 			isa = PBXGroup;
 			children = (
-				DC4C6460165B62910097288E /* CXDocument.h */,
-				DC4C6461165B62910097288E /* CXDocument.mm */,
+				DC264EA9165DFFD300C86BDD /* Debugger Web UI */,
+				DC0D42AF165EE4C100883586 /* Document Architecture */,
+				DC0D42B0165EE4CF00883586 /* WebView Glue */,
+				DC0D42B1165EE4F400883586 /* CXObjcDisassemblyWriter.mm */,
+				DC0D42B2165EE4F400883586 /* CXObjcDisassemblyWriter.h */,
 				DC4C6463165B62910097288E /* CXDocument.xib */,
 				DC4C6466165B62920097288E /* MainMenu.xib */,
 				DC4C6455165B62910097288E /* Supporting Files */,
@@ -355,8 +430,8 @@
 				DC9D8D4C164F642000036FDD /* main.cpp */,
 				DC8301F5165010690079CE2D /* VirtualMachine.cpp */,
 				DC8301F6165010690079CE2D /* VirtualMachine.h */,
-				DC4F9B501658328200E11153 /* FancyDisassembler.cpp */,
-				DC4F9B511658328200E11153 /* FancyDisassembler.h */,
+				DC0D42A9165EDDBB00883586 /* OStreamDisassemblyWriter.cpp */,
+				DC0D42AA165EDDBB00883586 /* OStreamDisassemblyWriter.h */,
 			);
 			path = Classix;
 			sourceTree = "<group>";
@@ -376,6 +451,8 @@
 		DCA1E14B1643810E008C3C8C /* Disassembler */ = {
 			isa = PBXGroup;
 			children = (
+				DC0D42A5165EDC4600883586 /* FancyDisassembler.cpp */,
+				DC0D42A6165EDC4600883586 /* FancyDisassembler.h */,
 				DC83021A1650B2D70079CE2D /* Disassembler.cpp */,
 				DC83021B1650B2D70079CE2D /* Disassembler.h */,
 				DC83021D1650D1A60079CE2D /* InstructionRange.cpp */,
@@ -458,6 +535,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC0D42A8165EDC4600883586 /* FancyDisassembler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -570,6 +648,11 @@
 				DC4C645F165B62910097288E /* Credits.rtf in Resources */,
 				DC4C6465165B62910097288E /* CXDocument.xib in Resources */,
 				DC4C6468165B62920097288E /* MainMenu.xib in Resources */,
+				DC264EAD165DFFEB00C86BDD /* cxdb.css in Resources */,
+				DC264EAF165DFFF800C86BDD /* cxdb.xhtml in Resources */,
+				DC9E43C8165E9E9D00AAC682 /* main.js in Resources */,
+				DC9E43C7165E9E9B00AAC682 /* cxdb.js in Resources */,
+				DC264EB1165E012B00C86BDD /* execution-cursor.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -582,6 +665,13 @@
 			files = (
 				DC4C645B165B62910097288E /* main.m in Sources */,
 				DC4C6462165B62910097288E /* CXDocument.mm in Sources */,
+				DC264EAC165DFFEB00C86BDD /* main.js in Sources */,
+				DC264EB3165E022300C86BDD /* cxdb.js in Sources */,
+				DC9E43BF165E896A00AAC682 /* CXDBURLProtocol.m in Sources */,
+				DC9E43C3165E8E6900AAC682 /* CXDocumentController.m in Sources */,
+				DC9E43CB165EA22400AAC682 /* CXJSONEncode.m in Sources */,
+				DC0D42A3165ED0ED00883586 /* CXJSDebug.m in Sources */,
+				DC0D42B3165EE4F500883586 /* CXObjcDisassemblyWriter.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -630,6 +720,7 @@
 				DCE0A8AA165733B00092CEBC /* InstructionRange.cpp in Sources */,
 				DCE0A8AB165733B50092CEBC /* Disassembler.cpp in Sources */,
 				DCE0A8AF1657651D0092CEBC /* DisassembledOpcode.cpp in Sources */,
+				DC0D42A7165EDC4600883586 /* FancyDisassembler.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -639,7 +730,7 @@
 			files = (
 				DC9D8D4D164F642000036FDD /* main.cpp in Sources */,
 				DC8301F7165010690079CE2D /* VirtualMachine.cpp in Sources */,
-				DC4F9B521658328200E11153 /* FancyDisassembler.cpp in Sources */,
+				DC0D42AB165EDDBB00883586 /* OStreamDisassemblyWriter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

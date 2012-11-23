@@ -7,8 +7,12 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "CXDBURLProtocol.h"
+#import "CXDocumentController.h"
 
 int main(int argc, char *argv[])
 {
+	[CXDBURLProtocol class];
+	[[CXDocumentController alloc] init];
 	return NSApplicationMain(argc, (const char **)argv);
 }
