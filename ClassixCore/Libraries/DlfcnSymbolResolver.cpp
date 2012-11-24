@@ -52,7 +52,7 @@ namespace ClassixCore
 	ResolvedSymbol& DlfcnSymbolResolver::CacheSymbol(const std::string& name, void* address)
 	{
 		intptr_t ppcAddress = allocator->ToIntPtr(address);
-		return symbols.emplace(std::make_pair(name, ResolvedSymbol::IntelSymbol(ppcAddress))).first->second;
+		return symbols.emplace(std::make_pair(name, ResolvedSymbol::IntelSymbol(name, ppcAddress))).first->second;
 	}
 	
 	PEF::TransitionVector& DlfcnSymbolResolver::MakeTransitionVector(const std::string& symbolName, void* address)
@@ -67,6 +67,25 @@ namespace ClassixCore
 		
 		stlAllocator.SetNextName("Transition Vector [" + symbolName + "]");
 		return *transitions.emplace(transitions.end(), vector);
+	}
+	
+	const std::string* DlfcnSymbolResolver::FilePath() const
+	{
+		return &library.Path;
+	}
+	
+	std::vector<std::string> DlfcnSymbolResolver::SymbolList() const
+	{
+		std::vector<std::string> symbols;
+		if (const char** nameIter = library.Symbols)
+		{
+			while (*nameIter)
+			{
+				symbols.push_back(*nameIter);
+				nameIter++;
+			}
+		}
+		return symbols;
 	}
 	
 	ResolvedSymbol DlfcnSymbolResolver::ResolveSymbol(const std::string& name)

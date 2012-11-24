@@ -164,10 +164,6 @@ function ShowDisassembly(assembly)
 	while (table.childNodes.length > 0)
 		table.removeChild(table.firstChild);
 	
-	var labels = document.querySelector("#label");
-	while (labels.childNodes.length > 0)
-		labels.removeChild(labels.firstChild);
-	
 	function doLabel(i)
 	{
 		var label = assembly[i];
@@ -176,12 +172,8 @@ function ShowDisassembly(assembly)
 		
 		var firstLetters = label.label.substr(0, 2);
 		var labelName = (firstLetters == "fn" || firstLetters == "lb") ? "." + label.label : label.label;
-		var tr = CreateElement("tr", {}, [
-			CreateElement("th", {colspan: 6, id: label.label}, [labelName])
-		]);
+		var tr = CreateElement("tr", {}, [CreateElement("th", {colspan: 6, id: label.label}, [labelName])]);
 		table.appendChild(tr);
-		
-		labels.appendChild(CreateElement("option", {value: label.label}, [labelName]));
 		
 		for (var j = 0; j < label.instructions.length; j++)
 		{
@@ -257,19 +249,13 @@ function LoadSections(sections)
 	cxdb.Status(UpdateStatus);
 }
 
+function CXDB_ShowSection(lib, sectionNumber)
+{
+	cxdb.GetSectionDisassembly(lib, sectionNumber, ShowDisassembly);
+}
+
 document.addEventListener("DOMContentLoaded", function()
 {
 	var documentId = document.querySelector("html").getAttribute("data-document-id");
 	cxdb = new CXDB(documentId);
-	cxdb.GetSectionList(LoadSections);
-	
-	document.querySelector("#section").onchange = function()
-	{
-		cxdb.GetSectionDisassembly(this.value, ShowDisassembly);
-	}
-	
-	document.querySelector("#label").onchange = function()
-	{
-		document.location.hash = this.value;
-	}
 });

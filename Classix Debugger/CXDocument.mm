@@ -27,6 +27,7 @@
 #include "DlfcnLibraryResolver.h"
 #include "FancyDisassembler.h"
 #include "CXObjcDisassemblyWriter.h"
+#include <unordered_set>
 
 #import "CXJSDebug.h"
 #import "CXDocument.h"
@@ -34,6 +35,10 @@
 
 NSString* CXErrorDomain = @"Classix Error Domain";
 NSString* CXErrorFileURL = @"File URL";
+
+static NSImage* exportImage;
+static NSImage* labelImage;
+static NSImage* functionImage;
 
 using namespace PEF;
 
@@ -47,6 +52,7 @@ struct ClassixCoreVM
 	PPCVM::Execution::Interpreter interp;
 	PEF::Container* container;
 	
+	std::unordered_set<intptr_t> breakpoints;
 	intptr_t nextPC;
 	
 	ClassixCoreVM(Common::IAllocator* allocator)
@@ -104,9 +110,28 @@ struct ClassixCoreVM
 	}
 };
 
+@interface CXDocument (Private)
+
+-(void)buildSymbolMenu;
+-(void)showDisassemblyPage;
+-(NSMenu*)exportMenuForResolver:(const CFM::SymbolResolver*)resolver;
+
+@end
+
 @implementation CXDocument
 
 @synthesize disassemblyView;
+@synthesize navBar;
+
++(void)initialize
+{
+	NSString* exportPath = [[NSBundle mainBundle] pathForResource:@"export" ofType:@"png"];
+	NSString* labelPath = [[NSBundle mainBundle] pathForResource:@"label" ofType:@"png"];
+	NSString* functionPath = [[NSBundle mainBundle] pathForResource:@"function" ofType:@"png"];
+	exportImage = [[NSImage alloc] initWithContentsOfFile:exportPath];
+	labelImage = [[NSImage alloc] initWithContentsOfFile:labelPath];
+	functionImage = [[NSImage alloc] initWithContentsOfFile:functionPath];
+}
 
 -(id)init
 {
@@ -152,25 +177,28 @@ struct ClassixCoreVM
 		return NO;
 	}
 	
-	dispatch_async(dispatch_get_main_queue(), ^{
-		// great, let's load the XHTML document into the WebView
-		NSString* cxdbPath = [NSBundle.mainBundle pathForResource:@"cxdb" ofType:@"xhtml"];
-		NSMutableString* xhtml = [NSMutableString stringWithContentsOfFile:cxdbPath encoding:NSUTF8StringEncoding error:NULL];
-		if (xhtml == nil)
-			xhtml = [NSMutableString stringWithString:@"<!DOCTYPE html><html><body><p>There was an error loading the disassembler user interface.</p></body></html>"];
-		
-		unsigned docId = (unsigned)[[CXDocumentController documentController] idOfDocument:self];
-		NSString* documentId = [NSString stringWithFormat:@"%u", docId];
-		NSRange fullRange = NSMakeRange(0, xhtml.length);
-		[xhtml replaceOccurrencesOfString:@"##data-document-id##" withString:documentId options:NSLiteralSearch range:fullRange];
-		NSData* data = [xhtml dataUsingEncoding:NSUTF8StringEncoding];
-		
-		NSURL* rootUrl = [NSURL URLWithString:@"cxdb:disassembly"];
-		[[disassemblyView mainFrame] loadData:data MIMEType:@"application/xhtml+xml" textEncodingName:@"UTF-8" baseURL:rootUrl];
-	});
-	
 	return YES;
 }
+
+-(void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame *)frame
+{
+	CXJSDebug* jsDebug = [[[CXJSDebug alloc] init] autorelease];
+	[[disassemblyView windowScriptObject] setValue:jsDebug forKey:@"debug"];
+}
+
+-(void)awakeFromNib
+{
+	[self buildSymbolMenu];
+	[self showDisassemblyPage];
+}
+
+-(void)dealloc
+{
+	delete vm;
+	[super dealloc];
+}
+
+#pragma mark -
 
 -(id)executeCommand:(NSString *)aCommand arguments:(NSArray *)arguments
 {
@@ -262,17 +290,134 @@ struct ClassixCoreVM
 	return nil;
 }
 
--(void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame *)frame
+-(void)buildSymbolMenu
 {
-	CXJSDebug* jsDebug = [[[CXJSDebug alloc] init] autorelease];
-	[[disassemblyView windowScriptObject] setValue:jsDebug forKey:@"debug"];
+	using namespace ClassixCore;
+	using namespace CFM;
+	
+	// build the menus with the current resolvers
+	NSWorkspace* ws = [NSWorkspace sharedWorkspace];
+	NSMenu* resolverMenu = [[[NSMenu alloc] initWithTitle:@"Debugger"] autorelease];
+	NSMutableDictionary* mutableDisassembly = [NSMutableDictionary dictionary];
+	
+	for (auto iter = vm->cfm.Begin(); iter != vm->cfm.End(); iter++)
+	{
+		const SymbolResolver* resolver = iter->second;
+		std::string name;
+		if (const std::string* fullPath = resolver->FilePath())
+		{
+			std::string::size_type lastSlash = fullPath->find_last_of('/');
+			name = fullPath->substr(lastSlash + 1);
+		}
+		else
+		{
+			std::string::size_type lastSlash = iter->first.find_last_of('/');
+			name = iter->first.substr(lastSlash + 1);
+		}
+		
+		NSString* title = [NSString stringWithCString:name.c_str() encoding:NSUTF8StringEncoding];
+		NSMenuItem* resolverItem = [[[NSMenuItem alloc] initWithTitle:title action:NULL keyEquivalent:@""] autorelease];
+		
+		if (const std::string* path = resolver->FilePath())
+		{
+			NSString* libraryPath = [NSString stringWithCString:path->c_str() encoding:NSUTF8StringEncoding];
+			resolverItem.image = [ws iconForFile:libraryPath];
+		}
+		[resolverMenu addItem:resolverItem];
+		
+		NSMenu* submenu = [[[NSMenu alloc] initWithTitle:title] autorelease];
+		resolverItem.submenu = submenu;
+		
+		if (NSMenu* exportsMenu = [self exportMenuForResolver:resolver])
+		{
+			NSMenuItem* exports = [[[NSMenuItem alloc] initWithTitle:@"Exports" action:NULL keyEquivalent:@""] autorelease];
+			exports.submenu = exportsMenu;
+			[submenu addItem:exports];
+		}
+		
+		// unfortunately we have to do typecasts from this point...
+		if (const PEFSymbolResolver* pef = dynamic_cast<const PEFSymbolResolver*>(resolver))
+		{
+			PPCVM::Disassembly::FancyDisassembler disasm(vm->allocator);
+			const PEF::Container& container = pef->GetContainer();
+			for (int i = 0; i < container.Size(); i++)
+			{
+				const PEF::InstantiableSection& section = container.GetSection(i);
+				PEF::SectionType type = section.GetSectionType();
+				if (type == PEF::SectionType::Code || type == PEF::SectionType::ExecutableData)
+				{
+					CXObjCDisassemblyWriter writer(i);
+					disasm.Disassemble(container, writer);
+					NSArray* result = writer.GetDisassembly();
+					if (result.count == 0)
+						continue;
+					
+					NSString* menuTitle = [NSString stringWithCString:section.Name.c_str() encoding:NSUTF8StringEncoding];
+					NSMenuItem* sectionItem = [[[NSMenuItem alloc] initWithTitle:menuTitle action:NULL keyEquivalent:@""] autorelease];
+					NSUInteger tag = [mutableDisassembly count];
+					sectionItem.tag = tag;
+					[mutableDisassembly setObject:result forKey:@(tag)];
+					
+					NSMenu* labelMenu = [[[NSMenu alloc] initWithTitle:menuTitle] autorelease];
+					for (NSDictionary* label in result)
+					{
+						NSString* labelTitle = [label objectForKey:@"label"];
+						NSMenuItem* labelMenuItem = [[NSMenuItem alloc] initWithTitle:labelTitle action:NULL keyEquivalent:@""];
+						labelMenuItem.image = [[labelTitle substringToIndex:2] isEqualToString:@"lb"] ? labelImage : functionImage;
+						[labelMenu addItem:labelMenuItem];
+					}
+					sectionItem.submenu = labelMenu;
+					[submenu addItem:sectionItem];
+				}
+			}
+		}
+	}
+
+	navBar.menu = resolverMenu;
 }
 
--(void)dealloc
+-(void)showDisassemblyPage
 {
-	[execData release];
-	delete vm;
-	[super dealloc];
+	NSData* pageData;
+	NSString* mimeType;
+	NSURL* rootUrl = [NSURL URLWithString:@"cxdb:disassembly"];
+	NSString* cxdbPath = [NSBundle.mainBundle pathForResource:@"cxdb" ofType:@"xhtml"];
+	NSMutableString* xhtml = [NSMutableString stringWithContentsOfFile:cxdbPath encoding:NSUTF8StringEncoding error:NULL];
+	if (xhtml == nil)
+	{
+		NSString* error = [NSMutableString stringWithString:@"<title>Oops</title><p>There was an error loading the disassembler user interface."];
+		pageData = [error dataUsingEncoding:NSUTF8StringEncoding];
+		mimeType = @"text/html";
+	}
+	else
+	{
+		unsigned docId = (unsigned)[[CXDocumentController documentController] idOfDocument:self];
+		NSString* documentId = [NSString stringWithFormat:@"%u", docId];
+		NSRange fullRange = NSMakeRange(0, xhtml.length);
+		[xhtml replaceOccurrencesOfString:@"##data-document-id##" withString:documentId options:NSLiteralSearch range:fullRange];
+		mimeType = @"application/xhtml+xml";
+		pageData = [xhtml dataUsingEncoding:NSUTF8StringEncoding];
+	}
+	[[disassemblyView mainFrame] loadData:pageData MIMEType:@"application/xhtml+xml" textEncodingName:@"UTF-8" baseURL:rootUrl];
+}
+
+-(NSMenu*)exportMenuForResolver:(const CFM::SymbolResolver *)resolver
+{
+	std::vector<std::string> symbols = resolver->SymbolList();
+	if (symbols.size() == 0)
+		return nil;
+	
+	NSMenu* exportMenu = [[NSMenu alloc] initWithTitle:@"Exports"];
+	for (const std::string& symbol : symbols)
+	{
+		NSString* title = [NSString stringWithCString:symbol.c_str() encoding:NSUTF8StringEncoding];
+		NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:title action:NULL keyEquivalent:@""] autorelease];
+		item.image = exportImage;
+		[item setEnabled:NO];
+		[exportMenu addItem:item];
+	}
+	
+	return [exportMenu autorelease];
 }
 
 @end

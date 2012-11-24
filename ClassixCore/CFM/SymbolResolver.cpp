@@ -23,22 +23,23 @@
 
 namespace CFM
 {
-	const ResolvedSymbol ResolvedSymbol::Invalid(SymbolUniverse::LostInTimeAndSpace, 0);
+	const ResolvedSymbol ResolvedSymbol::Invalid(SymbolUniverse::LostInTimeAndSpace, "<invalid>", 0);
 	
-	ResolvedSymbol::ResolvedSymbol(SymbolUniverse universe, intptr_t address)
+	ResolvedSymbol::ResolvedSymbol(SymbolUniverse universe, const std::string& name, intptr_t address)
+	: Name(name)
 	{
 		Universe = universe;
 		Address = address;
 	}
 	
-	ResolvedSymbol ResolvedSymbol::PowerPCSymbol(intptr_t address)
+	ResolvedSymbol ResolvedSymbol::PowerPCSymbol(const std::string& name, intptr_t address)
 	{
-		return ResolvedSymbol(SymbolUniverse::PowerPC, address);
+		return ResolvedSymbol(SymbolUniverse::PowerPC, name, address);
 	}
 	
-	ResolvedSymbol ResolvedSymbol::IntelSymbol(intptr_t address)
+	ResolvedSymbol ResolvedSymbol::IntelSymbol(const std::string& name, intptr_t address)
 	{
-		return ResolvedSymbol(SymbolUniverse::Intel, address);
+		return ResolvedSymbol(SymbolUniverse::Intel, name, address);
 	}
 	
 	CFM::SymbolResolver::~SymbolResolver()

@@ -69,15 +69,15 @@ namespace PPCVM
 			std::unordered_set<InstructionRange*> unprocessedRanges;
 			std::unordered_map<InstructionRange*, const uint8_t*> r2Values;
 			
-			void DoDisassemble(PEF::Container& container);
-			void TryInitR2WithMainSymbol(PEF::Container& container);
+			void DoDisassemble(const PEF::Container& container);
+			void TryInitR2WithMainSymbol(const PEF::Container& container);
 			void ProcessRange(PPCVM::Disassembly::InstructionRange& range, const uint8_t* r2);
 			void TryFollowBranch(PPCVM::Disassembly::InstructionRange* range, const Common::UInt32* currentAddress, const Common::UInt32 *targetAddress, const uint8_t* r2);
 			
 		public:
 			FancyDisassembler(Common::IAllocator* allocator);
 			
-			void Disassemble(PEF::Container& container, DisassemblyWriter& writer);
+			void Disassemble(const PEF::Container& container, DisassemblyWriter& writer);
 		};
 		
 		class DisassemblyWriter

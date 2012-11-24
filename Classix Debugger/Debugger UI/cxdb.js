@@ -36,14 +36,9 @@ var CXDB = function(documentId)
 	
 	this.OnInstructionPointerChanged = null;
 	
-	this.GetSectionList = function(cb)
+	this.GetSectionDisassembly = function(lib, sectionIndex, cb)
 	{
-		DoJSONQuery("sections", cb);
-	}
-	
-	this.GetSectionDisassembly = function(sectionIndex, cb)
-	{
-		DoJSONQuery("sections/" + sectionIndex, cb);
+		DoJSONQuery("/sections/" + lib + "/" + sectionIndex, cb);
 	}
 	
 	this.Status = function(cb)

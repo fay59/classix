@@ -104,6 +104,12 @@ namespace PEF
 		return sections.at(realIndex);
 	}
 	
+	const InstantiableSection& Container::GetSection(uint32_t index) const
+	{
+		int32_t realIndex = instantiableSectionIndices.at(index);
+		return sections.at(realIndex);
+	}
+	
 	LoaderSection* Container::LoaderSection()
 	{
 		return loader;

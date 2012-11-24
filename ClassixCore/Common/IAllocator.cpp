@@ -62,11 +62,6 @@ namespace Common
 	{
 		return AutoAllocation(this, size, zoneName);
 	}
-	
-	bool IAllocator::IsAllocated(const void *address)
-	{
-		return GetRegionOfAllocation(address) != nullptr;
-	}
 
 	IAllocator::~IAllocator()
 	{ }

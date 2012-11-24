@@ -97,7 +97,7 @@ namespace PPCVM
 		: allocator(allocator)
 		{ }
 		
-		void FancyDisassembler::DoDisassemble(Container &container)
+		void FancyDisassembler::DoDisassemble(const Container &container)
 		{
 			for (uint32_t i = 0; i < container.Size(); i++)
 			{
@@ -114,11 +114,11 @@ namespace PPCVM
 			}
 		}
 		
-		void FancyDisassembler::TryInitR2WithMainSymbol(Container& container)
+		void FancyDisassembler::TryInitR2WithMainSymbol(const Container& container)
 		{
-			LoaderSection* loaderSection = container.LoaderSection();
+			const LoaderSection* loaderSection = container.LoaderSection();
 			const auto& mainLocation = loaderSection->Header->Main;
-			InstantiableSection& mainSection = container.GetSection(mainLocation.Section);
+			const InstantiableSection& mainSection = container.GetSection(mainLocation.Section);
 			// only search for a transition vector inside data segments
 			switch (mainSection.GetSectionType())
 			{
@@ -210,7 +210,7 @@ namespace PPCVM
 			}
 		}
 		
-		void FancyDisassembler::Disassemble(Container &container, DisassemblyWriter& writer)
+		void FancyDisassembler::Disassemble(const Container &container, DisassemblyWriter& writer)
 		{
 			metadata.clear();
 			sections.clear();

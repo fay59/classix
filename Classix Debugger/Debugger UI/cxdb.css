@@ -3,22 +3,6 @@ html, body {
 	padding: 0px;
 }
 
-nav {
-	display: block;
-	position: fixed;
-	top: 0px;
-	left: 0px;
-	width: 100%;
-	background-image: -webkit-linear-gradient(bottom, #bcbcbc 0%, #dadada 100%);
-	border-bottom: 1px #555 solid;
-}
-
-nav select {
-	margin: 5px;
-}
-
-#flow { float: right; }
-
 #disasm {
 	margin: 0px;
 	padding: 0px;
@@ -30,7 +14,6 @@ nav select {
 
 #disasm th {
 	text-align: left;
-	padding-top: 3em;
 	padding-left: 11ex;
 	border-top: 1px #ccc solid;
 	border-bottom: 1px #ccc solid;

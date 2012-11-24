@@ -56,6 +56,7 @@ namespace PEF
 		size_t Size() const;
 		
 		InstantiableSection& GetSection(uint32_t index);
+		const InstantiableSection& GetSection(uint32_t index) const;
 		
 		LoaderSection* LoaderSection();
 		const class LoaderSection* LoaderSection() const;

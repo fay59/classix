@@ -55,22 +55,22 @@ namespace CFM
 		}
 	}
 	
-	ResolvedSymbol PEFSymbolResolver::Symbolize(const uint8_t *address)
+	ResolvedSymbol PEFSymbolResolver::Symbolize(const std::string& name, const uint8_t *address)
 	{
 		if (address == nullptr)
 			return ResolvedSymbol::Invalid;
 		
-		return ResolvedSymbol::PowerPCSymbol(reinterpret_cast<intptr_t>(address));
+		return ResolvedSymbol::PowerPCSymbol(name, reinterpret_cast<intptr_t>(address));
 	}
 	
-	ResolvedSymbol PEFSymbolResolver::Symbolize(const PEF::LoaderHeader::SectionWithOffset &sectionWithOffset)
+	ResolvedSymbol PEFSymbolResolver::Symbolize(const std::string& name, const PEF::LoaderHeader::SectionWithOffset &sectionWithOffset)
 	{
 		if (sectionWithOffset.Section == -1)
 			return ResolvedSymbol::Invalid;
 		
 		auto& section = container.GetSection(sectionWithOffset.Section);
 		const uint8_t* address = section.Data + sectionWithOffset.Offset;
-		return Symbolize(address);
+		return Symbolize(name, address);
 	}
 	
 	PEF::Container& PEFSymbolResolver::GetContainer()
@@ -86,19 +86,30 @@ namespace CFM
 	ResolvedSymbol PEFSymbolResolver::GetInitAddress()
 	{
 		const LoaderHeader::SectionWithOffset& initInfo = container.LoaderSection()->Header->Init;
-		return Symbolize(initInfo);
+		return Symbolize("<init>", initInfo);
 	}
 	
 	ResolvedSymbol PEFSymbolResolver::GetMainAddress()
 	{
 		const LoaderHeader::SectionWithOffset& mainInfo = container.LoaderSection()->Header->Main;
-		return Symbolize(mainInfo);
+		return Symbolize("<main>", mainInfo);
 	}
 	
 	ResolvedSymbol PEFSymbolResolver::GetTermAddress()
 	{
 		const LoaderHeader::SectionWithOffset& termInfo = container.LoaderSection()->Header->Term;
-		return Symbolize(termInfo);
+		return Symbolize("<term>", termInfo);
+	}
+	
+	const std::string* PEFSymbolResolver::FilePath() const
+	{
+		return &mapping.path();
+	}
+	
+	std::vector<std::string> PEFSymbolResolver::SymbolList() const
+	{
+		const PEF::ExportHashTable& table = container.LoaderSection()->ExportTable;
+		return std::vector<std::string>(table.begin(), table.end());
 	}
 	
 	ResolvedSymbol PEFSymbolResolver::ResolveSymbol(const std::string &symbolName)
@@ -110,14 +121,14 @@ namespace CFM
 			if (symbol->SectionIndex > -1)
 			{
 				const uint8_t* address = container.GetSection(symbol->SectionIndex).Data + symbol->Offset;
-				return Symbolize(address);
+				return Symbolize(symbolName, address);
 			}
 			
 			// section -2: address absolute to container
 			if (symbol->SectionIndex == -2)
 			{
 				const uint8_t* address = container.Base + symbol->Offset;
-				return Symbolize(address);
+				return Symbolize(symbolName, address);
 			}
 			
 			// section -3: reexported symbol

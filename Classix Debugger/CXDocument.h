@@ -21,6 +21,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
+#import "CXNavBar.h"
 
 struct ClassixCoreVM;
 
@@ -36,11 +37,13 @@ enum CXErrorCode
 @interface CXDocument : NSDocument
 {
 	struct ClassixCoreVM* vm;
+	NSDictionary* disassembly;
 	WebView* disassemblyView;
-	NSData* execData;
+	CXNavBar* navBar;
 }
 
 @property (assign) IBOutlet WebView* disassemblyView;
+@property (assign) IBOutlet CXNavBar* navBar;
 
 -(id)executeCommand:(NSString*)command arguments:(NSArray*)arguments;
 

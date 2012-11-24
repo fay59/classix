@@ -26,6 +26,7 @@
 #include <unordered_map>
 #include <list>
 #include <deque>
+
 #include "IAllocator.h"
 #include "STAllocator.h"
 #include "Structures.h"
@@ -60,6 +61,9 @@ namespace ClassixCore
 		virtual ResolvedSymbol GetInitAddress();
 		virtual ResolvedSymbol GetMainAddress();
 		virtual ResolvedSymbol GetTermAddress();
+		
+		virtual const std::string* FilePath() const;
+		virtual std::vector<std::string> SymbolList() const;
 		
 		virtual ResolvedSymbol ResolveSymbol(const std::string& name);
 		virtual ~DlfcnSymbolResolver();

@@ -25,6 +25,7 @@
 #include <string>
 #include <unordered_map>
 #include <deque>
+
 #include "LibraryResolver.h"
 #include "MachineState.h"
 #include "IAllocator.h"
@@ -43,12 +44,13 @@ namespace ClassixCore
 		typedef SymbolType (*LookupFunction)(void*, const char*, void**);
 		typedef void (*FinitFunction)(void*);
 		
+		std::string Path;
 		std::string Name;
 		InitFunction Init;
 		LookupFunction Lookup;
 		FinitFunction Finit;
+		const char** Symbols;
 		
-		DlfcnLibrary(const std::string& Name, InitFunction init, LookupFunction lookup, FinitFunction finit);
 		DlfcnLibrary(const std::string& path);
 		DlfcnLibrary(const DlfcnLibrary& that) = delete;
 		DlfcnLibrary(DlfcnLibrary&& that);

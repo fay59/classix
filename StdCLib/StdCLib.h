@@ -33,6 +33,8 @@ extern "C"
 	StdCLibGlobals* LibraryInit(Common::IAllocator* allocator);
 	SymbolType LibraryLookup(StdCLibGlobals* globals, const char* symbolName, void** symbol);
 	void LibraryFinit(StdCLibGlobals* context);
+	
+	extern const char* LibrarySymbolNames[];
 }
 
 #endif

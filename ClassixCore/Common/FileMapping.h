@@ -30,6 +30,7 @@ namespace Common
 	{
 		long long fileSize;
 		void* address;
+		std::string file;
 		
 	public:
 		FileMapping(const std::string& filePath);
@@ -38,6 +39,7 @@ namespace Common
 		FileMapping(int fd);
 		
 		long long size() const;
+		const std::string& path() const;
 		
 		void* begin();
 		void* end();

@@ -35,27 +35,21 @@ namespace ClassixCore
 		}
 	}
 	
-	DlfcnLibrary::DlfcnLibrary(const std::string& name, InitFunction init, LookupFunction lookup, FinitFunction finit)
-	: Name(name)
-	{
-		Init = init;
-		Lookup = lookup;
-		Finit = finit;
-		dlHandle = nullptr;
-	}
-	
 	DlfcnLibrary::DlfcnLibrary(DlfcnLibrary&& that)
+	: Path(that.Path), Name(that.Name)
 	{
 		Init = that.Init;
 		Lookup = that.Lookup;
 		Finit = that.Finit;
 		dlHandle = that.dlHandle;
+		Symbols = that.Symbols;
 		that.dlHandle = nullptr;
 	}
 	
 	DlfcnLibrary::DlfcnLibrary(const std::string& path)
+	: Path(path)
 	{
-		dlHandle = dlopen(path.c_str(), RTLD_LOCAL | RTLD_LAZY);
+		dlHandle = dlopen(Path.c_str(), RTLD_LOCAL | RTLD_LAZY);
 		if (dlHandle == nullptr)
 			throw std::logic_error(dlerror());
 		
@@ -65,6 +59,7 @@ namespace ClassixCore
 		Init = dlsym<InitFunction>(dlHandle, "LibraryInit");
 		Lookup = dlsym<LookupFunction>(dlHandle, "LibraryLookup");
 		Finit = dlsym<FinitFunction>(dlHandle, "LibraryFinit");
+		Symbols = dlsym<const char**>(dlHandle, "LibrarySymbolNames");
 		
 		if (Init == nullptr || Lookup == nullptr || Finit == nullptr)
 			throw std::logic_error("Incomplete library");

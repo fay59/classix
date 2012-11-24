@@ -63,8 +63,6 @@ namespace Common
 		virtual const std::string* GetRegionOfAllocation(const void* address) = 0;
 		virtual const std::string* GetRegionOfAllocation(intptr_t address) = 0;
 		
-		virtual bool IsAllocated(const void* address); // default implementation: GetRegionOfAddress(address) != nullptr
-		
 #pragma mark -
 		inline bool IsAllocated(intptr_t address)
 		{

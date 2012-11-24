@@ -20,6 +20,7 @@
 //
 
 #include <sys/mman.h>
+#include <sys/syslimits.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
@@ -29,8 +30,9 @@
 namespace Common
 {
 	FileMapping::FileMapping(const std::string& path)
+	: file(path)
 	{
-		int fd = open(path.c_str(), O_RDONLY);
+		int fd = open(file.c_str(), O_RDONLY);
 		if (fd == -1)
 			throw std::logic_error(strerror(errno));
 		
@@ -47,6 +49,10 @@ namespace Common
 		if (fd < 0)
 			throw new std::logic_error("file descriptor is not open");
 		
+		char filePath[PATH_MAX];
+		if (fcntl(fd, F_GETPATH, filePath) != -1)
+			file = filePath;
+		
 		long long currentPosition = lseek(fd, 0, SEEK_CUR);
 		fileSize = lseek(fd, 0, SEEK_END);
 		lseek(fd, currentPosition, SEEK_SET);
@@ -57,6 +63,7 @@ namespace Common
 	}
 	
 	FileMapping::FileMapping(FileMapping&& that)
+	: file(that.file)
 	{
 		address = that.address;
 		fileSize = that.fileSize;
@@ -67,6 +74,11 @@ namespace Common
 	long long FileMapping::size() const
 	{
 		return fileSize;
+	}
+	
+	const std::string& FileMapping::path() const
+	{
+		return file;
 	}
 
 	void* FileMapping::begin()

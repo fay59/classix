@@ -13,11 +13,8 @@
 		DC0D42AB165EDDBB00883586 /* OStreamDisassemblyWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC0D42A9165EDDBB00883586 /* OStreamDisassemblyWriter.cpp */; };
 		DC0D42B3165EE4F500883586 /* CXObjcDisassemblyWriter.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC0D42B1165EE4F400883586 /* CXObjcDisassemblyWriter.mm */; };
 		DC264EA7165DF76A00C86BDD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC264EA6165DF76A00C86BDD /* WebKit.framework */; };
-		DC264EAC165DFFEB00C86BDD /* main.js in Sources */ = {isa = PBXBuildFile; fileRef = DC264EAA165DFFEB00C86BDD /* main.js */; };
-		DC264EAD165DFFEB00C86BDD /* cxdb.css in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAB165DFFEB00C86BDD /* cxdb.css */; };
-		DC264EAF165DFFF800C86BDD /* cxdb.xhtml in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAE165DFFF800C86BDD /* cxdb.xhtml */; };
-		DC264EB1165E012B00C86BDD /* execution-cursor.png in Resources */ = {isa = PBXBuildFile; fileRef = DC264EB0165E012B00C86BDD /* execution-cursor.png */; };
-		DC264EB3165E022300C86BDD /* cxdb.js in Sources */ = {isa = PBXBuildFile; fileRef = DC264EB2165E022300C86BDD /* cxdb.js */; };
+		DC264EAC165DFFEB00C86BDD /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAA165DFFEB00C86BDD /* main.js */; };
+		DC264EB3165E022300C86BDD /* cxdb.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EB2165E022300C86BDD /* cxdb.js */; };
 		DC4C644F165B62910097288E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC4C644E165B62910097288E /* Cocoa.framework */; };
 		DC4C6459165B62910097288E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6457165B62910097288E /* InfoPlist.strings */; };
 		DC4C645B165B62910097288E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC4C645A165B62910097288E /* main.m */; };
@@ -26,6 +23,16 @@
 		DC4C6465165B62910097288E /* CXDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6463165B62910097288E /* CXDocument.xib */; };
 		DC4C6468165B62920097288E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6466165B62920097288E /* MainMenu.xib */; };
 		DC4C646D165B62B80097288E /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
+		DC5CF824166153D200577272 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = DC5CF823166153D200577272 /* arrow.png */; };
+		DC5CF825166165D200577272 /* StdCLibFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE988111660B11A00C28F25 /* StdCLibFunctions.cpp */; };
+		DC6FEAC91661508400DD415C /* export.png in Resources */ = {isa = PBXBuildFile; fileRef = DCE988131660B3D900C28F25 /* export.png */; };
+		DC6FEACA1661508400DD415C /* label.png in Resources */ = {isa = PBXBuildFile; fileRef = DCE988101660A9B400C28F25 /* label.png */; };
+		DC6FEACB1661508400DD415C /* function.png in Resources */ = {isa = PBXBuildFile; fileRef = DCE9880F1660A81A00C28F25 /* function.png */; };
+		DC6FEACC1661508400DD415C /* step-into.png in Resources */ = {isa = PBXBuildFile; fileRef = DCBCB091166019F300FDCC35 /* step-into.png */; };
+		DC6FEACD1661508400DD415C /* step-over.png in Resources */ = {isa = PBXBuildFile; fileRef = DCBCB092166019F300FDCC35 /* step-over.png */; };
+		DC6FEACE1661508400DD415C /* execution-cursor.png in Resources */ = {isa = PBXBuildFile; fileRef = DC264EB0165E012B00C86BDD /* execution-cursor.png */; };
+		DC6FEACF1661508400DD415C /* cxdb.xhtml in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAE165DFFF800C86BDD /* cxdb.xhtml */; };
+		DC6FEAD01661508400DD415C /* cxdb.css in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAB165DFFEB00C86BDD /* cxdb.css */; };
 		DC71705A164F6618008D767E /* FileMapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC5E33C5163A496300944FFD /* FileMapping.cpp */; };
 		DC71705B164F6618008D767E /* IAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBF81638451400BFA046 /* IAllocator.cpp */; };
 		DC71705C164F6618008D767E /* NativeAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */; };
@@ -62,13 +69,12 @@
 		DC9D8D4F164F645900036FDD /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC9E43BF165E896A00AAC682 /* CXDBURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9E43BE165E896A00AAC682 /* CXDBURLProtocol.m */; };
 		DC9E43C3165E8E6900AAC682 /* CXDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9E43C2165E8E6900AAC682 /* CXDocumentController.m */; };
-		DC9E43C7165E9E9B00AAC682 /* cxdb.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EB2165E022300C86BDD /* cxdb.js */; };
-		DC9E43C8165E9E9D00AAC682 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAA165DFFEB00C86BDD /* main.js */; };
 		DC9E43CB165EA22400AAC682 /* CXJSONEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9E43CA165EA22400AAC682 /* CXJSONEncode.m */; };
 		DCE0A8A9165732CC0092CEBC /* InstructionDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE0A8A7165732860092CEBC /* InstructionDispatcher.cpp */; };
 		DCE0A8AA165733B00092CEBC /* InstructionRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021D1650D1A60079CE2D /* InstructionRange.cpp */; };
 		DCE0A8AB165733B50092CEBC /* Disassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021A1650B2D70079CE2D /* Disassembler.cpp */; };
 		DCE0A8AF1657651D0092CEBC /* DisassembledOpcode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE0A8AC16575A160092CEBC /* DisassembledOpcode.cpp */; };
+		DCE9880E16604ED700C28F25 /* CXNavBar.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE9880D16604ED700C28F25 /* CXNavBar.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -120,6 +126,7 @@
 		DC4C6461165B62910097288E /* CXDocument.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CXDocument.mm; sourceTree = "<group>"; };
 		DC4C6464165B62910097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/CXDocument.xib; sourceTree = "<group>"; };
 		DC4C6467165B62920097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		DC5CF823166153D200577272 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		DC5E33C5163A496300944FFD /* FileMapping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileMapping.cpp; sourceTree = "<group>"; };
 		DC5E33C6163A496300944FFD /* FileMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileMapping.h; sourceTree = "<group>"; };
 		DC6847C91638C258003E906D /* PEFRelocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PEFRelocator.cpp; sourceTree = "<group>"; };
@@ -175,10 +182,18 @@
 		DCB00B9D163B6DAD003C88CA /* MachineState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MachineState.cpp; sourceTree = "<group>"; };
 		DCB00B9E163B6DAD003C88CA /* MachineState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachineState.h; sourceTree = "<group>"; };
 		DCB00BA1163B9367003C88CA /* BigEndian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigEndian.h; sourceTree = "<group>"; };
+		DCBCB091166019F300FDCC35 /* step-into.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "step-into.png"; sourceTree = "<group>"; };
+		DCBCB092166019F300FDCC35 /* step-over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "step-over.png"; sourceTree = "<group>"; };
 		DCC3DC3016338A7900792F4A /* Classix */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Classix; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCE0A8A7165732860092CEBC /* InstructionDispatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionDispatcher.cpp; path = ClassixCore/PPCVM/InstructionDispatcher.cpp; sourceTree = SOURCE_ROOT; };
 		DCE0A8AC16575A160092CEBC /* DisassembledOpcode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DisassembledOpcode.cpp; path = ClassixCore/PPCVM/Disassembler/DisassembledOpcode.cpp; sourceTree = SOURCE_ROOT; };
 		DCE0A8AD16575A160092CEBC /* DisassembledOpcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DisassembledOpcode.h; path = ClassixCore/PPCVM/Disassembler/DisassembledOpcode.h; sourceTree = SOURCE_ROOT; };
+		DCE9880C16604ED700C28F25 /* CXNavBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXNavBar.h; sourceTree = "<group>"; };
+		DCE9880D16604ED700C28F25 /* CXNavBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXNavBar.m; sourceTree = "<group>"; };
+		DCE9880F1660A81A00C28F25 /* function.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = function.png; sourceTree = "<group>"; };
+		DCE988101660A9B400C28F25 /* label.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = label.png; sourceTree = "<group>"; };
+		DCE988111660B11A00C28F25 /* StdCLibFunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StdCLibFunctions.cpp; sourceTree = "<group>"; };
+		DCE988131660B3D900C28F25 /* export.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = export.png; sourceTree = "<group>"; };
 		DCF3599616384E1400EC1A95 /* Container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Container.cpp; sourceTree = "<group>"; };
 		DCF3599716384E1400EC1A95 /* Container.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
 		DCF3599A16384E1400EC1A95 /* Export.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Export.cpp; sourceTree = "<group>"; };
@@ -258,16 +273,22 @@
 			name = "WebView Glue";
 			sourceTree = "<group>";
 		};
-		DC264EA9165DFFD300C86BDD /* Debugger Web UI */ = {
+		DC264EA9165DFFD300C86BDD /* UI Resources */ = {
 			isa = PBXGroup;
 			children = (
+				DC5CF823166153D200577272 /* arrow.png */,
+				DCE988131660B3D900C28F25 /* export.png */,
+				DCE988101660A9B400C28F25 /* label.png */,
+				DCE9880F1660A81A00C28F25 /* function.png */,
+				DCBCB091166019F300FDCC35 /* step-into.png */,
+				DCBCB092166019F300FDCC35 /* step-over.png */,
 				DC264EB0165E012B00C86BDD /* execution-cursor.png */,
 				DC264EAE165DFFF800C86BDD /* cxdb.xhtml */,
 				DC264EAB165DFFEB00C86BDD /* cxdb.css */,
 				DC264EAA165DFFEB00C86BDD /* main.js */,
 				DC264EB2165E022300C86BDD /* cxdb.js */,
 			);
-			name = "Debugger Web UI";
+			name = "UI Resources";
 			path = "Debugger UI";
 			sourceTree = "<group>";
 		};
@@ -294,9 +315,10 @@
 		DC4C6454165B62910097288E /* Classix Debugger */ = {
 			isa = PBXGroup;
 			children = (
-				DC264EA9165DFFD300C86BDD /* Debugger Web UI */,
+				DC264EA9165DFFD300C86BDD /* UI Resources */,
 				DC0D42AF165EE4C100883586 /* Document Architecture */,
 				DC0D42B0165EE4CF00883586 /* WebView Glue */,
+				DCE9880A16604C7A00C28F25 /* Custom Controls */,
 				DC0D42B1165EE4F400883586 /* CXObjcDisassemblyWriter.mm */,
 				DC0D42B2165EE4F400883586 /* CXObjcDisassemblyWriter.h */,
 				DC4C6463165B62910097288E /* CXDocument.xib */,
@@ -343,8 +365,9 @@
 			isa = PBXGroup;
 			children = (
 				DC787EAF164F69000010A288 /* StdCLib.h */,
-				DC787EB3164F6F110010A288 /* StdCLibFunctions.h */,
 				DC787EB0164F6A810010A288 /* StdCLib.cpp */,
+				DC787EB3164F6F110010A288 /* StdCLibFunctions.h */,
+				DCE988111660B11A00C28F25 /* StdCLibFunctions.cpp */,
 			);
 			path = StdCLib;
 			sourceTree = "<group>";
@@ -521,6 +544,15 @@
 			path = ClassixCore;
 			sourceTree = "<group>";
 		};
+		DCE9880A16604C7A00C28F25 /* Custom Controls */ = {
+			isa = PBXGroup;
+			children = (
+				DCE9880C16604ED700C28F25 /* CXNavBar.h */,
+				DCE9880D16604ED700C28F25 /* CXNavBar.m */,
+			);
+			name = "Custom Controls";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -645,14 +677,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC4C6459165B62910097288E /* InfoPlist.strings in Resources */,
+				DC264EAC165DFFEB00C86BDD /* main.js in Resources */,
+				DC264EB3165E022300C86BDD /* cxdb.js in Resources */,
 				DC4C645F165B62910097288E /* Credits.rtf in Resources */,
 				DC4C6465165B62910097288E /* CXDocument.xib in Resources */,
 				DC4C6468165B62920097288E /* MainMenu.xib in Resources */,
-				DC264EAD165DFFEB00C86BDD /* cxdb.css in Resources */,
-				DC264EAF165DFFF800C86BDD /* cxdb.xhtml in Resources */,
-				DC9E43C8165E9E9D00AAC682 /* main.js in Resources */,
-				DC9E43C7165E9E9B00AAC682 /* cxdb.js in Resources */,
-				DC264EB1165E012B00C86BDD /* execution-cursor.png in Resources */,
+				DC6FEAC91661508400DD415C /* export.png in Resources */,
+				DC6FEACA1661508400DD415C /* label.png in Resources */,
+				DC6FEACB1661508400DD415C /* function.png in Resources */,
+				DC6FEACC1661508400DD415C /* step-into.png in Resources */,
+				DC6FEACD1661508400DD415C /* step-over.png in Resources */,
+				DC6FEACE1661508400DD415C /* execution-cursor.png in Resources */,
+				DC6FEACF1661508400DD415C /* cxdb.xhtml in Resources */,
+				DC6FEAD01661508400DD415C /* cxdb.css in Resources */,
+				DC5CF824166153D200577272 /* arrow.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -665,13 +703,12 @@
 			files = (
 				DC4C645B165B62910097288E /* main.m in Sources */,
 				DC4C6462165B62910097288E /* CXDocument.mm in Sources */,
-				DC264EAC165DFFEB00C86BDD /* main.js in Sources */,
-				DC264EB3165E022300C86BDD /* cxdb.js in Sources */,
 				DC9E43BF165E896A00AAC682 /* CXDBURLProtocol.m in Sources */,
 				DC9E43C3165E8E6900AAC682 /* CXDocumentController.m in Sources */,
 				DC9E43CB165EA22400AAC682 /* CXJSONEncode.m in Sources */,
 				DC0D42A3165ED0ED00883586 /* CXJSDebug.m in Sources */,
 				DC0D42B3165EE4F500883586 /* CXObjcDisassemblyWriter.mm in Sources */,
+				DCE9880E16604ED700C28F25 /* CXNavBar.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -680,6 +717,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC787EB2164F6A910010A288 /* StdCLib.cpp in Sources */,
+				DC5CF825166165D200577272 /* StdCLibFunctions.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

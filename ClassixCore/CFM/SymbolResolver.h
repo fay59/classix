@@ -24,6 +24,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace CFM
 {
@@ -45,14 +46,15 @@ namespace CFM
 	struct ResolvedSymbol
 	{
 		SymbolUniverse Universe;
+		std::string Name;
 		intptr_t Address;
 		
 		static const ResolvedSymbol Invalid;
 		
-		ResolvedSymbol(SymbolUniverse universe, intptr_t address);
+		ResolvedSymbol(SymbolUniverse universe, const std::string& name, intptr_t address);
 		
-		static ResolvedSymbol PowerPCSymbol(intptr_t address);
-		static ResolvedSymbol IntelSymbol(intptr_t address);
+		static ResolvedSymbol PowerPCSymbol(const std::string& name, intptr_t address);
+		static ResolvedSymbol IntelSymbol(const std::string& name, intptr_t address);
 	};
 	
 	class SymbolResolver
@@ -61,6 +63,9 @@ namespace CFM
 		virtual ResolvedSymbol GetInitAddress() = 0;
 		virtual ResolvedSymbol GetMainAddress() = 0;
 		virtual ResolvedSymbol GetTermAddress() = 0;
+		
+		virtual const std::string* FilePath() const = 0;
+		virtual std::vector<std::string> SymbolList() const = 0;
 		
 		virtual ResolvedSymbol ResolveSymbol(const std::string& name) = 0;
 		virtual ~SymbolResolver() = 0;
