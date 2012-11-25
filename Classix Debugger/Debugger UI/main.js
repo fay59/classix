@@ -193,7 +193,15 @@ function ShowDisassembly(assembly)
 			
 			var targetTdContents = [];
 			if (inst.target != null)
-				targetTdContents.push(CreateElement("a", {href: "#" + inst.target}, [inst.target]));
+			{
+				var a = CreateElement("a", {href: "#" + inst.target}, [inst.target]);
+				a.addEventListener("click", function(e)
+				{
+					GoToLabel(this.textContent);
+					e.preventDefault();
+				});
+				targetTdContents.push(a);
+			}
 			
 			var tr = CreateElement("tr", {id: "i" + inst.location.toString(16)}, [
 				CreateElement("td", {}, [inst.location.toString(16)]),
@@ -218,14 +226,25 @@ function ShowDisassembly(assembly)
 
 function GoToLabel(label)
 {
-	document.location.hash = "#" + label;
+	var id = "#" + label;
+	if (document.querySelector(id) == null)
+	{
+		cxdb.GetLabelDisassembly(label, function(disassembly)
+		{
+			ShowDisassembly(disassembly);
+			GoToLabel(label);
+		});
+	}
+	else
+	{
+		document.location.hash = "#" + label;
+	}
 }
 
 function UpdateStatus(status)
 {
 	currentAddress = status.pc;
-	document.querySelector("#section").value = status.section;
-	cxdb.GetSectionDisassembly(status.section, ShowDisassembly);
+	// TODO update me
 }
 
 document.addEventListener("DOMContentLoaded", function()

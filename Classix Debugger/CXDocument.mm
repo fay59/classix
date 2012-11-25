@@ -206,26 +206,15 @@ struct ClassixCoreVM
 -(id)executeCommand:(NSString *)aCommand arguments:(NSArray *)arguments
 {
 	std::string command = aCommand.UTF8String;
-	if (command == "sections")
+	if (command == "labels")
 	{
 		if (arguments.count == 0)
 		{
-			NSUInteger sectionCount = vm->container->Size();
-			NSMutableArray* result = [NSMutableArray arrayWithCapacity:sectionCount];
-			for (NSUInteger i = 0; i < sectionCount; i++)
-			{
-				const char* name = vm->container->GetSection(i).Name.c_str();
-				NSString* sectionName = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
-				[result addObject:sectionName];
-			}
-			return result;
+			return [disassembly allKeys];
 		}
 		else if (arguments.count == 1)
 		{
-			NSUInteger section = [[arguments objectAtIndex:0] integerValue];
-			CXObjCDisassemblyWriter writer(section);
-			PPCVM::Disassembly::FancyDisassembler(vm->allocator).Disassemble(*vm->container, writer);
-			return writer.GetDisassembly();
+			return [disassembly objectForKey:[arguments objectAtIndex:0]];
 		}
 		else
 		{
