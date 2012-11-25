@@ -12,6 +12,8 @@ html, body {
 	width: 100%;
 }
 
+#disasm tr:first-child th { border-top: none; }
+
 #disasm th {
 	text-align: left;
 	padding-left: 11ex;
