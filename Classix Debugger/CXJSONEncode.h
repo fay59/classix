@@ -24,6 +24,14 @@
 
 #import <Cocoa/Cocoa.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+	
 NSString* CXJSONEncode(id<NSObject> object);
+	
+#ifdef __cplusplus
+}
+#endif
 
 #endif

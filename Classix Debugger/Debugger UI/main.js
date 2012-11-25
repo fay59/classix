@@ -164,7 +164,7 @@ function ShowDisassembly(assembly)
 	while (table.childNodes.length > 0)
 		table.removeChild(table.firstChild);
 	
-	function doLabel(i)
+	for (var i = 0; i < assembly.length; i++)
 	{
 		var label = assembly[i];
 		if (label.instructions.length == 0)
@@ -214,19 +214,11 @@ function ShowDisassembly(assembly)
 			table.appendChild(tr);
 		}
 	}
-	
-	var i = 0;
-	function labelLoop()
-	{
-		if (i < assembly.length)
-		{
-			doLabel(i);
-			i++;
-			setTimeout(labelLoop, 0);
-		}
-	}
-	
-	labelLoop();
+}
+
+function GoToLabel(label)
+{
+	document.location.hash = "#" + label;
 }
 
 function UpdateStatus(status)
@@ -234,24 +226,6 @@ function UpdateStatus(status)
 	currentAddress = status.pc;
 	document.querySelector("#section").value = status.section;
 	cxdb.GetSectionDisassembly(status.section, ShowDisassembly);
-}
-
-function LoadSections(sections)
-{
-	var sectionDropdown = document.querySelector("#section");
-	
-	for (var i = 0; i < sections.length; i++)
-	{
-		var section = CreateElement("option", {value: i}, [sections[i]]);
-		sectionDropdown.appendChild(section);
-	}
-	
-	cxdb.Status(UpdateStatus);
-}
-
-function CXDB_ShowSection(lib, sectionNumber)
-{
-	cxdb.GetSectionDisassembly(lib, sectionNumber, ShowDisassembly);
 }
 
 document.addEventListener("DOMContentLoaded", function()

@@ -32,6 +32,7 @@
 #import "CXJSDebug.h"
 #import "CXDocument.h"
 #import "CXDocumentController.h"
+#import "CXJSONEncode.h"
 
 NSString* CXErrorDomain = @"Classix Error Domain";
 NSString* CXErrorFileURL = @"File URL";
@@ -114,6 +115,7 @@ struct ClassixCoreVM
 
 -(void)buildSymbolMenu;
 -(void)showDisassemblyPage;
+-(void)showDisassembly:(NSString*)key;
 -(NSImage*)fileIcon16x16:(NSString*)path;
 -(NSMenu*)exportMenuForResolver:(const CFM::SymbolResolver*)resolver;
 
@@ -185,11 +187,11 @@ struct ClassixCoreVM
 {
 	CXJSDebug* jsDebug = [[[CXJSDebug alloc] init] autorelease];
 	[[disassemblyView windowScriptObject] setValue:jsDebug forKey:@"debug"];
+	[self buildSymbolMenu];
 }
 
 -(void)awakeFromNib
 {
-	[self buildSymbolMenu];
 	[self showDisassemblyPage];
 }
 
@@ -298,7 +300,6 @@ struct ClassixCoreVM
 	
 	// build the menus with the current resolvers
 	NSMenu* resolverMenu = [[[NSMenu alloc] initWithTitle:@"Debugger"] autorelease];
-	NSMutableDictionary* mutableDisassembly = [NSMutableDictionary dictionary];
 	
 	for (auto iter = vm->cfm.Begin(); iter != vm->cfm.End(); iter++)
 	{
@@ -340,6 +341,7 @@ struct ClassixCoreVM
 		{
 			PPCVM::Disassembly::FancyDisassembler disasm(vm->allocator);
 			const PEF::Container& container = pef->GetContainer();
+			NSMutableDictionary* labelToArray = [NSMutableDictionary dictionary];
 			for (int i = 0; i < container.Size(); i++)
 			{
 				const PEF::InstantiableSection& section = container.GetSection(i);
@@ -352,11 +354,18 @@ struct ClassixCoreVM
 					if (result.count == 0)
 						continue;
 					
+					NSMutableArray* currentArray = [NSMutableArray array];
+					for (NSDictionary* dict in result)
+					{
+						NSString* label = [dict objectForKey:@"label"];
+						if ([[label substringToIndex:2] isEqualToString:@"fn"])
+							currentArray = [NSMutableArray array];
+						[currentArray addObject:dict];
+						[labelToArray setObject:currentArray forKey:label];
+					}
+					
 					NSString* menuTitle = [NSString stringWithCString:section.Name.c_str() encoding:NSUTF8StringEncoding];
 					NSMenuItem* sectionItem = [[[NSMenuItem alloc] initWithTitle:menuTitle action:NULL keyEquivalent:@""] autorelease];
-					NSUInteger tag = [mutableDisassembly count];
-					sectionItem.tag = tag;
-					[mutableDisassembly setObject:result forKey:@(tag)];
 					
 					NSMenu* labelMenu = [[[NSMenu alloc] initWithTitle:menuTitle] autorelease];
 					for (NSDictionary* label in result)
@@ -370,9 +379,11 @@ struct ClassixCoreVM
 					[submenu addItem:sectionItem];
 				}
 			}
+			disassembly = [labelToArray copy];
 		}
 	}
 
+	navBar.selectionChanged = ^(CXNavBar* bar, NSMenuItem* selection) { [self showDisassembly:selection.title]; };
 	navBar.menu = resolverMenu;
 }
 
@@ -414,6 +425,17 @@ struct ClassixCoreVM
 		pageData = [xhtml dataUsingEncoding:NSUTF8StringEncoding];
 	}
 	[[disassemblyView mainFrame] loadData:pageData MIMEType:@"application/xhtml+xml" textEncodingName:@"UTF-8" baseURL:rootUrl];
+}
+
+-(void)showDisassembly:(NSString *)key
+{
+	if (NSArray* functionDisassembly = [disassembly objectForKey:key])
+	{
+		NSString* scriptTemplate = @"ShowDisassembly(%@); GoToLabel(\"%@\");";
+		NSString* disasmScript = [NSString stringWithFormat:scriptTemplate, CXJSONEncode(functionDisassembly), key];
+		auto scriptObject = [disassemblyView windowScriptObject];
+		[scriptObject evaluateWebScript:disasmScript];
+	}
 }
 
 -(NSMenu*)exportMenuForResolver:(const CFM::SymbolResolver *)resolver
