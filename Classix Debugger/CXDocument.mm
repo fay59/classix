@@ -114,6 +114,7 @@ struct ClassixCoreVM
 
 -(void)buildSymbolMenu;
 -(void)showDisassemblyPage;
+-(NSImage*)fileIcon16x16:(NSString*)path;
 -(NSMenu*)exportMenuForResolver:(const CFM::SymbolResolver*)resolver;
 
 @end
@@ -296,7 +297,6 @@ struct ClassixCoreVM
 	using namespace CFM;
 	
 	// build the menus with the current resolvers
-	NSWorkspace* ws = [NSWorkspace sharedWorkspace];
 	NSMenu* resolverMenu = [[[NSMenu alloc] initWithTitle:@"Debugger"] autorelease];
 	NSMutableDictionary* mutableDisassembly = [NSMutableDictionary dictionary];
 	
@@ -321,7 +321,7 @@ struct ClassixCoreVM
 		if (const std::string* path = resolver->FilePath())
 		{
 			NSString* libraryPath = [NSString stringWithCString:path->c_str() encoding:NSUTF8StringEncoding];
-			resolverItem.image = [ws iconForFile:libraryPath];
+			resolverItem.image = [self fileIcon16x16:libraryPath];
 		}
 		[resolverMenu addItem:resolverItem];
 		
@@ -374,6 +374,21 @@ struct ClassixCoreVM
 	}
 
 	navBar.menu = resolverMenu;
+}
+
+-(NSImage*)fileIcon16x16:(NSString *)path
+{
+	const NSSize targetSize = NSMakeSize(16, 16);
+	NSImage* icon = [[NSWorkspace sharedWorkspace] iconForFile:path];
+	NSImage* smallIcon = [[NSImage alloc] initWithSize:targetSize];
+	
+	NSSize actualSize = icon.size;
+	[smallIcon lockFocus];
+	[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
+	[icon drawInRect:NSMakeRect(0, 0, targetSize.width, targetSize.height) fromRect:NSMakeRect(0, 0, actualSize.width, actualSize.height) operation:NSCompositeCopy fraction:1];
+	[smallIcon unlockFocus];
+	
+	return [smallIcon autorelease];
 }
 
 -(void)showDisassemblyPage
