@@ -124,6 +124,7 @@ struct ClassixCoreVM
 
 @synthesize disassemblyView;
 @synthesize navBar;
+@synthesize backForward;
 
 +(void)initialize
 {
@@ -191,6 +192,10 @@ struct ClassixCoreVM
 -(void)awakeFromNib
 {
 	[self buildSymbolMenu];
+	[backForward setEnabled:NO forSegment:0];
+	[backForward setEnabled:NO forSegment:1];
+	[disassemblyView addObserver:self forKeyPath:@"canGoBack" options:NSKeyValueObservingOptionNew context:nullptr];
+	[disassemblyView addObserver:self forKeyPath:@"canGoForward" options:NSKeyValueObservingOptionNew context:nullptr];
 }
 
 -(void)dealloc
@@ -200,6 +205,15 @@ struct ClassixCoreVM
 }
 
 #pragma mark -
+
+-(IBAction)navigate:(id)sender
+{
+	NSInteger segment = [sender selectedSegment];
+	if (segment == 0)
+		[disassemblyView goBack];
+	else
+		[disassemblyView goForward];
+}
 
 -(id)executeCommand:(NSString *)aCommand arguments:(NSArray *)arguments
 {
@@ -286,6 +300,23 @@ struct ClassixCoreVM
 }
 
 #pragma mark -
+
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if (object == disassemblyView)
+	{
+		if ([keyPath isEqualToString:@"canGoBack"])
+		{
+			BOOL enable = [[change objectForKey:NSKeyValueChangeNewKey] boolValue];
+			[backForward setEnabled:enable forSegment:0];
+		}
+		else if ([keyPath isEqualToString:@"canGoForward"])
+		{
+			BOOL enable = [[change objectForKey:NSKeyValueChangeNewKey] boolValue];
+			[backForward setEnabled:enable forSegment:1];
+		}
+	}
+}
 
 -(void)buildSymbolMenu
 {

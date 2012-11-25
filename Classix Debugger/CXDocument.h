@@ -40,10 +40,14 @@ enum CXErrorCode
 	NSDictionary* disassembly;
 	WebView* disassemblyView;
 	CXNavBar* navBar;
+	NSSegmentedControl* backForward;
 }
 
 @property (assign) IBOutlet WebView* disassemblyView;
 @property (assign) IBOutlet CXNavBar* navBar;
+@property (assign) IBOutlet NSSegmentedControl* backForward;
+
+-(IBAction)navigate:(id)sender;
 
 -(id)executeCommand:(NSString*)command arguments:(NSArray*)arguments;
 -(NSArray*)disassemblyForLabel:(NSString*)label;

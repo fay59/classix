@@ -13,6 +13,8 @@
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>NSCustomObject</string>
 			<string>NSCustomView</string>
+			<string>NSSegmentedCell</string>
+			<string>NSSegmentedControl</string>
 			<string>NSView</string>
 			<string>NSWindowTemplate</string>
 			<string>WebView</string>
@@ -66,7 +68,7 @@
 								<string>public.url</string>
 								<string>public.url-name</string>
 							</set>
-							<string key="NSFrameSize">{636, 386}</string>
+							<string key="NSFrameSize">{636, 385}</string>
 							<reference key="NSSuperview" ref="568628114"/>
 							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView"/>
@@ -88,11 +90,47 @@
 							<reference key="NSNextResponder" ref="568628114"/>
 							<int key="NSvFlags">266</int>
 							<array class="NSMutableArray" key="NSSubviews">
+								<object class="NSSegmentedControl" id="363581664">
+									<reference key="NSNextResponder" ref="701093666"/>
+									<int key="NSvFlags">268</int>
+									<string key="NSFrame">{{2, 0}, {69, 25}}</string>
+									<reference key="NSSuperview" ref="701093666"/>
+									<reference key="NSWindow"/>
+									<reference key="NSNextKeyView" ref="625160755"/>
+									<string key="NSReuseIdentifierKey">_NS:9</string>
+									<bool key="NSEnabled">YES</bool>
+									<object class="NSSegmentedCell" key="NSCell" id="207651383">
+										<int key="NSCellFlags">67108864</int>
+										<int key="NSCellFlags2">0</int>
+										<object class="NSFont" key="NSSupport">
+											<string key="NSName">STKaiti-SC-Regular</string>
+											<double key="NSSize">13</double>
+											<int key="NSfFlags">16</int>
+										</object>
+										<string key="NSCellIdentifier">_NS:9</string>
+										<reference key="NSControlView" ref="363581664"/>
+										<array class="NSMutableArray" key="NSSegmentImages">
+											<object class="NSSegmentItem">
+												<string key="NSSegmentItemLabel">◀</string>
+												<int key="NSSegmentItemImageScaling">0</int>
+											</object>
+											<object class="NSSegmentItem">
+												<string key="NSSegmentItemLabel">▶</string>
+												<int key="NSSegmentItemTag">1</int>
+												<int key="NSSegmentItemImageScaling">0</int>
+											</object>
+										</array>
+										<int key="NSSelectedSegment">1</int>
+										<int key="NSTrackingMode">2</int>
+										<int key="NSSegmentStyle">4</int>
+									</object>
+									<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
+								</object>
 								<object class="NSCustomView" id="625160755">
 									<reference key="NSNextResponder" ref="701093666"/>
 									<int key="NSvFlags">266</int>
 									<array class="NSMutableArray" key="NSSubviews"/>
-									<string key="NSFrame">{{64, 0}, {572, 24}}</string>
+									<string key="NSFrame">{{73, 1}, {563, 24}}</string>
 									<reference key="NSSuperview" ref="701093666"/>
 									<reference key="NSWindow"/>
 									<reference key="NSNextKeyView" ref="807185318"/>
@@ -100,10 +138,10 @@
 									<string key="NSClassName">CXNavBar</string>
 								</object>
 							</array>
-							<string key="NSFrame">{{0, 387}, {636, 24}}</string>
+							<string key="NSFrame">{{0, 385}, {636, 26}}</string>
 							<reference key="NSSuperview" ref="568628114"/>
 							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView" ref="625160755"/>
+							<reference key="NSNextKeyView" ref="363581664"/>
 							<string key="NSReuseIdentifierKey">_NS:9</string>
 							<string key="NSClassName">CXGradientView</string>
 						</object>
@@ -147,6 +185,22 @@
 						<reference key="destination" ref="625160755"/>
 					</object>
 					<int key="connectionID">100163</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">backForward</string>
+						<reference key="source" ref="512844837"/>
+						<reference key="destination" ref="363581664"/>
+					</object>
+					<int key="connectionID">100167</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">navigate:</string>
+						<reference key="source" ref="512844837"/>
+						<reference key="destination" ref="363581664"/>
+					</object>
+					<int key="connectionID">100168</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -220,6 +274,7 @@
 						<reference key="object" ref="701093666"/>
 						<array class="NSMutableArray" key="children">
 							<reference ref="625160755"/>
+							<reference ref="363581664"/>
 						</array>
 						<reference key="parent" ref="568628114"/>
 					</object>
@@ -227,6 +282,19 @@
 						<int key="objectID">100039</int>
 						<reference key="object" ref="625160755"/>
 						<reference key="parent" ref="701093666"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">100165</int>
+						<reference key="object" ref="363581664"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="207651383"/>
+						</array>
+						<reference key="parent" ref="701093666"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">100166</int>
+						<reference key="object" ref="207651383"/>
+						<reference key="parent" ref="363581664"/>
 					</object>
 				</array>
 			</object>
@@ -237,6 +305,9 @@
 				<string key="100027.IBPluginDependency">com.apple.WebKitIBPlugin</string>
 				<string key="100039.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="100164.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="100165.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<integer value="0" key="100166.IBNSSegmentedControlInspectorSelectedSegmentMetadataKey"/>
+				<string key="100166.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="5.IBWindowTemplateEditedContentRect">{{133, 170}, {507, 413}}</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -245,18 +316,34 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">100164</int>
+			<int key="maxID">100168</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<object class="IBPartialClassDescription">
 					<string key="className">CXDocument</string>
 					<string key="superclassName">NSDocument</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">navigate:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">navigate:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">navigate:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="backForward">NSSegmentedControl</string>
 						<string key="disassemblyView">WebView</string>
 						<string key="navBar">CXNavBar</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="backForward">
+							<string key="name">backForward</string>
+							<string key="candidateClassName">NSSegmentedControl</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="disassemblyView">
 							<string key="name">disassemblyView</string>
 							<string key="candidateClassName">WebView</string>
