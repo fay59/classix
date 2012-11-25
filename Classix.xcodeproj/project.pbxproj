@@ -13,6 +13,7 @@
 		DC0D42AB165EDDBB00883586 /* OStreamDisassemblyWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC0D42A9165EDDBB00883586 /* OStreamDisassemblyWriter.cpp */; };
 		DC0D42B3165EE4F500883586 /* CXObjcDisassemblyWriter.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC0D42B1165EE4F400883586 /* CXObjcDisassemblyWriter.mm */; };
 		DC161F021661F7A900B76B61 /* CXDBRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = DC161F011661F7A900B76B61 /* CXDBRequest.m */; };
+		DC176D091662A91700C76888 /* CXGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC176D081662A91700C76888 /* CXGradientView.m */; };
 		DC264EA7165DF76A00C86BDD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC264EA6165DF76A00C86BDD /* WebKit.framework */; };
 		DC264EAC165DFFEB00C86BDD /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAA165DFFEB00C86BDD /* main.js */; };
 		DC264EB3165E022300C86BDD /* cxdb.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EB2165E022300C86BDD /* cxdb.js */; };
@@ -101,6 +102,8 @@
 		DC0D42B2165EE4F400883586 /* CXObjcDisassemblyWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXObjcDisassemblyWriter.h; sourceTree = "<group>"; };
 		DC161F001661F7A900B76B61 /* CXDBRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXDBRequest.h; sourceTree = "<group>"; };
 		DC161F011661F7A900B76B61 /* CXDBRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXDBRequest.m; sourceTree = "<group>"; };
+		DC176D071662A91700C76888 /* CXGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXGradientView.h; sourceTree = "<group>"; };
+		DC176D081662A91700C76888 /* CXGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXGradientView.m; sourceTree = "<group>"; };
 		DC264EA6165DF76A00C86BDD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		DC264EAA165DFFEB00C86BDD /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
 		DC264EAB165DFFEB00C86BDD /* cxdb.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = cxdb.css; sourceTree = "<group>"; };
@@ -554,6 +557,8 @@
 			children = (
 				DCE9880C16604ED700C28F25 /* CXNavBar.h */,
 				DCE9880D16604ED700C28F25 /* CXNavBar.m */,
+				DC176D071662A91700C76888 /* CXGradientView.h */,
+				DC176D081662A91700C76888 /* CXGradientView.m */,
 			);
 			name = "Custom Controls";
 			sourceTree = "<group>";
@@ -715,6 +720,7 @@
 				DC0D42B3165EE4F500883586 /* CXObjcDisassemblyWriter.mm in Sources */,
 				DCE9880E16604ED700C28F25 /* CXNavBar.m in Sources */,
 				DC161F021661F7A900B76B61 /* CXDBRequest.m in Sources */,
+				DC176D091662A91700C76888 /* CXGradientView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
