@@ -114,7 +114,6 @@ struct ClassixCoreVM
 @interface CXDocument (Private)
 
 -(void)buildSymbolMenu;
--(void)showDisassemblyPage;
 -(void)showDisassembly:(NSString*)key;
 -(NSImage*)fileIcon16x16:(NSString*)path;
 -(NSMenu*)exportMenuForResolver:(const CFM::SymbolResolver*)resolver;
@@ -187,12 +186,11 @@ struct ClassixCoreVM
 {
 	CXJSDebug* jsDebug = [[[CXJSDebug alloc] init] autorelease];
 	[[disassemblyView windowScriptObject] setValue:jsDebug forKey:@"debug"];
-	[self buildSymbolMenu];
 }
 
 -(void)awakeFromNib
 {
-	[self showDisassemblyPage];
+	[self buildSymbolMenu];
 }
 
 -(void)dealloc
@@ -281,6 +279,13 @@ struct ClassixCoreVM
 	}
 	return nil;
 }
+
+-(NSArray*)disassemblyForLabel:(NSString *)label
+{
+	return [disassembly objectForKey:label];
+}
+
+#pragma mark -
 
 -(void)buildSymbolMenu
 {
@@ -391,40 +396,13 @@ struct ClassixCoreVM
 	return [smallIcon autorelease];
 }
 
--(void)showDisassemblyPage
-{
-	NSData* pageData;
-	NSString* mimeType;
-	NSURL* rootUrl = [NSURL URLWithString:@"cxdb:disassembly"];
-	NSString* cxdbPath = [NSBundle.mainBundle pathForResource:@"cxdb" ofType:@"xhtml"];
-	NSMutableString* xhtml = [NSMutableString stringWithContentsOfFile:cxdbPath encoding:NSUTF8StringEncoding error:NULL];
-	if (xhtml == nil)
-	{
-		NSString* error = [NSMutableString stringWithString:@"<title>Oops</title><p>There was an error loading the disassembler user interface."];
-		pageData = [error dataUsingEncoding:NSUTF8StringEncoding];
-		mimeType = @"text/html";
-	}
-	else
-	{
-		unsigned docId = (unsigned)[[CXDocumentController documentController] idOfDocument:self];
-		NSString* documentId = [NSString stringWithFormat:@"%u", docId];
-		NSRange fullRange = NSMakeRange(0, xhtml.length);
-		[xhtml replaceOccurrencesOfString:@"##data-document-id##" withString:documentId options:NSLiteralSearch range:fullRange];
-		mimeType = @"application/xhtml+xml";
-		pageData = [xhtml dataUsingEncoding:NSUTF8StringEncoding];
-	}
-	[[disassemblyView mainFrame] loadData:pageData MIMEType:@"application/xhtml+xml" textEncodingName:@"UTF-8" baseURL:rootUrl];
-}
-
 -(void)showDisassembly:(NSString *)key
 {
-	if (NSArray* functionDisassembly = [disassembly objectForKey:key])
-	{
-		NSString* scriptTemplate = @"ShowDisassembly(%@); GoToLabel(\"%@\");";
-		NSString* disasmScript = [NSString stringWithFormat:scriptTemplate, CXJSONEncode(functionDisassembly), key];
-		auto scriptObject = [disassemblyView windowScriptObject];
-		[scriptObject evaluateWebScript:disasmScript];
-	}
+	NSUInteger documentId = [[CXDocumentController documentController] idOfDocument:self];
+	NSString* cxdbUrl = [NSString stringWithFormat:@"cxdb://disassembly/%@/%@#%@", @(documentId), key, key];
+	NSURL* url = [NSURL URLWithString:cxdbUrl];
+	NSURLRequest* request = [NSURLRequest requestWithURL:url];
+	[[disassemblyView mainFrame] loadRequest:request];
 }
 
 -(NSMenu*)exportMenuForResolver:(const CFM::SymbolResolver *)resolver

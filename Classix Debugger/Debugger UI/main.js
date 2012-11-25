@@ -214,7 +214,7 @@ function ShowDisassembly(assembly)
 			
 			if (inst.location == currentAddress)
 			{
-				var eip = CreateElement("img", {src: "cxdb:resource/execution-cursor.png", alt: "Current instruction"}, []);
+				var eip = CreateElement("img", {src: "cxdb://resource/execution-cursor.png", alt: "Current instruction"}, []);
 				tr.classList.add("current");
 				tr.childNodes[1].appendChild(eip);
 			}

@@ -12,6 +12,7 @@
 		DC0D42A8165EDC4600883586 /* FancyDisassembler.h in Headers */ = {isa = PBXBuildFile; fileRef = DC0D42A6165EDC4600883586 /* FancyDisassembler.h */; };
 		DC0D42AB165EDDBB00883586 /* OStreamDisassemblyWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC0D42A9165EDDBB00883586 /* OStreamDisassemblyWriter.cpp */; };
 		DC0D42B3165EE4F500883586 /* CXObjcDisassemblyWriter.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC0D42B1165EE4F400883586 /* CXObjcDisassemblyWriter.mm */; };
+		DC161F021661F7A900B76B61 /* CXDBRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = DC161F011661F7A900B76B61 /* CXDBRequest.m */; };
 		DC264EA7165DF76A00C86BDD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC264EA6165DF76A00C86BDD /* WebKit.framework */; };
 		DC264EAC165DFFEB00C86BDD /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAA165DFFEB00C86BDD /* main.js */; };
 		DC264EB3165E022300C86BDD /* cxdb.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EB2165E022300C86BDD /* cxdb.js */; };
@@ -98,6 +99,8 @@
 		DC0D42AA165EDDBB00883586 /* OStreamDisassemblyWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OStreamDisassemblyWriter.h; sourceTree = "<group>"; };
 		DC0D42B1165EE4F400883586 /* CXObjcDisassemblyWriter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CXObjcDisassemblyWriter.mm; sourceTree = "<group>"; };
 		DC0D42B2165EE4F400883586 /* CXObjcDisassemblyWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXObjcDisassemblyWriter.h; sourceTree = "<group>"; };
+		DC161F001661F7A900B76B61 /* CXDBRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXDBRequest.h; sourceTree = "<group>"; };
+		DC161F011661F7A900B76B61 /* CXDBRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXDBRequest.m; sourceTree = "<group>"; };
 		DC264EA6165DF76A00C86BDD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		DC264EAA165DFFEB00C86BDD /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
 		DC264EAB165DFFEB00C86BDD /* cxdb.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = cxdb.css; sourceTree = "<group>"; };
@@ -265,6 +268,8 @@
 			children = (
 				DC9E43BD165E896A00AAC682 /* CXDBURLProtocol.h */,
 				DC9E43BE165E896A00AAC682 /* CXDBURLProtocol.m */,
+				DC161F001661F7A900B76B61 /* CXDBRequest.h */,
+				DC161F011661F7A900B76B61 /* CXDBRequest.m */,
 				DC9E43C9165EA20300AAC682 /* CXJSONEncode.h */,
 				DC9E43CA165EA22400AAC682 /* CXJSONEncode.m */,
 				DC0D42A1165ED0ED00883586 /* CXJSDebug.h */,
@@ -709,6 +714,7 @@
 				DC0D42A3165ED0ED00883586 /* CXJSDebug.m in Sources */,
 				DC0D42B3165EE4F500883586 /* CXObjcDisassemblyWriter.mm in Sources */,
 				DCE9880E16604ED700C28F25 /* CXNavBar.m in Sources */,
+				DC161F021661F7A900B76B61 /* CXDBRequest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

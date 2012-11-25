@@ -22,6 +22,18 @@
 #import "CXDBURLProtocol.h"
 #import "CXJSONEncode.h"
 #import "CXDocumentController.h"
+#import "CXDBRequest.h"
+
+@interface CXDBURLProtocol (Private)
+
+-(void)respondToRequest:(CXDBRequest*)request withData:(NSData*)data ofType:(NSString*)mimeType error:(NSError*)error;
+-(void)loadResource:(CXDBRequest*)request;
+-(void)loadDisassembly:(CXDBRequest*)request;
+
+-(NSString*)argumentsToXHTML:(NSArray*)arguments;
+-(NSString*)argumentToXHTML:(NSDictionary*)argument;
+
+@end
 
 @implementation CXDBURLProtocol
 
@@ -37,7 +49,8 @@
 
 +(BOOL)canInitWithRequest:(NSURLRequest *)request
 {
-	return [request.URL.scheme caseInsensitiveCompare:[self CXDBProtocolScheme]] == NSOrderedSame;
+	NSURL* url = request.URL;
+	return [url.scheme caseInsensitiveCompare:self.CXDBProtocolScheme] == NSOrderedSame;
 }
 
 +(NSURLRequest*)canonicalRequestForRequest:(NSURLRequest *)request
@@ -47,47 +60,29 @@
 
 -(void)startLoading
 {
-	NSURLRequest* request = self.request;
-	NSURL* url = request.URL;
-	NSArray* pathComponents = [url.resourceSpecifier componentsSeparatedByString:@"/"];
-	
-	id<NSURLProtocolClient> client = self.client;
-	
-	NSLog(@"Doing request: %@", url);
+	CXDBRequest* request = [CXDBRequest requestWithURL:self.request.URL];
+	NSLog(@"Doing request: %@", request);
 	
 	// if it's a data URL, load the file synchronously
-	if ([[pathComponents objectAtIndex:0] isEqualToString:@"resource"])
+	if ([request.component isEqualToString:@"resource"])
 	{
-		NSString* resourceGivenName = [pathComponents objectAtIndex:1];
-		NSString* resourceName = [resourceGivenName stringByDeletingPathExtension];
-		NSString* resourceType = [resourceGivenName pathExtension];
-		NSString* resourcePath = [NSBundle.mainBundle pathForResource:resourceName ofType:resourceType];
-		NSString* fullPath = [resourcePath stringByExpandingTildeInPath];
-		NSURL* resourceURL = [NSURL fileURLWithPath:fullPath];
-		NSURLRequest* fileRequest = [NSURLRequest requestWithURL:resourceURL];
-		
-		[NSURLConnection sendAsynchronousRequest:fileRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
-			if (error == nil)
-			{
-				[client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageAllowedInMemoryOnly];
-				[client URLProtocol:self didLoadData:data];
-				[client URLProtocolDidFinishLoading:self];
-			}
-			else
-				[client URLProtocol:self didFailWithError:error];
-		}];
-		
-		return;
+		[self loadResource:request];
 	}
+	else if ([request.component isEqualToString:@"disassembly"])
+	{
+		[self loadDisassembly:request];
+	}
+	return;
 	
+#if 0
 	// request format: documentId/command/param1/param2/...
 	NSUInteger documentId = [[pathComponents objectAtIndex:0] integerValue];
 	NSString* command = [pathComponents objectAtIndex:1];
 	NSRange argumentsRange = NSMakeRange(2, pathComponents.count - 2);
 	
 	CXDocument* document = [[CXDocumentController documentController] documentWithId:documentId];
-	dispatch_async(dispatch_get_main_queue(), ^{
-		
+	dispatch_async(dispatch_get_main_queue(),
+	^{
 		NSString* mimeType;
 		NSString* textEncoding = nil;
 		NSData* data;
@@ -125,9 +120,154 @@
 			[response release];
 		}
 	});
+#endif
 }
 
 -(void)stopLoading
 { }
+
+#pragma mark -
+#pragma mark Private Implementation
+
+-(void)respondToRequest:(CXDBRequest*)request withData:(NSData*)data ofType:(NSString*)mimeType error:(NSError*)error
+{
+	id<NSURLProtocolClient> client = self.client;
+	
+	if (error == nil)
+	{
+		NSURLResponse* response = [[NSURLResponse alloc] initWithURL:request.URL MIMEType:mimeType expectedContentLength:data.length textEncodingName:@"UTF-8"];
+		[client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageAllowedInMemoryOnly];
+		[client URLProtocol:self didLoadData:data];
+		[client URLProtocolDidFinishLoading:self];
+	}
+	else
+		[client URLProtocol:self didFailWithError:error];
+}
+
+-(void)loadResource:(CXDBRequest*)request
+{
+	NSURL* url = request.URL;
+	NSArray* pathComponents = url.pathComponents;
+	
+	NSString* resourceGivenName = [pathComponents objectAtIndex:1];
+	NSString* resourceName = [resourceGivenName stringByDeletingPathExtension];
+	NSString* resourceType = [resourceGivenName pathExtension];
+	NSString* resourcePath = [NSBundle.mainBundle pathForResource:resourceName ofType:resourceType];
+	NSString* fullPath = [resourcePath stringByExpandingTildeInPath];
+	NSURL* resourceURL = [NSURL fileURLWithPath:fullPath];
+	NSURLRequest* fileRequest = [NSURLRequest requestWithURL:resourceURL];
+	
+	[NSURLConnection sendAsynchronousRequest:fileRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse* response, NSData* data, NSError* error)
+	{
+		[self respondToRequest:request withData:data ofType:response.MIMEType error:error];
+	}];
+}
+
+-(void)loadDisassembly:(CXDBRequest*)request
+{
+	NSError* error = nil;
+	NSString* templatePath = [[NSBundle mainBundle] pathForResource:@"cxdb" ofType:@"xhtml"];
+	NSMutableString* template = [NSMutableString stringWithContentsOfFile:templatePath encoding:NSUTF8StringEncoding error:&error];
+	if (error != nil)
+	{
+		[self respondToRequest:request withData:nil ofType:nil error:error];
+		return;
+	}
+	
+	NSString* label = [request.params objectAtIndex:0];
+	NSMutableString* xhtmlDisassembly = [NSMutableString stringWithString:@"<table id=\"disasm\">"];
+	CXDocument* document = [[CXDocumentController documentController] documentWithId:request.documentId];
+	NSArray* disassembly = [document disassemblyForLabel:label];
+	
+	for (NSDictionary* dict in disassembly)
+	{
+		NSString* label = [dict objectForKey:@"label"];
+		NSArray* instructions = [dict objectForKey:@"instructions"];
+		if (instructions.count == 0)
+			continue;
+		
+		[xhtmlDisassembly appendFormat:@"<tr><th colspan=\"6\" id=\"%@\">.%@</th></tr>", label, label];
+		for (NSDictionary* instruction in instructions)
+		{
+			uint32_t location = [[instruction objectForKey:@"location"] integerValue];
+			uint32_t code = [[instruction objectForKey:@"code"] integerValue];
+			NSString* opcode = [instruction objectForKey:@"opcode"];
+			NSArray* arguments = [instruction objectForKey:@"arguments"];
+			id target = [instruction objectForKey:@"target"];
+			
+			[xhtmlDisassembly appendFormat:@"<tr id=\"i%08x\">", location];
+			[xhtmlDisassembly appendFormat:@"<td>%08x</td>", location];
+			[xhtmlDisassembly appendString:@"<td/>"];
+			[xhtmlDisassembly appendFormat:@"<td>%08x</td>", code];
+			[xhtmlDisassembly appendFormat:@"<td>%@</td>", opcode];
+			[xhtmlDisassembly appendFormat:@"<td>%@</td>", [self argumentsToXHTML:arguments]];
+			if (target != NSNull.null)
+			{
+				NSString* stringTarget = target;
+				NSString* prefix = [stringTarget substringToIndex:2];
+				NSString* targetContent;
+				if ([prefix isEqualToString:@"lb"] || [prefix isEqualToString:@"fn"])
+				{
+					targetContent = [NSString stringWithFormat:@"<a href=\"%@#%@\">%@</a>", stringTarget, stringTarget, stringTarget];
+				}
+				else
+				{
+					targetContent = stringTarget;
+				}
+				[xhtmlDisassembly appendFormat:@"<td>%@</td>", targetContent];
+			}
+			[xhtmlDisassembly appendFormat:@"</tr>"];
+		}
+	}
+	
+	[xhtmlDisassembly appendString:@"</table>"];
+	
+	NSRange docIdRange = [template rangeOfString:@"##data-document-id##"];
+	[template replaceCharactersInRange:docIdRange withString:[NSString stringWithFormat:@"%@", label]];
+	
+	NSRange tableRange = [template rangeOfString:@"<table id=\"disasm\"/>"];
+	[template replaceCharactersInRange:tableRange withString:xhtmlDisassembly];
+
+	NSData* result = [template dataUsingEncoding:NSUTF8StringEncoding];
+	[self respondToRequest:request withData:result ofType:@"application/xhtml+xml" error:nil];
+}
+
+-(NSString*)argumentToXHTML:(NSDictionary *)argument
+{
+	int32_t value = [[argument objectForKey:@"value"] intValue];
+	switch ([[argument objectForKey:@"type"] intValue])
+	{
+		default:
+		case 0: return @"(null)";
+			
+		case 1: return [NSString stringWithFormat:@"<span class=\"gpr\">r%u</span>", value];
+		case 2: return [NSString stringWithFormat:@"<span class=\"fpr\">fr%u</span>", value];
+		case 3: return [NSString stringWithFormat:@"<span class=\"spr\">sr%u</span>", value]; // FIXME use good spr names
+		case 4: return [NSString stringWithFormat:@"<span class=\"cr\">cr%u</span>", value];
+		case 5:
+		{
+			int32_t reg = [[argument objectForKey:@"gpr"] intValue];
+			return [NSString stringWithFormat:@"<span class=\"ptr\">%i(r%u)</span>", value, reg];
+		}
+		case 6:
+		{
+			const char* sign = "";
+			if (value < 0)
+			{
+				sign = "-";
+				value = abs(value);
+			}
+			return [NSString stringWithFormat:@"%s0x%08x", sign, value];
+		}
+	}
+}
+
+-(NSString*)argumentsToXHTML:(NSArray *)arguments
+{
+	NSMutableArray* result = [NSMutableArray arrayWithCapacity:arguments.count];
+	for (NSDictionary* arg in arguments)
+		[result addObject:[self argumentToXHTML:arg]];
+	return [result componentsJoinedByString:@", "];
+}
 
 @end

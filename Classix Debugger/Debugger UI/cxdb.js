@@ -3,7 +3,7 @@ var CXDB = function(documentId)
 	function DoJSONQuery(path, callback)
 	{
 		var xhr = new XMLHttpRequest();
-		xhr.open("GET", "cxdb:" + documentId + "/" + path);
+		xhr.open("GET", "cxdb://debugger:" + documentId + "/" + path);
 		
 		if (callback != undefined)
 		{
@@ -20,7 +20,7 @@ var CXDB = function(documentId)
 	function DoDataQuery(path, callback)
 	{
 		var xhr = new XMLHttpRequest();
-		xhr.open("GET", "cxdb:" + documentId + "/" + path);
+		xhr.open("GET", "cxdb://debugger:" + documentId + "/" + path);
 		
 		if (callback != undefined)
 		{
@@ -35,11 +35,6 @@ var CXDB = function(documentId)
 	}
 	
 	this.OnInstructionPointerChanged = null;
-	
-	this.GetLabelDisassembly = function(label, cb)
-	{
-		DoJSONQuery("labels/" + label, cb);
-	}
 	
 	this.Status = function(cb)
 	{

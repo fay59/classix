@@ -46,5 +46,6 @@ enum CXErrorCode
 @property (assign) IBOutlet CXNavBar* navBar;
 
 -(id)executeCommand:(NSString*)command arguments:(NSArray*)arguments;
+-(NSArray*)disassemblyForLabel:(NSString*)label;
 
 @end
