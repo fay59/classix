@@ -47,14 +47,10 @@ namespace ClassixCore
 	}
 	
 	DlfcnLibrary::DlfcnLibrary(const std::string& path)
-	: Path(path)
 	{
-		dlHandle = dlopen(Path.c_str(), RTLD_LOCAL | RTLD_LAZY);
+		dlHandle = dlopen(path.c_str(), RTLD_LOCAL | RTLD_LAZY);
 		if (dlHandle == nullptr)
 			throw std::logic_error(dlerror());
-		
-		// this works even if there are no slashes in the name because string::npos + 1 == 0
-		Name = path.substr(path.find_last_of('/') + 1);
 		
 		Init = dlsym<InitFunction>(dlHandle, "LibraryInit");
 		Lookup = dlsym<LookupFunction>(dlHandle, "LibraryLookup");
@@ -63,6 +59,11 @@ namespace ClassixCore
 		
 		if (Init == nullptr || Lookup == nullptr || Finit == nullptr)
 			throw std::logic_error("Incomplete library");
+		
+		// get the full file path
+		Dl_info info;
+		Path = dladdr(reinterpret_cast<void*>(Init), &info) == 0 ? path : info.dli_fname;
+		Name = Path.substr(path.find_last_of('/') + 1);
 	}
 	
 	DlfcnLibrary::~DlfcnLibrary()
