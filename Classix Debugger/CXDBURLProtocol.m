@@ -186,7 +186,7 @@
 		if (instructions.count == 0)
 			continue;
 		
-		[xhtmlDisassembly appendFormat:@"<tr><th colspan=\"6\" id=\"%@\">.%@</th></tr>", label, label];
+		[xhtmlDisassembly appendFormat:@"<tr><th/><th colspan=\"5\" id=\"%@\">.%@</th></tr>", label, label];
 		for (NSDictionary* instruction in instructions)
 		{
 			uint32_t location = [[instruction objectForKey:@"location"] integerValue];
@@ -196,10 +196,10 @@
 			id target = [instruction objectForKey:@"target"];
 			
 			[xhtmlDisassembly appendFormat:@"<tr id=\"i%08x\">", location];
-			[xhtmlDisassembly appendFormat:@"<td>%08x</td>", location];
+			[xhtmlDisassembly appendFormat:@"<td> %08x</td>", location];
 			[xhtmlDisassembly appendString:@"<td/>"];
-			[xhtmlDisassembly appendFormat:@"<td>%08x</td>", code];
-			[xhtmlDisassembly appendFormat:@"<td>%@</td>", opcode];
+			[xhtmlDisassembly appendFormat:@"<td> %08x</td>", code];
+			[xhtmlDisassembly appendFormat:@"<td> %@</td>", opcode];
 			[xhtmlDisassembly appendFormat:@"<td>%@</td>", [self argumentsToXHTML:arguments]];
 			if (target != NSNull.null)
 			{
@@ -257,7 +257,12 @@
 				sign = "-";
 				value = abs(value);
 			}
-			return [NSString stringWithFormat:@"%s0x%08x", sign, value];
+			if (value > 0xffff)
+				return [NSString stringWithFormat:@"%s0x%08x", sign, value];
+			else if (value > 0xff)
+				return [NSString stringWithFormat:@"%s0x%04x", sign, value];
+			else
+				return [NSString stringWithFormat:@"%s0x%02x", sign, value];
 		}
 	}
 }

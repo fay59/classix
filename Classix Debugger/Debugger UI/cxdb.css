@@ -10,19 +10,25 @@ html, body {
 	font-size: 9pt;
 	border-collapse: collapse;
 	width: 100%;
+	white-space: pre;
 }
 
 #disasm tr:first-child th { border-top: none; }
 
 #disasm th {
 	text-align: left;
-	padding-left: 11ex;
 	border-top: 1px #ccc solid;
 	border-bottom: 1px #ccc solid;
 }
 
+#disasm tr > *:first-child {
+	-webkit-user-select: none;
+	border: none;
+	border-right : 1px #ccc solid;
+	background-color: #ededed;
+}
+
 #disasm td {
-	padding-left: 2ex;
 	height: 13px;
 	padding-top: 1px;
 	padding-bottom: 1px;
