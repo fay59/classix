@@ -24,6 +24,9 @@ NSNumber* CXVirtualMachineFPRKey = @(CXRegisterFPR);
 NSNumber* CXVirtualMachineSPRKey = @(CXRegisterSPR);
 NSNumber* CXVirtualMachineCRKey = @(CXRegisterCR);
 
+NSString* CXErrorDomain = @"Classix Error Domain";
+NSString* CXErrorFilePath = @"File URL";
+
 struct ClassixCoreVM
 {
 	Common::IAllocator* allocator;
@@ -97,6 +100,28 @@ struct ClassixCoreVM
 @implementation CXVirtualMachine
 
 @synthesize allRegisters = registers;
+@synthesize breakpoints;
+@synthesize pc;
+
+-(NSArray*)gpr
+{
+	return [registers objectForKey:CXVirtualMachineGPRKey];
+}
+
+-(NSArray*)fpr
+{
+	return [registers objectForKey:CXVirtualMachineFPRKey];
+}
+
+-(NSArray*)spr
+{
+	return [registers objectForKey:CXVirtualMachineSPRKey];
+}
+
+-(NSArray*)cr
+{
+	return [registers objectForKey:CXVirtualMachineCRKey];
+}
 
 -(id)init
 {
@@ -109,6 +134,7 @@ struct ClassixCoreVM
 	NSMutableArray* fpr = [NSMutableArray arrayWithCapacity:32];
 	NSMutableArray* cr = [NSMutableArray arrayWithCapacity:8];
 	NSMutableArray* spr = [NSMutableArray array];
+	breakpoints = [NSMutableArray array];
 	
 	for (int i = 0; i < 32; i++)
 	{
@@ -138,31 +164,116 @@ struct ClassixCoreVM
 	return self;
 }
 
--(NSArray*)gpr
+-(BOOL)loadClassicExecutable:(NSString *)executablePath error:(NSError **)error
 {
-	return [registers objectForKey:CXVirtualMachineGPRKey];
+	// TODO check that we haven't already loaded an executable
+	std::string path = [executablePath UTF8String];
+	
+	if (!vm->LoadContainer(path))
+	{
+		if (error != nullptr)
+			*error = [NSError errorWithDomain:CXErrorDomain code:CXErrorCodeFileNotLoadable userInfo:@{CXErrorFilePath: executablePath}];
+		return NO;
+	}
+	return YES;
 }
 
--(NSArray*)fpr
+-(NSValue*)fragmentManager
 {
-	return [registers objectForKey:CXVirtualMachineFPRKey];
+	CFM::FragmentManager* cfm = &vm->cfm;
+	return [NSValue value:&cfm withObjCType:@encode(typeof cfm)];
 }
 
--(NSArray*)spr
+-(NSValue*)allocator
 {
-	return [registers objectForKey:CXVirtualMachineSPRKey];
+	Common::IAllocator* allocator = vm->allocator;
+	return [NSValue value:&allocator withObjCType:@encode(typeof allocator)];
 }
 
--(NSArray*)cr
+-(IBAction)run:(id)sender
 {
-	return [registers objectForKey:CXVirtualMachineCRKey];
+	std::unordered_set<const void*> cppBreakpoints;
+	for (NSNumber* number in breakpoints)
+	{
+		const void* address = vm->allocator->ToPointer<const void>(number.unsignedIntValue);
+		cppBreakpoints.insert(address);
+	}
+	
+	const void* eip = vm->allocator->ToPointer<const void>(pc);
+	vm->interp.ExecuteUntil(eip, cppBreakpoints);
+}
+
+-(IBAction)stepOver:(id)sender
+{
+	NSLog(@"*** step over is not currently supported; step into instead");
+	[self stepInto:sender];
+}
+
+-(IBAction)stepInto:(id)sender
+{
+	const void* eip = vm->allocator->ToPointer<const void>(pc);
+	const void* newEip = vm->interp.ExecuteOne(eip);
+	self.pc = vm->allocator->ToIntPtr(newEip);
+}
+
+-(void)runTo:(uint32_t)location
+{
+	std::unordered_set<const void*> until = {vm->allocator->ToPointer<const void>(location)};
+	const void* eip = vm->allocator->ToPointer<const void>(pc);
+	vm->interp.ExecuteUntil(eip, until);
 }
 
 -(void)dealloc
 {
 	delete vm;
 	[registers release];
+	[breakpoints release];
 	[super dealloc];
+}
+
+#pragma mark -
+#pragma mark NSOutlineView stuff
+-(BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(id)item
+{
+	return [outlineView parentForItem:item] == nil;
+}
+
+-(NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
+{
+	if (item == nil) return registers.count;
+	if ([item respondsToSelector:@selector(count)]) return [item count];
+	return 0;
+}
+
+-(BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
+{
+	return [self outlineView:outlineView numberOfChildrenOfItem:item] != 0;
+}
+
+-(id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
+{
+	if (item == nil)
+		return [registers objectForKey:@(index)];
+	
+	return [item objectAtIndex:index];
+}
+
+-(id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
+{
+	if ([outlineView parentForItem:item] == nil)
+	{
+		static NSString* headers[] = {@"General-Purpose Registers", @"Floating-Point Registers", @"Condition Registers", @"Special-Purpose Registers"};
+		int index = [[[registers allKeysForObject:item] objectAtIndex:0] intValue];
+		return headers[index];
+	}
+	
+	NSString* identifier = tableColumn.identifier;
+	if ([identifier isEqualToString:@"Register"])
+		return [item name];
+	else if ([identifier isEqualToString:@"Value"])
+		return [item value];
+	
+	return nil;
 }
 
 @end

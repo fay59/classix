@@ -15,18 +15,50 @@ extern NSNumber* CXVirtualMachineFPRKey;
 extern NSNumber* CXVirtualMachineCRKey;
 extern NSNumber* CXVirtualMachineSPRKey;
 
-@interface CXVirtualMachine : NSObject <NSOutlineViewDataSource>
+extern NSString* CXErrorDomain;
+extern NSString* CXErrorFilePath;
+
+enum CXErrorCode
+{
+	CXErrorCodeNotLocalURL = 1,
+	CXErrorCodeFileNotLoadable = 2,
+	CXErrorCoreExecutableAlreadyLoaded = 3,
+};
+
+enum CXVirtualMachineSPRIndex
+{
+	CXVirtualMachineSPRXERIndex = 0,
+	CXVirtualMachineSPRLRIndex = 1,
+	CXVirtualMachineSPRCTRIndex = 2,
+};
+
+@interface CXVirtualMachine : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
 {
 	struct ClassixCoreVM* vm;
 	NSDictionary* registers;
+	NSMutableArray* breakpoints;
+	uint32_t pc;
 }
 
+@property (assign) uint32_t pc;
 @property (readonly) NSArray* gpr;
 @property (readonly) NSArray* fpr;
 @property (readonly) NSArray* cr;
 @property (readonly) NSArray* spr;
+@property (readonly) NSMutableArray* breakpoints;
 @property (readonly) NSDictionary* allRegisters; // split by category
 
 -(id)init;
+
+-(BOOL)loadClassicExecutable:(NSString*)executablePath error:(NSError**)error;
+
+-(NSValue*)fragmentManager;
+-(NSValue*)allocator;
+
+-(IBAction)run:(id)sender;
+-(IBAction)stepOver:(id)sender;
+-(IBAction)stepInto:(id)sender;
+
+-(void)runTo:(uint32_t)location;
 
 @end

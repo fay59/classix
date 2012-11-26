@@ -21,22 +21,12 @@
 
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
+#import "CXVirtualMachine.h"
 #import "CXNavBar.h"
-
-struct ClassixCoreVM;
-
-extern NSString* CXErrorDomain;
-extern NSString* CXErrorFileURL;
-
-enum CXErrorCode
-{
-	CXErrorCodeNotLocalURL = 1,
-	CXErrorCodeFileNotLoadable = 2
-};
 
 @interface CXDocument : NSDocument
 {
-	struct ClassixCoreVM* vm;
+	CXVirtualMachine* vm;
 	NSDictionary* disassembly;
 	WebView* disassemblyView;
 	CXNavBar* navBar;

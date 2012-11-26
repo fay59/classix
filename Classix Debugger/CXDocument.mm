@@ -33,83 +33,11 @@
 #import "CXDocument.h"
 #import "CXDocumentController.h"
 #import "CXJSONEncode.h"
-
-NSString* CXErrorDomain = @"Classix Error Domain";
-NSString* CXErrorFileURL = @"File URL";
+#import "CXRegister.h"
 
 static NSImage* exportImage;
 static NSImage* labelImage;
 static NSImage* functionImage;
-
-using namespace PEF;
-
-struct ClassixCoreVM
-{
-	Common::IAllocator* allocator;
-	PPCVM::MachineState state;
-	CFM::FragmentManager cfm;
-	CFM::PEFLibraryResolver pefResolver;
-	ClassixCore::DlfcnLibraryResolver dlfcnResolver;
-	PPCVM::Execution::Interpreter interp;
-	PEF::Container* container;
-	
-	std::unordered_set<intptr_t> breakpoints;
-	intptr_t nextPC;
-	
-	ClassixCoreVM(Common::IAllocator* allocator)
-	: allocator(allocator)
-	, state()
-	, cfm()
-	, pefResolver(allocator, cfm)
-	, dlfcnResolver(allocator)
-	, interp(allocator, &state)
-	, container(nullptr)
-	, nextPC(0)
-	{
-		dlfcnResolver.RegisterLibrary("StdCLib");
-		cfm.LibraryResolvers.push_back(&pefResolver);
-		cfm.LibraryResolvers.push_back(&dlfcnResolver);
-	}
-	
-	bool LoadContainer(const std::string& path)
-	{
-		if (cfm.LoadContainer(path))
-		{
-			CFM::SymbolResolver* resolver = cfm.GetSymbolResolver(path);
-			if (CFM::PEFSymbolResolver* pefResolver = dynamic_cast<CFM::PEFSymbolResolver*>(resolver))
-			{
-				container = &pefResolver->GetContainer();
-				auto main = pefResolver->GetMainAddress();
-				if (main.Universe == CFM::SymbolUniverse::PowerPC)
-				{
-					nextPC = main.Address;
-					
-					auto& section = container->GetSection(SectionForPC());
-					if (section.GetSectionType() != SectionType::Code && section.GetSectionType() != SectionType::ExecutableData)
-					{
-						// then it's a transition vector
-						const TransitionVector* vector = allocator->ToPointer<TransitionVector>(nextPC);
-						nextPC = vector->EntryPoint;
-					}
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	int SectionForPC() const
-	{
-		void* ptr = allocator->ToPointer<void>(nextPC);
-		for (int i = 0; i < container->Size(); i++)
-		{
-			auto& section = container->GetSection(i);
-			if (section.Data <= ptr && section.Data + section.Size() > ptr)
-				return i;
-		}
-		return -1;
-	}
-};
 
 @interface CXDocument (Private)
 
@@ -140,7 +68,7 @@ struct ClassixCoreVM
 {
     self = [super init];
     if (self) {
-		vm = new ClassixCoreVM(Common::NativeAllocator::Instance);
+		vm = [[CXVirtualMachine alloc] init];
     }
     return self;
 }
@@ -168,19 +96,11 @@ struct ClassixCoreVM
 	if (!url.isFileURL)
 	{
 		if (outError != nullptr)
-			*outError = [NSError errorWithDomain:CXErrorDomain code:CXErrorCodeNotLocalURL userInfo:@{CXErrorFileURL: url}];
+			*outError = [NSError errorWithDomain:CXErrorDomain code:CXErrorCodeNotLocalURL userInfo:nil];
 		return NO;
 	}
 	
-	const char* path = url.path.UTF8String;
-	if (!vm->LoadContainer(path))
-	{
-		if (outError != nullptr)
-			*outError = [NSError errorWithDomain:CXErrorDomain code:CXErrorCodeFileNotLoadable userInfo:@{CXErrorFileURL: url}];
-		return NO;
-	}
-	
-	return YES;
+	return [vm loadClassicExecutable:url.path error:outError];
 }
 
 -(void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame *)frame
@@ -200,7 +120,7 @@ struct ClassixCoreVM
 
 -(void)dealloc
 {
-	delete vm;
+	[vm release];
 	[super dealloc];
 }
 
@@ -218,77 +138,50 @@ struct ClassixCoreVM
 -(id)executeCommand:(NSString *)aCommand arguments:(NSArray *)arguments
 {
 	std::string command = aCommand.UTF8String;
-	if (command == "labels")
-	{
-		if (arguments.count == 0)
-		{
-			return [disassembly allKeys];
-		}
-		else if (arguments.count == 1)
-		{
-			return [disassembly objectForKey:[arguments objectAtIndex:0]];
-		}
-		else
-		{
-			return nil;
-		}
-	}
-	else if (command == "status")
-	{
-		if (arguments.count != 0) return nil;
-		return @{@"section": @(vm->SectionForPC()), @"pc": @(vm->nextPC)};
-	}
-	else if (command == "gpr")
+	if (command == "gpr")
 	{
 		if (arguments.count != 1) return nil;
 		int reg = [[arguments objectAtIndex:0] intValue];
 		if (reg < 0 || reg > 31) return nil;
-		return @(vm->state.gpr[reg]);
+		
+		CXRegister* regObject = [vm.gpr objectAtIndex:reg];
+		return [regObject value];
 	}
 	else if (command == "fpr")
 	{
 		if (arguments.count != 1) return nil;
 		int reg = [[arguments objectAtIndex:0] intValue];
 		if (reg < 0 || reg > 31) return nil;
-		return @(vm->state.fpr[reg]);
+		
+		CXRegister* regObject = [vm.fpr objectAtIndex:reg];
+		return [regObject value];
 	}
 	else if (command == "spr")
 	{
 		if (arguments.count != 1) return nil;
 		int reg = [[arguments objectAtIndex:0] intValue];
+		
+		CXRegister* regObject = nil;
 		switch (reg)
 		{
-			case 1: return @(vm->state.xer);
-			case 8: return @(vm->state.lr);
-			case 9: return @(vm->state.ctr);
-			default: return nil;
+			case 1: regObject = [vm.spr objectAtIndex:CXVirtualMachineSPRXERIndex]; break;
+			case 8: regObject = [vm.spr objectAtIndex:CXVirtualMachineSPRLRIndex]; break;
+			case 9: regObject = [vm.spr objectAtIndex:CXVirtualMachineSPRCTRIndex]; break;
 		}
+		return [regObject value];
 	}
 	else if (command == "cr")
 	{
 		if (arguments.count != 1) return nil;
 		int reg = [[arguments objectAtIndex:0] intValue];
 		if (reg < 0 || reg > 7) return nil;
-		return @(vm->state.cr[reg]);
+		
+		CXRegister* regObject = [vm.cr objectAtIndex:reg];
+		return [regObject value];
 	}
 	else if (command == "memory")
 	{
-		if (arguments.count != 2) return nil;
-		
-		intptr_t begin = [[arguments objectAtIndex:0] integerValue];
-		intptr_t count = [[arguments objectAtIndex:1] integerValue];
-		
-		// check that the range was allocated
-		// this is a cheap, inaccurate check because it only verifies that the two ends of the memory range lie inside
-		// any allocated memory range, and not even necessarily the same, but in practice it should be "good enough".
-		intptr_t end = begin + count;
-		
-		if (vm->allocator->IsAllocated(begin) && vm->allocator->IsAllocated(end))
-		{
-			uint8_t* bytes = vm->allocator->ToPointer<uint8_t>(begin);
-			return [NSData dataWithBytes:bytes length:count];
-		}
-		
+		NSLog(@"*** Memory command is not implemented");
 		return nil;
 	}
 	return nil;
@@ -326,7 +219,12 @@ struct ClassixCoreVM
 	// build the menus with the current resolvers
 	NSMenu* resolverMenu = [[[NSMenu alloc] initWithTitle:@"Debugger"] autorelease];
 	
-	for (auto iter = vm->cfm.Begin(); iter != vm->cfm.End(); iter++)
+	CFM::FragmentManager* cfm;
+	Common::IAllocator* allocator;
+	[[vm fragmentManager] getValue:&cfm];
+	[[vm allocator] getValue:&allocator];
+	
+	for (auto iter = cfm->Begin(); iter != cfm->End(); iter++)
 	{
 		const SymbolResolver* resolver = iter->second;
 		std::string name;
@@ -364,7 +262,7 @@ struct ClassixCoreVM
 		// unfortunately we have to do typecasts from this point...
 		if (const PEFSymbolResolver* pef = dynamic_cast<const PEFSymbolResolver*>(resolver))
 		{
-			PPCVM::Disassembly::FancyDisassembler disasm(vm->allocator);
+			PPCVM::Disassembly::FancyDisassembler disasm(allocator);
 			const PEF::Container& container = pef->GetContainer();
 			NSMutableDictionary* labelToArray = [NSMutableDictionary dictionary];
 			for (int i = 0; i < container.Size(); i++)
