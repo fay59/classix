@@ -53,6 +53,7 @@ static NSImage* functionImage;
 @synthesize disassemblyView;
 @synthesize navBar;
 @synthesize backForward;
+@synthesize outline;
 
 +(void)initialize
 {
@@ -116,6 +117,9 @@ static NSImage* functionImage;
 	[backForward setEnabled:NO forSegment:1];
 	[disassemblyView addObserver:self forKeyPath:@"canGoBack" options:NSKeyValueObservingOptionNew context:nullptr];
 	[disassemblyView addObserver:self forKeyPath:@"canGoForward" options:NSKeyValueObservingOptionNew context:nullptr];
+	
+	outline.delegate = vm;
+	outline.dataSource = vm;
 }
 
 -(void)dealloc

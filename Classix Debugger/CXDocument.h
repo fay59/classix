@@ -31,11 +31,13 @@
 	WebView* disassemblyView;
 	CXNavBar* navBar;
 	NSSegmentedControl* backForward;
+	NSOutlineView* outline;
 }
 
 @property (assign) IBOutlet WebView* disassemblyView;
 @property (assign) IBOutlet CXNavBar* navBar;
 @property (assign) IBOutlet NSSegmentedControl* backForward;
+@property (assign) IBOutlet NSOutlineView* outline;
 
 -(IBAction)navigate:(id)sender;
 

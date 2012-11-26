@@ -262,9 +262,13 @@ struct ClassixCoreVM
 {
 	if ([outlineView parentForItem:item] == nil)
 	{
-		static NSString* headers[] = {@"General-Purpose Registers", @"Floating-Point Registers", @"Condition Registers", @"Special-Purpose Registers"};
-		int index = [[[registers allKeysForObject:item] objectAtIndex:0] intValue];
-		return headers[index];
+		if ([tableColumn.identifier isEqualToString:@"Register"])
+		{
+			static NSString* headers[] = {@"GPR", @"FPR", @"CR", @"SPR"};
+			int index = [[[registers allKeysForObject:item] objectAtIndex:0] intValue];
+			return headers[index];
+		}
+		return nil;
 	}
 	
 	NSString* identifier = tableColumn.identifier;
@@ -274,6 +278,47 @@ struct ClassixCoreVM
 		return [item value];
 	
 	return nil;
+}
+
+-(void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
+{
+	if ([item isKindOfClass:CXRegister.class])
+	{
+		NSString* value = object;
+		CXRegister* regObject = item;
+		const char* numberString = value.UTF8String;
+		char* end;
+		
+		if (value.length > 2 && [value characterAtIndex:0] == '0')
+		{
+			long result;
+			switch ([value characterAtIndex:1])
+			{
+				case 'b': result = strtol(numberString + 2, &end, 2); break;
+				case 'x': result = strtol(numberString + 2, &end, 16); break;
+				default: result = strtol(numberString + 1, &end, 8); break;
+			}
+			
+			if (*end != 0)
+			{
+				NSLog(@"*** trying to set %@ to invalid string %@", regObject.name, value);
+				return;
+			}
+			regObject.value = @(result);
+		}
+		else
+		{
+			NSNumberFormatter* formatter = [[[NSNumberFormatter alloc] init] autorelease];
+			formatter.numberStyle = NSNumberFormatterDecimalStyle;
+			NSNumber* result = [formatter numberFromString:value];
+			if (result == nil)
+			{
+				NSLog(@"*** trying to set %@ to invalid string %@", regObject.name, value);
+				return;
+			}
+			regObject.value = result;
+		}
+	}
 }
 
 @end
