@@ -33,7 +33,7 @@ namespace Common
 	
 	class AutoAllocation
 	{
-		void* address;
+		uint32_t address;
 		IAllocator* allocator;
 		
 	public:
@@ -43,6 +43,9 @@ namespace Common
 		
 		void* operator*();
 		const void* operator*() const;
+		
+		template<typename T> T* ToPointer();
+		template<typename T> T* ToArray(size_t count);
 		
 		uint32_t GetVirtualAddress() const;
 		
@@ -64,6 +67,11 @@ namespace Common
 		virtual const std::string* GetRegionOfAllocation(intptr_t address) = 0;
 		
 #pragma mark -
+		inline uint32_t IntPtrAllocate(const std::string& zoneName, size_t size)
+		{
+			return ToIntPtr(Allocate(zoneName, size));
+		}
+		
 		inline bool IsAllocated(intptr_t address)
 		{
 			return GetRegionOfAllocation(address) != nullptr;
@@ -98,6 +106,13 @@ namespace Common
 		}
 		
 		template<typename T>
+		T* ToArray(intptr_t value, size_t count)
+		{
+			assert(IsAllocated(value) && IsAllocated(value + sizeof(T) * count - 1) && "dereferencing memory that was not allocated");
+			return reinterpret_cast<T*>(GetBaseAddress() + value);
+		}
+		
+		template<typename T>
 		intptr_t ToIntPtr(T* value)
 		{
 			uint8_t* asUint8 = reinterpret_cast<uint8_t*>(value);
@@ -113,6 +128,18 @@ namespace Common
 		
 		virtual ~IAllocator();
 	};
+	
+	template<typename T>
+	T* AutoAllocation::ToPointer()
+	{
+		return allocator->ToPointer<T>(address);
+	}
+	
+	template<typename T>
+	T* AutoAllocation::ToArray(size_t count)
+	{
+		return allocator->ToArray<T>(address, count);
+	}
 }
 
 #endif /* defined(__pefdump__IAllocator__) */
