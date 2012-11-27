@@ -20,7 +20,6 @@
 			<string>NSSegmentedControl</string>
 			<string>NSSplitView</string>
 			<string>NSTableColumn</string>
-			<string>NSTableHeaderView</string>
 			<string>NSTextFieldCell</string>
 			<string>NSView</string>
 			<string>NSWindowTemplate</string>
@@ -184,24 +183,14 @@
 															<reference key="NSNextResponder" ref="266271608"/>
 															<int key="NSvFlags">256</int>
 															<array class="NSMutableArray" key="NSSubviews"/>
-															<string key="NSFrameSize">{179, 482}</string>
+															<string key="NSFrameSize">{179, 498}</string>
 															<reference key="NSSuperview" ref="266271608"/>
 															<reference key="NSWindow"/>
-															<reference key="NSNextKeyView" ref="617058492"/>
+															<reference key="NSNextKeyView"/>
 															<string key="NSReuseIdentifierKey">_NS:13</string>
 															<bool key="NSEnabled">YES</bool>
 															<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 															<bool key="NSControlAllowsExpansionToolTips">YES</bool>
-															<object class="NSTableHeaderView" key="NSHeaderView" id="834554427">
-																<reference key="NSNextResponder" ref="982513493"/>
-																<int key="NSvFlags">256</int>
-																<string key="NSFrameSize">{179, 17}</string>
-																<reference key="NSSuperview" ref="982513493"/>
-																<reference key="NSWindow"/>
-																<reference key="NSNextKeyView" ref="266271608"/>
-																<string key="NSReuseIdentifierKey">_NS:16</string>
-																<reference key="NSTableView" ref="229490025"/>
-															</object>
 															<object class="_NSCornerView" key="NSCornerView">
 																<nil key="NSNextResponder"/>
 																<int key="NSvFlags">-2147483392</int>
@@ -327,7 +316,7 @@
 															<bool key="NSOutlineViewIndentationMarkerFollowsCellKey">NO</bool>
 														</object>
 													</array>
-													<string key="NSFrame">{{1, 17}, {179, 482}}</string>
+													<string key="NSFrame">{{1, 1}, {179, 498}}</string>
 													<reference key="NSSuperview" ref="976478822"/>
 													<reference key="NSWindow"/>
 													<reference key="NSNextKeyView" ref="229490025"/>
@@ -347,8 +336,7 @@
 													<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 													<reference key="NSTarget" ref="976478822"/>
 													<string key="NSAction">_doScroller:</string>
-													<double key="NSCurValue">37</double>
-													<double key="NSPercent">0.13909779489040375</double>
+													<double key="NSPercent">0.99799599198396793</double>
 												</object>
 												<object class="NSScroller" id="622082895">
 													<reference key="NSNextResponder" ref="976478822"/>
@@ -361,34 +349,18 @@
 													<int key="NSsFlags">1</int>
 													<reference key="NSTarget" ref="976478822"/>
 													<string key="NSAction">_doScroller:</string>
-													<double key="NSPercent">0.98639455782312924</double>
-												</object>
-												<object class="NSClipView" id="982513493">
-													<reference key="NSNextResponder" ref="976478822"/>
-													<int key="NSvFlags">2304</int>
-													<array class="NSMutableArray" key="NSSubviews">
-														<reference ref="834554427"/>
-													</array>
-													<string key="NSFrame">{{1, 0}, {179, 17}}</string>
-													<reference key="NSSuperview" ref="976478822"/>
-													<reference key="NSWindow"/>
-													<reference key="NSNextKeyView" ref="834554427"/>
-													<string key="NSReuseIdentifierKey">_NS:15</string>
-													<reference key="NSDocView" ref="834554427"/>
-													<reference key="NSBGColor" ref="265380759"/>
-													<int key="NScvFlags">4</int>
+													<double key="NSPercent">0.99444444444444446</double>
 												</object>
 											</array>
 											<string key="NSFrameSize">{181, 500}</string>
 											<reference key="NSSuperview" ref="912253566"/>
 											<reference key="NSWindow"/>
-											<reference key="NSNextKeyView" ref="982513493"/>
+											<reference key="NSNextKeyView" ref="266271608"/>
 											<string key="NSReuseIdentifierKey">_NS:9</string>
 											<int key="NSsFlags">133682</int>
 											<reference key="NSVScroller" ref="617058492"/>
 											<reference key="NSHScroller" ref="622082895"/>
 											<reference key="NSContentView" ref="266271608"/>
-											<reference key="NSHeaderClipView" ref="982513493"/>
 											<bytes key="NSScrollAmts">QSAAAEEgAABBmAAAQZgAAA</bytes>
 											<double key="NSMinMagnification">0.25</double>
 											<double key="NSMaxMagnification">4</double>
@@ -600,7 +572,6 @@
 						<array class="NSMutableArray" key="children">
 							<reference ref="229490025"/>
 							<reference ref="622082895"/>
-							<reference ref="834554427"/>
 							<reference ref="617058492"/>
 						</array>
 						<reference key="parent" ref="912253566"/>
@@ -617,11 +588,6 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">100174</int>
 						<reference key="object" ref="622082895"/>
-						<reference key="parent" ref="976478822"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">100175</int>
-						<reference key="object" ref="834554427"/>
 						<reference key="parent" ref="976478822"/>
 					</object>
 					<object class="IBObjectRecord">
@@ -673,7 +639,6 @@
 				<string key="100172.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="100173.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="100174.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="100175.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="100176.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="100177.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="100178.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
