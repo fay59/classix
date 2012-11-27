@@ -23,6 +23,7 @@ enum CXErrorCode
 	CXErrorCodeNotLocalURL = 1,
 	CXErrorCodeFileNotLoadable = 2,
 	CXErrorCoreExecutableAlreadyLoaded = 3,
+	CXErrorCodeFileNotExecutable = 4,
 };
 
 enum CXVirtualMachineSPRIndex
@@ -37,6 +38,7 @@ enum CXVirtualMachineSPRIndex
 	struct ClassixCoreVM* vm;
 	NSDictionary* registers;
 	NSMutableArray* breakpoints;
+	NSMutableSet* changedRegisters;
 	uint32_t pc;
 }
 
@@ -50,7 +52,7 @@ enum CXVirtualMachineSPRIndex
 
 -(id)init;
 
--(BOOL)loadClassicExecutable:(NSString*)executablePath error:(NSError**)error;
+-(BOOL)loadClassicExecutable:(NSString *)executablePath arguments:(NSArray*)args environment:(NSDictionary*)env error:(NSError **)error;
 
 -(NSValue*)fragmentManager;
 -(NSValue*)allocator;

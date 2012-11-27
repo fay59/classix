@@ -101,7 +101,10 @@ static NSImage* functionImage;
 		return NO;
 	}
 	
-	return [vm loadClassicExecutable:url.path error:outError];
+	// FIXME cheap
+	NSArray* arguments = @[url.path];
+	NSDictionary* environment = [NSDictionary dictionary];
+	return [vm loadClassicExecutable:url.path arguments:arguments environment:environment error:outError];
 }
 
 -(void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame *)frame

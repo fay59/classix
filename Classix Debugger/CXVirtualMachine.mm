@@ -97,6 +97,12 @@ struct ClassixCoreVM
 	}
 };
 
+@interface CXVirtualMachine (Private)
+
+-(void)refreshRegisters:(const PPCVM::MachineState*)oldState;
+
+@end
+
 @implementation CXVirtualMachine
 
 @synthesize allRegisters = registers;
@@ -134,7 +140,8 @@ struct ClassixCoreVM
 	NSMutableArray* fpr = [NSMutableArray arrayWithCapacity:32];
 	NSMutableArray* cr = [NSMutableArray arrayWithCapacity:8];
 	NSMutableArray* spr = [NSMutableArray array];
-	breakpoints = [NSMutableArray array];
+	breakpoints = [[NSMutableArray alloc] init];
+	changedRegisters = [[NSMutableSet alloc] initWithCapacity:75];
 	
 	for (int i = 0; i < 32; i++)
 	{
@@ -164,7 +171,7 @@ struct ClassixCoreVM
 	return self;
 }
 
--(BOOL)loadClassicExecutable:(NSString *)executablePath error:(NSError **)error
+-(BOOL)loadClassicExecutable:(NSString *)executablePath arguments:(NSArray*)args environment:(NSDictionary*)env error:(NSError **)error
 {
 	// TODO check that we haven't already loaded an executable
 	std::string path = [executablePath UTF8String];
@@ -175,6 +182,89 @@ struct ClassixCoreVM
 			*error = [NSError errorWithDomain:CXErrorDomain code:CXErrorCodeFileNotLoadable userInfo:@{CXErrorFilePath: executablePath}];
 		return NO;
 	}
+	
+	// do we have a main symbol? let's hope so
+	auto resolver = vm->cfm.GetSymbolResolver(path);
+	auto main = resolver->GetMainAddress();
+	if (main.Universe != CFM::SymbolUniverse::PowerPC)
+	{
+		if (error != nullptr)
+			*error = [NSError errorWithDomain:CXErrorDomain code:CXErrorCodeFileNotExecutable userInfo:@{CXErrorFilePath: executablePath}];
+		return NO;
+	}
+	
+	// from this point, nothing else should fail...
+	auto mainVector = vm->allocator->ToPointer<const PEF::TransitionVector>(main.Address);
+	
+	// set argv and envp
+	std::vector<size_t> argvOffsets;
+	std::vector<size_t> envpOffsets;
+	std::vector<char> argvStrings;
+	std::vector<char> envpStrings;
+	
+	for (NSString* arg in args)
+	{
+		const char* begin = arg.UTF8String;
+		const char* end = begin + strlen(begin) + 1;
+		argvOffsets.push_back(argvStrings.size());
+		argvStrings.insert(argvStrings.end(), begin, end);
+	}
+	
+	for (NSString* key in env)
+	{
+		const char* keyBegin = key.UTF8String;
+		const char* keyEnd = keyBegin + strlen(keyBegin);
+		envpOffsets.push_back(envpStrings.size());
+		envpStrings.insert(envpStrings.end(), keyBegin, keyEnd);
+		envpStrings.push_back('=');
+		
+		NSString* value = [env objectForKey:key];
+		const char* valueBegin = value.UTF8String;
+		const char* valueEnd = valueBegin + strlen(valueBegin) + 1;
+		envpStrings.insert(envpStrings.end(), valueBegin, valueEnd);
+	}
+	
+	Common::AutoAllocation argvStringsArea = vm->allocator->AllocateAuto("Argument Values", argvStrings.size());
+	Common::AutoAllocation envpStringsArea = vm->allocator->AllocateAuto("Environment Variables", envpStrings.size());
+	Common::AutoAllocation argvAlloc = vm->allocator->AllocateAuto("argv", argvOffsets.size() * sizeof(uint32_t));
+	Common::AutoAllocation envpAlloc = vm->allocator->AllocateAuto("envp", (envpOffsets.size() + 1) * sizeof(uint32_t));
+	
+	memcpy(*argvStringsArea, argvStrings.data(), argvStrings.size());
+	memcpy(*envpStringsArea, envpStrings.data(), envpStrings.size());
+	
+	Common::UInt32* argvValues = argvAlloc.ToArray<Common::UInt32>(argvOffsets.size());
+	for (size_t i = 0; i < argvOffsets.size(); i++)
+		argvValues[i] = argvStringsArea.GetVirtualAddress() + argvOffsets[i];
+	
+	Common::UInt32* envpValues = envpAlloc.ToArray<Common::UInt32>(envpOffsets.size() + 1);
+	for (size_t i = 0; i < envpOffsets.size(); i++)
+		envpValues[i] = envpStringsArea.GetVirtualAddress() + envpOffsets[i];
+	envpValues[envpOffsets.size()] = 0;
+	
+	Common::AutoAllocation stack = vm->allocator->AllocateAuto("Stack", 0x100000);
+	
+	// set the stage
+	vm->state.r0 = 0;
+	vm->state.r1 = stack.GetVirtualAddress();
+	vm->state.r2 = mainVector->TableOfContents;
+	vm->state.r3 = args.count;
+	vm->state.r4 = argvAlloc.GetVirtualAddress();
+	vm->state.r5 = envpAlloc.GetVirtualAddress();
+	
+	NSArray* gpr = self.gpr;
+	NSArray* initialRegisters = @[
+		[gpr objectAtIndex:1],
+		[gpr objectAtIndex:2],
+		[gpr objectAtIndex:3],
+		[gpr objectAtIndex:4],
+		[gpr objectAtIndex:5],
+	];
+	
+	[changedRegisters removeAllObjects];
+	[changedRegisters addObjectsFromArray:initialRegisters];
+	
+	self.pc = mainVector->EntryPoint;
+	
 	return YES;
 }
 
@@ -200,27 +290,38 @@ struct ClassixCoreVM
 	}
 	
 	const void* eip = vm->allocator->ToPointer<const void>(pc);
-	vm->interp.ExecuteUntil(eip, cppBreakpoints);
+	PPCVM::MachineState oldState = vm->state;
+	eip = vm->interp.ExecuteUntil(eip, cppBreakpoints);
+	
+	self.pc = vm->allocator->ToIntPtr(eip);
+	[self refreshRegisters:&oldState];
 }
 
 -(IBAction)stepOver:(id)sender
 {
-	NSLog(@"*** step over is not currently supported; step into instead");
+	NSLog(@"*** step over is not currently supported; stepping into instead");
 	[self stepInto:sender];
 }
 
 -(IBAction)stepInto:(id)sender
 {
+	PPCVM::MachineState oldState = vm->state;
 	const void* eip = vm->allocator->ToPointer<const void>(pc);
-	const void* newEip = vm->interp.ExecuteOne(eip);
-	self.pc = vm->allocator->ToIntPtr(newEip);
+	eip = vm->interp.ExecuteOne(eip);
+	
+	self.pc = vm->allocator->ToIntPtr(eip);
+	[self refreshRegisters:&oldState];
 }
 
 -(void)runTo:(uint32_t)location
 {
 	std::unordered_set<const void*> until = {vm->allocator->ToPointer<const void>(location)};
 	const void* eip = vm->allocator->ToPointer<const void>(pc);
-	vm->interp.ExecuteUntil(eip, until);
+	PPCVM::MachineState oldState = vm->state;
+	eip = vm->interp.ExecuteUntil(eip, until);
+	
+	self.pc = vm->allocator->ToIntPtr(eip);
+	[self refreshRegisters:&oldState];
 }
 
 -(void)dealloc
@@ -228,6 +329,7 @@ struct ClassixCoreVM
 	delete vm;
 	[registers release];
 	[breakpoints release];
+	[changedRegisters release];
 	[super dealloc];
 }
 
@@ -256,6 +358,18 @@ struct ClassixCoreVM
 		return [registers objectForKey:@(index)];
 	
 	return [item objectAtIndex:index];
+}
+
+-(void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item
+{
+	if ([changedRegisters containsObject:item])
+	{
+		[cell setTextColor:NSColor.redColor];
+	}
+	else
+	{
+		[cell setTextColor:NSColor.blackColor];
+	}
 }
 
 -(id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
@@ -318,6 +432,61 @@ struct ClassixCoreVM
 			}
 			regObject.value = result;
 		}
+	}
+}
+
+#pragma mark -
+#pragma mark Private
+-(void)refreshRegisters:(const PPCVM::MachineState *)oldState
+{
+	[changedRegisters removeAllObjects];
+	// notify observers for value changes
+	for (int i = 0; i < 8; i++)
+	{
+		if (oldState->cr[i] != vm->state.cr[i])
+		{
+			CXRegister* cr = [self.cr objectAtIndex:i];
+			cr.value = @(vm->state.cr[i]);
+			[changedRegisters addObject:cr];
+		}
+	}
+	
+	for (int i = 0; i < 32; i++)
+	{
+		if (oldState->gpr[i] != vm->state.gpr[i])
+		{
+			CXRegister* gpr = [self.gpr objectAtIndex:i];
+			gpr.value = @(vm->state.gpr[i]);
+			[changedRegisters addObject:gpr];
+		}
+		
+		if (oldState->fpr[i] != vm->state.fpr[i])
+		{
+			CXRegister* fpr = [self.fpr objectAtIndex:i];
+			fpr.value = @(vm->state.fpr[i]);
+			[changedRegisters addObject:fpr];
+		}
+	}
+	
+	if (oldState->xer != vm->state.xer)
+	{
+		CXRegister* xer = [self.spr objectAtIndex:CXVirtualMachineSPRXERIndex];
+		xer.value = @(vm->state.xer);
+		[changedRegisters addObject:xer];
+	}
+	
+	if (oldState->ctr != vm->state.ctr)
+	{
+		CXRegister* ctr = [self.spr objectAtIndex:CXVirtualMachineSPRCTRIndex];
+		ctr.value = @(vm->state.ctr);
+		[changedRegisters addObject:ctr];
+	}
+	
+	if (oldState->lr != vm->state.lr)
+	{
+		CXRegister* lr = [self.spr objectAtIndex:CXVirtualMachineSPRLRIndex];
+		lr.value = @(vm->state.lr);
+		[changedRegisters addObject:lr];
 	}
 }
 
