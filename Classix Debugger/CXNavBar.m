@@ -117,7 +117,7 @@ static NSImage* arrow;
 	
 	NSMutableDictionary* mutableHitBoxes = [NSMutableDictionary dictionaryWithCapacity:selectionHierarchy.count];
 	NSUInteger i = 0;
-	CGFloat outputLocation = bounds.origin.x + 10;
+	CGFloat outputLocation = bounds.origin.x;
 	const NSSize arrowSize = arrow.size;
 	const CGFloat height = bounds.size.height - 8;
 	const NSRect arrowBaseFrame = NSMakeRect(0, bounds.origin.y + 4, height * arrowSize.width / arrowSize.height, height);
