@@ -18,7 +18,7 @@ function DehighlightPC()
 	var pcRow = document.querySelector(".current");
 	if (pcRow != null)
 	{
-		var arrowTd = pcRow.childNodes[2];
+		var arrowTd = pcRow.childNodes[1];
 		arrowTd.removeChild(arrowTd.firstChild);
 		pcRow.classList.remove("current");
 	}
@@ -37,13 +37,13 @@ function HighlightPC(pc)
 	
 	var pcString = lpad(pc.toString(16), 8, '0');
 	var instructionLabel = "#i" + pcString;
-	pcRow = document.querySelector(instructionLabel);
-	if (row != null)
+	var pcRow = document.querySelector(instructionLabel);
+	if (pcRow != null)
 	{
-		row.classList.add("current");
+		pcRow.classList.add("current");
 		var img = document.createElement("img");
 		img.src = "cxdb://resource/execution-cursor.png";
-		row.childNodes[1].appendChild(img);
+		pcRow.childNodes[1].appendChild(img);
 	}
 	
 	var visibleYBegin = document.scrollTop;

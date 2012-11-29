@@ -201,7 +201,11 @@
 			[xhtmlDisassembly appendFormat:@"<td> %08x</td>", code];
 			[xhtmlDisassembly appendFormat:@"<td> %@</td>", opcode];
 			[xhtmlDisassembly appendFormat:@"<td>%@</td>", [self argumentsToXHTML:arguments]];
-			if (target != NSNull.null)
+			if (target == NSNull.null)
+			{
+				[xhtmlDisassembly appendString:@"<td/>"];
+			}
+			else
 			{
 				NSString* stringTarget = target;
 				NSString* prefix = [stringTarget substringToIndex:2];
