@@ -27,7 +27,11 @@
 @interface CXDocument : NSDocument
 {
 	CXVirtualMachine* vm;
+	
+	NSArray* sortedLabelAddresses;
+	NSDictionary* labelNames;
 	NSDictionary* disassembly;
+	
 	WebView* disassemblyView;
 	CXNavBar* navBar;
 	NSSegmentedControl* backForward;
@@ -39,9 +43,17 @@
 @property (assign) IBOutlet NSSegmentedControl* backForward;
 @property (assign) IBOutlet NSOutlineView* outline;
 
--(IBAction)navigate:(id)sender;
+@property (readonly) uint32_t pc;
 
--(id)executeCommand:(NSString*)command arguments:(NSArray*)arguments;
--(NSArray*)disassemblyForLabel:(NSString*)label;
+-(IBAction)goBack:(id)sender;
+-(IBAction)goForward:(id)sender;
+-(IBAction)run:(id)sender;
+-(IBAction)stepOver:(id)sender;
+-(IBAction)stepInto:(id)sender;
+
+-(IBAction)navigate:(id)sender;
+-(IBAction)controlFlow:(id)sender;
+
+-(NSArray*)disassemblyForAddress:(NSString*)label;
 
 @end

@@ -174,10 +174,10 @@
 		return;
 	}
 	
-	NSString* label = [request.params objectAtIndex:0];
+	NSString* label = request.params.lastObject;
 	NSMutableString* xhtmlDisassembly = [NSMutableString stringWithString:@"<table id=\"disasm\">"];
 	CXDocument* document = [[CXDocumentController documentController] documentWithId:request.documentId];
-	NSArray* disassembly = [document disassemblyForLabel:label];
+	NSArray* disassembly = [document disassemblyForAddress:label];
 	
 	for (NSDictionary* dict in disassembly)
 	{

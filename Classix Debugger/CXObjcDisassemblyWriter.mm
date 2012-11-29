@@ -39,6 +39,7 @@ void CXObjCDisassemblyWriter::EnterLabel(const PPCVM::Disassembly::InstructionRa
 	currentArray = [NSMutableArray array];
 	NSDictionary* objcLabel = @{
 		@"label": @(label.Name.c_str()),
+		@"address": @(labelAddress),
 		@"instructions": currentArray
 	};
 	[result addObject:objcLabel];

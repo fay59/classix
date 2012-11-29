@@ -29,7 +29,6 @@
 #include "CXObjcDisassemblyWriter.h"
 #include <unordered_set>
 
-#import "CXJSDebug.h"
 #import "CXDocument.h"
 #import "CXDocumentController.h"
 #import "CXJSONEncode.h"
@@ -39,10 +38,36 @@ static NSImage* exportImage;
 static NSImage* labelImage;
 static NSImage* functionImage;
 
+static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number, NSUInteger partitionBegin, NSUInteger size)
+{
+	if (size <= 2)
+		return [sortedArray objectAtIndex:partitionBegin];
+	
+	NSUInteger halfSize = size / 2;
+	NSUInteger middle = partitionBegin + halfSize;
+	NSNumber* middleNumber = [sortedArray objectAtIndex:middle];
+	
+	NSComparisonResult compare = [number compare:middleNumber];
+	
+	if (compare == NSOrderedAscending)
+		return CXFindNextGreater(sortedArray, number, partitionBegin, halfSize);
+	
+	if (compare == NSOrderedDescending)
+		return CXFindNextGreater(sortedArray, number, middle, size - halfSize);
+	
+	return middleNumber;
+}
+
+static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
+{
+	return CXFindNextGreater(sortedArray, number, 0, sortedArray.count);
+}
+
 @interface CXDocument (Private)
 
 -(void)buildSymbolMenu;
 -(void)showDisassembly:(NSString*)key;
+-(void)showPC;
 -(NSImage*)fileIcon16x16:(NSString*)path;
 -(NSMenu*)exportMenuForResolver:(const CFM::SymbolResolver*)resolver;
 
@@ -54,6 +79,11 @@ static NSImage* functionImage;
 @synthesize navBar;
 @synthesize backForward;
 @synthesize outline;
+
+-(uint32_t)pc
+{
+	return vm.pc;
+}
 
 +(void)initialize
 {
@@ -84,7 +114,15 @@ static NSImage* functionImage;
 -(void)windowControllerDidLoadNib:(NSWindowController *)aController
 {
 	[super windowControllerDidLoadNib:aController];
-	// Add any code here that needs to be executed once the windowController has loaded the document's window.
+	
+	[self buildSymbolMenu];
+	[backForward setEnabled:NO forSegment:0];
+	[backForward setEnabled:NO forSegment:1];
+	[disassemblyView addObserver:self forKeyPath:@"canGoBack" options:NSKeyValueObservingOptionNew context:nullptr];
+	[disassemblyView addObserver:self forKeyPath:@"canGoForward" options:NSKeyValueObservingOptionNew context:nullptr];
+	
+	outline.delegate = vm;
+	outline.dataSource = vm;
 }
 
 +(BOOL)autosavesInPlace
@@ -109,94 +147,76 @@ static NSImage* functionImage;
 
 -(void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame *)frame
 {
-	CXJSDebug* jsDebug = [[[CXJSDebug alloc] init] autorelease];
-	[[disassemblyView windowScriptObject] setValue:jsDebug forKey:@"debug"];
-}
-
--(void)awakeFromNib
-{
-	[self buildSymbolMenu];
-	[backForward setEnabled:NO forSegment:0];
-	[backForward setEnabled:NO forSegment:1];
-	[disassemblyView addObserver:self forKeyPath:@"canGoBack" options:NSKeyValueObservingOptionNew context:nullptr];
-	[disassemblyView addObserver:self forKeyPath:@"canGoForward" options:NSKeyValueObservingOptionNew context:nullptr];
-	
-	outline.delegate = vm;
-	outline.dataSource = vm;
+	[self showPC];
 }
 
 -(void)dealloc
 {
 	[vm release];
+	[sortedLabelAddresses release];
+	[labelNames release];
+	[disassembly release];
+	
 	[super dealloc];
 }
 
 #pragma mark -
 
+-(IBAction)goBack:(id)sender
+{
+	[disassemblyView goBack];
+}
+
+-(IBAction)goForward:(id)sender
+{
+	[disassemblyView goForward];
+}
+
+-(IBAction)run:(id)sender
+{
+	[vm run:sender];
+	[self showPC];
+}
+
+-(IBAction)stepInto:(id)sender
+{
+	[vm stepInto:sender];
+	[self showPC];
+}
+
+-(IBAction)stepOver:(id)sender
+{
+	[vm stepOver:sender];
+	[self showPC];
+}
+
+-(IBAction)controlFlow:(id)sender
+{
+	NSInteger segment = [sender selectedSegment];
+	switch (segment)
+	{
+		case 0: return [self run:sender];
+		case 1: return [self stepInto:sender];
+		case 2: return [self stepOver:sender];
+	}
+}
+
 -(IBAction)navigate:(id)sender
 {
 	NSInteger segment = [sender selectedSegment];
 	if (segment == 0)
-		[disassemblyView goBack];
+		[self goBack:sender];
 	else
-		[disassemblyView goForward];
+		[self goForward:sender];
 }
 
--(id)executeCommand:(NSString *)aCommand arguments:(NSArray *)arguments
+-(NSArray*)disassemblyForAddress:(NSString *)label
 {
-	std::string command = aCommand.UTF8String;
-	if (command == "gpr")
-	{
-		if (arguments.count != 1) return nil;
-		int reg = [[arguments objectAtIndex:0] intValue];
-		if (reg < 0 || reg > 31) return nil;
-		
-		CXRegister* regObject = [vm.gpr objectAtIndex:reg];
-		return [regObject value];
-	}
-	else if (command == "fpr")
-	{
-		if (arguments.count != 1) return nil;
-		int reg = [[arguments objectAtIndex:0] intValue];
-		if (reg < 0 || reg > 31) return nil;
-		
-		CXRegister* regObject = [vm.fpr objectAtIndex:reg];
-		return [regObject value];
-	}
-	else if (command == "spr")
-	{
-		if (arguments.count != 1) return nil;
-		int reg = [[arguments objectAtIndex:0] intValue];
-		
-		CXRegister* regObject = nil;
-		switch (reg)
-		{
-			case 1: regObject = [vm.spr objectAtIndex:CXVirtualMachineSPRXERIndex]; break;
-			case 8: regObject = [vm.spr objectAtIndex:CXVirtualMachineSPRLRIndex]; break;
-			case 9: regObject = [vm.spr objectAtIndex:CXVirtualMachineSPRCTRIndex]; break;
-		}
-		return [regObject value];
-	}
-	else if (command == "cr")
-	{
-		if (arguments.count != 1) return nil;
-		int reg = [[arguments objectAtIndex:0] intValue];
-		if (reg < 0 || reg > 7) return nil;
-		
-		CXRegister* regObject = [vm.cr objectAtIndex:reg];
-		return [regObject value];
-	}
-	else if (command == "memory")
-	{
-		NSLog(@"*** Memory command is not implemented");
-		return nil;
-	}
-	return nil;
-}
-
--(NSArray*)disassemblyForLabel:(NSString *)label
-{
-	return [disassembly objectForKey:label];
+	const char* hex = [[label substringFromIndex:label.length - 8] UTF8String];
+	uint32_t address = strtol(hex, NULL, 16);
+	NSNumber* firstFittingAddress = CXFindNextGreater(sortedLabelAddresses, @(address));
+	NSString* realLabel = [labelNames objectForKey:firstFittingAddress];
+	return [disassembly objectForKey:realLabel];
 }
 
 #pragma mark -
@@ -272,6 +292,7 @@ static NSImage* functionImage;
 			PPCVM::Disassembly::FancyDisassembler disasm(allocator);
 			const PEF::Container& container = pef->GetContainer();
 			NSMutableDictionary* labelToArray = [NSMutableDictionary dictionary];
+			NSMutableDictionary* addressToLabel = [NSMutableDictionary dictionary];
 			for (int i = 0; i < container.Size(); i++)
 			{
 				const PEF::InstantiableSection& section = container.GetSection(i);
@@ -284,25 +305,28 @@ static NSImage* functionImage;
 					if (result.count == 0)
 						continue;
 					
-					NSMutableArray* currentArray = [NSMutableArray array];
-					for (NSDictionary* dict in result)
-					{
-						NSString* label = [dict objectForKey:@"label"];
-						if ([[label substringToIndex:2] isEqualToString:@"fn"])
-							currentArray = [NSMutableArray array];
-						[currentArray addObject:dict];
-						[labelToArray setObject:currentArray forKey:label];
-					}
-					
 					NSString* menuTitle = [NSString stringWithCString:section.Name.c_str() encoding:NSUTF8StringEncoding];
 					NSMenuItem* sectionItem = [[[NSMenuItem alloc] initWithTitle:menuTitle action:NULL keyEquivalent:@""] autorelease];
-					
+					NSMutableArray* currentArray = [NSMutableArray array];
 					NSMenu* labelMenu = [[[NSMenu alloc] initWithTitle:menuTitle] autorelease];
-					for (NSDictionary* label in result)
+					
+					for (NSDictionary* dict in result)
 					{
-						NSString* labelTitle = [label objectForKey:@"label"];
-						NSMenuItem* labelMenuItem = [[NSMenuItem alloc] initWithTitle:labelTitle action:NULL keyEquivalent:@""];
-						labelMenuItem.image = [[labelTitle substringToIndex:2] isEqualToString:@"lb"] ? labelImage : functionImage;
+						NSArray* instructions = [dict objectForKey:@"instructions"];
+						if (instructions.count == 0)
+							continue;
+						
+						NSString* label = [dict objectForKey:@"label"];
+						NSNumber* address = [dict objectForKey:@"address"];
+						if ([[label substringToIndex:2] isEqualToString:@"fn"])
+							currentArray = [NSMutableArray array];
+						
+						[currentArray addObject:dict];
+						[labelToArray setObject:currentArray forKey:label];
+						[addressToLabel setObject:label forKey:address];
+						
+						NSMenuItem* labelMenuItem = [[NSMenuItem alloc] initWithTitle:label action:NULL keyEquivalent:@""];
+						labelMenuItem.image = [[label substringToIndex:2] isEqualToString:@"lb"] ? labelImage : functionImage;
 						[labelMenu addItem:labelMenuItem];
 					}
 					sectionItem.submenu = labelMenu;
@@ -310,6 +334,8 @@ static NSImage* functionImage;
 				}
 			}
 			disassembly = [labelToArray copy];
+			sortedLabelAddresses = [[[addressToLabel allKeys] sortedArrayUsingSelector:@selector(compare:)] retain];
+			labelNames = [addressToLabel copy];
 		}
 	}
 
@@ -332,10 +358,16 @@ static NSImage* functionImage;
 	return [smallIcon autorelease];
 }
 
+-(void)showPC
+{
+	NSString* script = [NSString stringWithFormat:@"HighlightPC(%u)", self.pc];
+	[[disassemblyView windowScriptObject] evaluateWebScript:script];
+}
+
 -(void)showDisassembly:(NSString *)key
 {
 	NSUInteger documentId = [[CXDocumentController documentController] idOfDocument:self];
-	NSString* cxdbUrl = [NSString stringWithFormat:@"cxdb://disassembly/%@/%@#%@", @(documentId), key, key];
+	NSString* cxdbUrl = [NSString stringWithFormat:@"cxdb://disassembly/%@/%@", @(documentId), key];
 	NSURL* url = [NSURL URLWithString:cxdbUrl];
 	NSURLRequest* request = [NSURLRequest requestWithURL:url];
 	[[disassemblyView mainFrame] loadRequest:request];

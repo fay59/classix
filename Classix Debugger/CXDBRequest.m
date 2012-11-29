@@ -14,7 +14,6 @@
 @synthesize component;
 @synthesize documentId;
 @synthesize params;
-@synthesize hash;
 
 -(id)init
 {
@@ -46,7 +45,6 @@
 	}
 	
 	self.params = [urlParams subarrayWithRange:NSMakeRange(skipCount, urlParams.count - skipCount)];
-	self.hash = url.fragment;
 	
 	return self;
 }
@@ -62,7 +60,6 @@
 	[url appendString:component];
 	if (documentId != 0) [url appendFormat:@"/%@", @(documentId)];
 	[url appendFormat:@"/%@", [params componentsJoinedByString:@"/"]];
-	if (hash != nil) [url appendFormat:@"#%@", hash];
 	
 	return [NSURL URLWithString:url];
 }
