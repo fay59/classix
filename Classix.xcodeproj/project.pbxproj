@@ -15,9 +15,10 @@
 		DC176D091662A91700C76888 /* CXGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC176D081662A91700C76888 /* CXGradientView.m */; };
 		DC264EA7165DF76A00C86BDD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC264EA6165DF76A00C86BDD /* WebKit.framework */; };
 		DC264EAC165DFFEB00C86BDD /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAA165DFFEB00C86BDD /* main.js */; };
+		DC30714E1668800D00475144 /* CXJSAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = DC30714D1668800D00475144 /* CXJSAdapter.m */; };
 		DC4C644F165B62910097288E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC4C644E165B62910097288E /* Cocoa.framework */; };
 		DC4C6459165B62910097288E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6457165B62910097288E /* InfoPlist.strings */; };
-		DC4C645B165B62910097288E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC4C645A165B62910097288E /* main.m */; };
+		DC4C645B165B62910097288E /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC4C645A165B62910097288E /* main.mm */; };
 		DC4C645F165B62910097288E /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = DC4C645D165B62910097288E /* Credits.rtf */; };
 		DC4C6462165B62910097288E /* CXDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC4C6461165B62910097288E /* CXDocument.mm */; };
 		DC4C6465165B62910097288E /* CXDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6463165B62910097288E /* CXDocument.xib */; };
@@ -108,6 +109,8 @@
 		DC264EAB165DFFEB00C86BDD /* cxdb.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = cxdb.css; sourceTree = "<group>"; };
 		DC264EAE165DFFF800C86BDD /* cxdb.xhtml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = cxdb.xhtml; sourceTree = "<group>"; };
 		DC264EB0165E012B00C86BDD /* execution-cursor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "execution-cursor.png"; sourceTree = "<group>"; };
+		DC30714C1668800D00475144 /* CXJSAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXJSAdapter.h; sourceTree = "<group>"; };
+		DC30714D1668800D00475144 /* CXJSAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXJSAdapter.m; sourceTree = "<group>"; };
 		DC40D0191635B125008CA9BC /* SymbolResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SymbolResolver.cpp; sourceTree = "<group>"; };
 		DC40D01A1635B125008CA9BC /* SymbolResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolResolver.h; sourceTree = "<group>"; };
 		DC40D01D1635B4A0008CA9BC /* PEFSymbolResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PEFSymbolResolver.cpp; sourceTree = "<group>"; };
@@ -123,7 +126,7 @@
 		DC4C6453165B62910097288E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		DC4C6456165B62910097288E /* Classix Debugger-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Classix Debugger-Info.plist"; sourceTree = "<group>"; };
 		DC4C6458165B62910097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		DC4C645A165B62910097288E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		DC4C645A165B62910097288E /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		DC4C645C165B62910097288E /* Classix Debugger-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Classix Debugger-Prefix.pch"; sourceTree = "<group>"; };
 		DC4C645E165B62910097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
 		DC4C6460165B62910097288E /* CXDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXDocument.h; sourceTree = "<group>"; };
@@ -278,6 +281,8 @@
 				DC161F011661F7A900B76B61 /* CXDBRequest.m */,
 				DC9E43C9165EA20300AAC682 /* CXJSONEncode.h */,
 				DC9E43CA165EA22400AAC682 /* CXJSONEncode.m */,
+				DC30714C1668800D00475144 /* CXJSAdapter.h */,
+				DC30714D1668800D00475144 /* CXJSAdapter.m */,
 			);
 			name = "WebView Glue";
 			sourceTree = "<group>";
@@ -343,7 +348,7 @@
 			children = (
 				DC4C6456165B62910097288E /* Classix Debugger-Info.plist */,
 				DC4C6457165B62910097288E /* InfoPlist.strings */,
-				DC4C645A165B62910097288E /* main.m */,
+				DC4C645A165B62910097288E /* main.mm */,
 				DC4C645C165B62910097288E /* Classix Debugger-Prefix.pch */,
 				DC4C645D165B62910097288E /* Credits.rtf */,
 			);
@@ -724,7 +729,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC4C645B165B62910097288E /* main.m in Sources */,
+				DC4C645B165B62910097288E /* main.mm in Sources */,
 				DC4C6462165B62910097288E /* CXDocument.mm in Sources */,
 				DC9E43BF165E896A00AAC682 /* CXDBURLProtocol.m in Sources */,
 				DC9E43C3165E8E6900AAC682 /* CXDocumentController.m in Sources */,
@@ -735,6 +740,7 @@
 				DC176D091662A91700C76888 /* CXGradientView.m in Sources */,
 				DCC4B0E41662FAC100D21C90 /* CXVirtualMachine.mm in Sources */,
 				DCC4B0E91662FBC200D21C90 /* CXRegister.m in Sources */,
+				DC30714E1668800D00475144 /* CXJSAdapter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

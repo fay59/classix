@@ -24,9 +24,12 @@
 #import "CXVirtualMachine.h"
 #import "CXNavBar.h"
 
+@class CXJSAdapter;
+
 @interface CXDocument : NSDocument
 {
 	CXVirtualMachine* vm;
+	CXJSAdapter* js;
 	
 	NSArray* sortedLabelAddresses;
 	NSDictionary* labelNames;
@@ -43,7 +46,7 @@
 @property (assign) IBOutlet NSSegmentedControl* backForward;
 @property (assign) IBOutlet NSOutlineView* outline;
 
-@property (readonly) uint32_t pc;
+@property (assign) uint32_t pc;
 
 -(IBAction)goBack:(id)sender;
 -(IBAction)goForward:(id)sender;

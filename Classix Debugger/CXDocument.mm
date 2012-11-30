@@ -40,7 +40,7 @@ static NSImage* functionImage;
 
 static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number, NSUInteger partitionBegin, NSUInteger size)
 {
-	if (size <= 2)
+	if (size < 2)
 		return [sortedArray objectAtIndex:partitionBegin];
 	
 	NSUInteger halfSize = size / 2;

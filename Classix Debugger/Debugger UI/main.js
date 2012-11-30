@@ -46,11 +46,11 @@ function HighlightPC(pc)
 		pcRow.childNodes[1].appendChild(img);
 	}
 	
-	var visibleYBegin = document.scrollTop;
-	var visibleYEnd = document.scrollTop + document.offsetHeight;
+	var visibleYBegin = document.body.scrollTop;
+	var visibleYEnd = document.body.scrollTop + document.body.scrollHeight;
 	if (pcRow.offsetTop < visibleYBegin || pcRow.offsetTop > visibleYEnd)
 	{
-		document.scrollTop = pcRow.offsetTop - 20;
+		document.body.scrollTop = pcRow.offsetTop - 20;
 	}
 }
 

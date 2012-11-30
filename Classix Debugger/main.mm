@@ -22,9 +22,13 @@
 #import <Cocoa/Cocoa.h>
 #import "CXDBURLProtocol.h"
 #import "CXDocumentController.h"
+#import "NativeAllocator.h"
 
 int main(int argc, char *argv[])
 {
+	Common::NativeAllocator* allocator = Common::NativeAllocator::Instance;
+	(void)allocator;
+	
 	[CXDBURLProtocol class];
 	[[CXDocumentController alloc] init];
 	return NSApplicationMain(argc, (const char **)argv);

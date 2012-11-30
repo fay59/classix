@@ -1,6 +1,8 @@
 html, body {
 	margin: 0px;
 	padding: 0px;
+	overflow: auto;
+	height: 100%;
 }
 
 #disasm {

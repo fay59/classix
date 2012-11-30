@@ -17,6 +17,7 @@
 #include "DlfcnLibraryResolver.h"
 #include "FancyDisassembler.h"
 #include "CXObjcDisassemblyWriter.h"
+#include "NativeCall.h"
 #include <unordered_set>
 
 NSNumber* CXVirtualMachineGPRKey = @(CXRegisterGPR);
@@ -27,6 +28,8 @@ NSNumber* CXVirtualMachineCRKey = @(CXRegisterCR);
 NSString* CXErrorDomain = @"Classix Error Domain";
 NSString* CXErrorFilePath = @"File URL";
 
+const NSUInteger CXStackSize = 0x100000;
+
 struct ClassixCoreVM
 {
 	Common::IAllocator* allocator;
@@ -36,6 +39,7 @@ struct ClassixCoreVM
 	ClassixCore::DlfcnLibraryResolver dlfcnResolver;
 	PPCVM::Execution::Interpreter interp;
 	PEF::Container* container;
+	Common::AutoAllocation stack;
 	
 	std::unordered_set<intptr_t> breakpoints;
 	intptr_t nextPC;
@@ -49,6 +53,7 @@ struct ClassixCoreVM
 	, interp(allocator, &state)
 	, container(nullptr)
 	, nextPC(0)
+	, stack(allocator->AllocateAuto("Stack", CXStackSize))
 	{
 		dlfcnResolver.RegisterLibrary("StdCLib");
 		cfm.LibraryResolvers.push_back(&pefResolver);
@@ -224,32 +229,58 @@ struct ClassixCoreVM
 		envpStrings.insert(envpStrings.end(), valueBegin, valueEnd);
 	}
 	
-	Common::AutoAllocation argvStringsArea = vm->allocator->AllocateAuto("Argument Values", argvStrings.size());
-	Common::AutoAllocation envpStringsArea = vm->allocator->AllocateAuto("Environment Variables", envpStrings.size());
-	Common::AutoAllocation argvAlloc = vm->allocator->AllocateAuto("argv", argvOffsets.size() * sizeof(uint32_t));
-	Common::AutoAllocation envpAlloc = vm->allocator->AllocateAuto("envp", (envpOffsets.size() + 1) * sizeof(uint32_t));
+	Common::AutoAllocation& stack = vm->stack;
+	memset(*stack, 0, CXStackSize);
+
+	//  stack layout:
+	// +-------------+
+	// | string area |
+	// +-------------+
+	// |      0      |
+	// +-------------+
+	// |    env[n]   |
+	// +-------------+
+	//        :
+	// +-------------+
+	// |    env[0]   |
+	// +-------------+
+	// |      0      |
+	// +-------------+
+	// | arg[argc-1] |
+	// +-------------+
+	//        :
+	// +-------------+
+	// |    arg[0]   |
+	// +-------------+
+	// |     argc    | <-- sp
+	// +-------------+
 	
-	memcpy(*argvStringsArea, argvStrings.data(), argvStrings.size());
-	memcpy(*envpStringsArea, envpStrings.data(), envpStrings.size());
+	const uint32_t stackAddress = stack.GetVirtualAddress();
+	const NSUInteger stringAreaOffset = CXStackSize - envpStrings.size() - argvStrings.size();
+	char* stringArea = static_cast<char*>(*stack) + stringAreaOffset;
+	memcpy(stringArea, argvStrings.data(), argvStrings.size());
+	memcpy(stringArea + argvStrings.size(), envpStrings.data(), envpStrings.size());
 	
-	Common::UInt32* argvValues = argvAlloc.ToArray<Common::UInt32>(argvOffsets.size());
-	for (size_t i = 0; i < argvOffsets.size(); i++)
-		argvValues[i] = argvStringsArea.GetVirtualAddress() + argvOffsets[i];
-	
-	Common::UInt32* envpValues = envpAlloc.ToArray<Common::UInt32>(envpOffsets.size() + 1);
+	const NSUInteger envOffset = (stringAreaOffset - (envpOffsets.size() + 1) * sizeof(uint32_t)) / 4;
+	Common::UInt32* envArea = static_cast<Common::UInt32*>(*stack) + envOffset;
 	for (size_t i = 0; i < envpOffsets.size(); i++)
-		envpValues[i] = envpStringsArea.GetVirtualAddress() + envpOffsets[i];
-	envpValues[envpOffsets.size()] = 0;
+		envArea[i] = stackAddress + stringAreaOffset + envpOffsets[i];
 	
-	Common::AutoAllocation stack = vm->allocator->AllocateAuto("Stack", 0x100000);
+	const NSUInteger argvOffset = envOffset - argvOffsets.size() - 1;
+	Common::UInt32* argvArea = static_cast<Common::UInt32*>(*stack) + argvOffset;
+	for (size_t i = 0; i < argvOffsets.size(); i++)
+		argvArea[i] = stackAddress + stringAreaOffset + envpStrings.size() + argvOffsets[i];
+	
+	Common::UInt32& argc = *(static_cast<Common::UInt32*>(*stack) + argvOffset - 1);
+	argc = argvOffsets.size();
 	
 	// set the stage
 	vm->state.r0 = 0;
-	vm->state.r1 = stack.GetVirtualAddress();
+	vm->state.r1 = vm->allocator->ToIntPtr(&argc);
 	vm->state.r2 = mainVector->TableOfContents;
 	vm->state.r3 = args.count;
-	vm->state.r4 = argvAlloc.GetVirtualAddress();
-	vm->state.r5 = envpAlloc.GetVirtualAddress();
+	vm->state.r4 = vm->allocator->ToIntPtr(argvArea);
+	vm->state.r5 = vm->allocator->ToIntPtr(envArea);
 	
 	NSArray* gpr = self.gpr;
 	NSArray* initialRegisters = @[
@@ -305,12 +336,19 @@ struct ClassixCoreVM
 
 -(IBAction)stepInto:(id)sender
 {
+	using namespace PPCVM::Execution;
+	
 	PPCVM::MachineState oldState = vm->state;
 	const void* eip = vm->allocator->ToPointer<const void>(pc);
 	eip = vm->interp.ExecuteOne(eip);
 	
 	self.pc = vm->allocator->ToIntPtr(eip);
 	[self refreshRegisters:&oldState];
+	
+	// don't stop inside a native call
+	const NativeCall* nativeCall = reinterpret_cast<const NativeCall*>(eip);
+	if (nativeCall->Tag == NativeTag)
+		[self stepOver:sender];
 }
 
 -(void)runTo:(uint32_t)location

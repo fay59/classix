@@ -61,7 +61,6 @@
 -(void)startLoading
 {
 	CXDBRequest* request = [CXDBRequest requestWithURL:self.request.URL];
-	NSLog(@"Doing request: %@", request);
 	
 	// if it's a data URL, load the file synchronously
 	if ([request.component isEqualToString:@"resource"])
@@ -72,55 +71,6 @@
 	{
 		[self loadDisassembly:request];
 	}
-	return;
-	
-#if 0
-	// request format: documentId/command/param1/param2/...
-	NSUInteger documentId = [[pathComponents objectAtIndex:0] integerValue];
-	NSString* command = [pathComponents objectAtIndex:1];
-	NSRange argumentsRange = NSMakeRange(2, pathComponents.count - 2);
-	
-	CXDocument* document = [[CXDocumentController documentController] documentWithId:documentId];
-	dispatch_async(dispatch_get_main_queue(),
-	^{
-		NSString* mimeType;
-		NSString* textEncoding = nil;
-		NSData* data;
-		
-		id result = [document executeCommand:command arguments:[pathComponents subarrayWithRange:argumentsRange]];
-		
-		if (result == nil)
-		{
-			NSError* error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorResourceUnavailable userInfo:nil];
-			[client URLProtocol:self didFailWithError:error];
-		}
-		else
-		{
-			if ([result isKindOfClass:[NSData class]])
-			{
-				mimeType = @"application/octet-stream";
-				data = result;
-			}
-			else
-			{
-				mimeType = @"application/json";
-				textEncoding = @"UTF-8";
-				NSString* json = CXJSONEncode(result);
-				data = [json dataUsingEncoding:NSUTF8StringEncoding];
-			}
-			
-			NSURLResponse* response = [[NSURLResponse alloc] initWithURL:request.URL MIMEType:mimeType expectedContentLength:data.length textEncodingName:textEncoding];
-			
-			// it's legal to cache "sections" responses
-			NSURLCacheStoragePolicy policy = [command isEqualToString:@"sections"] ? NSURLCacheStorageAllowedInMemoryOnly : NSURLCacheStorageNotAllowed;
-			
-			[client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:policy];
-			[client URLProtocol:self didLoadData:data];
-			[client URLProtocolDidFinishLoading:self];
-			[response release];
-		}
-	});
-#endif
 }
 
 -(void)stopLoading

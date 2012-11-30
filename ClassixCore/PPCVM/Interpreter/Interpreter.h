@@ -29,6 +29,7 @@
 #include "InstructionDispatcher.h"
 #include "BigEndian.h"
 #include <string>
+#include <iostream>
 
 namespace PPCVM
 {
@@ -266,6 +267,7 @@ namespace PPCVM
 			
 			do
 			{
+				std::cout << currentAddress << std::endl;
 				const Common::UInt32& instructionCode = *currentAddress;
 				
 				if (instructionCode.AsBigEndian == NativeTag)

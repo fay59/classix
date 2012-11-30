@@ -164,7 +164,7 @@
 													<string key="NSFrame">{{187, 1}, {390, 24}}</string>
 													<reference key="NSSuperview" ref="701093666"/>
 													<reference key="NSWindow"/>
-													<reference key="NSNextKeyView" ref="807185318"/>
+													<reference key="NSNextKeyView" ref="912253566"/>
 													<string key="NSReuseIdentifierKey">_NS:9</string>
 													<string key="NSClassName">CXNavBar</string>
 												</object>
@@ -206,9 +206,14 @@
 											<object class="WebPreferences" key="Preferences">
 												<string key="Identifier"/>
 												<dictionary class="NSMutableDictionary" key="Values">
+													<boolean value="NO" key="WebKitAllowAnimatedImageLoopingPreferenceKey"/>
+													<boolean value="NO" key="WebKitAllowAnimatedImagesPreferenceKey"/>
 													<integer value="12" key="WebKitDefaultFixedFontSize"/>
 													<integer value="12" key="WebKitDefaultFontSize"/>
+													<boolean value="NO" key="WebKitJavaEnabled"/>
+													<boolean value="NO" key="WebKitJavaScriptCanOpenWindowsAutomatically"/>
 													<integer value="1" key="WebKitMinimumFontSize"/>
+													<boolean value="NO" key="WebKitPluginsEnabled"/>
 												</dictionary>
 											</object>
 											<bool key="UseBackForwardList">YES</bool>
@@ -395,6 +400,7 @@
 													<string key="NSFrame">{{1, 362}, {145, 16}}</string>
 													<reference key="NSSuperview" ref="976478822"/>
 													<reference key="NSWindow"/>
+													<reference key="NSNextKeyView"/>
 													<string key="NSReuseIdentifierKey">_NS:60</string>
 													<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 													<int key="NSsFlags">1</int>
@@ -594,11 +600,6 @@
 						<reference key="parent" ref="21453048"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">100027</int>
-						<reference key="object" ref="807185318"/>
-						<reference key="parent" ref="955460312"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">100164</int>
 						<reference key="object" ref="701093666"/>
 						<array class="NSMutableArray" key="children">
@@ -694,6 +695,11 @@
 						<reference key="object" ref="778624494"/>
 						<reference key="parent" ref="248731241"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">100027</int>
+						<reference key="object" ref="807185318"/>
+						<reference key="parent" ref="955460312"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -728,7 +734,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">100192</int>
+			<int key="maxID">100193</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
