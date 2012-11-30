@@ -37,6 +37,8 @@ html, body {
 }
 
 #disasm td:nth-child(1) {
+	font-size: 8pt;
+	padding-right: 4px;
 	border-right: 1px #ccc solid;
 	text-align: right;
 	width: 10ex;
@@ -70,6 +72,30 @@ html, body {
 
 .dereference {
 	text-decoration: none;
+}
+
+#disasm tr.breakpoint > td {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+#disasm tr.breakpoint > td:first-child {
+	color: white;
+	text-shadow: 0px 1px 1px rgba(0,0,0,0.3);
+	border: 1px #1f65a5 solid;
+	border-right: none;
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+	background: -webkit-linear-gradient(top,
+		rgba(107,156,199,1) 0%,
+		rgba(97,150,195,1) 50%,
+		rgba(91,146,193,1) 51%,
+		rgba(79,137,187,1) 100%);
+}
+
+#disasm tr.breakpoint > td:nth-child(2) {
+	background-image: url('cxdb://resource/breakpoint-end.png');
+	background-repeat: no-repeat;
 }
 
 #disasm tr.current > td:not(:first-child) {
