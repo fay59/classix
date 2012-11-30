@@ -31,8 +31,9 @@
 
 #import "CXDocument.h"
 #import "CXDocumentController.h"
-#import "CXJSONEncode.h"
 #import "CXRegister.h"
+#import "CXDBRequest.h"
+#import "CXJSAdapter.h"
 
 static NSImage* exportImage;
 static NSImage* labelImage;
@@ -67,7 +68,8 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 
 -(void)buildSymbolMenu;
 -(void)showDisassembly:(NSString*)key;
--(void)showPC;
+-(void)showPCAndJump:(BOOL)jumpToPC;
+-(NSString*)labelForAddress:(NSString*)address;
 -(NSImage*)fileIcon16x16:(NSString*)path;
 -(NSMenu*)exportMenuForResolver:(const CFM::SymbolResolver*)resolver;
 
@@ -85,6 +87,12 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 	return vm.pc;
 }
 
+
+-(void)setPc:(uint32_t)pc
+{
+	vm.pc = pc;
+}
+
 +(void)initialize
 {
 	NSString* exportPath = [[NSBundle mainBundle] pathForResource:@"export" ofType:@"png"];
@@ -100,6 +108,7 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
     self = [super init];
     if (self) {
 		vm = [[CXVirtualMachine alloc] init];
+		js = [[CXJSAdapter alloc] initWithDocument:self];
     }
     return self;
 }
@@ -147,12 +156,14 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 
 -(void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame *)frame
 {
-	[self showPC];
+	[[sender windowScriptObject] setValue:js forKey:@"cxdb"];
+	[self showPCAndJump:NO];
 }
 
 -(void)dealloc
 {
 	[vm release];
+	[js release];
 	[sortedLabelAddresses release];
 	[labelNames release];
 	[disassembly release];
@@ -175,19 +186,22 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 -(IBAction)run:(id)sender
 {
 	[vm run:sender];
-	[self showPC];
+	[outline reloadData];
+	[self showPCAndJump:YES];
 }
 
 -(IBAction)stepInto:(id)sender
 {
 	[vm stepInto:sender];
-	[self showPC];
+	[outline reloadData];
+	[self showPCAndJump:YES];
 }
 
 -(IBAction)stepOver:(id)sender
 {
 	[vm stepOver:sender];
-	[self showPC];
+	[outline reloadData];
+	[self showPCAndJump:YES];
 }
 
 -(IBAction)controlFlow:(id)sender
@@ -212,10 +226,7 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 
 -(NSArray*)disassemblyForAddress:(NSString *)label
 {
-	const char* hex = [[label substringFromIndex:label.length - 8] UTF8String];
-	uint32_t address = strtol(hex, NULL, 16);
-	NSNumber* firstFittingAddress = CXFindNextGreater(sortedLabelAddresses, @(address));
-	NSString* realLabel = [labelNames objectForKey:firstFittingAddress];
+	NSString* realLabel = [self labelForAddress:label];
 	return [disassembly objectForKey:realLabel];
 }
 
@@ -358,10 +369,31 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 	return [smallIcon autorelease];
 }
 
--(void)showPC
+-(void)showPCAndJump:(BOOL)jumpToPC
 {
+	if (jumpToPC)
+	{
+		NSURL* url = [NSURL URLWithString:disassemblyView.mainFrameURL];
+		CXDBRequest* request = [CXDBRequest requestWithURL:url];
+		NSString* shownLabel = [self labelForAddress:request.params.lastObject];
+		NSString* targetLabel = [self labelForAddress:[NSString stringWithFormat:@"%08x", self.pc]];
+		if (![shownLabel isEqualToString:targetLabel])
+		{
+			[self showDisassembly:targetLabel];
+			return;
+		}
+	}
+	
 	NSString* script = [NSString stringWithFormat:@"HighlightPC(%u)", self.pc];
 	[[disassemblyView windowScriptObject] evaluateWebScript:script];
+}
+
+-(NSString*)labelForAddress:(NSString *)address
+{
+	const char* hex = [[address substringFromIndex:address.length - 8] UTF8String];
+	uint32_t intAddress = strtol(hex, NULL, 16);
+	NSNumber* firstFittingAddress = CXFindNextGreater(sortedLabelAddresses, @(intAddress));
+	return [labelNames objectForKey:firstFittingAddress];
 }
 
 -(void)showDisassembly:(NSString *)key
