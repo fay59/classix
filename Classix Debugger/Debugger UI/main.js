@@ -1,3 +1,10 @@
+function lpad(string, length, padding)
+{
+	while (string.length < length)
+		string = padding + string;
+	return string;
+}
+
 function GoToLabel(label)
 {
 	var id = "#" + label;
@@ -26,13 +33,6 @@ function DehighlightPC()
 
 function HighlightPC(pc)
 {
-	function lpad(string, length, padding)
-	{
-		while (string.length < length)
-			string = padding + string;
-		return string;
-	}
-	
 	DehighlightPC();
 	
 	var pcString = lpad(pc.toString(16), 8, '0');
@@ -58,5 +58,34 @@ document.addEventListener("DOMContentLoaded", function()
 {
 	var url = document.location.toString();
 	var location = url.substr(url.lastIndexOf('/') + 1);
-	document.location.hash = location
+	document.location.hash = location;
+	
+	setTimeout(function()
+	{
+		var breakpoints = cxdb.breakpoints();
+		for (var i = 0; i < breakpoints.length; i++)
+		{
+			var address = breakpoints[i];
+			var selector = "#i" + lpad(address.toString(16), 8, '0');
+			var tr = document.querySelector(selector);
+			if (tr != null)
+				tr.classList.add("breakpoint");
+		}
+	}, 0);
+});
+
+document.addEventListener("click", function(event)
+{
+	var target = event.target;
+	if (target.nodeName == "td" && target.previousSibling == null)
+	{
+		var tr = target.parentNode;
+		var address = parseInt(tr.id.substr(1), 16);
+		var added = cxdb.toggleBreakpoint_(address);
+		if (added)
+			tr.classList.add("breakpoint");
+		else
+			tr.classList.remove("breakpoint");
+		event.preventDefault();
+	}
 });

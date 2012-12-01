@@ -162,7 +162,7 @@
 				NSString* targetContent;
 				if ([prefix isEqualToString:@"lb"] || [prefix isEqualToString:@"fn"])
 				{
-					targetContent = [NSString stringWithFormat:@"<a href=\"%@#%@\">%@</a>", stringTarget, stringTarget, stringTarget];
+					targetContent = [NSString stringWithFormat:@"<a href=\"%@\">%@</a>", stringTarget, stringTarget];
 				}
 				else
 				{

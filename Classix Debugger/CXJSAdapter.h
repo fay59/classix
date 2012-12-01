@@ -7,14 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <WebKit/WebKit.h>
 
 @class CXDocument;
 
 @interface CXJSAdapter : NSObject
 {
 	CXDocument* document;
-	NSMutableSet* breakpoints;
 }
+
++(BOOL)isSelectorExcludedFromWebScript:(SEL)selector;
 
 -(id)initWithDocument:(CXDocument*)document;
 

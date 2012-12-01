@@ -165,8 +165,6 @@ namespace PPCVM
 			currentAddress = reinterpret_cast<const Common::UInt32*>(address);
 			branchAddress = nullptr;
 			
-			std::cout << currentAddress << std::endl;
-			
 			const Common::UInt32& instructionCode = *currentAddress;
 			if (instructionCode.AsBigEndian == NativeTag)
 			{

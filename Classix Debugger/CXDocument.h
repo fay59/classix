@@ -41,12 +41,11 @@
 	NSOutlineView* outline;
 }
 
+@property (readonly) CXVirtualMachine* vm;
 @property (assign) IBOutlet WebView* disassemblyView;
 @property (assign) IBOutlet CXNavBar* navBar;
 @property (assign) IBOutlet NSSegmentedControl* backForward;
 @property (assign) IBOutlet NSOutlineView* outline;
-
-@property (assign) uint32_t pc;
 
 -(IBAction)goBack:(id)sender;
 -(IBAction)goForward:(id)sender;

@@ -11,29 +11,45 @@
 
 @implementation CXJSAdapter
 
++(BOOL)isSelectorExcludedFromWebScript:(SEL)selector
+{
+	SEL validSelectors[] = {
+		@selector(setPC:),
+		@selector(breakpoints),
+		@selector(toggleBreakpoint:)
+	};
+	
+	for (int i = 0; i < sizeof validSelectors / sizeof(SEL); i++)
+	{
+		if (validSelectors[i] == selector)
+			return NO;
+	}
+	return YES;
+}
+
 -(id)initWithDocument:(CXDocument *)aDocument
 {
 	if (!(self = [super init]))
 		return nil;
 	
 	document = aDocument;
-	breakpoints = [[NSMutableSet alloc] init];
 	
 	return self;
 }
 
 -(void)setPC:(uint32_t)pc
 {
-	document.pc = pc;
+	document.vm.pc = pc;
 }
 
 -(NSArray*)breakpoints
 {
-	return breakpoints.allObjects;
+	return document.vm.breakpoints.allObjects;
 }
 
 -(BOOL)toggleBreakpoint:(uint32_t)address
 {
+	NSMutableSet* breakpoints = document.vm.breakpoints;
 	NSNumber* number = @(address);
 	if ([breakpoints containsObject:number])
 	{
@@ -49,7 +65,6 @@
 
 -(void)dealloc
 {
-	[breakpoints release];
 	[super dealloc];
 }
 

@@ -267,12 +267,11 @@ namespace PPCVM
 			
 			do
 			{
-				std::cout << currentAddress << std::endl;
 				const Common::UInt32& instructionCode = *currentAddress;
 				
 				if (instructionCode.AsBigEndian == NativeTag)
 				{
-					const NativeCall* call = static_cast<const NativeCall*>(address);
+					const NativeCall* call = reinterpret_cast<const NativeCall*>(currentAddress);
 					branchAddress = ExecuteNative(call);
 				}
 				else

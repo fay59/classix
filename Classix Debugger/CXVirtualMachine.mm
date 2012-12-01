@@ -145,7 +145,7 @@ struct ClassixCoreVM
 	NSMutableArray* fpr = [NSMutableArray arrayWithCapacity:32];
 	NSMutableArray* cr = [NSMutableArray arrayWithCapacity:8];
 	NSMutableArray* spr = [NSMutableArray array];
-	breakpoints = [[NSMutableArray alloc] init];
+	breakpoints = [[NSMutableSet alloc] init];
 	changedRegisters = [[NSMutableSet alloc] initWithCapacity:75];
 	
 	for (int i = 0; i < 32; i++)

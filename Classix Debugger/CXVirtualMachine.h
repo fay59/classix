@@ -37,7 +37,7 @@ enum CXVirtualMachineSPRIndex
 {
 	struct ClassixCoreVM* vm;
 	NSDictionary* registers;
-	NSMutableArray* breakpoints;
+	NSMutableSet* breakpoints;
 	NSMutableSet* changedRegisters;
 	uint32_t pc;
 }
@@ -47,7 +47,7 @@ enum CXVirtualMachineSPRIndex
 @property (readonly) NSArray* fpr;
 @property (readonly) NSArray* cr;
 @property (readonly) NSArray* spr;
-@property (readonly) NSMutableArray* breakpoints;
+@property (readonly) NSMutableSet* breakpoints;
 @property (readonly) NSDictionary* allRegisters; // split by category
 
 -(id)init;

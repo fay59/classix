@@ -77,21 +77,11 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 
 @implementation CXDocument
 
+@synthesize vm;
 @synthesize disassemblyView;
 @synthesize navBar;
 @synthesize backForward;
 @synthesize outline;
-
--(uint32_t)pc
-{
-	return vm.pc;
-}
-
-
--(void)setPc:(uint32_t)pc
-{
-	vm.pc = pc;
-}
 
 +(void)initialize
 {
@@ -376,7 +366,7 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 		NSURL* url = [NSURL URLWithString:disassemblyView.mainFrameURL];
 		CXDBRequest* request = [CXDBRequest requestWithURL:url];
 		NSString* shownLabel = [self labelForAddress:request.params.lastObject];
-		NSString* targetLabel = [self labelForAddress:[NSString stringWithFormat:@"%08x", self.pc]];
+		NSString* targetLabel = [self labelForAddress:[NSString stringWithFormat:@"%08x", vm.pc]];
 		if (![shownLabel isEqualToString:targetLabel])
 		{
 			[self showDisassembly:targetLabel];
@@ -384,7 +374,7 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 		}
 	}
 	
-	NSString* script = [NSString stringWithFormat:@"HighlightPC(%u)", self.pc];
+	NSString* script = [NSString stringWithFormat:@"HighlightPC(%u)", vm.pc];
 	[[disassemblyView windowScriptObject] evaluateWebScript:script];
 }
 
