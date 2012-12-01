@@ -26,6 +26,7 @@
 #include <cstddef>
 #include <cassert>
 #include <string>
+#include "AccessViolationException.h"
 
 namespace Common
 {
@@ -99,31 +100,35 @@ namespace Common
 		}
 		
 		template<typename T>
-		T* ToPointer(intptr_t value)
+		T* ToPointer(uint32_t value)
 		{
-			assert(IsAllocated(value) && IsAllocated(value + sizeof(T) - 1) && "dereferencing memory that was not allocated");
+#ifdef DEBUG
+			AccessViolationException::Check(this, value, sizeof(T));
+#endif
 			return reinterpret_cast<T*>(GetBaseAddress() + value);
 		}
 		
 		template<typename T>
-		T* ToArray(intptr_t value, size_t count)
+		T* ToArray(uint32_t value, size_t count)
 		{
-			assert(IsAllocated(value) && IsAllocated(value + sizeof(T) * count - 1) && "dereferencing memory that was not allocated");
+#ifdef DEBUG
+			AccessViolationException::Check(this, value, sizeof(T) * count);
+#endif
 			return reinterpret_cast<T*>(GetBaseAddress() + value);
 		}
 		
 		template<typename T>
-		intptr_t ToIntPtr(T* value)
+		uint32_t ToIntPtr(T* value)
 		{
 			uint8_t* asUint8 = reinterpret_cast<uint8_t*>(value);
-			return static_cast<intptr_t>(asUint8 - GetBaseAddress());
+			return static_cast<uint32_t>(asUint8 - GetBaseAddress());
 		}
 		
 		template<typename T>
-		intptr_t ToIntPtr(const T* value)
+		uint32_t ToIntPtr(const T* value)
 		{
 			const uint8_t* asUInt8 = reinterpret_cast<const uint8_t*>(value);
-			return static_cast<intptr_t>(asUInt8 - GetBaseAddress());
+			return static_cast<uint32_t>(asUInt8 - GetBaseAddress());
 		}
 		
 		virtual ~IAllocator();
