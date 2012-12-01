@@ -201,8 +201,8 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 	switch (segment)
 	{
 		case 0: return [self run:sender];
-		case 1: return [self stepInto:sender];
-		case 2: return [self stepOver:sender];
+		case 1: return [self stepOver:sender];
+		case 2: return [self stepInto:sender];
 	}
 }
 
