@@ -22,18 +22,20 @@
 #ifndef TRAPEXCEPTION_H
 #define TRAPEXCEPTION_H
 
-#include <exception>
+#include "PPCRuntimeException.h"
 #include <string>
 
 namespace PPCVM
 {
-	class TrapException : public std::exception
+	class TrapException : public Common::PPCRuntimeException
 	{
 		std::string trapName;
 	public:
 		TrapException(const std::string& trapName);
 		
+		virtual PPCRuntimeException* ToHeapAlloc() const;
 		virtual const char* what() const noexcept;
+		virtual ~TrapException();
 	};
 }
 

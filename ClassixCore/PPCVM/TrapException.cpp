@@ -22,10 +22,18 @@
 #include "TrapException.h"
 
 PPCVM::TrapException::TrapException(const std::string& trapName)
-: trapName(trapName)
+: trapName("Trap: " + trapName)
 {}
+
+Common::PPCRuntimeException* PPCVM::TrapException::ToHeapAlloc() const
+{
+	return new TrapException(*this);
+}
 
 const char* PPCVM::TrapException::what() const noexcept
 {
 	return trapName.c_str();
 }
+
+PPCVM::TrapException::~TrapException()
+{ }
