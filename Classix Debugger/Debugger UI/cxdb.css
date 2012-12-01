@@ -31,6 +31,7 @@ html, body {
 }
 
 #disasm td {
+	vertical-align: top;
 	height: 13px;
 	padding: 0px 0px 0px 1px;
 }
@@ -103,5 +104,22 @@ html, body {
 		#eaefe3 50%,
 		#e6ebdf 51%,
 		#e7ece0 100%);
-	height: 1em;=
+}
+
+#disasm tr.current.error > td:not(:first-child) {
+	border-top: 1px #e9b1aa solid;
+	border-bottom: 1px #e9b1aa solid;
+	background-image: -webkit-linear-gradient(top,
+		#fed2cb 0%,
+		#facec7 50%,
+		#f6cac3 51%,
+		#f7cac3 100%);
+}
+
+#disasm tr.current.error span.error-message {
+	display: block;
+	text-align: right;
+	font-family: "Lucida Grande";
+	font-size: 7pt;
+	white-space: normal;
 }

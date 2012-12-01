@@ -113,6 +113,16 @@ struct ClassixCoreVM
 @synthesize allRegisters = registers;
 @synthesize breakpoints;
 @synthesize pc;
+@synthesize lastError;
+
+-(void)setLastError:(NSString *)aLastError
+{
+	NSString* copy = [aLastError copy];
+	[self willChangeValueForKey:@"lastError"];
+	[lastError release];
+	lastError = copy;
+	[self didChangeValueForKey:@"lastError"];
+}
 
 -(NSArray*)gpr
 {
@@ -322,9 +332,19 @@ struct ClassixCoreVM
 	
 	const void* eip = vm->allocator->ToPointer<const void>(pc);
 	PPCVM::MachineState oldState = vm->state;
-	eip = vm->interp.ExecuteUntil(eip, cppBreakpoints);
 	
-	self.pc = vm->allocator->ToIntPtr(eip);
+	try
+	{
+		eip = vm->interp.ExecuteUntil(eip, cppBreakpoints);
+		self.pc = vm->allocator->ToIntPtr(eip);
+		self.lastError = nil;
+	}
+	catch (PPCVM::Execution::InterpreterException& ex)
+	{
+		self.pc = ex.GetPC();
+		self.lastError = [NSString stringWithCString:ex.what() encoding:NSUTF8StringEncoding];
+	}
+	
 	[self refreshRegisters:&oldState];
 }
 
@@ -340,9 +360,18 @@ struct ClassixCoreVM
 	
 	PPCVM::MachineState oldState = vm->state;
 	const void* eip = vm->allocator->ToPointer<const void>(pc);
-	eip = vm->interp.ExecuteOne(eip);
+	try
+	{
+		eip = vm->interp.ExecuteOne(eip);
+		self.pc = vm->allocator->ToIntPtr(eip);
+		self.lastError = nil;
+	}
+	catch (PPCVM::Execution::InterpreterException& ex)
+	{
+		self.pc = ex.GetPC();
+		self.lastError = [NSString stringWithCString:ex.what() encoding:NSUTF8StringEncoding];
+	}
 	
-	self.pc = vm->allocator->ToIntPtr(eip);
 	[self refreshRegisters:&oldState];
 	
 	// don't stop inside a native call
@@ -356,9 +385,18 @@ struct ClassixCoreVM
 	std::unordered_set<const void*> until = {vm->allocator->ToPointer<const void>(location)};
 	const void* eip = vm->allocator->ToPointer<const void>(pc);
 	PPCVM::MachineState oldState = vm->state;
-	eip = vm->interp.ExecuteUntil(eip, until);
+	try
+	{
+		eip = vm->interp.ExecuteUntil(eip, until);
+		self.pc = vm->allocator->ToIntPtr(eip);
+		self.lastError = nil;
+	}
+	catch (PPCVM::Execution::InterpreterException& ex)
+	{
+		self.pc = ex.GetPC();
+		self.lastError = [NSString stringWithCString:ex.what() encoding:NSUTF8StringEncoding];
+	}
 	
-	self.pc = vm->allocator->ToIntPtr(eip);
 	[self refreshRegisters:&oldState];
 }
 

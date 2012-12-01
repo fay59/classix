@@ -23,7 +23,10 @@ namespace Common
 	: allocator(allocator), address(address), size(size)
 	{
 		std::stringstream ss;
-		ss << "Cannot access memory location at address 0x" << std::hex << std::setw(8) << address << " - 0x" << address + size;
+		ss << "Cannot access memory location at address 0x";
+		ss << std::hex << std::setw(8) << std::setfill('0') << address;
+		ss << " - 0x";
+		ss << std::hex << std::setw(8) << std::setfill('0') << address + size;
 		description = ss.str();
 	}
 	

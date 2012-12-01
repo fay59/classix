@@ -33,6 +33,7 @@
 #import "CXDocumentController.h"
 #import "CXRegister.h"
 #import "CXDBRequest.h"
+#import "CXJSONEncode.h"
 #import "CXJSAdapter.h"
 
 static NSImage* exportImage;
@@ -374,7 +375,11 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 		}
 	}
 	
-	NSString* script = [NSString stringWithFormat:@"HighlightPC(%u)", vm.pc];
+	id<NSObject> scriptArguments = vm.lastError == nil
+		? @(vm.pc)
+		: [NSString stringWithFormat:@"%u, %@", vm.pc, CXJSONEncodeString(vm.lastError)];
+
+	NSString* script = [NSString stringWithFormat:@"HighlightPC(%@)", scriptArguments];
 	[[disassemblyView windowScriptObject] evaluateWebScript:script];
 }
 

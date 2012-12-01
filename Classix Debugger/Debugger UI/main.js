@@ -28,10 +28,15 @@ function DehighlightPC()
 		var arrowTd = pcRow.childNodes[1];
 		arrowTd.removeChild(arrowTd.firstChild);
 		pcRow.classList.remove("current");
+		pcRow.classList.remove("error");
+		
+		var errorSpan = pcRow.querySelector(".error-message");
+		if (errorSpan != null)
+			errorSpan.parentNode.removeChild(errorSpan);
 	}
 }
 
-function HighlightPC(pc)
+function HighlightPC(pc, errorMessage)
 {
 	DehighlightPC();
 	
@@ -44,13 +49,16 @@ function HighlightPC(pc)
 		var img = document.createElement("img");
 		img.src = "cxdb://resource/execution-cursor.png";
 		pcRow.childNodes[1].appendChild(img);
-	}
-	
-	var visibleYBegin = document.body.scrollTop;
-	var visibleYEnd = document.body.scrollTop + document.body.scrollHeight;
-	if (pcRow.offsetTop < visibleYBegin || pcRow.offsetTop > visibleYEnd)
-	{
-		document.body.scrollTop = pcRow.offsetTop - 20;
+		
+		if (errorMessage != null)
+		{
+			pcRow.classList.add("error");
+			var lastTd = pcRow.querySelector("td:last-child");
+			var errorSpan = document.createElement("span");
+			errorSpan.className = "error-message";
+			errorSpan.textContent = errorMessage;
+			lastTd.appendChild(errorSpan);
+		}
 	}
 }
 

@@ -28,6 +28,9 @@
 extern "C" {
 #endif
 	
+NSString* CXJSONEncodeString(NSString* string);
+NSString* CXJSONEncodeDictionary(NSDictionary* dict);
+NSString* CXJSONEncodeArray(NSArray* array);
 NSString* CXJSONEncode(id<NSObject> object);
 	
 #ifdef __cplusplus

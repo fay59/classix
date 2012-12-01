@@ -39,6 +39,7 @@ enum CXVirtualMachineSPRIndex
 	NSDictionary* registers;
 	NSMutableSet* breakpoints;
 	NSMutableSet* changedRegisters;
+	NSString* lastError;
 	uint32_t pc;
 }
 
@@ -47,6 +48,7 @@ enum CXVirtualMachineSPRIndex
 @property (readonly) NSArray* fpr;
 @property (readonly) NSArray* cr;
 @property (readonly) NSArray* spr;
+@property (readonly) NSString* lastError;
 @property (readonly) NSMutableSet* breakpoints;
 @property (readonly) NSDictionary* allRegisters; // split by category
 

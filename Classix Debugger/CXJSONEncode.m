@@ -22,14 +22,14 @@
 #include "CXJSONEncode.h"
 #include <objc/runtime.h>
 
-static NSString* CXJSONEncodeString(NSString* string)
+NSString* CXJSONEncodeString(NSString* string)
 {
 	NSString* escapedSlashes = [string stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
 	NSString* escapedQuotes = [escapedSlashes stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
 	return [NSString stringWithFormat:@"\"%@\"", escapedQuotes];
 }
 
-static NSString* CXJSONEncodeDictionary(NSDictionary* dict)
+NSString* CXJSONEncodeDictionary(NSDictionary* dict)
 {
 	NSMutableArray* elements = [NSMutableArray arrayWithCapacity:[dict count]];
 	for (NSString* key in dict)
@@ -42,7 +42,7 @@ static NSString* CXJSONEncodeDictionary(NSDictionary* dict)
 	return [NSString stringWithFormat:@"{%@}", [elements componentsJoinedByString:@","]];
 }
 
-static NSString* CXJSONEncodeArray(NSArray* array)
+NSString* CXJSONEncodeArray(NSArray* array)
 {
 	NSMutableArray* elements = [NSMutableArray arrayWithCapacity:[array count]];
 	for (id<NSObject> object in array)
