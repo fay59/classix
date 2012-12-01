@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC07B1751669CF2400A78205 /* AccessViolationException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC07B1731669CF2300A78205 /* AccessViolationException.cpp */; };
+		DC07B1761669CF2400A78205 /* AccessViolationException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC07B1741669CF2300A78205 /* AccessViolationException.h */; };
+		DC07B17A1669D1AD00A78205 /* PPCRuntimeException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC07B1781669D1AD00A78205 /* PPCRuntimeException.h */; };
+		DC07B17D1669D39900A78205 /* InterpreterException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC07B17B1669D39900A78205 /* InterpreterException.cpp */; };
+		DC07B17E1669D39900A78205 /* InterpreterException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC07B17C1669D39900A78205 /* InterpreterException.h */; };
 		DC0D42A7165EDC4600883586 /* FancyDisassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC0D42A5165EDC4600883586 /* FancyDisassembler.cpp */; };
 		DC0D42A8165EDC4600883586 /* FancyDisassembler.h in Headers */ = {isa = PBXBuildFile; fileRef = DC0D42A6165EDC4600883586 /* FancyDisassembler.h */; };
 		DC0D42AB165EDDBB00883586 /* OStreamDisassemblyWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC0D42A9165EDDBB00883586 /* OStreamDisassemblyWriter.cpp */; };
@@ -95,6 +100,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DC07B1731669CF2300A78205 /* AccessViolationException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AccessViolationException.cpp; sourceTree = "<group>"; };
+		DC07B1741669CF2300A78205 /* AccessViolationException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccessViolationException.h; sourceTree = "<group>"; };
+		DC07B1781669D1AD00A78205 /* PPCRuntimeException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPCRuntimeException.h; sourceTree = "<group>"; };
+		DC07B17B1669D39900A78205 /* InterpreterException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InterpreterException.cpp; sourceTree = "<group>"; };
+		DC07B17C1669D39900A78205 /* InterpreterException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterpreterException.h; sourceTree = "<group>"; };
 		DC0D42A5165EDC4600883586 /* FancyDisassembler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FancyDisassembler.cpp; sourceTree = "<group>"; };
 		DC0D42A6165EDC4600883586 /* FancyDisassembler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FancyDisassembler.h; sourceTree = "<group>"; };
 		DC0D42A9165EDDBB00883586 /* OStreamDisassemblyWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OStreamDisassemblyWriter.cpp; sourceTree = "<group>"; };
@@ -361,6 +371,8 @@
 		DC7273E316471CB300DA17E5 /* Interpreter */ = {
 			isa = PBXGroup;
 			children = (
+				DC07B17B1669D39900A78205 /* InterpreterException.cpp */,
+				DC07B17C1669D39900A78205 /* InterpreterException.h */,
 				DC7273FE16471CD800DA17E5 /* Interpreter.h */,
 				DC7273FD16471CD800DA17E5 /* Interpreter.cpp */,
 				DC7273F816471CD800DA17E5 /* FloatingPointInstructions.cpp */,
@@ -515,6 +527,9 @@
 				DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */,
 				DCA6DBFC1638460600BFA046 /* NativeAllocator.h */,
 				DC9D8D41164F2E2800036FDD /* STAllocator.h */,
+				DC07B1781669D1AD00A78205 /* PPCRuntimeException.h */,
+				DC07B1731669CF2300A78205 /* AccessViolationException.cpp */,
+				DC07B1741669CF2300A78205 /* AccessViolationException.h */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -599,6 +614,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC0D42A8165EDC4600883586 /* FancyDisassembler.h in Headers */,
+				DC07B1761669CF2400A78205 /* AccessViolationException.h in Headers */,
+				DC07B17A1669D1AD00A78205 /* PPCRuntimeException.h in Headers */,
+				DC07B17E1669D39900A78205 /* InterpreterException.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -795,6 +813,8 @@
 				DCE0A8AB165733B50092CEBC /* Disassembler.cpp in Sources */,
 				DCE0A8AF1657651D0092CEBC /* DisassembledOpcode.cpp in Sources */,
 				DC0D42A7165EDC4600883586 /* FancyDisassembler.cpp in Sources */,
+				DC07B1751669CF2400A78205 /* AccessViolationException.cpp in Sources */,
+				DC07B17D1669D39900A78205 /* InterpreterException.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
