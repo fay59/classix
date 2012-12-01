@@ -932,7 +932,7 @@ void StdCLib_getenv(StdCLibGlobals* globals, MachineState* state)
 #endif
 	
 	const char* name = ToPointer<const char>(state->r3);
-	const char* env = getenv(name);
+	char* env = getenv(name);
 	state->r3 = ToIntPtr(env);
 	globals->errno_ = errno;
 }

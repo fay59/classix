@@ -287,7 +287,7 @@ namespace PPCVM
 				}
 				catch (Common::PPCRuntimeException& ex)
 				{
-					uint32_t pc = allocator->ToIntPtr(currentAddress);
+					uint32_t pc = allocator->ToIntPtr(const_cast<Common::UInt32*>(currentAddress));
 					throw InterpreterException(pc, ex);
 				}
 				

@@ -23,10 +23,11 @@
 
 namespace Common
 {
-	AutoAllocation::AutoAllocation(IAllocator* allocator, size_t size, const std::string& zoneName)
+	AutoAllocation::AutoAllocation(IAllocator* allocator, size_t size, const AllocationDetails& details)
 	: allocator(allocator)
 	{
-		address = allocator->IntPtrAllocate(zoneName, size);
+		void* pointer = allocator->Allocate(details, size);
+		address = allocator->ToIntPtr(pointer);
 	}
 
 	AutoAllocation::AutoAllocation(AutoAllocation&& that)
@@ -60,7 +61,17 @@ namespace Common
 
 	AutoAllocation IAllocator::AllocateAuto(const std::string& zoneName, size_t size)
 	{
-		return AutoAllocation(this, size, zoneName);
+		return AllocateAuto(AllocationDetails(zoneName), size);
+	}
+	
+	AutoAllocation IAllocator::AllocateAuto(const Common::AllocationDetails &details, size_t size)
+	{
+		return AutoAllocation(this, size, details);
+	}
+	
+	uint8_t* IAllocator::Allocate(const std::string &zoneName, size_t size)
+	{
+		return Allocate(AllocationDetails(zoneName), size);
 	}
 
 	IAllocator::~IAllocator()

@@ -29,32 +29,36 @@ namespace Common
 {
 	class NativeAllocator : public IAllocator
 	{
+		static NativeAllocator* instance;
 		struct AllocatedRange
 		{
 			void* start;
 			void* end;
-			std::string name;
+			AllocationDetails* details;
 			
 			AllocatedRange();
-			AllocatedRange(void* start, void* end, const std::string& name);
+			AllocatedRange(void* start, void* end, const AllocationDetails& details);
+			~AllocatedRange();
 		};
 		
 		std::map<intptr_t, AllocatedRange> ranges;
 		
-		const AllocatedRange* GetAllocationRange(intptr_t address);
+		const AllocatedRange* GetAllocationRange(uint32_t address);
+		
+	protected:
+		virtual void* IntPtrToPointer(uint32_t value);
+		virtual uint32_t PointerToIntPtr(void* address);
 		
 	public:
-		static NativeAllocator* Instance;
+		static NativeAllocator* GetInstance();
 		
-		virtual uint8_t* GetBaseAddress();
-		
-		virtual uint8_t* Allocate(const std::string& reason, size_t size);
+		virtual uint8_t* Allocate(const AllocationDetails& details, size_t size);
 		virtual void Deallocate(void* address);
-		virtual const std::string* GetRegionOfAllocation(const void* address);
-		virtual const std::string* GetRegionOfAllocation(intptr_t address);
+		virtual const AllocationDetails* GetDetails(const void* address);
+		virtual const AllocationDetails* GetDetails(uint32_t address);
 		
 		void PrintMemoryMap();
-		void PrintParentZone(intptr_t address);
+		void PrintParentZone(const void* address);
 		
 		virtual ~NativeAllocator();
 	};

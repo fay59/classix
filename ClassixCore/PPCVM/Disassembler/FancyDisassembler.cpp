@@ -74,11 +74,12 @@ namespace PPCVM
 			for (auto iter = disasm->Begin(); iter != disasm->End(); iter++)
 			{
 				auto& section = iter->second;
-				writer.EnterLabel(section, allocator->ToIntPtr(section.Begin));
+				Common::UInt32* sectionBase = const_cast<Common::UInt32*>(section.Begin);
+				writer.EnterLabel(section, allocator->ToIntPtr(sectionBase));
 				
 				for (int i = 0; i < section.Opcodes.size(); i++)
 				{
-					intptr_t opcodeAddress = allocator->ToIntPtr(section.Begin + i);
+					intptr_t opcodeAddress = allocator->ToIntPtr(sectionBase + i);
 					MetadataMap::iterator iter = metadata.find(opcodeAddress);
 					const std::string* stringMetadata = iter == metadata.end() ? nullptr : &iter->second;
 					writer.VisitOpcode(section.Opcodes[i], opcodeAddress, stringMetadata);
@@ -179,7 +180,8 @@ namespace PPCVM
 							Dl_info info;
 							if (dladdr(reinterpret_cast<void*>(native->Callback), &info))
 							{
-								intptr_t opcodeAddress = allocator->ToIntPtr(range.Begin + i);
+								Common::UInt32* base = const_cast<Common::UInt32*>(range.Begin);
+								intptr_t opcodeAddress = allocator->ToIntPtr(base + i);
 								metadata.insert(std::make_pair(opcodeAddress, info.dli_sname));
 							}
 						}
@@ -203,7 +205,8 @@ namespace PPCVM
 		{
 			if (auto targetRange = rangeToDisasm[range]->FindRange(targetAddress))
 			{
-				intptr_t address = allocator->ToIntPtr(currentAddress);
+				Common::UInt32* base = const_cast<Common::UInt32*>(currentAddress);
+				intptr_t address = allocator->ToIntPtr(base);
 				metadata.insert(std::make_pair(address, targetRange->Name));
 				if (r2 != nullptr && unprocessedRanges.count(targetRange))
 					r2Values.insert(std::make_pair(targetRange, r2));

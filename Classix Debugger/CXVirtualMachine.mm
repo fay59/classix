@@ -149,7 +149,7 @@ struct ClassixCoreVM
 	if (!(self = [super init]))
 		return nil;
 	
-	vm = new ClassixCoreVM(Common::NativeAllocator::Instance);
+	vm = new ClassixCoreVM(Common::NativeAllocator::GetInstance());
 	
 	NSMutableArray* gpr = [NSMutableArray arrayWithCapacity:32];
 	NSMutableArray* fpr = [NSMutableArray arrayWithCapacity:32];
@@ -330,13 +330,13 @@ struct ClassixCoreVM
 		cppBreakpoints.insert(address);
 	}
 	
-	const void* eip = vm->allocator->ToPointer<const void>(pc);
+	const void* eip = vm->allocator->ToPointer<void>(pc);
 	PPCVM::MachineState oldState = vm->state;
 	
 	try
 	{
 		eip = vm->interp.ExecuteUntil(eip, cppBreakpoints);
-		self.pc = vm->allocator->ToIntPtr(eip);
+		self.pc = vm->allocator->ToIntPtr(const_cast<void*>(eip));
 		self.lastError = nil;
 	}
 	catch (PPCVM::Execution::InterpreterException& ex)
@@ -363,7 +363,7 @@ struct ClassixCoreVM
 	try
 	{
 		eip = vm->interp.ExecuteOne(eip);
-		self.pc = vm->allocator->ToIntPtr(eip);
+		self.pc = vm->allocator->ToIntPtr(const_cast<void*>(eip));
 		self.lastError = nil;
 	}
 	catch (PPCVM::Execution::InterpreterException& ex)
@@ -388,7 +388,7 @@ struct ClassixCoreVM
 	try
 	{
 		eip = vm->interp.ExecuteUntil(eip, until);
-		self.pc = vm->allocator->ToIntPtr(eip);
+		self.pc = vm->allocator->ToIntPtr(const_cast<void*>(eip));
 		self.lastError = nil;
 	}
 	catch (PPCVM::Execution::InterpreterException& ex)

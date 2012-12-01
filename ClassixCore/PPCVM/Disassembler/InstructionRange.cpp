@@ -133,7 +133,7 @@ namespace PPCVM
 			char functionName[] = "fn00000000";
 			sprintf(functionName, "%s%08x",
 					IsFunction ? "fn" : "lb",
-					allocator->ToIntPtr(Begin));
+					allocator->ToIntPtr(const_cast<Common::UInt32*>(Begin)));
 			
 			Name = functionName;
 			

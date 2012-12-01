@@ -26,7 +26,7 @@
 
 int main(int argc, char *argv[])
 {
-	Common::NativeAllocator* allocator = Common::NativeAllocator::Instance;
+	Common::NativeAllocator* allocator = Common::NativeAllocator::GetInstance();
 	(void)allocator;
 	
 	[CXDBURLProtocol class];

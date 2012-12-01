@@ -26,6 +26,7 @@
 #include <cstddef>
 #include <cassert>
 #include <string>
+#include "AllocationDetails.h"
 #include "AccessViolationException.h"
 
 namespace Common
@@ -38,7 +39,7 @@ namespace Common
 		IAllocator* allocator;
 		
 	public:
-		AutoAllocation(IAllocator* allocator, size_t size, const std::string& zoneName);
+		AutoAllocation(IAllocator* allocator, size_t size, const AllocationDetails& details);
 		AutoAllocation(const AutoAllocation& that) = delete;
 		AutoAllocation(AutoAllocation&& that);
 		
@@ -60,30 +61,19 @@ namespace Common
 	class IAllocator
 	{
 	public:
-#pragma mark Virtual Interface
-		virtual uint8_t* GetBaseAddress() = 0;
-		virtual uint8_t* Allocate(const std::string& zoneName, size_t size) = 0;
-		virtual void Deallocate(void* address) = 0;
-		virtual const std::string* GetRegionOfAllocation(const void* address) = 0;
-		virtual const std::string* GetRegionOfAllocation(intptr_t address) = 0;
+		uint8_t* Allocate(const std::string& zoneName, size_t size);
+		AutoAllocation AllocateAuto(const std::string& zoneName, size_t size);
+		AutoAllocation AllocateAuto(const AllocationDetails& details, size_t size);
 		
-#pragma mark -
-		inline uint32_t IntPtrAllocate(const std::string& zoneName, size_t size)
+		inline bool IsAllocated(uint32_t address)
 		{
-			return ToIntPtr(Allocate(zoneName, size));
-		}
-		
-		inline bool IsAllocated(intptr_t address)
-		{
-			return GetRegionOfAllocation(address) != nullptr;
+			return GetDetails(address) != nullptr;
 		}
 		
 		inline const uint8_t* GetBaseAddress() const
 		{
 			return const_cast<IAllocator*>(this)->GetBaseAddress();
 		}
-		
-		AutoAllocation AllocateAuto(const std::string& zoneName, size_t size);
 		
 		template<typename T, typename ...TParams>
 		T* Allocate(const std::string& zoneName, TParams... params)
@@ -105,7 +95,7 @@ namespace Common
 #ifdef DEBUG
 			AccessViolationException::Check(this, value, sizeof(T));
 #endif
-			return reinterpret_cast<T*>(GetBaseAddress() + value);
+			return reinterpret_cast<T*>(IntPtrToPointer(value));
 		}
 		
 		template<typename T>
@@ -114,24 +104,27 @@ namespace Common
 #ifdef DEBUG
 			AccessViolationException::Check(this, value, sizeof(T) * count);
 #endif
-			return reinterpret_cast<T*>(GetBaseAddress() + value);
+			return reinterpret_cast<T*>(IntPtrToPointer(value));
 		}
 		
 		template<typename T>
 		uint32_t ToIntPtr(T* value)
 		{
-			uint8_t* asUint8 = reinterpret_cast<uint8_t*>(value);
-			return static_cast<uint32_t>(asUint8 - GetBaseAddress());
+			return PointerToIntPtr(value);
 		}
 		
-		template<typename T>
-		uint32_t ToIntPtr(const T* value)
-		{
-			const uint8_t* asUInt8 = reinterpret_cast<const uint8_t*>(value);
-			return static_cast<uint32_t>(asUInt8 - GetBaseAddress());
-		}
+#pragma mark Virtual Interface
+		virtual uint8_t* Allocate(const AllocationDetails& details, size_t size) = 0;
+		virtual void Deallocate(void* address) = 0;
+		
+		virtual const AllocationDetails* GetDetails(const void* address) = 0;
+		virtual const AllocationDetails* GetDetails(uint32_t address) = 0;
 		
 		virtual ~IAllocator();
+		
+	protected:
+		virtual void* IntPtrToPointer(uint32_t value) = 0;
+		virtual uint32_t PointerToIntPtr(void* address) = 0;
 	};
 	
 	template<typename T>

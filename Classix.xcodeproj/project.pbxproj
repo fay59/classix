@@ -20,6 +20,8 @@
 		DC176D091662A91700C76888 /* CXGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC176D081662A91700C76888 /* CXGradientView.m */; };
 		DC264EA7165DF76A00C86BDD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC264EA6165DF76A00C86BDD /* WebKit.framework */; };
 		DC264EAC165DFFEB00C86BDD /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAA165DFFEB00C86BDD /* main.js */; };
+		DC29C3D2166AB92400B35EF7 /* AllocationDetails.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC29C3D0166AB92400B35EF7 /* AllocationDetails.cpp */; };
+		DC29C3D3166AB92400B35EF7 /* AllocationDetails.h in Headers */ = {isa = PBXBuildFile; fileRef = DC29C3D1166AB92400B35EF7 /* AllocationDetails.h */; };
 		DC30714E1668800D00475144 /* CXJSAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = DC30714D1668800D00475144 /* CXJSAdapter.m */; };
 		DC307156166884DE00475144 /* breakpoint-end.png in Resources */ = {isa = PBXBuildFile; fileRef = DC307155166884DE00475144 /* breakpoint-end.png */; };
 		DC4C644F165B62910097288E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC4C644E165B62910097288E /* Cocoa.framework */; };
@@ -120,6 +122,8 @@
 		DC264EAB165DFFEB00C86BDD /* cxdb.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = cxdb.css; sourceTree = "<group>"; };
 		DC264EAE165DFFF800C86BDD /* cxdb.xhtml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = cxdb.xhtml; sourceTree = "<group>"; };
 		DC264EB0165E012B00C86BDD /* execution-cursor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "execution-cursor.png"; sourceTree = "<group>"; };
+		DC29C3D0166AB92400B35EF7 /* AllocationDetails.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AllocationDetails.cpp; sourceTree = "<group>"; };
+		DC29C3D1166AB92400B35EF7 /* AllocationDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllocationDetails.h; sourceTree = "<group>"; };
 		DC30714C1668800D00475144 /* CXJSAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXJSAdapter.h; sourceTree = "<group>"; };
 		DC30714D1668800D00475144 /* CXJSAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXJSAdapter.m; sourceTree = "<group>"; };
 		DC307155166884DE00475144 /* breakpoint-end.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "breakpoint-end.png"; sourceTree = "<group>"; };
@@ -317,6 +321,20 @@
 			);
 			name = "UI Resources";
 			path = "Debugger UI";
+			sourceTree = "<group>";
+		};
+		DC29C3D5166AC09A00B35EF7 /* Memory Management */ = {
+			isa = PBXGroup;
+			children = (
+				DC29C3D0166AB92400B35EF7 /* AllocationDetails.cpp */,
+				DC29C3D1166AB92400B35EF7 /* AllocationDetails.h */,
+				DCA6DBF81638451400BFA046 /* IAllocator.cpp */,
+				DCA6DBF91638451400BFA046 /* IAllocator.h */,
+				DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */,
+				DCA6DBFC1638460600BFA046 /* NativeAllocator.h */,
+				DC9D8D41164F2E2800036FDD /* STAllocator.h */,
+			);
+			name = "Memory Management";
 			sourceTree = "<group>";
 		};
 		DC4C644D165B62910097288E /* Frameworks */ = {
@@ -519,14 +537,10 @@
 		DCA6DBF61638450000BFA046 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				DC29C3D5166AC09A00B35EF7 /* Memory Management */,
 				DCB00BA1163B9367003C88CA /* BigEndian.h */,
 				DC5E33C5163A496300944FFD /* FileMapping.cpp */,
 				DC5E33C6163A496300944FFD /* FileMapping.h */,
-				DCA6DBF81638451400BFA046 /* IAllocator.cpp */,
-				DCA6DBF91638451400BFA046 /* IAllocator.h */,
-				DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */,
-				DCA6DBFC1638460600BFA046 /* NativeAllocator.h */,
-				DC9D8D41164F2E2800036FDD /* STAllocator.h */,
 				DC07B1781669D1AD00A78205 /* PPCRuntimeException.h */,
 				DC07B1731669CF2300A78205 /* AccessViolationException.cpp */,
 				DC07B1741669CF2300A78205 /* AccessViolationException.h */,
@@ -617,6 +631,7 @@
 				DC07B1761669CF2400A78205 /* AccessViolationException.h in Headers */,
 				DC07B17A1669D1AD00A78205 /* PPCRuntimeException.h in Headers */,
 				DC07B17E1669D39900A78205 /* InterpreterException.h in Headers */,
+				DC29C3D3166AB92400B35EF7 /* AllocationDetails.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -815,6 +830,7 @@
 				DC0D42A7165EDC4600883586 /* FancyDisassembler.cpp in Sources */,
 				DC07B1751669CF2400A78205 /* AccessViolationException.cpp in Sources */,
 				DC07B17D1669D39900A78205 /* InterpreterException.cpp in Sources */,
+				DC29C3D2166AB92400B35EF7 /* AllocationDetails.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

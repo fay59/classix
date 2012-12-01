@@ -23,25 +23,55 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <iomanip>
+
+namespace
+{
+	std::ostream& PrintAddress(std::ostream& into, uint32_t address)
+	{
+		into << "0x";
+		into << std::setw(8) << std::setfill('0') << address;
+		return into;
+	}
+}
 
 namespace Common
 {
-	NativeAllocator::AllocatedRange::AllocatedRange(void* start, void* end, const std::string& name)
-	: start(start), end(end), name(name)
+	NativeAllocator::AllocatedRange::AllocatedRange(void* start, void* end, const AllocationDetails& details)
+	: start(start), end(end), details(details.ToHeapAlloc())
 	{ }
 	
 	NativeAllocator::AllocatedRange::AllocatedRange()
-	: start(0), end(0)
+	: start(0), end(0), details(nullptr)
 	{ }
 	
-	NativeAllocator* NativeAllocator::Instance = new NativeAllocator();
-	
-	uint8_t* NativeAllocator::GetBaseAddress()
+	NativeAllocator::AllocatedRange::~AllocatedRange()
 	{
-		return nullptr;
+		delete details;
 	}
 	
-	uint8_t* NativeAllocator::Allocate(const std::string& reason, size_t size)
+	NativeAllocator* NativeAllocator::instance = new NativeAllocator();
+	
+	NativeAllocator* NativeAllocator::GetInstance()
+	{
+		// gotta love bit paranoia
+		if (sizeof(void*) != sizeof(uint32_t))
+			throw std::logic_error("NativeAllocator32 is only usable in 32-bits mode");
+		
+		return instance;
+	}
+	
+	void* NativeAllocator::IntPtrToPointer(uint32_t value)
+	{
+		return reinterpret_cast<void*>(value);
+	}
+	
+	uint32_t NativeAllocator::PointerToIntPtr(void *address)
+	{
+		return reinterpret_cast<uint32_t>(address);
+	}
+	
+	uint8_t* NativeAllocator::Allocate(const AllocationDetails& reason, size_t size)
 	{
 		uint8_t* allocation = static_cast<uint8_t*>(malloc(size));
 		intptr_t address = ToIntPtr(allocation);
@@ -59,7 +89,7 @@ namespace Common
 		}
 	}
 	
-	const NativeAllocator::AllocatedRange* NativeAllocator::GetAllocationRange(intptr_t address)
+	const NativeAllocator::AllocatedRange* NativeAllocator::GetAllocationRange(uint32_t address)
 	{
 		for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
 		{
@@ -75,15 +105,15 @@ namespace Common
 		return nullptr;
 	}
 	
-	const std::string* NativeAllocator::GetRegionOfAllocation(const void* address)
+	const AllocationDetails* NativeAllocator::GetDetails(const void* address)
 	{
-		return GetRegionOfAllocation(ToIntPtr(address));
+		return GetDetails(ToIntPtr(const_cast<void*>(address)));
 	}
 	
-	const std::string* NativeAllocator::GetRegionOfAllocation(intptr_t address)
+	const AllocationDetails* NativeAllocator::GetDetails(uint32_t address)
 	{
 		auto range = GetAllocationRange(address);
-		return range == nullptr ? nullptr : &range->name;
+		return range == nullptr ? nullptr : range->details;
 	}
 	
 	void NativeAllocator::PrintMemoryMap()
@@ -91,17 +121,34 @@ namespace Common
 		for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
 		{
 			const auto& range = iter->second;
-			std::cout << range.start << " - " << range.end << ": " << range.name << std::endl;
+			uint32_t start = ToIntPtr(range.start);
+			uint32_t end = ToIntPtr(range.end);
+			
+			PrintAddress(std::cout, start);
+			std::cout << " - ";
+			PrintAddress(std::cout, end);
+			std::cout << ": " << range.details->GetAllocationName() << std::endl;
 		}
 	}
 	
-	void NativeAllocator::PrintParentZone(intptr_t address)
+	void NativeAllocator::PrintParentZone(const void* address)
 	{
-		auto range = GetAllocationRange(address);
+		uint32_t intAddress = ToIntPtr(const_cast<void*>(address));
+		auto range = GetAllocationRange(intAddress);
 		if (range == nullptr)
 			std::cout << address << " was not allocated" << std::endl;
 		else
-			std::cout << range->start << " - " << range->end << ": " << range->name << std::endl;
+		{
+			uint32_t start = ToIntPtr(range->start);
+			uint32_t end = ToIntPtr(range->end);
+			
+			PrintAddress(std::cout, start);
+			std::cout << " - ";
+			PrintAddress(std::cout, end);
+			std::cout << ": " << range->details->GetAllocationName();
+			
+			std::cout << " (" << range->details->GetAllocationDetails(intAddress - start) << ')' << std::endl;
+		}
 	}
 	
 	NativeAllocator::~NativeAllocator()
