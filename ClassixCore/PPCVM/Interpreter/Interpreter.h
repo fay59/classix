@@ -271,24 +271,24 @@ namespace PPCVM
 			{
 				const Common::UInt32& instructionCode = *currentAddress;
 				
-				if (instructionCode.AsBigEndian == NativeTag)
+				try
 				{
-					const NativeCall* call = reinterpret_cast<const NativeCall*>(currentAddress);
-					branchAddress = ExecuteNative(call);
-				}
-				else
-				{
-					Instruction inst = instructionCode.Get();
-					try
+					if (instructionCode.AsBigEndian == NativeTag)
 					{
+						const NativeCall* call = reinterpret_cast<const NativeCall*>(currentAddress);
+						branchAddress = ExecuteNative(call);
+					}
+					else
+					{
+						Instruction inst = instructionCode.Get();
 						Dispatch(inst);
 						currentAddress++;
 					}
-					catch (Common::PPCRuntimeException& ex)
-					{
-						uint32_t pc = allocator->ToIntPtr(currentAddress);
-						throw InterpreterException(pc, ex);
-					}
+				}
+				catch (Common::PPCRuntimeException& ex)
+				{
+					uint32_t pc = allocator->ToIntPtr(currentAddress);
+					throw InterpreterException(pc, ex);
 				}
 				
 				if (branchAddress != nullptr)

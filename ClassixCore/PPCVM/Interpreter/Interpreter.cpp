@@ -144,25 +144,25 @@ namespace PPCVM
 			branchAddress = nullptr;
 			do
 			{
-				const Common::UInt32& instructionCode = *currentAddress;
-				if (instructionCode.AsBigEndian == NativeTag)
+				try
 				{
-					const NativeCall* call = static_cast<const NativeCall*>(address);
-					branchAddress = ExecuteNative(call);
+					const Common::UInt32& instructionCode = *currentAddress;
+					if (instructionCode.AsBigEndian == NativeTag)
+					{
+						const NativeCall* call = static_cast<const NativeCall*>(address);
+						branchAddress = ExecuteNative(call);
+					}
+					else
+					{
+						Instruction inst = instructionCode.Get();
+							Dispatch(inst);
+							currentAddress++;
+					}
 				}
-				else
+				catch (Common::PPCRuntimeException& ex)
 				{
-					Instruction inst = instructionCode.Get();
-					try
-					{
-						Dispatch(inst);
-						currentAddress++;
-					}
-					catch (Common::PPCRuntimeException& ex)
-					{
-						uint32_t pc = allocator->ToIntPtr(currentAddress);
-						throw InterpreterException(pc, ex);
-					}
+					uint32_t pc = allocator->ToIntPtr(currentAddress);
+					throw InterpreterException(pc, ex);
 				}
 			} while (branchAddress == nullptr);
 			return branchAddress;
@@ -173,25 +173,25 @@ namespace PPCVM
 			currentAddress = reinterpret_cast<const Common::UInt32*>(address);
 			branchAddress = nullptr;
 			
-			const Common::UInt32& instructionCode = *currentAddress;
-			if (instructionCode.AsBigEndian == NativeTag)
+			try
 			{
-				const NativeCall* call = static_cast<const NativeCall*>(address);
-				branchAddress = ExecuteNative(call);
-			}
-			else
-			{
-				Instruction inst = instructionCode.Get();
-				try
+				const Common::UInt32& instructionCode = *currentAddress;
+				if (instructionCode.AsBigEndian == NativeTag)
 				{
+					const NativeCall* call = static_cast<const NativeCall*>(address);
+					branchAddress = ExecuteNative(call);
+				}
+				else
+				{
+					Instruction inst = instructionCode.Get();
 					Dispatch(inst);
 					currentAddress++;
 				}
-				catch (Common::PPCRuntimeException& ex)
-				{
-					uint32_t pc = allocator->ToIntPtr(currentAddress);
-					throw InterpreterException(pc, ex);
-				}
+			}
+			catch (Common::PPCRuntimeException& ex)
+			{
+				uint32_t pc = allocator->ToIntPtr(currentAddress);
+				throw InterpreterException(pc, ex);
 			}
 			
 			return branchAddress == nullptr ? currentAddress : branchAddress;
