@@ -30,6 +30,8 @@
 #include "BigEndian.h"
 #include <string>
 #include <iostream>
+#include "PPCRuntimeException.h"
+#include "InterpreterException.h"
 
 namespace PPCVM
 {
@@ -277,8 +279,16 @@ namespace PPCVM
 				else
 				{
 					Instruction inst = instructionCode.Get();
-					Dispatch(inst);
-					currentAddress++;
+					try
+					{
+						Dispatch(inst);
+						currentAddress++;
+					}
+					catch (Common::PPCRuntimeException& ex)
+					{
+						uint32_t pc = allocator->ToIntPtr(currentAddress);
+						throw InterpreterException(pc, ex);
+					}
 				}
 				
 				if (branchAddress != nullptr)

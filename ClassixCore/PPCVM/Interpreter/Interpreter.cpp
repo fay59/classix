@@ -153,8 +153,16 @@ namespace PPCVM
 				else
 				{
 					Instruction inst = instructionCode.Get();
-					Dispatch(inst);
-					currentAddress++;
+					try
+					{
+						Dispatch(inst);
+						currentAddress++;
+					}
+					catch (Common::PPCRuntimeException& ex)
+					{
+						uint32_t pc = allocator->ToIntPtr(currentAddress);
+						throw InterpreterException(pc, ex);
+					}
 				}
 			} while (branchAddress == nullptr);
 			return branchAddress;
@@ -174,8 +182,16 @@ namespace PPCVM
 			else
 			{
 				Instruction inst = instructionCode.Get();
-				Dispatch(inst);
-				currentAddress++;
+				try
+				{
+					Dispatch(inst);
+					currentAddress++;
+				}
+				catch (Common::PPCRuntimeException& ex)
+				{
+					uint32_t pc = allocator->ToIntPtr(currentAddress);
+					throw InterpreterException(pc, ex);
+				}
 			}
 			
 			return branchAddress == nullptr ? currentAddress : branchAddress;
