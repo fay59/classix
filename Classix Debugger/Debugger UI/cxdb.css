@@ -24,6 +24,7 @@ html, body {
 	padding: 0px;
 	overflow: auto;
 	height: 100%;
+	font-family: "Lucida Grande";
 }
 
 #disasm {
@@ -154,4 +155,31 @@ span.gpr, span.fpr, span.spr, span.cr, span.ptr {
 #disasm span.active {
 	padding: 0px;
 	border: 1px #f00 dashed;
+	font-weight: bold;
+}
+
+.popover {
+	position: absolute;
+	z-index: 1;
+	padding: 20px;
+}
+
+.popover table {
+	background-color: #FFF8DC;
+	border: 1px #000 solid;
+	border-spacing: 0;
+	box-shadow: 0px 0px 10px rgba(0,0,0, 0.5);
+}
+
+.popover td {
+	padding: 0px 5px;
+}
+
+.popover tr:not(:first-child) > td {
+	border-top: 1px #000 solid;
+}
+
+.popover td:last-child {
+	font-weight: bold;
+	text-align: right;
 }

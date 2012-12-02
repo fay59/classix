@@ -97,15 +97,16 @@ namespace Common
 		}
 	}
 	
-	const NativeAllocator::AllocatedRange* NativeAllocator::GetAllocationRange(uint32_t address)
+	const NativeAllocator::AllocatedRange* NativeAllocator::GetAllocationRange(uint32_t address) const
 	{
+		NativeAllocator* self = const_cast<NativeAllocator*>(this);
 		for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
 		{
 			const auto& range = iter->second;
-			if (ToIntPtr(range.end) < address)
+			if (self->ToIntPtr(range.end) < address)
 				continue;
 			
-			if (ToIntPtr(range.start) > address)
+			if (self->ToIntPtr(range.start) > address)
 				break;
 			
 			return &range;
@@ -113,15 +114,19 @@ namespace Common
 		return nullptr;
 	}
 	
-	const AllocationDetails* NativeAllocator::GetDetails(const void* address)
-	{
-		return GetDetails(ToIntPtr(const_cast<void*>(address)));
-	}
-	
 	const AllocationDetails* NativeAllocator::GetDetails(uint32_t address)
 	{
 		auto range = GetAllocationRange(address);
 		return range == nullptr ? nullptr : range->details;
+	}
+	
+	uint32_t NativeAllocator::GetAllocationOffset(uint32_t address)
+	{
+		auto range = GetAllocationRange(address);
+		if (range == nullptr)
+			throw AccessViolationException(this, address, 0);
+		
+		return address - ToIntPtr(range->start);
 	}
 	
 	void NativeAllocator::PrintMemoryMap()

@@ -1,5 +1,5 @@
 //
-// CXJSAdapter.h
+// CXReverseAllocationDetails.cpp
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,32 +19,26 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#import <Foundation/Foundation.h>
-#import <WebKit/WebKit.h>
+#include "CXReverseAllocationDetails.h"
+#include <sstream>
+#include <cassert>
 
-@class CXDocument;
+CXReverseAllocationDetails::CXReverseAllocationDetails(const std::string& name, uint32_t offset)
+: Common::AllocationDetails(name), endOffset(offset)
+{ }
 
-@interface CXJSAdapter : NSObject
+std::string CXReverseAllocationDetails::GetAllocationDetails(uint32_t offset) const
 {
-	CXDocument* document;
+	assert(offset < endOffset && "offset out of bounds");
+	std::stringstream ss;
+	ss << GetAllocationName() << " -" << endOffset - offset;
+	return ss.str();
 }
 
-+(BOOL)isSelectorExcludedFromWebScript:(SEL)selector;
+Common::AllocationDetails* CXReverseAllocationDetails::ToHeapAlloc() const
+{
+	return new CXReverseAllocationDetails(*this);
+}
 
--(id)initWithDocument:(CXDocument*)document;
-
--(void)setPC:(uint32_t)pc;
-
--(NSDictionary*)representationsOfGPR:(uint32_t)gpr;
--(NSDictionary*)representationsOfFPR:(uint32_t)fpr;
--(NSDictionary*)representationsOfSPR:(uint32_t)spr;
--(NSDictionary*)representationsOfCR:(uint32_t)cr;
--(NSDictionary*)representationsOfMemoryAddress:(uint32_t)memoryAddress;
--(NSString*)jsonize:(id<NSObject>)object;
-
--(NSArray*)breakpoints;
--(BOOL)toggleBreakpoint:(uint32_t)address;
-
--(void)dealloc;
-
-@end
+CXReverseAllocationDetails::~CXReverseAllocationDetails()
+{ }

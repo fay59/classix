@@ -22,6 +22,8 @@
 #import "CXVirtualMachine.h"
 #import "CXRegister.h"
 
+#include <unordered_set>
+
 #include "MachineState.h"
 #include "FragmentManager.h"
 #include "NativeAllocator.h"
@@ -31,7 +33,7 @@
 #include "FancyDisassembler.h"
 #include "CXObjcDisassemblyWriter.h"
 #include "NativeCall.h"
-#include <unordered_set>
+#include "CXReverseAllocationDetails.h"
 
 NSNumber* CXVirtualMachineGPRKey = @(CXRegisterGPR);
 NSNumber* CXVirtualMachineFPRKey = @(CXRegisterFPR);
@@ -66,7 +68,7 @@ struct ClassixCoreVM
 	, interp(allocator, &state)
 	, container(nullptr)
 	, nextPC(0)
-	, stack(allocator->AllocateAuto("Stack", CXStackSize))
+	, stack(allocator->AllocateAuto(CXReverseAllocationDetails("Stack", CXStackSize), CXStackSize))
 	{
 		dlfcnResolver.RegisterLibrary("StdCLib");
 		cfm.LibraryResolvers.push_back(&pefResolver);
@@ -332,6 +334,56 @@ struct ClassixCoreVM
 {
 	Common::IAllocator* allocator = vm->allocator;
 	return [NSValue value:&allocator withObjCType:@encode(typeof allocator)];
+}
+
+-(NSString*)explainAddress:(unsigned)address
+{
+	if (const Common::AllocationDetails* details = vm->allocator->GetDetails(address))
+	{
+		uint32_t offset = vm->allocator->GetAllocationOffset(address);
+		std::string description = details->GetAllocationDetails(offset);
+		return [NSString stringWithCString:description.c_str() encoding:NSUTF8StringEncoding];
+	}
+	return nil;
+}
+
+-(NSNumber*)getWordAtAddress:(unsigned int)address
+{
+	try
+	{
+		const Common::UInt32* atAddress = vm->allocator->ToPointer<const Common::UInt32>(address);
+		return @(atAddress->Get());
+	}
+	catch (Common::AccessViolationException&)
+	{
+		return nil;
+	}
+}
+
+-(NSNumber*)getFloatAtAddress:(unsigned int)address
+{
+	try
+	{
+		const Common::Real32* atAddress = vm->allocator->ToPointer<const Common::Real32>(address);
+		return @(atAddress->Get());
+	}
+	catch (Common::AccessViolationException&)
+	{
+		return nil;
+	}
+}
+
+-(NSNumber*)getDoubleAtAddress:(unsigned int)address
+{
+	try
+	{
+		const Common::Real64* atAddress = vm->allocator->ToPointer<const Common::Real64>(address);
+		return @(atAddress->Get());
+	}
+	catch (Common::AccessViolationException&)
+	{
+		return nil;
+	}
 }
 
 -(IBAction)run:(id)sender

@@ -1,5 +1,5 @@
 //
-// CXJSAdapter.h
+// CXReverseAllocationDetails.h
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,32 +19,22 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#import <Foundation/Foundation.h>
-#import <WebKit/WebKit.h>
+#ifndef __Classix__ReverseAllocationDetails__
+#define __Classix__ReverseAllocationDetails__
 
-@class CXDocument;
+#include "AllocationDetails.h"
 
-@interface CXJSAdapter : NSObject
+class CXReverseAllocationDetails : public Common::AllocationDetails
 {
-	CXDocument* document;
-}
+	uint32_t endOffset;
+	
+public:
+	CXReverseAllocationDetails(const std::string& name, uint32_t endOffset);
+	
+	virtual std::string GetAllocationDetails(uint32_t offset) const;
+	virtual AllocationDetails* ToHeapAlloc() const;
+	
+	virtual ~CXReverseAllocationDetails();
+};
 
-+(BOOL)isSelectorExcludedFromWebScript:(SEL)selector;
-
--(id)initWithDocument:(CXDocument*)document;
-
--(void)setPC:(uint32_t)pc;
-
--(NSDictionary*)representationsOfGPR:(uint32_t)gpr;
--(NSDictionary*)representationsOfFPR:(uint32_t)fpr;
--(NSDictionary*)representationsOfSPR:(uint32_t)spr;
--(NSDictionary*)representationsOfCR:(uint32_t)cr;
--(NSDictionary*)representationsOfMemoryAddress:(uint32_t)memoryAddress;
--(NSString*)jsonize:(id<NSObject>)object;
-
--(NSArray*)breakpoints;
--(BOOL)toggleBreakpoint:(uint32_t)address;
-
--(void)dealloc;
-
-@end
+#endif /* defined(__Classix__ReverseAllocationDetails__) */

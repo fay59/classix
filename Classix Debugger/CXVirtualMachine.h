@@ -72,6 +72,11 @@ enum CXVirtualMachineSPRIndex
 -(NSValue*)fragmentManager;
 -(NSValue*)allocator;
 
+-(NSString*)explainAddress:(unsigned)address;
+-(NSNumber*)getWordAtAddress:(unsigned)address;
+-(NSNumber*)getFloatAtAddress:(unsigned)address;
+-(NSNumber*)getDoubleAtAddress:(unsigned)address;
+
 -(IBAction)run:(id)sender;
 -(IBAction)stepOver:(id)sender;
 -(IBAction)stepInto:(id)sender;

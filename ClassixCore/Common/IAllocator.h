@@ -61,9 +61,34 @@ namespace Common
 	class IAllocator
 	{
 	public:
+#pragma mark Virtual Interface
+		virtual uint8_t* Allocate(const AllocationDetails& details, size_t size) = 0;
+		virtual void Deallocate(void* address) = 0;
+		
+		virtual const AllocationDetails* GetDetails(uint32_t address) = 0;
+		virtual uint32_t GetAllocationOffset(uint32_t address) = 0;
+		
+		virtual ~IAllocator();
+		
+	protected:
+		virtual void* IntPtrToPointer(uint32_t value) = 0;
+		virtual uint32_t PointerToIntPtr(void* address) = 0;
+		
+#pragma mark -
+	public:
 		uint8_t* Allocate(const std::string& zoneName, size_t size);
 		AutoAllocation AllocateAuto(const std::string& zoneName, size_t size);
 		AutoAllocation AllocateAuto(const AllocationDetails& details, size_t size);
+		
+		inline const AllocationDetails* GetDetails(const void* address)
+		{
+			return GetDetails(ToIntPtr(const_cast<void*>(address)));
+		}
+		
+		inline uint32_t GetAllocationOffset(const void* address)
+		{
+			return GetAllocationOffset(ToIntPtr(const_cast<void*>(address)));
+		}
 		
 		inline bool IsAllocated(uint32_t address)
 		{
@@ -118,19 +143,6 @@ namespace Common
 		{
 			return PointerToIntPtr(value);
 		}
-		
-#pragma mark Virtual Interface
-		virtual uint8_t* Allocate(const AllocationDetails& details, size_t size) = 0;
-		virtual void Deallocate(void* address) = 0;
-		
-		virtual const AllocationDetails* GetDetails(const void* address) = 0;
-		virtual const AllocationDetails* GetDetails(uint32_t address) = 0;
-		
-		virtual ~IAllocator();
-		
-	protected:
-		virtual void* IntPtrToPointer(uint32_t value) = 0;
-		virtual uint32_t PointerToIntPtr(void* address) = 0;
 	};
 	
 	template<typename T>

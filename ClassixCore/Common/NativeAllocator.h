@@ -46,7 +46,7 @@ namespace Common
 		
 		std::map<intptr_t, AllocatedRange> ranges;
 		
-		const AllocatedRange* GetAllocationRange(uint32_t address);
+		const AllocatedRange* GetAllocationRange(uint32_t address) const;
 		
 	protected:
 		virtual void* IntPtrToPointer(uint32_t value);
@@ -57,8 +57,8 @@ namespace Common
 		
 		virtual uint8_t* Allocate(const AllocationDetails& details, size_t size);
 		virtual void Deallocate(void* address);
-		virtual const AllocationDetails* GetDetails(const void* address);
 		virtual const AllocationDetails* GetDetails(uint32_t address);
+		virtual uint32_t GetAllocationOffset(uint32_t address);
 		
 		void PrintMemoryMap();
 		void PrintParentZone(const void* address);

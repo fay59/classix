@@ -83,6 +83,121 @@ function HighlightPC(pc, errorMessage)
 	}
 }
 
+function BeginShowPreview(element)
+{
+	function CreateValueRow(title, value)
+	{
+		var tr = document.createElement("tr");
+		var titleTd = document.createElement("td");
+		titleTd.textContent = title;
+		var valueTd = document.createElement("td");
+		valueTd.textContent = value;
+		
+		tr.appendChild(titleTd);
+		tr.appendChild(valueTd);
+		return tr;
+	}
+	
+	function Offset(which, element)
+	{
+		var totalOffset = 0;
+		while (element != null)
+		{
+			totalOffset += element["offset" + which];
+			element = element.offsetParent;
+		}
+		return totalOffset;
+	}
+	
+	function IsAncestor(ancestorNode, childNode)
+	{
+		var parent = childNode.parentElement;
+		while (parent != null)
+		{
+			if (parent == ancestorNode)
+				return true;
+			parent = parent.parentElement;
+		}
+		return false;
+	}
+	
+	var timeout = setTimeout(function()
+	{
+		var classes = ["gpr", "fpr", "spr", "cr"];
+		var values = undefined;
+		for (var i = 0; i < classes.length; i++)
+		{
+			var className = classes[i];
+			if (element.classList.contains(className))
+			{
+				var number = parseInt(element.textContent.replace(/[^0-9]/g, ''));
+				var method = "representationsOf" + className.toUpperCase() + "_";
+				var objcValues = cxdb[method](number);
+				values = JSON.parse(cxdb.jsonize_(objcValues));
+				break;
+			}
+		}
+		
+		if (values == undefined && element.classList.contains("ptr"))
+		{
+			var parts = element.textContent.match(/^(-*[0-9]+)\(r([0-9]+)\)$/);
+			var register = parseInt(parts[2]);
+			var registerRep = cxdb.representationsOfGPR_(register)
+			var registerStringValue = JSON.parse(cxdb.jsonize_(registerRep))["unsigned"];
+			var registerValue = parseInt(registerStringValue.substr(2), 16);
+			var address = registerValue + parseInt(parts[1]);
+			var objcValues = cxdb.representationsOfMemoryAddress_(address);
+			values = JSON.parse(cxdb.jsonize_(objcValues));
+			values["r" + register] = registerStringValue;
+			values["address"] = "0x" + lpad(address.toString(16), 8, '0');
+		}
+		
+		if (values == undefined)
+			return;
+		
+		element.classList.add("active");
+		
+		var popoverDiv = document.createElement("div");
+		popoverDiv.style.top = Offset("Top", element) - 20 + "px";
+		popoverDiv.style.left = Offset("Left", element) - 25 + "px";
+		popoverDiv.className = "popover";
+		
+		var onMouseOut = function(event)
+		{
+			var target = event.relatedTarget;
+			if (target != popoverDiv && !IsAncestor(popoverDiv, target))
+			{
+				popoverDiv.parentNode.removeChild(popoverDiv);
+				element.classList.remove("active");
+				document.removeEventListener("mouseout", onMouseOut);
+			}
+		}
+		document.addEventListener("mouseout", onMouseOut);
+		
+		var popover = document.createElement("table");
+		popover.style.marginTop = element.offsetHeight + "px";
+		popoverDiv.appendChild(popover);
+		
+		var possibleKeys = ["address", "condition", "signed", "unsigned", "float", "double", "pointer", "*unsigned", "*signed", "*float", "*double"];
+		for (var i = 0; i < 32; i++) possibleKeys.unshift("r" + i);
+		for (var i = 0; i < possibleKeys.length; i++)
+		{
+			var key = possibleKeys[i];
+			if (values[key] != undefined)
+				popover.appendChild(CreateValueRow(key, values[key]));
+		}
+		document.body.appendChild(popoverDiv);
+	}, 750);
+	
+	var onMouseOut = function()
+	{
+		clearTimeout(timeout);
+		element.removeEventListener("mouseout", onMouseOut);
+	}
+	
+	element.addEventListener("mouseout", onMouseOut);
+}
+
 document.addEventListener("DOMContentLoaded", function()
 {
 	var url = document.location.toString();
@@ -101,6 +216,19 @@ document.addEventListener("DOMContentLoaded", function()
 				tr.classList.add("breakpoint");
 		}
 	}, 0);
+});
+
+document.addEventListener("mouseover", function(event)
+{
+	var target = event.target;
+	var classes = ["gpr", "fpr", "spr", "cr", "ptr"];
+	for (var i = 0; i < classes.length; i++)
+	{
+		if (target.classList.contains(classes[i]))
+		{
+			BeginShowPreview(target);
+		}
+	}
 });
 
 document.addEventListener("click", function(event)
