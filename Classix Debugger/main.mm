@@ -1,5 +1,5 @@
 //
-// main.m
+// main.mm
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
