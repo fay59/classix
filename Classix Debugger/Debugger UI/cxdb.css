@@ -38,6 +38,8 @@ html, body {
 
 #disasm tr:first-child th { border-top: none; }
 
+#disasm tr { height: 16px; }
+
 #disasm th {
 	text-align: left;
 	border-top: 1px #ccc solid;
@@ -52,8 +54,9 @@ html, body {
 }
 
 #disasm td {
+	box-sizing: border-box;
 	vertical-align: top;
-	height: 13px;
+	height: 16px;
 	padding: 0px 0px 0px 1px;
 }
 
@@ -71,7 +74,8 @@ html, body {
 	padding: 0px;
 }
 
-#disasm td:nth-child(2) > img {
+#disasm tr.current > td:nth-child(2) > img {
+	margin-left: -3px;
 	display: block;
 	margin: 0px;
 	padding: 0px;
@@ -115,11 +119,6 @@ html, body {
 	background-repeat: no-repeat;
 }
 
-#disasm tr.current img {
-	height: 14px;
-	margin-left: -3px;
-}
-
 #disasm tr.current > td:not(:first-child) {
 	border-top: 1px #d8e1cb solid;
 	border-bottom: 1px #d8e1cb solid;
@@ -146,4 +145,13 @@ html, body {
 	font-family: "Lucida Grande";
 	font-size: 7pt;
 	white-space: normal;
+}
+
+span.gpr, span.fpr, span.spr, span.cr, span.ptr {
+	padding: 1px;
+}
+
+#disasm span.active {
+	padding: 0px;
+	border: 1px #f00 dashed;
 }
