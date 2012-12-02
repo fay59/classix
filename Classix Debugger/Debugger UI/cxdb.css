@@ -22,10 +22,11 @@
 html, body {
 	margin: 0px;
 	padding: 0px;
-	overflow: auto;
 	height: 100%;
 	font-family: "Lucida Grande";
 }
+
+body { overflow: auto }
 
 #disasm {
 	margin: 0px;
