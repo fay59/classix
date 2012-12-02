@@ -76,6 +76,31 @@
 	return representations;
 }
 
+-(NSDictionary*)representationsOfFPR:(uint32_t)fprNumber
+{
+	CXRegister* fpr = [document.vm.fpr objectAtIndex:fprNumber];
+	double doubleValue= fpr.value.doubleValue;
+	unsigned long long longValue = *(unsigned long long*)&doubleValue;
+	unsigned unsignedValue = longValue & 0xffffffff;
+	float floatValue = *(float*)&unsignedValue;
+	
+	NSMutableDictionary* representations = [NSMutableDictionary dictionary];
+	[representations setObject:@(floatValue) forKey:@"float"];
+	[representations setObject:@(doubleValue) forKey:@"double"];
+	return representations;
+}
+
+-(NSDictionary*)representationsOfSPR:(uint32_t)spr
+{
+	return @{@"TODO": @""};
+}
+
+-(NSDictionary*)representationsOfCR:(uint32_t)crNumber
+{
+	CXRegister* cr = [document.vm.fpr objectAtIndex:crNumber];
+	return @{@"unsigned": cr.value, @"TODO": @""};
+}
+
 -(NSDictionary*)representationsOfMemoryAddress:(uint32_t)memoryAddress
 {
 	NSMutableDictionary* representations = [NSMutableDictionary dictionary];
