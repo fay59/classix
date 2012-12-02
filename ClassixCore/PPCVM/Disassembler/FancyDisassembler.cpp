@@ -172,30 +172,35 @@ namespace PPCVM
 					}
 					else if (opcode.Opcode == "bctr")
 					{
-						const TransitionVector* target = allocator->ToPointer<TransitionVector>(r12);
-						const NativeCall* native = allocator->ToPointer<NativeCall>(target->EntryPoint);
-						if (native->Tag == PPCVM::Execution::NativeTag)
+						try
 						{
-							// if it's a native call, add the function name as metadata
-							Dl_info info;
-							if (dladdr(reinterpret_cast<void*>(native->Callback), &info))
+							const TransitionVector* target = allocator->ToPointer<TransitionVector>(r12);
+							const NativeCall* native = allocator->ToPointer<NativeCall>(target->EntryPoint);
+							if (native->Tag == PPCVM::Execution::NativeTag)
 							{
-								Common::UInt32* base = const_cast<Common::UInt32*>(range.Begin);
-								intptr_t opcodeAddress = allocator->ToIntPtr(base + i);
-								metadata.insert(std::make_pair(opcodeAddress, info.dli_sname));
+								// if it's a native call, add the function name as metadata
+								Dl_info info;
+								if (dladdr(reinterpret_cast<void*>(native->Callback), &info))
+								{
+									Common::UInt32* base = const_cast<Common::UInt32*>(range.Begin);
+									intptr_t opcodeAddress = allocator->ToIntPtr(base + i);
+									metadata.insert(std::make_pair(opcodeAddress, info.dli_sname));
+								}
+							}
+							else
+							{
+								// this probably points to another section of the executable.
+								// I'm not too sure how it works because most applications only have
+								// one code section.
+								const UInt32* targetLabel = allocator->ToPointer<UInt32>(target->EntryPoint);
+								const uint8_t* targetToc = allocator->ToPointer<uint8_t>(target->TableOfContents);
+								
+								// For now, let's hope that this points to the same executable section.
+								TryFollowBranch(&range, range.Begin + i, targetLabel, targetToc);
 							}
 						}
-						else
-						{
-							// this probably points to another section of the executable.
-							// I'm not too sure how it works because most applications only have
-							// one code section.
-							const UInt32* targetLabel = allocator->ToPointer<UInt32>(target->EntryPoint);
-							const uint8_t* targetToc = allocator->ToPointer<uint8_t>(target->TableOfContents);
-							
-							// For now, let's hope that this points to the same executable section.
-							TryFollowBranch(&range, range.Begin + i, targetLabel, targetToc);
-						}
+						catch (Common::AccessViolationException& ex)
+						{ }
 					}
 				}
 			}

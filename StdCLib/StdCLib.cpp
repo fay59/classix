@@ -25,6 +25,7 @@
 #include <cctype>
 #include <map>
 #include <string>
+#include <sstream>
 
 #include <dlfcn.h>
 #include <unistd.h>
@@ -54,6 +55,8 @@ static FILE* fdup(FILE* fp)
 
 union StdCLibPPCFILE
 {
+	static const char* OffsetNames[28];
+	
 	struct
 	{
 		int32_t _cnt;
@@ -70,6 +73,16 @@ union StdCLibPPCFILE
 		uint32_t : 32;
 		FILE* fptr;
 	};
+};
+
+const char* StdCLibPPCFILE::OffsetNames[28] = {
+	"_cnt", "_cnt + 1", "_cnt + 2", "_cnt + 3",
+	"_ptr", "_ptr + 1", "_ptr + 2", "_ptr + 3",
+	"_base", "_base + 1", "_base + 2", "_base + 3",
+	"_end", "_end + 1", "_end + 2", "_end + 3",
+	"_size", "_size + 1", "_size + 2", "_size + 3",
+	"_flag", "_flag + 1", "_flag + 2", "_flag + 3",
+	"_file", "_file + 1", "_file + 2", "_file + 3",
 };
 
 #define _U		 01
@@ -138,7 +151,7 @@ struct StdCLibGlobals
 	uint8_t cType[256];
 	Common::IAllocator* allocator;
 	
-	static std::map<std::string, off_t> FieldOffsets;
+	static std::map<std::string, size_t> FieldOffsets;
 	
 	StdCLibGlobals(Common::IAllocator* allocator)
 	: allocator(allocator)
@@ -171,7 +184,7 @@ struct StdCLibGlobals
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 
-std::map<std::string, off_t> StdCLibGlobals::FieldOffsets
+std::map<std::string, size_t> StdCLibGlobals::FieldOffsets
 {
 	std::make_pair("__C_phase", offsetof(StdCLibGlobals, __C_phase)),
 	std::make_pair("__loc", offsetof(StdCLibGlobals, __loc)),
@@ -207,11 +220,54 @@ std::map<std::string, off_t> StdCLibGlobals::FieldOffsets
 
 #pragma clang diagnostics pop
 
+class StdCLibGlobalsDetails : public Common::AllocationDetails
+{
+public:
+	StdCLibGlobalsDetails()
+	: Common::AllocationDetails("StdCLib Globals")
+	{ }
+	
+	virtual std::string GetAllocationDetails(uint32_t offset) const
+	{
+		std::stringstream ss;
+		ss << "StdCLibGlobals::";
+		for (auto iter = StdCLibGlobals::FieldOffsets.rbegin(); iter != StdCLibGlobals::FieldOffsets.rend(); iter++)
+		{
+			if (iter->second < offset)
+			{
+				ss << iter->first;
+				uint32_t subOffset = offset - iter->second;
+				if (iter->first == "_iob")
+				{
+					ss << '[' << (subOffset / sizeof (StdCLibPPCFILE)) << ']';
+					ss << '.' << StdCLibPPCFILE::OffsetNames[subOffset % sizeof (StdCLibPPCFILE)];
+				}
+				else
+				{
+					ss << " +" << subOffset;
+				}
+				return ss.str();
+			}
+		}
+		
+		assert(!"this should never happen");
+		return "<not found>";
+	}
+	
+	virtual AllocationDetails* ToHeapAlloc() const
+	{
+		return new StdCLibGlobalsDetails(*this);
+	}
+	
+	virtual ~StdCLibGlobalsDetails()
+	{}
+};
+
 #pragma mark -
 #pragma mark Lifecycle
 StdCLibGlobals* LibraryInit(Common::IAllocator* allocator)
 {
-	return allocator->Allocate<StdCLibGlobals>("StdCLib Globals", allocator);
+	return allocator->Allocate<StdCLibGlobals>(StdCLibGlobalsDetails(), allocator);
 }
 
 SymbolType LibraryLookup(StdCLibGlobals* globals, const char* name, void** result)

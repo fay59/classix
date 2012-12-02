@@ -78,7 +78,13 @@ namespace Common
 		template<typename T, typename ...TParams>
 		T* Allocate(const std::string& zoneName, TParams... params)
 		{
-			T* object = reinterpret_cast<T*>(Allocate(zoneName, sizeof(T)));
+			return Allocate(AllocationDetails(zoneName), params...);
+		}
+		
+		template<typename T, typename ...TParams>
+		T* Allocate(const AllocationDetails& details, TParams... params)
+		{
+			T* object = reinterpret_cast<T*>(Allocate(details, sizeof(T)));
 			return new (object) T(params...);
 		}
 		

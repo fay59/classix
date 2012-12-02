@@ -38,6 +38,9 @@ namespace Common
 			
 			AllocatedRange();
 			AllocatedRange(void* start, void* end, const AllocationDetails& details);
+			AllocatedRange(const AllocatedRange& that) = delete;
+			AllocatedRange(AllocatedRange&& that);
+			
 			~AllocatedRange();
 		};
 		

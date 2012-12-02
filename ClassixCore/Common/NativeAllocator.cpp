@@ -30,20 +30,28 @@ namespace
 	std::ostream& PrintAddress(std::ostream& into, uint32_t address)
 	{
 		into << "0x";
-		into << std::setw(8) << std::setfill('0') << address;
+		into << std::setw(8) << std::setfill('0') << std::hex << address;
 		return into;
 	}
 }
 
 namespace Common
 {
+	NativeAllocator::AllocatedRange::AllocatedRange()
+	: start(nullptr), end(nullptr), details(nullptr)
+	{ }
+	
 	NativeAllocator::AllocatedRange::AllocatedRange(void* start, void* end, const AllocationDetails& details)
 	: start(start), end(end), details(details.ToHeapAlloc())
 	{ }
 	
-	NativeAllocator::AllocatedRange::AllocatedRange()
-	: start(0), end(0), details(nullptr)
-	{ }
+	NativeAllocator::AllocatedRange::AllocatedRange(AllocatedRange&& that)
+	: start(that.start), end(that.end), details(that.details)
+	{
+		that.start = nullptr;
+		that.end = nullptr;
+		that.details = nullptr;
+	}
 	
 	NativeAllocator::AllocatedRange::~AllocatedRange()
 	{
@@ -75,7 +83,7 @@ namespace Common
 	{
 		uint8_t* allocation = static_cast<uint8_t*>(malloc(size));
 		intptr_t address = ToIntPtr(allocation);
-		ranges[address] = AllocatedRange(allocation, allocation + size, reason);
+		ranges.emplace(std::make_pair(address, AllocatedRange(allocation, allocation + size, reason)));
 		return allocation;
 	}
 	
