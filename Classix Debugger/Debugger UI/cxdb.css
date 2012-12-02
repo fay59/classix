@@ -94,7 +94,10 @@ html, body {
 	background-repeat: no-repeat;
 }
 
-#disasm tr.current img { height: 14px; }
+#disasm tr.current img {
+	height: 14px;
+	margin-left: -3px;
+}
 
 #disasm tr.current > td:not(:first-child) {
 	border-top: 1px #d8e1cb solid;
