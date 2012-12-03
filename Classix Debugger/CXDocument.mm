@@ -123,6 +123,7 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 	
 	outline.delegate = vm;
 	outline.dataSource = vm;
+	[self showPCAndJump:YES];
 }
 
 +(BOOL)autosavesInPlace

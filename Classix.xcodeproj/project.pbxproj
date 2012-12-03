@@ -398,14 +398,14 @@
 			children = (
 				DC07B17B1669D39900A78205 /* InterpreterException.cpp */,
 				DC07B17C1669D39900A78205 /* InterpreterException.h */,
+				DC86E088166C2D380027F40E /* PanicException.cpp */,
+				DC86E089166C2D390027F40E /* PanicException.h */,
 				DC7273FE16471CD800DA17E5 /* Interpreter.h */,
 				DC7273FD16471CD800DA17E5 /* Interpreter.cpp */,
 				DC7273F816471CD800DA17E5 /* FloatingPointInstructions.cpp */,
 				DC7273FC16471CD800DA17E5 /* IntegerInstructions.cpp */,
 				DC7273FF16471CD800DA17E5 /* LoadStoreInstructions.cpp */,
 				DC72740016471CD800DA17E5 /* SystemRegisterInstructions.cpp */,
-				DC86E088166C2D380027F40E /* PanicException.cpp */,
-				DC86E089166C2D390027F40E /* PanicException.h */,
 			);
 			path = Interpreter;
 			sourceTree = "<group>";

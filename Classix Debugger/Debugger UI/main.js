@@ -68,6 +68,7 @@ function HighlightPC(pc, errorMessage)
 	{
 		pcRow.classList.add("current");
 		var img = document.createElement("img");
+		img.alt = ">";
 		img.src = "cxdb://resource/execution-cursor.png";
 		pcRow.childNodes[1].appendChild(img);
 		
