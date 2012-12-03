@@ -75,8 +75,8 @@
 		DC8301F3165006FB0079CE2D /* DlfcnSymbolResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F0165006D00079CE2D /* DlfcnSymbolResolver.cpp */; };
 		DC8301F7165010690079CE2D /* VirtualMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F5165010690079CE2D /* VirtualMachine.cpp */; };
 		DC86E082166C03730027F40E /* CXReverseAllocationDetails.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC86E080166C03730027F40E /* CXReverseAllocationDetails.cpp */; };
-		DC86E086166C277A0027F40E /* NotImplementedException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC86E084166C277A0027F40E /* NotImplementedException.cpp */; };
-		DC86E087166C277A0027F40E /* NotImplementedException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC86E085166C277A0027F40E /* NotImplementedException.h */; };
+		DC86E08A166C2D390027F40E /* PanicException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC86E088166C2D380027F40E /* PanicException.cpp */; };
+		DC86E08B166C2D390027F40E /* PanicException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC86E089166C2D390027F40E /* PanicException.h */; };
 		DC8A501B1665DB5900B72EB7 /* run.png in Resources */ = {isa = PBXBuildFile; fileRef = DC8A501A1665DB5900B72EB7 /* run.png */; };
 		DC9D8D4D164F642000036FDD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC9D8D4C164F642000036FDD /* main.cpp */; };
 		DC9D8D4F164F645900036FDD /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
@@ -187,8 +187,8 @@
 		DC83021E1650D1A60079CE2D /* InstructionRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionRange.h; path = ClassixCore/PPCVM/Disassembler/InstructionRange.h; sourceTree = SOURCE_ROOT; };
 		DC86E080166C03730027F40E /* CXReverseAllocationDetails.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CXReverseAllocationDetails.cpp; sourceTree = "<group>"; };
 		DC86E081166C03730027F40E /* CXReverseAllocationDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXReverseAllocationDetails.h; sourceTree = "<group>"; };
-		DC86E084166C277A0027F40E /* NotImplementedException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NotImplementedException.cpp; sourceTree = "<group>"; };
-		DC86E085166C277A0027F40E /* NotImplementedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotImplementedException.h; sourceTree = "<group>"; };
+		DC86E088166C2D380027F40E /* PanicException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PanicException.cpp; sourceTree = "<group>"; };
+		DC86E089166C2D390027F40E /* PanicException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanicException.h; sourceTree = "<group>"; };
 		DC8A501A1665DB5900B72EB7 /* run.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = run.png; sourceTree = "<group>"; };
 		DC94F106163C80E8004538C5 /* SymbolResolutionException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SymbolResolutionException.cpp; sourceTree = "<group>"; };
 		DC94F107163C80E8004538C5 /* SymbolResolutionException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolResolutionException.h; sourceTree = "<group>"; };
@@ -404,8 +404,8 @@
 				DC7273FC16471CD800DA17E5 /* IntegerInstructions.cpp */,
 				DC7273FF16471CD800DA17E5 /* LoadStoreInstructions.cpp */,
 				DC72740016471CD800DA17E5 /* SystemRegisterInstructions.cpp */,
-				DC86E084166C277A0027F40E /* NotImplementedException.cpp */,
-				DC86E085166C277A0027F40E /* NotImplementedException.h */,
+				DC86E088166C2D380027F40E /* PanicException.cpp */,
+				DC86E089166C2D390027F40E /* PanicException.h */,
 			);
 			path = Interpreter;
 			sourceTree = "<group>";
@@ -643,7 +643,7 @@
 				DC07B17A1669D1AD00A78205 /* PPCRuntimeException.h in Headers */,
 				DC07B17E1669D39900A78205 /* InterpreterException.h in Headers */,
 				DC29C3D3166AB92400B35EF7 /* AllocationDetails.h in Headers */,
-				DC86E087166C277A0027F40E /* NotImplementedException.h in Headers */,
+				DC86E08B166C2D390027F40E /* PanicException.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -844,7 +844,7 @@
 				DC07B1751669CF2400A78205 /* AccessViolationException.cpp in Sources */,
 				DC07B17D1669D39900A78205 /* InterpreterException.cpp in Sources */,
 				DC29C3D2166AB92400B35EF7 /* AllocationDetails.cpp in Sources */,
-				DC86E086166C277A0027F40E /* NotImplementedException.cpp in Sources */,
+				DC86E08A166C2D390027F40E /* PanicException.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

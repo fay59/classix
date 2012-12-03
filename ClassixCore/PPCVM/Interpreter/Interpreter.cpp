@@ -22,6 +22,7 @@
 #include "Interpreter.h"
 #include "Disassembler.h"
 #include "NativeCall.h"
+#include "PanicException.h"
 #include <iostream>
 #include <sstream>
 #include <cassert>
@@ -96,8 +97,7 @@ namespace PPCVM
 
 		void Interpreter::Panic(const std::string& error)
 		{
-			std::cerr << error << std::endl;
-			abort(); // now that's an ugly panic
+			throw PanicException(error);
 		}
 
 		void Interpreter::unknown(Instruction inst)
@@ -280,108 +280,108 @@ namespace PPCVM
 
 		void Interpreter::sc(Instruction inst)
 		{
-			abort();
+			Panic("sc is not implemented");
 		}
-
+		
 		// supervisor mode instructions (not implemented)
 		void Interpreter::dcba(Instruction inst)
 		{
-			abort();
+			Panic("dcba is not implemented");
 		}
-
+		
 		void Interpreter::dcbf(Instruction inst)
 		{
-			abort();
+			Panic("dcbf is not implemented");
 		}
-
+		
 		void Interpreter::dcbst(Instruction inst)
 		{
-			abort();
+			Panic("dcbst is not implemented");
 		}
-
+		
 		void Interpreter::dcbt(Instruction inst)
 		{
-			abort();
+			Panic("dcbt is not implemented");
 		}
-
+		
 		void Interpreter::dcbtst(Instruction inst)
 		{
-			abort();
+			Panic("dcbtst is not implemented");
 		}
-
+		
 		void Interpreter::dcbz(Instruction inst)
 		{
-			abort();
+			Panic("dcbz is not implemented");
 		}
-
+		
 		void Interpreter::dcbi(Instruction inst)
 		{
-			abort();
+			Panic("dcbi is not implemented");
 		}
-
+		
 		void Interpreter::eciwx(Instruction inst)
 		{
-			abort();
+			Panic("eciwx is not implemented");
 		}
-
+		
 		void Interpreter::ecowx(Instruction inst)
 		{
-			abort();
+			Panic("ecowx is not implemented");
 		}
-
+		
 		void Interpreter::icbi(Instruction inst)
 		{
-			abort();
+			Panic("icbi is not implemented");
 		}
-
+		
 		void Interpreter::mfmsr(Instruction inst)
 		{
-			abort();
+			Panic("mfmsr is not implemented");
 		}
-
+		
 		void Interpreter::mfsr(Instruction inst)
 		{
-			abort();
+			Panic("mfsr is not implemented");
 		}
-
+		
 		void Interpreter::mfsrin(Instruction inst)
 		{
-			abort();
+			Panic("mfsrin is not implemented");
 		}
-
+		
 		void Interpreter::mtmsr(Instruction inst)
 		{
-			abort();
+			Panic("mtmsr is not implemented");
 		}
-
+		
 		void Interpreter::mtsr(Instruction inst)
 		{
-			abort();
+			Panic("mtsr is not implemented");
 		}
-
+		
 		void Interpreter::mtsrin(Instruction inst)
 		{
-			abort();
+			Panic("mtsrin is not implemented");
 		}
-
+		
 		void Interpreter::rfi(Instruction inst)
 		{
-			abort();
+			Panic("rfi is not implemented");
 		}
-
+		
 		void Interpreter::tlbia(Instruction inst)
 		{
-			abort();
+			Panic("tlbia is not implemented");
 		}
-
+		
 		void Interpreter::tlbie(Instruction inst)
 		{
-			abort();
+			Panic("tlbie is not implemented");
 		}
-
+		
 		void Interpreter::tlbsync(Instruction inst)
 		{
-			abort();
+			Panic("tlbsync is not implemented");
 		}
 	}
 }

@@ -111,25 +111,25 @@ namespace PPCVM
 
 		void Interpreter::mcrfs(Instruction inst)
 		{
-			abort();
+			Panic("mcrfs is not implemented");
 		}
-
+		
 		void Interpreter::mcrxr(Instruction inst)
 		{
-			SetCRField(state, inst.CRFD, state->xer >> 28); 
+			SetCRField(state, inst.CRFD, state->xer >> 28);
 			state->xer &= ~0xF0000000; // clear 0-3
 		}
-
+		
 		void Interpreter::mfcr(Instruction inst)
 		{
 			state->gpr[inst.RD] = state->GetCR();
 		}
-
+		
 		void Interpreter::mffsx(Instruction inst)
 		{
-			abort();
+			Panic("mffsx is not implemented");
 		}
-
+		
 		void Interpreter::mfspr(Instruction inst)
 		{
 			uint8_t spr = (inst.RB << 5) | inst.RA;
@@ -152,12 +152,12 @@ namespace PPCVM
 					break;
 			}
 		}
-
+		
 		void Interpreter::mftb(Instruction inst)
 		{
-			abort();
+			Panic("mftb is not implemented");
 		}
-
+		
 		void Interpreter::mtcrf(Instruction inst)
 		{
 			uint32_t crm = inst.CRM;
@@ -176,27 +176,27 @@ namespace PPCVM
 				state->SetCR((state->GetCR() & ~mask) | (state->gpr[inst.RS] & mask));
 			}
 		}
-
+		
 		void Interpreter::mtfsb0x(Instruction inst)
 		{
-			abort();
+			Panic("mtfsb0x is not implemented");
 		}
-
+		
 		void Interpreter::mtfsb1x(Instruction inst)
 		{
-			abort();
+			Panic("mtfsb1x is not implemented");
 		}
-
+		
 		void Interpreter::mtfsfix(Instruction inst)
 		{
-			abort();
+			Panic("mtfsfix is not implemented");
 		}
-
+		
 		void Interpreter::mtfsfx(Instruction inst)
 		{
-			abort();
+			Panic("mtfsfx is not implemented");
 		}
-
+		
 		void Interpreter::mtspr(Instruction inst)
 		{
 			uint8_t spr = (inst.RB << 5) | inst.RA;

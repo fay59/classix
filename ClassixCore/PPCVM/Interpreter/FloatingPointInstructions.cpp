@@ -29,147 +29,147 @@ namespace PPCVM
 	{
 		void Interpreter::fabsx(Instruction inst)
 		{
-			abort();
+			Panic("fabsx is not implemented");
 		}
 
 		void Interpreter::faddsx(Instruction inst)
 		{
-			abort();
+			Panic("faddsx is not implemented");
 		}
-
+		
 		void Interpreter::faddx(Instruction inst)
 		{
-			abort();
+			Panic("faddx is not implemented");
 		}
-
+		
 		void Interpreter::fcmpo(Instruction inst)
 		{
-			abort();
+			Panic("fcmpo is not implemented");
 		}
-
+		
 		void Interpreter::fcmpu(Instruction inst)
 		{
-			abort();
+			Panic("fcmpu is not implemented");
 		}
-
+		
 		void Interpreter::fctiwx(Instruction inst)
 		{
-			abort();
+			Panic("fctiwx is not implemented");
 		}
-
+		
 		void Interpreter::fctiwzx(Instruction inst)
 		{
-			abort();
+			Panic("fctiwzx is not implemented");
 		}
-
+		
 		void Interpreter::fdivsx(Instruction inst)
 		{
-			abort();
+			Panic("fdivsx is not implemented");
 		}
-
+		
 		void Interpreter::fdivx(Instruction inst)
 		{
-			abort();
+			Panic("fdivx is not implemented");
 		}
-
+		
 		void Interpreter::fmaddsx(Instruction inst)
 		{
-			abort();
+			Panic("fmaddsx is not implemented");
 		}
-
+		
 		void Interpreter::fmaddx(Instruction inst)
 		{
-			abort();
+			Panic("fmaddx is not implemented");
 		}
-
+		
 		void Interpreter::fmrx(Instruction inst)
 		{
-			abort();
+			Panic("fmrx is not implemented");
 		}
-
+		
 		void Interpreter::fmsubsx(Instruction inst)
 		{
-			abort();
+			Panic("fmsubsx is not implemented");
 		}
-
+		
 		void Interpreter::fmsubx(Instruction inst)
 		{
-			abort();
+			Panic("fmsubx is not implemented");
 		}
-
+		
 		void Interpreter::fmulsx(Instruction inst)
 		{
-			abort();
+			Panic("fmulsx is not implemented");
 		}
-
+		
 		void Interpreter::fmulx(Instruction inst)
 		{
-			abort();
+			Panic("fmulx is not implemented");
 		}
-
+		
 		void Interpreter::fnabsx(Instruction inst)
 		{
-			abort();
+			Panic("fnabsx is not implemented");
 		}
-
+		
 		void Interpreter::fnegx(Instruction inst)
 		{
-			abort();
+			Panic("fnegx is not implemented");
 		}
-
+		
 		void Interpreter::fnmaddsx(Instruction inst)
 		{
-			abort();
+			Panic("fnmaddsx is not implemented");
 		}
-
+		
 		void Interpreter::fnmaddx(Instruction inst)
 		{
-			abort();
+			Panic("fnmaddx is not implemented");
 		}
-
+		
 		void Interpreter::fnmsubsx(Instruction inst)
 		{
-			abort();
+			Panic("fnmsubsx is not implemented");
 		}
-
+		
 		void Interpreter::fnmsubx(Instruction inst)
 		{
-			abort();
+			Panic("fnmsubx is not implemented");
 		}
-
+		
 		void Interpreter::fresx(Instruction inst)
 		{
-			abort();
+			Panic("fresx is not implemented");
 		}
-
+		
 		void Interpreter::frspx(Instruction inst)
 		{
-			abort();
+			Panic("frspx is not implemented");
 		}
-
+		
 		void Interpreter::frsqrtex(Instruction inst)
 		{
-			abort();
+			Panic("frsqrtex is not implemented");
 		}
-
+		
 		void Interpreter::fselx(Instruction inst)
 		{
-			abort();
+			Panic("fselx is not implemented");
 		}
-
+		
 		void Interpreter::fsqrtx(Instruction inst)
 		{
-			abort();
+			Panic("fsqrtx is not implemented");
 		}
-
+		
 		void Interpreter::fsubsx(Instruction inst)
 		{
-			abort();
+			Panic("fsubsx is not implemented");
 		}
-
+		
 		void Interpreter::fsubx(Instruction inst)
 		{
-			abort();
+			Panic("fsubx is not implemented");
 		}
 	}
 }
