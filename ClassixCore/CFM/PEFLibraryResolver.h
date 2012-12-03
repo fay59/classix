@@ -30,7 +30,7 @@
 
 namespace CFM
 {
-	class PEFLibraryResolver : public virtual LibraryResolver
+	class PEFLibraryResolver : public LibraryResolver
 	{
 		FragmentManager& cfm;
 		Common::IAllocator* allocator;
@@ -39,8 +39,8 @@ namespace CFM
 	public:
 		PEFLibraryResolver(Common::IAllocator* allocator, FragmentManager& manager);
 						   
-		virtual SymbolResolver* ResolveLibrary(const std::string& name);
-		virtual ~PEFLibraryResolver();
+		virtual SymbolResolver* ResolveLibrary(const std::string& name) override;
+		virtual ~PEFLibraryResolver() override;
 	};
 }
 

@@ -30,7 +30,7 @@ namespace Common
 	{
 	public:
 		virtual PPCRuntimeException* ToHeapAlloc() const = 0;
-		virtual inline ~PPCRuntimeException() {};
+		virtual inline ~PPCRuntimeException() override {};
 	};
 }
 

@@ -27,15 +27,15 @@
 
 namespace CFM
 {
-	class LibraryResolutionException : public virtual std::exception
+	class LibraryResolutionException : public std::exception
 	{
 		std::string message;
 		
 	public:
 		LibraryResolutionException(const std::string& libName);
 		
-		virtual const char* what() const noexcept;
-		virtual ~LibraryResolutionException();
+		virtual const char* what() const noexcept override;
+		virtual ~LibraryResolutionException() override;
 	};
 }
 

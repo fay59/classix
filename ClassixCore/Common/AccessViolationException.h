@@ -46,10 +46,10 @@ namespace Common
 		uint32_t GetAddress() const;
 		size_t GetSize() const;
 		
-		virtual PPCRuntimeException* ToHeapAlloc() const;
-		virtual const char* what() const noexcept;
+		virtual PPCRuntimeException* ToHeapAlloc() const override;
+		virtual const char* what() const noexcept override;
 		
-		~AccessViolationException();
+		virtual ~AccessViolationException() override;
 	};
 }
 

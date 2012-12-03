@@ -227,7 +227,7 @@ public:
 	: Common::AllocationDetails("StdCLib Globals")
 	{ }
 	
-	virtual std::string GetAllocationDetails(uint32_t offset) const
+	virtual std::string GetAllocationDetails(uint32_t offset) const override
 	{
 		std::stringstream ss;
 		ss << "StdCLibGlobals::";
@@ -254,12 +254,12 @@ public:
 		return "<not found>";
 	}
 	
-	virtual AllocationDetails* ToHeapAlloc() const
+	virtual AllocationDetails* ToHeapAlloc() const override
 	{
 		return new StdCLibGlobalsDetails(*this);
 	}
 	
-	virtual ~StdCLibGlobalsDetails()
+	virtual ~StdCLibGlobalsDetails() override
 	{}
 };
 

@@ -49,21 +49,21 @@ namespace Common
 		const AllocatedRange* GetAllocationRange(uint32_t address) const;
 		
 	protected:
-		virtual void* IntPtrToPointer(uint32_t value);
-		virtual uint32_t PointerToIntPtr(void* address);
+		virtual void* IntPtrToPointer(uint32_t value) override;
+		virtual uint32_t PointerToIntPtr(void* address) override;
 		
 	public:
 		static NativeAllocator* GetInstance();
 		
-		virtual uint8_t* Allocate(const AllocationDetails& details, size_t size);
-		virtual void Deallocate(void* address);
-		virtual const AllocationDetails* GetDetails(uint32_t address);
-		virtual uint32_t GetAllocationOffset(uint32_t address);
+		virtual uint8_t* Allocate(const AllocationDetails& details, size_t size) override;
+		virtual void Deallocate(void* address) override;
+		virtual const AllocationDetails* GetDetails(uint32_t address) override;
+		virtual uint32_t GetAllocationOffset(uint32_t address) override;
 		
 		void PrintMemoryMap();
 		void PrintParentZone(const void* address);
 		
-		virtual ~NativeAllocator();
+		virtual ~NativeAllocator() override;
 	};
 }
 

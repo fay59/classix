@@ -27,15 +27,15 @@
 
 namespace CFM
 {
-	class SymbolResolutionException : public virtual std::exception
+	class SymbolResolutionException : public std::exception
 	{
 		std::string message;
 		
 	public:
 		SymbolResolutionException(const std::string& libName, const std::string& symbolName);
 		
-		virtual const char* what() const noexcept;
-		virtual ~SymbolResolutionException();
+		virtual const char* what() const noexcept override;
+		virtual ~SymbolResolutionException() override;
 	};
 }
 

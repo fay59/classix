@@ -30,7 +30,7 @@ namespace PPCVM
 {
 	namespace Execution
 	{
-		class InterpreterException
+		class InterpreterException : std::exception
 		{
 			Common::PPCRuntimeException* reason;
 			uint32_t pc;
@@ -39,9 +39,9 @@ namespace PPCVM
 			InterpreterException(uint32_t pc, const Common::PPCRuntimeException& reason);
 			
 			uint32_t GetPC() const;
-			virtual const char* what() const noexcept;
+			virtual const char* what() const noexcept override;
 			
-			~InterpreterException();
+			virtual ~InterpreterException() override;
 		};
 	}
 }

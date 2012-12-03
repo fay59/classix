@@ -73,8 +73,8 @@ namespace ClassixCore
 		void RegisterLibrary(const std::string& cfmName, const std::string& path);
 		void RegisterLibrary(const std::string& cfmName, DlfcnLibrary&& library);
 		
-		virtual CFM::SymbolResolver* ResolveLibrary(const std::string& name);
-		virtual ~DlfcnLibraryResolver();
+		virtual CFM::SymbolResolver* ResolveLibrary(const std::string& name) override;
+		virtual ~DlfcnLibraryResolver() override;
 	};
 }
 

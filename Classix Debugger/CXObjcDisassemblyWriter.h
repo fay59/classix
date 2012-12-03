@@ -36,13 +36,13 @@ class CXObjCDisassemblyWriter : public PPCVM::Disassembly::DisassemblyWriter
 public:
 	CXObjCDisassemblyWriter(uint32_t desiredSection);
 	
-	virtual void EnterSection(const PEF::InstantiableSection& section, uint32_t sectionIndex);
-	virtual void EnterLabel(const PPCVM::Disassembly::InstructionRange& label, intptr_t labelAddress);
-	virtual void VisitOpcode(const PPCVM::Disassembly::DisassembledOpcode& opcode, intptr_t opcodeAddress, const std::string* metadata);
+	virtual void EnterSection(const PEF::InstantiableSection& section, uint32_t sectionIndex) override;
+	virtual void EnterLabel(const PPCVM::Disassembly::InstructionRange& label, intptr_t labelAddress) override;
+	virtual void VisitOpcode(const PPCVM::Disassembly::DisassembledOpcode& opcode, intptr_t opcodeAddress, const std::string* metadata) override;
 	
 	NSArray* GetDisassembly();
 	
-	~CXObjCDisassemblyWriter();
+	virtual ~CXObjCDisassemblyWriter() override;
 };
 
 #endif /* defined(__Classix__CXObjcDisassemblyWriter__) */

@@ -29,7 +29,7 @@
 
 namespace CFM
 {
-	class PEFSymbolResolver : public virtual SymbolResolver
+	class PEFSymbolResolver : public SymbolResolver
 	{
 		Common::FileMapping mapping;
 		PEF::Container container;
@@ -47,16 +47,16 @@ namespace CFM
 		PEF::Container& GetContainer();
 		const PEF::Container& GetContainer() const;
 		
-		virtual ResolvedSymbol GetInitAddress();
-		virtual ResolvedSymbol GetMainAddress();
-		virtual ResolvedSymbol GetTermAddress();
+		virtual ResolvedSymbol GetInitAddress() override;
+		virtual ResolvedSymbol GetMainAddress() override;
+		virtual ResolvedSymbol GetTermAddress() override;
 		
-		virtual const std::string* FilePath() const;
-		virtual std::vector<std::string> SymbolList() const;
+		virtual const std::string* FilePath() const override;
+		virtual std::vector<std::string> SymbolList() const override;
 		
-		virtual ResolvedSymbol ResolveSymbol(const std::string& symbolName);
+		virtual ResolvedSymbol ResolveSymbol(const std::string& symbolName) override;
 		
-		virtual ~PEFSymbolResolver();
+		virtual ~PEFSymbolResolver() override;
 	};
 }
 

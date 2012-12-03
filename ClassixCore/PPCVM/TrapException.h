@@ -33,9 +33,9 @@ namespace PPCVM
 	public:
 		TrapException(const std::string& trapName);
 		
-		virtual PPCRuntimeException* ToHeapAlloc() const;
-		virtual const char* what() const noexcept;
-		virtual ~TrapException();
+		virtual PPCRuntimeException* ToHeapAlloc() const override;
+		virtual const char* what() const noexcept override;
+		virtual ~TrapException() override;
 	};
 }
 
