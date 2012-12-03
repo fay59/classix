@@ -1,4 +1,33 @@
 <?php
+//
+// ClassixHeader.php
+//
+// Copyright (C) 2012 Félix Cloutier
+//
+// This file is distributed with the Classix project source but is licensed
+// separately under the following terms:
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// 	The above copyright notice and this permission notice shall be included in
+//	all copies or substantial portions of the Software.
+//
+// ClassixHeader.php IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+
+// (How ironic is it that a PHP script that adds the GPL license header is
+// itself licensed under the MIT license.)
 
 function recursiveFileList($extensions, $dirPath = ".")
 {
@@ -66,7 +95,11 @@ foreach (recursiveFileList(array('h', 'c', 'cpp', 'm', 'mm', 'js', 'pch')) as $c
 		unset($file[$i]);
 	}
 	
-	$header = makeHeader(basename($codeFile), "Classix", "Félix Cloutier", 2012);
+	$projectName = "Classix";
+	$author = "Félix Cloutier";
+	$year = 2012;
+	
+	$header = makeHeader(basename($codeFile), $projectName, $author, $year);
 	file_put_contents($codeFile, $header . join("", $file));
 }
 
