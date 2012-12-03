@@ -137,6 +137,7 @@ static NSImage* arrow;
 	const NSRect arrowBounds = NSMakeRect(0, 0, arrowSize.width, arrowSize.height);
 	for (NSMenuItem* item in selectionHierarchy)
 	{
+		outputLocation = round(outputLocation);
 		if (i != 0)
 		{
 			outputLocation += 3;
