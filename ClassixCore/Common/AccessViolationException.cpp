@@ -26,13 +26,13 @@
 
 namespace Common
 {
-	void AccessViolationException::Check(Common::IAllocator *allocator, uint32_t address, size_t size)
+	void AccessViolationException::Check(const Common::IAllocator *allocator, uint32_t address, size_t size)
 	{
 		if (!(allocator->IsAllocated(address) && allocator->IsAllocated(address + size - 1)))
 			throw AccessViolationException(allocator, address, size);
 	}
 	
-	AccessViolationException::AccessViolationException(IAllocator* allocator, uint32_t address, size_t size)
+	AccessViolationException::AccessViolationException(const IAllocator* allocator, uint32_t address, size_t size)
 	: allocator(allocator), address(address), size(size)
 	{
 		std::stringstream ss;
@@ -43,7 +43,7 @@ namespace Common
 		description = ss.str();
 	}
 	
-	IAllocator* AccessViolationException::GetAllocator()
+	const IAllocator* AccessViolationException::GetAllocator() const
 	{
 		return allocator;
 	}

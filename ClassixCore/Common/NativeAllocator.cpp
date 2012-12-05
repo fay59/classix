@@ -69,12 +69,12 @@ namespace Common
 		return instance;
 	}
 	
-	void* NativeAllocator::IntPtrToPointer(uint32_t value)
+	void* NativeAllocator::IntPtrToPointer(uint32_t value) const
 	{
 		return reinterpret_cast<void*>(value);
 	}
 	
-	uint32_t NativeAllocator::PointerToIntPtr(void *address)
+	uint32_t NativeAllocator::PointerToIntPtr(const void *address) const
 	{
 		return reinterpret_cast<uint32_t>(address);
 	}
@@ -82,7 +82,7 @@ namespace Common
 	uint8_t* NativeAllocator::Allocate(const AllocationDetails& reason, size_t size)
 	{
 		uint8_t* allocation = static_cast<uint8_t*>(malloc(size));
-		intptr_t address = ToIntPtr(allocation);
+		uint32_t address = ToIntPtr(allocation);
 		ranges.emplace(std::make_pair(address, AllocatedRange(allocation, allocation + size, reason)));
 		return allocation;
 	}
@@ -114,13 +114,13 @@ namespace Common
 		return nullptr;
 	}
 	
-	const AllocationDetails* NativeAllocator::GetDetails(uint32_t address)
+	const AllocationDetails* NativeAllocator::GetDetails(uint32_t address) const
 	{
 		auto range = GetAllocationRange(address);
 		return range == nullptr ? nullptr : range->details;
 	}
 	
-	uint32_t NativeAllocator::GetAllocationOffset(uint32_t address)
+	uint32_t NativeAllocator::GetAllocationOffset(uint32_t address) const
 	{
 		auto range = GetAllocationRange(address);
 		if (range == nullptr)
@@ -129,7 +129,7 @@ namespace Common
 		return address - ToIntPtr(range->start);
 	}
 	
-	void NativeAllocator::PrintMemoryMap()
+	void NativeAllocator::PrintMemoryMap() const
 	{
 		for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
 		{
@@ -144,7 +144,7 @@ namespace Common
 		}
 	}
 	
-	void NativeAllocator::PrintParentZone(const void* address)
+	void NativeAllocator::PrintParentZone(const void* address) const
 	{
 		uint32_t intAddress = ToIntPtr(const_cast<void*>(address));
 		auto range = GetAllocationRange(intAddress);

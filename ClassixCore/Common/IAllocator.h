@@ -65,14 +65,14 @@ namespace Common
 		virtual uint8_t* Allocate(const AllocationDetails& details, size_t size) = 0;
 		virtual void Deallocate(void* address) = 0;
 		
-		virtual const AllocationDetails* GetDetails(uint32_t address) = 0;
-		virtual uint32_t GetAllocationOffset(uint32_t address) = 0;
+		virtual const AllocationDetails* GetDetails(uint32_t address) const = 0;
+		virtual uint32_t GetAllocationOffset(uint32_t address) const = 0;
 		
 		virtual ~IAllocator();
 		
 	protected:
-		virtual void* IntPtrToPointer(uint32_t value) = 0;
-		virtual uint32_t PointerToIntPtr(void* address) = 0;
+		virtual void* IntPtrToPointer(uint32_t value) const = 0;
+		virtual uint32_t PointerToIntPtr(const void* address) const = 0;
 		
 #pragma mark -
 	public:
@@ -80,24 +80,19 @@ namespace Common
 		AutoAllocation AllocateAuto(const std::string& zoneName, size_t size);
 		AutoAllocation AllocateAuto(const AllocationDetails& details, size_t size);
 		
-		inline const AllocationDetails* GetDetails(const void* address)
+		inline const AllocationDetails* GetDetails(const void* address) const
 		{
-			return GetDetails(ToIntPtr(const_cast<void*>(address)));
+			return GetDetails(ToIntPtr(address));
 		}
 		
-		inline uint32_t GetAllocationOffset(const void* address)
+		inline uint32_t GetAllocationOffset(const void* address) const
 		{
-			return GetAllocationOffset(ToIntPtr(const_cast<void*>(address)));
+			return GetAllocationOffset(ToIntPtr(address));
 		}
 		
-		inline bool IsAllocated(uint32_t address)
+		inline bool IsAllocated(uint32_t address) const
 		{
 			return GetDetails(address) != nullptr;
-		}
-		
-		inline const uint8_t* GetBaseAddress() const
-		{
-			return const_cast<IAllocator*>(this)->GetBaseAddress();
 		}
 		
 		template<typename T, typename ...TParams>
@@ -121,7 +116,7 @@ namespace Common
 		}
 		
 		template<typename T>
-		T* ToPointer(uint32_t value)
+		T* ToPointer(uint32_t value) const
 		{
 #ifdef DEBUG
 			AccessViolationException::Check(this, value, sizeof(T));
@@ -130,7 +125,7 @@ namespace Common
 		}
 		
 		template<typename T>
-		T* ToArray(uint32_t value, size_t count)
+		T* ToArray(uint32_t value, size_t count) const
 		{
 #ifdef DEBUG
 			AccessViolationException::Check(this, value, sizeof(T) * count);
@@ -139,7 +134,7 @@ namespace Common
 		}
 		
 		template<typename T>
-		uint32_t ToIntPtr(T* value)
+		uint32_t ToIntPtr(T* value) const
 		{
 			return PointerToIntPtr(value);
 		}
