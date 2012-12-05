@@ -259,6 +259,11 @@ namespace PEF
 		return header->ExecutionSize;
 	}
 	
+	uint32_t InstantiableSection::GetDataLocation() const
+	{
+		return allocator->ToIntPtr(Data);
+	}
+	
 	InstantiableSection::~InstantiableSection()
 	{
 		allocator->Deallocate(Data);
