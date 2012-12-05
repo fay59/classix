@@ -98,6 +98,11 @@ namespace PEF
 		return sections.size();
 	}
 	
+	Common::IAllocator* Container::GetAllocator()
+	{
+		return allocator;
+	}
+	
 	InstantiableSection& Container::GetSection(uint32_t index)
 	{
 		int32_t realIndex = instantiableSectionIndices.at(index);

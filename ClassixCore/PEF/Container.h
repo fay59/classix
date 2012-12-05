@@ -55,6 +55,8 @@ namespace PEF
 		const_iterator SectionsEnd() const;
 		size_t Size() const;
 		
+		Common::IAllocator* GetAllocator();
+		
 		InstantiableSection& GetSection(uint32_t index);
 		const InstantiableSection& GetSection(uint32_t index) const;
 		
