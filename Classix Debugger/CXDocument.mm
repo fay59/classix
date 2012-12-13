@@ -35,42 +35,16 @@
 #import "CXDBRequest.h"
 #import "CXJSONEncode.h"
 #import "CXJSAdapter.h"
+#import "CXCodeLabel.h"
 
 static NSImage* exportImage;
 static NSImage* labelImage;
 static NSImage* functionImage;
 
-static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number, NSUInteger partitionBegin, NSUInteger size)
-{
-	if (size < 2)
-		return [sortedArray objectAtIndex:partitionBegin];
-	
-	NSUInteger halfSize = size / 2;
-	NSUInteger middle = partitionBegin + halfSize;
-	NSNumber* middleNumber = [sortedArray objectAtIndex:middle];
-	
-	NSComparisonResult compare = [number compare:middleNumber];
-	
-	if (compare == NSOrderedAscending)
-		return CXFindNextGreater(sortedArray, number, partitionBegin, halfSize);
-	
-	if (compare == NSOrderedDescending)
-		return CXFindNextGreater(sortedArray, number, middle, size - halfSize);
-	
-	return middleNumber;
-}
-
-static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
-{
-	return CXFindNextGreater(sortedArray, number, 0, sortedArray.count);
-}
-
 @interface CXDocument (Private)
 
 -(void)buildSymbolMenu;
--(void)showDisassembly:(NSString*)key;
 -(void)showPCAndJump:(BOOL)jumpToPC;
--(NSString*)labelForAddress:(NSString*)address;
 -(NSImage*)fileIcon16x16:(NSString*)path;
 -(NSMenu*)exportMenuForResolver:(const CFM::SymbolResolver*)resolver;
 
@@ -79,6 +53,8 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 @implementation CXDocument
 
 @synthesize vm;
+@synthesize disassembly;
+
 @synthesize disassemblyView;
 @synthesize navBar;
 @synthesize backForward;
@@ -143,7 +119,12 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 	// FIXME cheap
 	NSArray* arguments = @[url.path];
 	NSDictionary* environment = [NSDictionary dictionary];
-	return [vm loadClassicExecutable:url.path arguments:arguments environment:environment error:outError];
+	if ([vm loadClassicExecutable:url.path arguments:arguments environment:environment error:outError])
+	{
+		disassembly = [[CXDisassembly alloc] initWithVirtualMachine:vm];
+		return YES;
+	}
+	return NO;
 }
 
 -(void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame *)frame
@@ -156,8 +137,6 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 {
 	[vm release];
 	[js release];
-	[sortedLabelAddresses release];
-	[labelNames release];
 	[disassembly release];
 	
 	[super dealloc];
@@ -214,12 +193,6 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 		[self goBack:sender];
 	else
 		[self goForward:sender];
-}
-
--(NSArray*)disassemblyForAddress:(NSString *)label
-{
-	NSString* realLabel = [self labelForAddress:label];
-	return [disassembly objectForKey:realLabel];
 }
 
 #pragma mark -
@@ -313,36 +286,39 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 					NSMutableArray* currentArray = [NSMutableArray array];
 					NSMenu* labelMenu = [[[NSMenu alloc] initWithTitle:menuTitle] autorelease];
 					
-					for (NSDictionary* dict in result)
+					for (CXCodeLabel* codeLabel in result)
 					{
-						NSArray* instructions = [dict objectForKey:@"instructions"];
+						NSArray* instructions = codeLabel.instructions;
 						if (instructions.count == 0)
 							continue;
 						
-						NSString* label = [dict objectForKey:@"label"];
-						NSNumber* address = [dict objectForKey:@"address"];
-						if ([[label substringToIndex:2] isEqualToString:@"fn"])
+						uint32_t address = codeLabel.address;
+						if (codeLabel.isFunction)
 							currentArray = [NSMutableArray array];
 						
-						[currentArray addObject:dict];
-						[labelToArray setObject:currentArray forKey:label];
-						[addressToLabel setObject:label forKey:address];
+						[currentArray addObject:codeLabel];
+						[labelToArray setObject:currentArray forKey:codeLabel.uniqueName];
+						[addressToLabel setObject:codeLabel.uniqueName forKey:@(address)];
 						
-						NSMenuItem* labelMenuItem = [[NSMenuItem alloc] initWithTitle:label action:NULL keyEquivalent:@""];
-						labelMenuItem.image = [[label substringToIndex:2] isEqualToString:@"lb"] ? labelImage : functionImage;
+						NSString* uniqueName = codeLabel.uniqueName;
+						NSString* title = [disassembly displayNameForUniqueName:uniqueName];
+						NSMenuItem* labelMenuItem = [[NSMenuItem alloc] initWithTitle:title action:NULL keyEquivalent:@""];
+						labelMenuItem.representedObject = codeLabel;
+						
+						labelMenuItem.image = codeLabel.isFunction ? functionImage : labelImage;
 						[labelMenu addItem:labelMenuItem];
 					}
 					sectionItem.submenu = labelMenu;
 					[submenu addItem:sectionItem];
 				}
 			}
-			disassembly = [labelToArray copy];
-			sortedLabelAddresses = [[[addressToLabel allKeys] sortedArrayUsingSelector:@selector(compare:)] retain];
-			labelNames = [addressToLabel copy];
 		}
 	}
 
-	navBar.selectionChanged = ^(CXNavBar* bar, NSMenuItem* selection) { [self showDisassembly:selection.title]; };
+	navBar.selectionChanged = ^(CXNavBar* bar, NSMenuItem* selection) {
+		CXCodeLabel* label = [selection representedObject];
+		[self showDisassembly:label.uniqueName];
+	};
 	navBar.menu = resolverMenu;
 }
 
@@ -365,15 +341,7 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 {
 	if (jumpToPC)
 	{
-		NSURL* url = [NSURL URLWithString:disassemblyView.mainFrameURL];
-		CXDBRequest* request = [CXDBRequest requestWithURL:url];
-		NSString* shownLabel = [self labelForAddress:request.params.lastObject];
-		NSString* targetLabel = [self labelForAddress:[NSString stringWithFormat:@"%08x", vm.pc]];
-		if (![shownLabel isEqualToString:targetLabel])
-		{
-			[self showDisassembly:targetLabel];
-			return;
-		}
+		
 	}
 	
 	id<NSObject> scriptArguments = vm.lastError == nil
@@ -384,18 +352,11 @@ static NSNumber* CXFindNextGreater(NSArray* sortedArray, NSNumber* number)
 	[[disassemblyView windowScriptObject] evaluateWebScript:script];
 }
 
--(NSString*)labelForAddress:(NSString *)address
-{
-	const char* hex = [[address substringFromIndex:address.length - 8] UTF8String];
-	uint32_t intAddress = strtol(hex, NULL, 16);
-	NSNumber* firstFittingAddress = CXFindNextGreater(sortedLabelAddresses, @(intAddress));
-	return [labelNames objectForKey:firstFittingAddress];
-}
-
--(void)showDisassembly:(NSString *)key
+-(void)showDisassembly:(NSString *)labelUniqueName
 {
 	NSUInteger documentId = [[CXDocumentController documentController] idOfDocument:self];
-	NSString* cxdbUrl = [NSString stringWithFormat:@"cxdb://disassembly/%@/%@", @(documentId), key];
+	CXCodeLabel* function = [[disassembly functionDisassemblyForUniqueName:labelUniqueName] objectAtIndex:0];
+	NSString* cxdbUrl = [NSString stringWithFormat:@"cxdb://disassembly/%@/%@#%@", @(documentId), function.uniqueName, labelUniqueName];
 	NSURL* url = [NSURL URLWithString:cxdbUrl];
 	NSURLRequest* request = [NSURLRequest requestWithURL:url];
 	[[disassemblyView mainFrame] loadRequest:request];

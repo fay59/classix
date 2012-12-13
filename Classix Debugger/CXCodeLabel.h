@@ -1,5 +1,5 @@
 //
-// ImportedSymbol.h
+// CXCodeLabel.h
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,25 +19,26 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __pefdump__ImportedSymbol__
-#define __pefdump__ImportedSymbol__
+#import <Foundation/Foundation.h>
 
-#include <string>
-#include "Structures.h"
-
-namespace PEF
+@interface CXCodeLabel : NSObject
 {
-	class ImportedSymbol
-	{
-	public:
-		ImportedSymbol(const std::string& libName, const std::string& name, bool isStronglyLinked, SymbolClasses::Enum symbolClass);
-		
-		const std::string LibraryName;
-		const std::string Name;
-		uint32_t Address;
-		bool IsStronglyLinked;
-		SymbolClasses::Enum Class;
-	};
+	NSString* label;
+	NSString* uniqueName;
+	uint32_t address;
+	uint32_t length;
+	NSArray* instructions;
+	BOOL isFunction;
 }
 
-#endif /* defined(__pefdump__ImportedSymbol__) */
+@property (copy) NSString* label;
+@property (readonly) NSString* uniqueName;
+@property (readonly) uint32_t address;
+@property (readonly) uint32_t length;
+@property (copy) NSArray* instructions;
+@property (assign) BOOL isFunction;
+
++(id)codeLabelWithAddress:(uint32_t)address length:(uint32_t)length uniqueName:(NSString*)uniqueName;
+-(id)initWithAddress:(uint32_t)address length:(uint32_t)length uniqueName:(NSString*)uniqueName;
+
+@end

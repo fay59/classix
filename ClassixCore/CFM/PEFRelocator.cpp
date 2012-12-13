@@ -26,8 +26,7 @@ namespace
 {
 	inline uint32_t SectionAddress(PEF::Container& container, uint32_t section)
 	{
-		intptr_t address = reinterpret_cast<intptr_t>(container.GetSection(section).Data);
-		return static_cast<uint32_t>(address);
+		return container.GetAllocator()->ToIntPtr(container.GetSection(section).Data);
 	}
 }
 

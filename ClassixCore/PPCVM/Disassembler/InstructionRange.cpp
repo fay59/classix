@@ -133,11 +133,8 @@ namespace PPCVM
 			assert(end >= Begin && "End before Begin");
 			End = end;
 			
-			char functionName[] = "fn00000000";
-			sprintf(functionName, "%s%08x",
-					IsFunction ? "fn" : "lb",
-					allocator->ToIntPtr(const_cast<Common::UInt32*>(Begin)));
-			
+			char functionName[] = "00000000";
+			sprintf(functionName, "%08x", allocator->ToIntPtr(const_cast<Common::UInt32*>(Begin)));
 			Name = functionName;
 			
 			InstructionDecoder decoder;

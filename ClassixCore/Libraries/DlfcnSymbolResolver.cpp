@@ -51,7 +51,7 @@ namespace ClassixCore
 	
 	ResolvedSymbol& DlfcnSymbolResolver::CacheSymbol(const std::string& name, void* address)
 	{
-		intptr_t ppcAddress = allocator->ToIntPtr(address);
+		uint32_t ppcAddress = allocator->ToIntPtr(address);
 		return symbols.emplace(std::make_pair(name, ResolvedSymbol::IntelSymbol(name, ppcAddress))).first->second;
 	}
 	

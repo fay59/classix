@@ -22,6 +22,7 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 #import "CXVirtualMachine.h"
+#import "CXDisassembly.h"
 #import "CXNavBar.h"
 
 @class CXJSAdapter;
@@ -29,12 +30,10 @@
 @interface CXDocument : NSDocument
 {
 	CXVirtualMachine* vm;
+	CXDisassembly* disassembly;
 	CXJSAdapter* js;
 	
-	NSArray* sortedLabelAddresses;
-	NSDictionary* labelNames;
-	NSDictionary* disassembly;
-	
+	// UI
 	WebView* disassemblyView;
 	CXNavBar* navBar;
 	NSSegmentedControl* backForward;
@@ -42,6 +41,8 @@
 }
 
 @property (readonly) CXVirtualMachine* vm;
+@property (readonly) CXDisassembly* disassembly;
+
 @property (assign) IBOutlet WebView* disassemblyView;
 @property (assign) IBOutlet CXNavBar* navBar;
 @property (assign) IBOutlet NSSegmentedControl* backForward;
@@ -55,7 +56,5 @@
 
 -(IBAction)navigate:(id)sender;
 -(IBAction)controlFlow:(id)sender;
-
--(NSArray*)disassemblyForAddress:(NSString*)label;
 
 @end

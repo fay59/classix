@@ -47,7 +47,7 @@ namespace PPCVM
 			uint32_t sectionNumber;
 			
 		public:
-			typedef std::unordered_map<intptr_t, std::string> MetadataMap;
+			typedef std::unordered_map<uint32_t, uint32_t> MetadataMap;
 			
 			SectionDisassembler(Common::IAllocator* allocator, uint32_t sectionNumber, const PEF::InstantiableSection& section);
 			SectionDisassembler(const SectionDisassembler& that) = delete;
@@ -84,8 +84,8 @@ namespace PPCVM
 		{
 		public:
 			virtual void EnterSection(const PEF::InstantiableSection& section, uint32_t sectionIndex) = 0;
-			virtual void EnterLabel(const InstructionRange& label, intptr_t labelAddress) = 0;
-			virtual void VisitOpcode(const DisassembledOpcode& opcode, intptr_t opcodeAddress, const std::string* metadata) = 0;
+			virtual void EnterLabel(const InstructionRange& label, uint32_t labelAddress) = 0;
+			virtual void VisitOpcode(const DisassembledOpcode& opcode, uint32_t opcodeAddress, const SectionDisassembler::MetadataMap::mapped_type* metadata) = 0;
 			
 			virtual ~DisassemblyWriter();
 		};

@@ -24,10 +24,14 @@
 
 #include "FancyDisassembler.h"
 #import <Cocoa/Cocoa.h>
+#import "CXCodeLabel.h"
 
 class CXObjCDisassemblyWriter : public PPCVM::Disassembly::DisassemblyWriter
 {
+	char sectionMD5[32];
+	uint32_t sectionBase;
 	NSMutableArray* result;
+	CXCodeLabel* currentLabel;
 	NSMutableArray* currentArray;
 	
 	uint32_t desiredSection;
@@ -37,8 +41,8 @@ public:
 	CXObjCDisassemblyWriter(uint32_t desiredSection);
 	
 	virtual void EnterSection(const PEF::InstantiableSection& section, uint32_t sectionIndex) override;
-	virtual void EnterLabel(const PPCVM::Disassembly::InstructionRange& label, intptr_t labelAddress) override;
-	virtual void VisitOpcode(const PPCVM::Disassembly::DisassembledOpcode& opcode, intptr_t opcodeAddress, const std::string* metadata) override;
+	virtual void EnterLabel(const PPCVM::Disassembly::InstructionRange& label, uint32_t labelAddress) override;
+	virtual void VisitOpcode(const PPCVM::Disassembly::DisassembledOpcode& opcode, uint32_t opcodeAddress, const PPCVM::Disassembly::SectionDisassembler::MetadataMap::mapped_type* metadata) override;
 	
 	NSArray* GetDisassembly();
 	

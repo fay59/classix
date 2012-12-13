@@ -22,6 +22,7 @@
 #import "CXVirtualMachine.h"
 #import "CXRegister.h"
 
+#include <dlfcn.h>
 #include <unordered_set>
 
 #include "MachineState.h"
@@ -336,6 +337,28 @@ struct ClassixCoreVM
 	return [NSValue value:&allocator withObjCType:@encode(typeof allocator)];
 }
 
+-(NSString*)symbolNameOfAddress:(unsigned int)address
+{
+	using namespace PPCVM::Execution;
+	Common::IAllocator* allocator = vm->allocator;
+	try
+	{
+		const NativeCall* pointer = allocator->ToPointer<NativeCall>(address);
+		if (pointer->Tag == NativeTag)
+		{
+			Dl_info info;
+			const void* symbolAddress = reinterpret_cast<const void*>(pointer->Callback);
+			if (dladdr(symbolAddress, &info))
+			{
+				return [NSString stringWithCString:info.dli_sname encoding:NSUTF8StringEncoding];
+			}
+		}
+	}
+	catch (Common::PPCRuntimeException& ex)
+	{ }
+	return nil;
+}
+
 -(NSString*)explainAddress:(unsigned)address
 {
 	if (const Common::AllocationDetails* details = vm->allocator->GetDetails(address))
@@ -347,7 +370,7 @@ struct ClassixCoreVM
 	return nil;
 }
 
--(NSNumber*)getWordAtAddress:(unsigned int)address
+-(NSNumber*)wordAtAddress:(unsigned int)address
 {
 	try
 	{
@@ -360,7 +383,7 @@ struct ClassixCoreVM
 	}
 }
 
--(NSNumber*)getFloatAtAddress:(unsigned int)address
+-(NSNumber*)floatAtAddress:(unsigned int)address
 {
 	try
 	{
@@ -373,7 +396,7 @@ struct ClassixCoreVM
 	}
 }
 
--(NSNumber*)getDoubleAtAddress:(unsigned int)address
+-(NSNumber*)doubleAtAddress:(unsigned int)address
 {
 	try
 	{

@@ -201,22 +201,15 @@ function BeginShowPreview(element)
 
 document.addEventListener("DOMContentLoaded", function()
 {
-	var url = document.location.toString();
-	var location = url.substr(url.lastIndexOf('/') + 1);
-	document.location.hash = location;
-	
-	setTimeout(function()
+	var breakpoints = cxdb.breakpoints();
+	for (var i = 0; i < breakpoints.length; i++)
 	{
-		var breakpoints = cxdb.breakpoints();
-		for (var i = 0; i < breakpoints.length; i++)
-		{
-			var address = breakpoints[i];
-			var selector = "#i" + lpad(address.toString(16), 8, '0');
-			var tr = document.querySelector(selector);
-			if (tr != null)
-				tr.classList.add("breakpoint");
-		}
-	}, 0);
+		var address = breakpoints[i];
+		var selector = "#i" + lpad(address.toString(16), 8, '0');
+		var tr = document.querySelector(selector);
+		if (tr != null)
+			tr.classList.add("breakpoint");
+	}
 });
 
 document.addEventListener("mouseover", function(event)

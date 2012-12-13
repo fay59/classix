@@ -23,6 +23,8 @@
 #import "CXJSONEncode.h"
 #import "CXDocumentController.h"
 #import "CXDBRequest.h"
+#import "CXCodeLabel.h"
+#import "CXDisassembly.h"
 
 @interface CXDBURLProtocol (Private)
 
@@ -124,19 +126,21 @@
 		return;
 	}
 	
-	NSString* label = request.params.lastObject;
+	NSString* uniqueName = request.params.lastObject;
 	NSMutableString* xhtmlDisassembly = [NSMutableString stringWithString:@"<table id=\"disasm\">"];
 	CXDocument* document = [[CXDocumentController documentController] documentWithId:request.documentId];
-	NSArray* disassembly = [document disassemblyForAddress:label];
+	CXDisassembly* disassembly = document.disassembly;
+	NSArray* disassemblyArray = [document.disassembly functionDisassemblyForUniqueName:uniqueName];
 	
-	for (NSDictionary* dict in disassembly)
+	for (CXCodeLabel* codeLabel in disassemblyArray)
 	{
-		NSString* label = [dict objectForKey:@"label"];
-		NSArray* instructions = [dict objectForKey:@"instructions"];
+		NSArray* instructions = codeLabel.instructions;
 		if (instructions.count == 0)
 			continue;
 		
-		[xhtmlDisassembly appendFormat:@"<tr><th/><th colspan=\"5\" id=\"%@\">.%@</th></tr>", label, label];
+		NSString* labelUniqueName = codeLabel.uniqueName;
+		NSString* labelDisplayName = [disassembly displayNameForUniqueName:labelUniqueName];
+		[xhtmlDisassembly appendFormat:@"<tr><th/><th colspan=\"5\" id=\"%@\">%@</th></tr>", labelUniqueName, labelDisplayName];
 		for (NSDictionary* instruction in instructions)
 		{
 			uint32_t location = [[instruction objectForKey:@"location"] integerValue];
@@ -157,16 +161,19 @@
 			}
 			else
 			{
-				NSString* stringTarget = target;
-				NSString* prefix = [stringTarget substringToIndex:2];
+				uint32_t targetAddress = [target unsignedIntValue];
+				CXCodeLabel* label = [disassembly labelDisassemblyForAddress:targetAddress];
 				NSString* targetContent;
-				if ([prefix isEqualToString:@"lb"] || [prefix isEqualToString:@"fn"])
+				
+				if (label == nil)
 				{
-					targetContent = [NSString stringWithFormat:@"<a href=\"%@\">%@</a>", stringTarget, stringTarget];
+					targetContent = [document.vm symbolNameOfAddress:targetAddress];
 				}
 				else
 				{
-					targetContent = stringTarget;
+					NSString* uniqueName = label.uniqueName;
+					NSString* displayName = [disassembly displayNameForUniqueName:uniqueName];
+					targetContent = [NSString stringWithFormat:@"<a href=\"%@\">%@</a>", uniqueName, displayName];
 				}
 				[xhtmlDisassembly appendFormat:@"<td>%@</td>", targetContent];
 			}
@@ -177,7 +184,7 @@
 	[xhtmlDisassembly appendString:@"</table>"];
 	
 	NSRange docIdRange = [template rangeOfString:@"##data-document-id##"];
-	[template replaceCharactersInRange:docIdRange withString:[NSString stringWithFormat:@"%@", label]];
+	[template replaceCharactersInRange:docIdRange withString:[NSString stringWithFormat:@"%@", @(request.documentId)]];
 	
 	NSRange tableRange = [template rangeOfString:@"<table id=\"disasm\"/>"];
 	[template replaceCharactersInRange:tableRange withString:xhtmlDisassembly];

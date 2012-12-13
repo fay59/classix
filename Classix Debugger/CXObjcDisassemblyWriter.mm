@@ -20,32 +20,46 @@
 //
 
 #include "CXObjcDisassemblyWriter.h"
+#include <CommonCrypto/CommonCrypto.h>
 
 CXObjCDisassemblyWriter::CXObjCDisassemblyWriter(uint32_t desiredSection)
-: desiredSection(desiredSection), inSection(false)
+: desiredSection(desiredSection), inSection(false), currentLabel(nil)
 {
 	result = [[NSMutableArray alloc] init];
 }
 
 void CXObjCDisassemblyWriter::EnterSection(const PEF::InstantiableSection &section, uint32_t sectionIndex)
 {
+	static const char hexChars[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 	inSection = sectionIndex == desiredSection;
+	if (inSection)
+	{
+		unsigned char md5[16];
+		CC_MD5(section.Data, section.Size(), md5);
+		for (int i = 0; i < sizeof(md5); i++)
+		{
+			sectionMD5[i * 2] = hexChars[md5[i] >> 4];
+			sectionMD5[i * 2 + 1] = hexChars[md5[i] & 0xf];
+		}
+		
+		sectionBase = section.GetDataLocation();
+	}
 }
 
-void CXObjCDisassemblyWriter::EnterLabel(const PPCVM::Disassembly::InstructionRange &label, intptr_t labelAddress)
+void CXObjCDisassemblyWriter::EnterLabel(const PPCVM::Disassembly::InstructionRange &label, uint32_t labelAddress)
 {
 	if (!inSection) return;
 	
+	currentLabel.instructions = currentArray;
+	NSString* uniqueName = [NSString stringWithFormat:@"%.32s%08x", sectionMD5, labelAddress - sectionBase];
+	uint32_t length = (label.End - label.Begin) * 4;
 	currentArray = [NSMutableArray array];
-	NSDictionary* objcLabel = @{
-		@"label": @(label.Name.c_str()),
-		@"address": @(labelAddress),
-		@"instructions": currentArray
-	};
-	[result addObject:objcLabel];
+	currentLabel = [CXCodeLabel codeLabelWithAddress:labelAddress length:length uniqueName:uniqueName];
+	currentLabel.isFunction = label.IsFunction;
+	[result addObject:currentLabel];
 }
 
-void CXObjCDisassemblyWriter::VisitOpcode(const PPCVM::Disassembly::DisassembledOpcode &opcode, intptr_t opcodeAddress, const std::string *metadata)
+void CXObjCDisassemblyWriter::VisitOpcode(const PPCVM::Disassembly::DisassembledOpcode &opcode, uint32_t opcodeAddress, const PPCVM::Disassembly::SectionDisassembler::MetadataMap::mapped_type* metadata)
 {
 	if (!inSection) return;
 	
@@ -65,12 +79,15 @@ void CXObjCDisassemblyWriter::VisitOpcode(const PPCVM::Disassembly::Disassembled
 		[arguments addObject:objcOpcode];
 	}
 	
-	id meta = metadata == nullptr ? [NSNull null] : @(metadata->c_str());
+	NSNumber* meta = nil;
+	if (metadata != nullptr)
+		meta = @(*metadata);
+	
 	NSDictionary* objcOpcode = @{
 		@"location": @(opcodeAddress),
 		@"code": @(opcode.Instruction.hex),
 		@"opcode": @(opcode.Opcode.c_str()),
-		@"target": meta,
+		@"target": meta ? meta : NSNull.null,
 		@"arguments": arguments
 	};
 	
@@ -79,6 +96,14 @@ void CXObjCDisassemblyWriter::VisitOpcode(const PPCVM::Disassembly::Disassembled
 
 NSArray* CXObjCDisassemblyWriter::GetDisassembly()
 {
+	if (currentLabel != nil)
+	{
+		[result addObject:currentLabel];
+		currentLabel = nil;
+	}
+	
+	// this can be necessary, as the CXObjCDisassemblyWriter will release `result` as it goes
+	// out of scope
 	return [[result retain] autorelease];
 }
 

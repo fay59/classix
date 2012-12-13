@@ -79,10 +79,10 @@ namespace PPCVM
 				
 				for (int i = 0; i < section.Opcodes.size(); i++)
 				{
-					intptr_t opcodeAddress = allocator->ToIntPtr(sectionBase + i);
+					uint32_t opcodeAddress = allocator->ToIntPtr(sectionBase + i);
 					MetadataMap::iterator iter = metadata.find(opcodeAddress);
-					const std::string* stringMetadata = iter == metadata.end() ? nullptr : &iter->second;
-					writer.VisitOpcode(section.Opcodes[i], opcodeAddress, stringMetadata);
+					const uint32_t* targetAddress = iter == metadata.end() ? nullptr : &iter->second;
+					writer.VisitOpcode(section.Opcodes[i], opcodeAddress, targetAddress);
 				}
 			}
 		}
@@ -178,14 +178,9 @@ namespace PPCVM
 							const NativeCall* native = allocator->ToPointer<NativeCall>(target->EntryPoint);
 							if (native->Tag == PPCVM::Execution::NativeTag)
 							{
-								// if it's a native call, add the function name as metadata
-								Dl_info info;
-								if (dladdr(reinterpret_cast<void*>(native->Callback), &info))
-								{
-									Common::UInt32* base = const_cast<Common::UInt32*>(range.Begin);
-									intptr_t opcodeAddress = allocator->ToIntPtr(base + i);
-									metadata.insert(std::make_pair(opcodeAddress, info.dli_sname));
-								}
+								// since it's a native call, add the tag address as metadata
+								uint32_t opcodeAddress = allocator->ToIntPtr(range.Begin + i);
+								metadata.insert(std::make_pair(opcodeAddress, target->EntryPoint));
 							}
 							else
 							{
@@ -211,8 +206,9 @@ namespace PPCVM
 			if (auto targetRange = rangeToDisasm[range]->FindRange(targetAddress))
 			{
 				Common::UInt32* base = const_cast<Common::UInt32*>(currentAddress);
-				intptr_t address = allocator->ToIntPtr(base);
-				metadata.insert(std::make_pair(address, targetRange->Name));
+				uint32_t address = allocator->ToIntPtr(base);
+				uint32_t targetAddress = allocator->ToIntPtr(targetRange->Begin);
+				metadata.insert(std::make_pair(address, targetAddress));
 				if (r2 != nullptr && unprocessedRanges.count(targetRange))
 					r2Values.insert(std::make_pair(targetRange, r2));
 			}

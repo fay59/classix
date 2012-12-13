@@ -107,17 +107,17 @@
 	if (NSString* explanation = [document.vm explainAddress:memoryAddress])
 	{
 		[representations setObject:explanation forKey:@"pointer"];
-		if (NSNumber* memoryValue = [document.vm getWordAtAddress:memoryAddress])
+		if (NSNumber* memoryValue = [document.vm wordAtAddress:memoryAddress])
 		{
 			uint32_t unsignedValue = memoryValue.unsignedIntValue;
 			[representations setObject:[NSString stringWithFormat:@"0x%08x", unsignedValue] forKey:@"*unsigned"];
 			[representations setObject:@((int32_t)unsignedValue) forKey:@"*signed"];
 		}
 		
-		if (NSNumber* memoryValue = [document.vm getFloatAtAddress:memoryAddress])
+		if (NSNumber* memoryValue = [document.vm floatAtAddress:memoryAddress])
 			[representations setObject:memoryValue forKey:@"*float"];
 		
-		if (NSNumber* memoryValue = [document.vm getDoubleAtAddress:memoryAddress])
+		if (NSNumber* memoryValue = [document.vm doubleAtAddress:memoryAddress])
 			[representations setObject:memoryValue forKey:@"*double"];
 	}
 	else

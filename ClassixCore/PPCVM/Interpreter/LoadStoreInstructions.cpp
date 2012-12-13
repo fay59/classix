@@ -37,7 +37,7 @@ namespace
 	template<typename T>
 	inline T* GetEffectivePointer(Common::IAllocator* allocator, MachineState* state, Instruction inst)
 	{
-		intptr_t address = inst.RA
+		uint32_t address = inst.RA
 		? state->gpr[inst.RA] + inst.SIMM_16
 		: inst.SIMM_16;
 		return allocator->ToPointer<T>(address);
@@ -46,14 +46,14 @@ namespace
 	template<typename T>
 	inline T* GetEffectivePointerU(Common::IAllocator* allocator, MachineState* state, Instruction inst)
 	{
-		intptr_t address = state->gpr[inst.RA] + inst.SIMM_16;;
+		uint32_t address = state->gpr[inst.RA] + inst.SIMM_16;;
 		return allocator->ToPointer<T>(address);
 	}
 	
 	template<typename T>
 	inline T* GetEffectivePointerX(Common::IAllocator* allocator, MachineState* state, Instruction inst)
 	{
-		intptr_t address = inst.RA
+		uint32_t address = inst.RA
 		? state->gpr[inst.RA] + state->gpr[inst.RB]
 		: state->gpr[inst.RB];
 		return allocator->ToPointer<T>(address);
@@ -62,7 +62,7 @@ namespace
 	template<typename T>
 	inline T* GetEffectivePointerUX(Common::IAllocator* allocator, MachineState* state, Instruction inst)
 	{
-		intptr_t address = state->gpr[inst.RA] + state->gpr[inst.RB];
+		uint32_t address = state->gpr[inst.RA] + state->gpr[inst.RB];
 		return allocator->ToPointer<T>(address);
 	}
 }

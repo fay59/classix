@@ -36,7 +36,7 @@ void OStreamDisassemblyWriter::EnterSection(const PEF::InstantiableSection& sect
 	into << "Section " << section.Name << " (" << sectionIndex << "):" << endline;
 }
 
-void OStreamDisassemblyWriter::EnterLabel(const PPCVM::Disassembly::InstructionRange &label, intptr_t labelAddress)
+void OStreamDisassemblyWriter::EnterLabel(const PPCVM::Disassembly::InstructionRange &label, uint32_t labelAddress)
 {
 	if (label.Begin != label.End)
 	{
@@ -46,7 +46,7 @@ void OStreamDisassemblyWriter::EnterLabel(const PPCVM::Disassembly::InstructionR
 	}
 }
 
-void OStreamDisassemblyWriter::VisitOpcode(const PPCVM::Disassembly::DisassembledOpcode &opcode, intptr_t opcodeAddress, const std::string *metadata)
+void OStreamDisassemblyWriter::VisitOpcode(const PPCVM::Disassembly::DisassembledOpcode &opcode, uint32_t opcodeAddress, const std::string *metadata)
 {
 	into << std::setw(8) << std::setfill('0') << std::right << std::hex << opcodeAddress << ' ';
 	into << '\t' << std::setw(12) << std::setfill(' ') << std::left << opcode.Opcode;

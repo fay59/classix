@@ -85,11 +85,13 @@
 		DC9E43CB165EA22400AAC682 /* CXJSONEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9E43CA165EA22400AAC682 /* CXJSONEncode.m */; };
 		DCC4B0E41662FAC100D21C90 /* CXVirtualMachine.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCC4B0E31662FAC100D21C90 /* CXVirtualMachine.mm */; };
 		DCC4B0E91662FBC200D21C90 /* CXRegister.m in Sources */ = {isa = PBXBuildFile; fileRef = DCC4B0E81662FBC200D21C90 /* CXRegister.m */; };
+		DCCB4607166EF1AB00D599CA /* CXDisassembly.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCCB4606166EF1AB00D599CA /* CXDisassembly.mm */; };
 		DCE0A8A9165732CC0092CEBC /* InstructionDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE0A8A7165732860092CEBC /* InstructionDispatcher.cpp */; };
 		DCE0A8AA165733B00092CEBC /* InstructionRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021D1650D1A60079CE2D /* InstructionRange.cpp */; };
 		DCE0A8AB165733B50092CEBC /* Disassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021A1650B2D70079CE2D /* Disassembler.cpp */; };
 		DCE0A8AF1657651D0092CEBC /* DisassembledOpcode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE0A8AC16575A160092CEBC /* DisassembledOpcode.cpp */; };
 		DCE9880E16604ED700C28F25 /* CXNavBar.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE9880D16604ED700C28F25 /* CXNavBar.m */; };
+		DCFC0CFF166DA2CA0069AE5E /* CXCodeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DCFC0CFE166DA2CA0069AE5E /* CXCodeLabel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -220,6 +222,8 @@
 		DCC4B0E31662FAC100D21C90 /* CXVirtualMachine.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CXVirtualMachine.mm; sourceTree = "<group>"; };
 		DCC4B0E71662FBC200D21C90 /* CXRegister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXRegister.h; sourceTree = "<group>"; };
 		DCC4B0E81662FBC200D21C90 /* CXRegister.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXRegister.m; sourceTree = "<group>"; };
+		DCCB4605166EF1AB00D599CA /* CXDisassembly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXDisassembly.h; sourceTree = "<group>"; };
+		DCCB4606166EF1AB00D599CA /* CXDisassembly.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CXDisassembly.mm; sourceTree = "<group>"; };
 		DCE0A8A7165732860092CEBC /* InstructionDispatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionDispatcher.cpp; path = ClassixCore/PPCVM/InstructionDispatcher.cpp; sourceTree = SOURCE_ROOT; };
 		DCE0A8AC16575A160092CEBC /* DisassembledOpcode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DisassembledOpcode.cpp; path = ClassixCore/PPCVM/Disassembler/DisassembledOpcode.cpp; sourceTree = SOURCE_ROOT; };
 		DCE0A8AD16575A160092CEBC /* DisassembledOpcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DisassembledOpcode.h; path = ClassixCore/PPCVM/Disassembler/DisassembledOpcode.h; sourceTree = SOURCE_ROOT; };
@@ -245,6 +249,8 @@
 		DCF359A516384E1400EC1A95 /* Relocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Relocation.h; sourceTree = "<group>"; };
 		DCF359A616384E1400EC1A95 /* Structures.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Structures.cpp; sourceTree = "<group>"; };
 		DCF359A716384E1400EC1A95 /* Structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Structures.h; sourceTree = "<group>"; };
+		DCFC0CFD166DA2CA0069AE5E /* CXCodeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXCodeLabel.h; sourceTree = "<group>"; };
+		DCFC0CFE166DA2CA0069AE5E /* CXCodeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXCodeLabel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -372,8 +378,12 @@
 				DC0D42B0165EE4CF00883586 /* WebView Glue */,
 				DCE9880A16604C7A00C28F25 /* Custom Controls */,
 				DCC4B0E61662FBAB00D21C90 /* Debugging */,
+				DCCB4605166EF1AB00D599CA /* CXDisassembly.h */,
+				DCCB4606166EF1AB00D599CA /* CXDisassembly.mm */,
 				DC0D42B1165EE4F400883586 /* CXObjcDisassemblyWriter.mm */,
 				DC0D42B2165EE4F400883586 /* CXObjcDisassemblyWriter.h */,
+				DCFC0CFD166DA2CA0069AE5E /* CXCodeLabel.h */,
+				DCFC0CFE166DA2CA0069AE5E /* CXCodeLabel.m */,
 				DC4C6463165B62910097288E /* CXDocument.xib */,
 				DC4C6466165B62920097288E /* MainMenu.xib */,
 				DC4C6455165B62910097288E /* Supporting Files */,
@@ -791,6 +801,8 @@
 				DCC4B0E91662FBC200D21C90 /* CXRegister.m in Sources */,
 				DC30714E1668800D00475144 /* CXJSAdapter.mm in Sources */,
 				DC86E082166C03730027F40E /* CXReverseAllocationDetails.cpp in Sources */,
+				DCFC0CFF166DA2CA0069AE5E /* CXCodeLabel.m in Sources */,
+				DCCB4607166EF1AB00D599CA /* CXDisassembly.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
