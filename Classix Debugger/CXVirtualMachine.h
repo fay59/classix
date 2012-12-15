@@ -78,6 +78,8 @@ enum CXVirtualMachineSPRIndex
 -(NSNumber*)floatAtAddress:(unsigned)address;
 -(NSNumber*)doubleAtAddress:(unsigned)address;
 
+-(NSArray*)stackTrace;
+
 -(IBAction)run:(id)sender;
 -(IBAction)stepOver:(id)sender;
 -(IBAction)stepInto:(id)sender;

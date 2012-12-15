@@ -35,6 +35,7 @@
 #include "CXObjcDisassemblyWriter.h"
 #include "NativeCall.h"
 #include "CXReverseAllocationDetails.h"
+#include "InstructionDecoder.h"
 
 NSNumber* CXVirtualMachineGPRKey = @(CXRegisterGPR);
 NSNumber* CXVirtualMachineFPRKey = @(CXRegisterFPR);
@@ -105,9 +106,8 @@ struct ClassixCoreVM
 		return false;
 	}
 	
-	int SectionForPC() const
+	int SectionForAddress(void* ptr) const
 	{
-		void* ptr = allocator->ToPointer<void>(nextPC);
 		for (int i = 0; i < container->Size(); i++)
 		{
 			auto& section = container->GetSection(i);
@@ -115,6 +115,24 @@ struct ClassixCoreVM
 				return i;
 		}
 		return -1;
+	}
+	
+	int SectionForAddress(uint32_t address) const
+	{
+		for (int i = 0; i < container->Size(); i++)
+		{
+			auto& section = container->GetSection(i);
+			uint32_t data = allocator->ToIntPtr(section.Data);
+			uint32_t dataEnd = data + section.Size();
+			if (data <= address && dataEnd > address)
+				return i;
+		}
+		return -1;
+	}
+	
+	int SectionForPC() const
+	{
+		return SectionForAddress(nextPC);
 	}
 };
 
@@ -407,6 +425,45 @@ struct ClassixCoreVM
 	{
 		return nil;
 	}
+}
+
+-(NSArray*)stackTrace
+{
+	using Common::UInt32;
+	
+	NSMutableArray* stackFrames = [NSMutableArray array];
+	// first frame: here
+	[stackFrames addObject:@(vm->nextPC)];
+	
+	// this relies on the fact that the stack is allocated on a 4-byte boundary
+	uint32_t stackWord = vm->state.r1 & ~0b11;
+	const UInt32* stackPointer;
+	
+	try { stackPointer = vm->allocator->ToPointer<const UInt32>(stackWord); }
+	catch (Common::AccessViolationException&) { return nil; }
+	
+	const UInt32* stackGuard = reinterpret_cast<UInt32*>(*vm->stack) + CXStackSize / sizeof(UInt32);
+	for (; stackPointer != stackGuard; stackPointer++)
+	{
+		uint32_t hopefullyBranchAndLinkAddress = *stackPointer - 4;
+		int sectionIndex = vm->SectionForAddress(hopefullyBranchAndLinkAddress);
+		if (sectionIndex != -1)
+		{
+			const UInt32* hopefullyBranchAndLink = vm->allocator->ToPointer<const UInt32>(hopefullyBranchAndLinkAddress);
+			PPCVM::Instruction inst = hopefullyBranchAndLink->Get();
+			int opcd = inst.OPCD;
+			int subop = inst.SUBOP10;
+			bool isBranch = opcd == 16 || opcd == 18 || (opcd == 19 && (subop == 16 || subop == 528));
+			if (isBranch)
+			{
+				// alright, that makes "enough sense" to be added
+				uint32_t address = vm->allocator->ToIntPtr(stackPointer);
+				[stackFrames addObject:@(address)];
+			}
+		}
+	}
+	
+	return stackFrames;
 }
 
 -(IBAction)run:(id)sender
