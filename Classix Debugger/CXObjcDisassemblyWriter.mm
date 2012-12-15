@@ -52,7 +52,7 @@ void CXObjCDisassemblyWriter::EnterLabel(const PPCVM::Disassembly::InstructionRa
 	
 	currentLabel.instructions = currentArray;
 	NSString* uniqueName = [NSString stringWithFormat:@"%.32s%08x", sectionMD5, labelAddress - sectionBase];
-	uint32_t length = (label.End - label.Begin) * 4;
+	uint32_t length = (label.End - label.Begin) * sizeof(Common::UInt32);
 	currentArray = [NSMutableArray array];
 	currentLabel = [CXCodeLabel codeLabelWithAddress:labelAddress length:length uniqueName:uniqueName];
 	currentLabel.isFunction = label.IsFunction;
