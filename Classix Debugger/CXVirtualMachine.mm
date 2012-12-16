@@ -59,7 +59,6 @@ struct ClassixCoreVM
 	Common::AutoAllocation stack;
 	
 	std::unordered_set<intptr_t> breakpoints;
-	intptr_t nextPC;
 	
 	ClassixCoreVM(Common::IAllocator* allocator)
 	: allocator(allocator)
@@ -69,7 +68,6 @@ struct ClassixCoreVM
 	, dlfcnResolver(allocator)
 	, interp(allocator, &state)
 	, container(nullptr)
-	, nextPC(0)
 	, stack(allocator->AllocateAuto(CXReverseAllocationDetails("Stack", CXStackSize), CXStackSize))
 	{
 		dlfcnResolver.RegisterLibrary("StdCLib");
@@ -88,19 +86,7 @@ struct ClassixCoreVM
 			{
 				container = &pefResolver->GetContainer();
 				auto main = pefResolver->GetMainAddress();
-				if (main.Universe == CFM::SymbolUniverse::PowerPC)
-				{
-					nextPC = main.Address;
-					
-					auto& section = container->GetSection(SectionForPC());
-					if (section.GetSectionType() != SectionType::Code && section.GetSectionType() != SectionType::ExecutableData)
-					{
-						// then it's a transition vector
-						const TransitionVector* vector = allocator->ToPointer<TransitionVector>(nextPC);
-						nextPC = vector->EntryPoint;
-					}
-					return true;
-				}
+				return main.Universe == CFM::SymbolUniverse::PowerPC;
 			}
 		}
 		return false;
@@ -128,11 +114,6 @@ struct ClassixCoreVM
 				return i;
 		}
 		return -1;
-	}
-	
-	int SectionForPC() const
-	{
-		return SectionForAddress(nextPC);
 	}
 };
 
@@ -433,7 +414,7 @@ struct ClassixCoreVM
 	
 	NSMutableArray* stackFrames = [NSMutableArray array];
 	// first frame: here
-	[stackFrames addObject:@(vm->nextPC)];
+	[stackFrames addObject:@(pc)];
 	
 	// this relies on the fact that the stack is allocated on a 4-byte boundary
 	uint32_t stackWord = vm->state.r1 & ~0b11;

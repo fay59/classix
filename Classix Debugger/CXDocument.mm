@@ -36,6 +36,7 @@
 #import "CXJSONEncode.h"
 #import "CXJSAdapter.h"
 #import "CXCodeLabel.h"
+#import "CXStackFrame.h"
 
 static NSImage* exportImage;
 static NSImage* labelImage;
@@ -44,7 +45,11 @@ static NSImage* functionImage;
 @interface CXDocument (Private)
 
 -(void)buildSymbolMenu;
--(void)showPCAndJump:(BOOL)jumpToPC;
+-(void)highlightPC;
+-(void)jumpToPC;
+-(void)showDisassembly:(NSString *)labelUniqueName;
+-(void)showDisassembly:(NSString *)labelUniqueName address:(uint32_t)address;
+-(void)reloadStackTrace;
 -(NSImage*)fileIcon16x16:(NSString*)path;
 -(NSMenu*)exportMenuForResolver:(const CFM::SymbolResolver*)resolver;
 
@@ -59,6 +64,7 @@ static NSImage* functionImage;
 @synthesize navBar;
 @synthesize backForward;
 @synthesize outline;
+@synthesize stackTraceTable;
 
 +(void)initialize
 {
@@ -97,9 +103,19 @@ static NSImage* functionImage;
 	[disassemblyView addObserver:self forKeyPath:@"canGoBack" options:NSKeyValueObservingOptionNew context:nullptr];
 	[disassemblyView addObserver:self forKeyPath:@"canGoForward" options:NSKeyValueObservingOptionNew context:nullptr];
 	
+	stackTrace = [[CXStackTrace alloc] initWithDisassembly:disassembly];
+	stackTrace.onFrameSelected = ^(CXStackTrace*, CXStackFrame* frame)
+	{
+		[self showDisassembly:frame.functionLabel.uniqueName address:frame.absoluteAddress];
+	};
+	
+	stackTraceTable.dataSource = stackTrace;
+	stackTraceTable.delegate = stackTrace;
+	[self reloadStackTrace];
+	
 	outline.delegate = vm;
 	outline.dataSource = vm;
-	[self showPCAndJump:YES];
+	[self jumpToPC];
 }
 
 +(BOOL)autosavesInPlace
@@ -130,7 +146,7 @@ static NSImage* functionImage;
 -(void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame *)frame
 {
 	[[sender windowScriptObject] setValue:js forKey:@"cxdb"];
-	[self showPCAndJump:NO];
+	[self highlightPC];
 }
 
 -(void)dealloc
@@ -138,6 +154,7 @@ static NSImage* functionImage;
 	[vm release];
 	[js release];
 	[disassembly release];
+	[stackTrace release];
 	
 	[super dealloc];
 }
@@ -158,21 +175,24 @@ static NSImage* functionImage;
 {
 	[vm run:sender];
 	[outline reloadData];
-	[self showPCAndJump:YES];
+	[self reloadStackTrace];
+	[self jumpToPC];
 }
 
 -(IBAction)stepInto:(id)sender
 {
 	[vm stepInto:sender];
 	[outline reloadData];
-	[self showPCAndJump:YES];
+	[self reloadStackTrace];
+	[self jumpToPC];
 }
 
 -(IBAction)stepOver:(id)sender
 {
 	[vm stepOver:sender];
 	[outline reloadData];
-	[self showPCAndJump:YES];
+	[self reloadStackTrace];
+	[self jumpToPC];
 }
 
 -(IBAction)controlFlow:(id)sender
@@ -337,16 +357,22 @@ static NSImage* functionImage;
 	return [smallIcon autorelease];
 }
 
--(void)showPCAndJump:(BOOL)jumpToPC
+-(void)jumpToPC
 {
-	if (jumpToPC)
-	{
-		
-	}
+	CXCodeLabel* label = [[disassembly functionDisassemblyForAddress:vm.pc] objectAtIndex:0];
+	[self showDisassembly:label.uniqueName address:vm.pc];
+}
+
+-(void)highlightPC
+{
+	NSArray* trace = stackTrace.stackTrace;
+	NSMutableArray* addresses = [NSMutableArray arrayWithCapacity:trace.count];
+	for (CXStackFrame* frame in trace)
+		[addresses addObject:@(frame.absoluteAddress)];
 	
-	id<NSObject> scriptArguments = vm.lastError == nil
-		? @(vm.pc)
-		: [NSString stringWithFormat:@"%u, %@", vm.pc, CXJSONEncodeString(vm.lastError)];
+	NSString* scriptArguments = CXJSONEncode(addresses);
+	if (NSString* error = vm.lastError)
+		scriptArguments = [scriptArguments stringByAppendingFormat:@", %@", CXJSONEncode(error)];
 
 	NSString* script = [NSString stringWithFormat:@"HighlightPC(%@)", scriptArguments];
 	[[disassemblyView windowScriptObject] evaluateWebScript:script];
@@ -360,6 +386,38 @@ static NSImage* functionImage;
 	NSURL* url = [NSURL URLWithString:cxdbUrl];
 	NSURLRequest* request = [NSURLRequest requestWithURL:url];
 	[[disassemblyView mainFrame] loadRequest:request];
+	[self highlightPC];
+}
+
+-(void)showDisassembly:(NSString *)labelUniqueName address:(uint32_t)address
+{
+	NSUInteger documentId = [[CXDocumentController documentController] idOfDocument:self];
+	CXCodeLabel* function = [[disassembly functionDisassemblyForUniqueName:labelUniqueName] objectAtIndex:0];
+	NSString* anchor = [NSString stringWithFormat:@"i%08x", address];
+	NSString* cxdbUrl = [NSString stringWithFormat:@"cxdb://disassembly/%@/%@#%@", @(documentId), function.uniqueName, anchor];
+	NSURL* url = [NSURL URLWithString:cxdbUrl];
+	NSURLRequest* request = [NSURLRequest requestWithURL:url];
+	[[disassemblyView mainFrame] loadRequest:request];
+	[self highlightPC];
+}
+
+-(void)reloadStackTrace
+{
+	CXRegister* spReg = [vm.gpr objectAtIndex:1];
+	CXRegister* lrReg = [vm.spr objectAtIndex:CXVirtualMachineSPRLRIndex];
+	uint32_t currentSp = spReg.value.unsignedIntValue;
+	uint32_t currentLr = lrReg.value.unsignedIntValue;
+	if (currentSp != sp || currentLr != lr)
+	{
+		sp = currentSp;
+		lr = currentLr;
+		[stackTrace feedNumericTrace:vm.stackTrace];
+	}
+	else
+	{
+		[stackTrace setTopAddress:vm.pc];
+	}
+	[stackTraceTable reloadData];
 }
 
 -(NSMenu*)exportMenuForResolver:(const CFM::SymbolResolver *)resolver

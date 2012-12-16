@@ -43,9 +43,10 @@ function GoToLabel(label)
 
 function DehighlightPC()
 {
-	var pcRow = document.querySelector(".current");
-	if (pcRow != null)
+	var pcRows = document.querySelectorAll(".current");
+	for (var i = 0; i < pcRows.length; i++)
 	{
+		var pcRow = pcRows[i];
 		var arrowTd = pcRow.childNodes[1];
 		arrowTd.removeChild(arrowTd.firstChild);
 		pcRow.classList.remove("current");
@@ -57,29 +58,36 @@ function DehighlightPC()
 	}
 }
 
-function HighlightPC(pc, errorMessage)
+function HighlightPC(trace, errorMessage)
 {
 	DehighlightPC();
 	
-	var pcString = lpad(pc.toString(16), 8, '0');
-	var instructionLabel = "#i" + pcString;
-	var pcRow = document.querySelector(instructionLabel);
-	if (pcRow != null)
+	for (var i = 0; i < trace.length; i++)
 	{
-		pcRow.classList.add("current");
-		var img = document.createElement("img");
-		img.alt = ">";
-		img.src = "cxdb://resource/execution-cursor.png";
-		pcRow.childNodes[1].appendChild(img);
-		
-		if (errorMessage != null)
+		var pc = trace[i];
+		var pcString = lpad(pc.toString(16), 8, '0');
+		var instructionLabel = "#i" + pcString;
+		var pcRow = document.querySelector(instructionLabel);
+		if (pcRow != null)
 		{
-			pcRow.classList.add("error");
-			var lastTd = pcRow.querySelector("td:last-child");
-			var errorSpan = document.createElement("span");
-			errorSpan.className = "error-message";
-			errorSpan.textContent = errorMessage;
-			lastTd.appendChild(errorSpan);
+			pcRow.classList.add("current");
+			if (i == 0)
+			{
+				var img = document.createElement("img");
+				img.alt = ">";
+				img.src = "cxdb://resource/execution-cursor.png";
+				pcRow.childNodes[1].appendChild(img);
+			}
+			
+			if (errorMessage != null)
+			{
+				pcRow.classList.add("error");
+				var lastTd = pcRow.querySelector("td:last-child");
+				var errorSpan = document.createElement("span");
+				errorSpan.className = "error-message";
+				errorSpan.textContent = errorMessage;
+				lastTd.appendChild(errorSpan);
+			}
 		}
 	}
 }

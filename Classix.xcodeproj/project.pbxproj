@@ -34,6 +34,7 @@
 		DC4C646D165B62B80097288E /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC5CF824166153D200577272 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = DC5CF823166153D200577272 /* arrow.png */; };
 		DC5CF825166165D200577272 /* StdCLibFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE988111660B11A00C28F25 /* StdCLibFunctions.cpp */; };
+		DC5ED1BD167CFF8100C249B7 /* CXStackTrace.m in Sources */ = {isa = PBXBuildFile; fileRef = DC5ED1BC167CFF8100C249B7 /* CXStackTrace.m */; };
 		DC6FEAC91661508400DD415C /* export.png in Resources */ = {isa = PBXBuildFile; fileRef = DCE988131660B3D900C28F25 /* export.png */; };
 		DC6FEACA1661508400DD415C /* label.png in Resources */ = {isa = PBXBuildFile; fileRef = DCE988101660A9B400C28F25 /* label.png */; };
 		DC6FEACB1661508400DD415C /* function.png in Resources */ = {isa = PBXBuildFile; fileRef = DCE9880F1660A81A00C28F25 /* function.png */; };
@@ -86,11 +87,14 @@
 		DCC4B0E41662FAC100D21C90 /* CXVirtualMachine.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCC4B0E31662FAC100D21C90 /* CXVirtualMachine.mm */; };
 		DCC4B0E91662FBC200D21C90 /* CXRegister.m in Sources */ = {isa = PBXBuildFile; fileRef = DCC4B0E81662FBC200D21C90 /* CXRegister.m */; };
 		DCCB4607166EF1AB00D599CA /* CXDisassembly.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCCB4606166EF1AB00D599CA /* CXDisassembly.mm */; };
+		DCCBBD36167AFF2B00BEAF3C /* CXStackFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = DCCBBD35167AFF2B00BEAF3C /* CXStackFrame.m */; };
 		DCE0A8A9165732CC0092CEBC /* InstructionDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE0A8A7165732860092CEBC /* InstructionDispatcher.cpp */; };
 		DCE0A8AA165733B00092CEBC /* InstructionRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021D1650D1A60079CE2D /* InstructionRange.cpp */; };
 		DCE0A8AB165733B50092CEBC /* Disassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021A1650B2D70079CE2D /* Disassembler.cpp */; };
 		DCE0A8AF1657651D0092CEBC /* DisassembledOpcode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE0A8AC16575A160092CEBC /* DisassembledOpcode.cpp */; };
 		DCE9880E16604ED700C28F25 /* CXNavBar.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE9880D16604ED700C28F25 /* CXNavBar.m */; };
+		DCF538C5167C37B9000D6E02 /* InstructionDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF538C3167C37B9000D6E02 /* InstructionDecoder.cpp */; };
+		DCF538C6167C37B9000D6E02 /* InstructionDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = DCF538C4167C37B9000D6E02 /* InstructionDecoder.h */; };
 		DCFC0CFF166DA2CA0069AE5E /* CXCodeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DCFC0CFE166DA2CA0069AE5E /* CXCodeLabel.m */; };
 /* End PBXBuildFile section */
 
@@ -157,6 +161,8 @@
 		DC5CF823166153D200577272 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		DC5E33C5163A496300944FFD /* FileMapping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileMapping.cpp; sourceTree = "<group>"; };
 		DC5E33C6163A496300944FFD /* FileMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileMapping.h; sourceTree = "<group>"; };
+		DC5ED1BB167CFF8100C249B7 /* CXStackTrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXStackTrace.h; sourceTree = "<group>"; };
+		DC5ED1BC167CFF8100C249B7 /* CXStackTrace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXStackTrace.m; sourceTree = "<group>"; };
 		DC6847C91638C258003E906D /* PEFRelocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PEFRelocator.cpp; sourceTree = "<group>"; };
 		DC6847CA1638C258003E906D /* PEFRelocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEFRelocator.h; sourceTree = "<group>"; };
 		DC7273F816471CD800DA17E5 /* FloatingPointInstructions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FloatingPointInstructions.cpp; sourceTree = "<group>"; };
@@ -224,6 +230,8 @@
 		DCC4B0E81662FBC200D21C90 /* CXRegister.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXRegister.m; sourceTree = "<group>"; };
 		DCCB4605166EF1AB00D599CA /* CXDisassembly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXDisassembly.h; sourceTree = "<group>"; };
 		DCCB4606166EF1AB00D599CA /* CXDisassembly.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CXDisassembly.mm; sourceTree = "<group>"; };
+		DCCBBD34167AFF2B00BEAF3C /* CXStackFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXStackFrame.h; sourceTree = "<group>"; };
+		DCCBBD35167AFF2B00BEAF3C /* CXStackFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXStackFrame.m; sourceTree = "<group>"; };
 		DCE0A8A7165732860092CEBC /* InstructionDispatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionDispatcher.cpp; path = ClassixCore/PPCVM/InstructionDispatcher.cpp; sourceTree = SOURCE_ROOT; };
 		DCE0A8AC16575A160092CEBC /* DisassembledOpcode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DisassembledOpcode.cpp; path = ClassixCore/PPCVM/Disassembler/DisassembledOpcode.cpp; sourceTree = SOURCE_ROOT; };
 		DCE0A8AD16575A160092CEBC /* DisassembledOpcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DisassembledOpcode.h; path = ClassixCore/PPCVM/Disassembler/DisassembledOpcode.h; sourceTree = SOURCE_ROOT; };
@@ -249,6 +257,8 @@
 		DCF359A516384E1400EC1A95 /* Relocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Relocation.h; sourceTree = "<group>"; };
 		DCF359A616384E1400EC1A95 /* Structures.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Structures.cpp; sourceTree = "<group>"; };
 		DCF359A716384E1400EC1A95 /* Structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Structures.h; sourceTree = "<group>"; };
+		DCF538C3167C37B9000D6E02 /* InstructionDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InstructionDecoder.cpp; sourceTree = "<group>"; };
+		DCF538C4167C37B9000D6E02 /* InstructionDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InstructionDecoder.h; sourceTree = "<group>"; };
 		DCFC0CFD166DA2CA0069AE5E /* CXCodeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXCodeLabel.h; sourceTree = "<group>"; };
 		DCFC0CFE166DA2CA0069AE5E /* CXCodeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXCodeLabel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -549,6 +559,8 @@
 				DC83021E1650D1A60079CE2D /* InstructionRange.h */,
 				DCE0A8AC16575A160092CEBC /* DisassembledOpcode.cpp */,
 				DCE0A8AD16575A160092CEBC /* DisassembledOpcode.h */,
+				DCF538C3167C37B9000D6E02 /* InstructionDecoder.cpp */,
+				DCF538C4167C37B9000D6E02 /* InstructionDecoder.h */,
 			);
 			path = Disassembler;
 			sourceTree = "<group>";
@@ -617,6 +629,8 @@
 				DCC4B0E31662FAC100D21C90 /* CXVirtualMachine.mm */,
 				DCC4B0E71662FBC200D21C90 /* CXRegister.h */,
 				DCC4B0E81662FBC200D21C90 /* CXRegister.m */,
+				DCCBBD34167AFF2B00BEAF3C /* CXStackFrame.h */,
+				DCCBBD35167AFF2B00BEAF3C /* CXStackFrame.m */,
 				DC86E080166C03730027F40E /* CXReverseAllocationDetails.cpp */,
 				DC86E081166C03730027F40E /* CXReverseAllocationDetails.h */,
 			);
@@ -630,6 +644,8 @@
 				DCE9880D16604ED700C28F25 /* CXNavBar.m */,
 				DC176D071662A91700C76888 /* CXGradientView.h */,
 				DC176D081662A91700C76888 /* CXGradientView.m */,
+				DC5ED1BB167CFF8100C249B7 /* CXStackTrace.h */,
+				DC5ED1BC167CFF8100C249B7 /* CXStackTrace.m */,
 			);
 			name = "Custom Controls";
 			sourceTree = "<group>";
@@ -654,6 +670,7 @@
 				DC07B17E1669D39900A78205 /* InterpreterException.h in Headers */,
 				DC29C3D3166AB92400B35EF7 /* AllocationDetails.h in Headers */,
 				DC86E08B166C2D390027F40E /* PanicException.h in Headers */,
+				DCF538C6167C37B9000D6E02 /* InstructionDecoder.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -803,6 +820,8 @@
 				DC86E082166C03730027F40E /* CXReverseAllocationDetails.cpp in Sources */,
 				DCFC0CFF166DA2CA0069AE5E /* CXCodeLabel.m in Sources */,
 				DCCB4607166EF1AB00D599CA /* CXDisassembly.mm in Sources */,
+				DCCBBD36167AFF2B00BEAF3C /* CXStackFrame.m in Sources */,
+				DC5ED1BD167CFF8100C249B7 /* CXStackTrace.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -857,6 +876,7 @@
 				DC07B17D1669D39900A78205 /* InterpreterException.cpp in Sources */,
 				DC29C3D2166AB92400B35EF7 /* AllocationDetails.cpp in Sources */,
 				DC86E08A166C2D390027F40E /* PanicException.cpp in Sources */,
+				DCF538C5167C37B9000D6E02 /* InstructionDecoder.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

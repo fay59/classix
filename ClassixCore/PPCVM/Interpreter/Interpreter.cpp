@@ -20,7 +20,7 @@
 //
 
 #include "Interpreter.h"
-#include "Disassembler.h"
+#include "InstructionDecoder.h"
 #include "NativeCall.h"
 #include "PanicException.h"
 #include <iostream>

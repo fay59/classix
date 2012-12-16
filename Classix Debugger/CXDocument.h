@@ -24,6 +24,7 @@
 #import "CXVirtualMachine.h"
 #import "CXDisassembly.h"
 #import "CXNavBar.h"
+#import "CXStackTrace.h"
 
 @class CXJSAdapter;
 
@@ -31,13 +32,18 @@
 {
 	CXVirtualMachine* vm;
 	CXDisassembly* disassembly;
+	CXStackTrace* stackTrace;
 	CXJSAdapter* js;
+	
+	uint32_t sp;
+	uint32_t lr;
 	
 	// UI
 	WebView* disassemblyView;
 	CXNavBar* navBar;
 	NSSegmentedControl* backForward;
 	NSOutlineView* outline;
+	NSTableView* stackTraceTable;
 }
 
 @property (readonly) CXVirtualMachine* vm;
@@ -47,6 +53,7 @@
 @property (assign) IBOutlet CXNavBar* navBar;
 @property (assign) IBOutlet NSSegmentedControl* backForward;
 @property (assign) IBOutlet NSOutlineView* outline;
+@property (assign) IBOutlet NSTableView* stackTraceTable;
 
 -(IBAction)goBack:(id)sender;
 -(IBAction)goForward:(id)sender;

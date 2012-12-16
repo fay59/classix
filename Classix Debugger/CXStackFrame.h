@@ -1,5 +1,5 @@
 //
-// InstructionDispatcher.cpp
+// CXStackFrame.h
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,16 +19,22 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#include <iostream>
-#include "InstructionDecoder.h"
+#import <Foundation/Foundation.h>
+#import "CXCodeLabel.h"
 
-namespace PPCVM
+@interface CXStackFrame : NSObject
 {
-	void DisassembleIfAsked(Instruction inst)
-	{
-		if (getenv("DEBUG_DISASSEMBLE"))
-		{
-			std::cerr << '\t' << Disassembly::InstructionDecoder::Decode(inst) << std::endl;
-		}
-	}
+	CXCodeLabel* functionLabel;
+	CXCodeLabel* label;
+	unsigned labelOffset;
 }
+
+@property (readonly) CXCodeLabel* functionLabel;
+@property (readonly) CXCodeLabel* label;
+@property (readonly) unsigned labelOffset;
+@property (readonly) unsigned functionOffset;
+@property (readonly) unsigned absoluteAddress;
+
+-(id)initWithFunction:(CXCodeLabel*)func label:(CXCodeLabel*)label offset:(unsigned)offset;
+
+@end
