@@ -629,6 +629,8 @@
 				DCC4B0E31662FAC100D21C90 /* CXVirtualMachine.mm */,
 				DCC4B0E71662FBC200D21C90 /* CXRegister.h */,
 				DCC4B0E81662FBC200D21C90 /* CXRegister.m */,
+				DC5ED1BB167CFF8100C249B7 /* CXStackTrace.h */,
+				DC5ED1BC167CFF8100C249B7 /* CXStackTrace.m */,
 				DCCBBD34167AFF2B00BEAF3C /* CXStackFrame.h */,
 				DCCBBD35167AFF2B00BEAF3C /* CXStackFrame.m */,
 				DC86E080166C03730027F40E /* CXReverseAllocationDetails.cpp */,
@@ -644,8 +646,6 @@
 				DCE9880D16604ED700C28F25 /* CXNavBar.m */,
 				DC176D071662A91700C76888 /* CXGradientView.h */,
 				DC176D081662A91700C76888 /* CXGradientView.m */,
-				DC5ED1BB167CFF8100C249B7 /* CXStackTrace.h */,
-				DC5ED1BC167CFF8100C249B7 /* CXStackTrace.m */,
 			);
 			name = "Custom Controls";
 			sourceTree = "<group>";

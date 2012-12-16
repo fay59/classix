@@ -151,7 +151,8 @@ struct StdCLibGlobals
 	uint8_t cType[256];
 	Common::IAllocator* allocator;
 	
-	static std::map<std::string, size_t> FieldOffsets;
+	static std::map<off_t, std::string> FieldOffsets;
+	static std::map<std::string, size_t> FieldLocations;
 	
 	StdCLibGlobals(Common::IAllocator* allocator)
 	: allocator(allocator)
@@ -184,7 +185,41 @@ struct StdCLibGlobals
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 
-std::map<std::string, size_t> StdCLibGlobals::FieldOffsets
+std::map<off_t, std::string> StdCLibGlobals::FieldOffsets
+{
+	std::make_pair(offsetof(StdCLibGlobals, __C_phase), "__C_phase"),
+	std::make_pair(offsetof(StdCLibGlobals, __loc), "__loc"),
+	std::make_pair(offsetof(StdCLibGlobals, __NubAt3), "__NubAt3"),
+	std::make_pair(offsetof(StdCLibGlobals, __p_CType), "__p_CType"),
+	std::make_pair(offsetof(StdCLibGlobals, __SigEnv), "__SigEnv"),
+	std::make_pair(offsetof(StdCLibGlobals, __target_for_exit), "__target_for_exit"),
+	std::make_pair(offsetof(StdCLibGlobals, __yd), "__yd"),
+	std::make_pair(offsetof(StdCLibGlobals, _CategoryLoc), "_CategoryLoc"),
+	std::make_pair(offsetof(StdCLibGlobals, _DBL_EPSILON), "_DBL_EPSILON"),
+	std::make_pair(offsetof(StdCLibGlobals, _DBL_MAX), "_DBL_MAX"),
+	std::make_pair(offsetof(StdCLibGlobals, _DBL_MIN), "_DBL_MIN"),
+	std::make_pair(offsetof(StdCLibGlobals, _exit_status), "_exit_status"),
+	std::make_pair(offsetof(StdCLibGlobals, _FLT_EPSILON), "_FLT_EPSILON"),
+	std::make_pair(offsetof(StdCLibGlobals, _FLT_MAX), "_FLT_MAX"),
+	std::make_pair(offsetof(StdCLibGlobals, _FLT_MIN), "_FLT_MIN"),
+	std::make_pair(offsetof(StdCLibGlobals, _IntEnv), "_IntEnv"),
+	std::make_pair(offsetof(StdCLibGlobals, _iob), "_iob"),
+	std::make_pair(offsetof(StdCLibGlobals, _lastbuf), "_lastbuf"),
+	std::make_pair(offsetof(StdCLibGlobals, _LDBL_EPSILON), "_LDBL_EPSILON"),
+	std::make_pair(offsetof(StdCLibGlobals, _LDBL_MIN), "_LDBL_MIN"),
+	std::make_pair(offsetof(StdCLibGlobals, _LDBL_MAX), "_LDBL_MAX"),
+	std::make_pair(offsetof(StdCLibGlobals, _PublicTimeInfo), "_PublicTimeInfo"),
+	std::make_pair(offsetof(StdCLibGlobals, _StdDevs), "_StdDevs"),
+	std::make_pair(offsetof(StdCLibGlobals, errno_), "errno"),
+	std::make_pair(offsetof(StdCLibGlobals, MacOSErr), "MacOSErr"),
+	std::make_pair(offsetof(StdCLibGlobals, MoneyData), "MoneyData"),
+	std::make_pair(offsetof(StdCLibGlobals, NoMoreDebugStr), "NoMoreDebugStr"),
+	std::make_pair(offsetof(StdCLibGlobals, NumericData), "NumericData"),
+	std::make_pair(offsetof(StdCLibGlobals, StandAlone), "StandAlone"),
+	std::make_pair(offsetof(StdCLibGlobals, TimeData), "TimeData"),
+};
+
+std::map<std::string, size_t> StdCLibGlobals::FieldLocations
 {
 	std::make_pair("__C_phase", offsetof(StdCLibGlobals, __C_phase)),
 	std::make_pair("__loc", offsetof(StdCLibGlobals, __loc)),
@@ -216,6 +251,7 @@ std::map<std::string, size_t> StdCLibGlobals::FieldOffsets
 	std::make_pair("NumericData", offsetof(StdCLibGlobals, NumericData)),
 	std::make_pair("StandAlone", offsetof(StdCLibGlobals, StandAlone)),
 	std::make_pair("TimeData", offsetof(StdCLibGlobals, TimeData)),
+
 };
 
 #pragma clang diagnostics pop
@@ -233,16 +269,16 @@ public:
 		ss << "StdCLibGlobals::";
 		for (auto iter = StdCLibGlobals::FieldOffsets.rbegin(); iter != StdCLibGlobals::FieldOffsets.rend(); iter++)
 		{
-			if (iter->second < offset)
+			if (iter->first <= offset)
 			{
-				ss << iter->first;
-				uint32_t subOffset = offset - iter->second;
-				if (iter->first == "_iob")
+				ss << iter->second;
+				off_t subOffset = offset - iter->first;
+				if (iter->second == "_iob")
 				{
 					ss << '[' << (subOffset / sizeof (StdCLibPPCFILE)) << ']';
 					ss << '.' << StdCLibPPCFILE::OffsetNames[subOffset % sizeof (StdCLibPPCFILE)];
 				}
-				else
+				else if (subOffset != 0)
 				{
 					ss << " +" << subOffset;
 				}
@@ -282,8 +318,8 @@ SymbolType LibraryLookup(StdCLibGlobals* globals, const char* name, void** resul
 		return CodeSymbol;
 	}
 	
-	auto iter = StdCLibGlobals::FieldOffsets.find(name);
-	if (iter != StdCLibGlobals::FieldOffsets.end())
+	auto iter = StdCLibGlobals::FieldLocations.find(name);
+	if (iter != StdCLibGlobals::FieldLocations.end())
 	{
 		*result = reinterpret_cast<uint8_t*>(globals) + iter->second;
 		return DataSymbol;
