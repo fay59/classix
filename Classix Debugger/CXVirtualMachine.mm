@@ -437,12 +437,15 @@ struct ClassixCoreVM
 	
 	// this relies on the fact that the stack is allocated on a 4-byte boundary
 	uint32_t stackWord = vm->state.r1 & ~0b11;
+	const UInt32* stackGuard = static_cast<UInt32*>(*vm->stack) + CXStackSize / sizeof (UInt32);
+	uint32_t stackEnd = vm->allocator->ToIntPtr(stackGuard);
+	uint32_t stackWordCount = (stackEnd - stackWord) / sizeof (UInt32);
+	
 	const UInt32* stackPointer;
 	
-	try { stackPointer = vm->allocator->ToPointer<const UInt32>(stackWord); }
+	try { stackPointer = vm->allocator->ToArray<const UInt32>(stackWord, stackWordCount); }
 	catch (Common::AccessViolationException&) { return nil; }
 	
-	const UInt32* stackGuard = reinterpret_cast<UInt32*>(*vm->stack) + CXStackSize / sizeof(UInt32);
 	for (; stackPointer != stackGuard; stackPointer++)
 	{
 		uint32_t hopefullyBranchAndLinkAddress = *stackPointer - 4;
@@ -454,10 +457,11 @@ struct ClassixCoreVM
 			int opcd = inst.OPCD;
 			int subop = inst.SUBOP10;
 			bool isBranch = opcd == 16 || opcd == 18 || (opcd == 19 && (subop == 16 || subop == 528));
-			if (isBranch)
+			bool isLink = inst.LK;
+			if (isBranch && isLink)
 			{
 				// alright, that makes "enough sense" to be added
-				uint32_t address = vm->allocator->ToIntPtr(stackPointer);
+				uint32_t address = stackPointer->Get();
 				[stackFrames addObject:@(address)];
 			}
 		}
