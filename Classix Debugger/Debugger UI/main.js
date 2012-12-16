@@ -245,6 +245,22 @@ document.addEventListener("click", function(event)
 			tr.classList.add("breakpoint");
 		else
 			tr.classList.remove("breakpoint");
+		
 		event.preventDefault();
+		event.stopPropagation();
+		return;
 	}
+	else if (target.nodeName == "span")
+	{
+		var selectable = /(r|fr|sr|cr)[0-9]{1,2}/;
+		var matches = target.getAttribute("class").match(selectable);
+		if (matches != null && matches.length > 0)
+		{
+			document.body.className = "selected-" + matches[0];
+			event.preventDefault();
+			event.stopPropagation();
+			return;
+		}
+	}
+	document.body.className = "";
 });

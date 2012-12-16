@@ -126,6 +126,19 @@
 		return;
 	}
 	
+	NSMutableString* highlightRules = [NSMutableString stringWithString:@"<style><![CDATA[\n"];
+	for (int i = 0; i < 32; i++)
+	{
+		[highlightRules appendFormat:@".selected-r%i .r%i, ", i, i];
+		[highlightRules appendFormat:@".selected-fr%i .fr%i, ", i, i];
+		if (i < 8)
+			[highlightRules appendFormat:@".selected-cr%i .cr%i, \n", i, i];
+	}
+	[highlightRules appendString:@".selected-sr1 .sr1, .selected-sr1 .sr8, .selected-sr1 .sr9 "];
+	[highlightRules appendString:@"{ background-color: rgba(44, 118, 202, 0.4); border-radius: 3px; }\n"];
+	[highlightRules appendString:@"]]></style>"];
+	// TODO highlight special registers
+	
 	NSString* uniqueName = request.params.lastObject;
 	NSMutableString* xhtmlDisassembly = [NSMutableString stringWithString:@"<table id=\"disasm\">"];
 	CXDocument* document = [[CXDocumentController documentController] documentWithId:request.documentId];
@@ -186,6 +199,9 @@
 	NSRange docIdRange = [template rangeOfString:@"##data-document-id##"];
 	[template replaceCharactersInRange:docIdRange withString:[NSString stringWithFormat:@"%@", @(request.documentId)]];
 	
+	NSRange styleRange = [template rangeOfString:@"<style id=\"highlight-rules\"/>"];
+	[template replaceCharactersInRange:styleRange withString:highlightRules];
+	
 	NSRange tableRange = [template rangeOfString:@"<table id=\"disasm\"/>"];
 	[template replaceCharactersInRange:tableRange withString:xhtmlDisassembly];
 
@@ -201,14 +217,14 @@
 		default:
 		case 0: return @"(null)";
 			
-		case 1: return [NSString stringWithFormat:@"<span class=\"gpr\">r%u</span>", value];
-		case 2: return [NSString stringWithFormat:@"<span class=\"fpr\">fr%u</span>", value];
-		case 3: return [NSString stringWithFormat:@"<span class=\"spr\">sr%u</span>", value]; // FIXME use good spr names
-		case 4: return [NSString stringWithFormat:@"<span class=\"cr\">cr%u</span>", value];
+		case 1: return [NSString stringWithFormat:@"<span class=\"gpr r%u\">r%u</span>", value, value];
+		case 2: return [NSString stringWithFormat:@"<span class=\"fpr fr%u\">fr%u</span>", value, value];
+		case 3: return [NSString stringWithFormat:@"<span class=\"spr sr%u\">sr%u</span>", value, value]; // FIXME use good spr names
+		case 4: return [NSString stringWithFormat:@"<span class=\"cr cr%u\">cr%u</span>", value, value];
 		case 5:
 		{
 			int32_t reg = [[argument objectForKey:@"gpr"] intValue];
-			return [NSString stringWithFormat:@"<span class=\"ptr\">%i(r%u)</span>", value, reg];
+			return [NSString stringWithFormat:@"<span class=\"ptr\">%i(<span class=\"r%u\">r%u</span>)</span>", value, reg, reg];
 		}
 		case 6:
 		{
