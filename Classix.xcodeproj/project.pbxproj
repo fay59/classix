@@ -29,7 +29,7 @@
 		DC4C645B165B62910097288E /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC4C645A165B62910097288E /* main.mm */; };
 		DC4C645F165B62910097288E /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = DC4C645D165B62910097288E /* Credits.rtf */; };
 		DC4C6462165B62910097288E /* CXDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC4C6461165B62910097288E /* CXDocument.mm */; };
-		DC4C6465165B62910097288E /* CXDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6463165B62910097288E /* CXDocument.xib */; };
+		DC4C6465165B62910097288E /* CXDebugUI.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6463165B62910097288E /* CXDebugUI.xib */; };
 		DC4C6468165B62920097288E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6466165B62920097288E /* MainMenu.xib */; };
 		DC4C646D165B62B80097288E /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC5CF824166153D200577272 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = DC5CF823166153D200577272 /* arrow.png */; };
@@ -156,7 +156,7 @@
 		DC4C645E165B62910097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
 		DC4C6460165B62910097288E /* CXDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXDocument.h; sourceTree = "<group>"; };
 		DC4C6461165B62910097288E /* CXDocument.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CXDocument.mm; sourceTree = "<group>"; };
-		DC4C6464165B62910097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/CXDocument.xib; sourceTree = "<group>"; };
+		DC4C6464165B62910097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/CXDebugUI.xib; sourceTree = "<group>"; };
 		DC4C6467165B62920097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		DC5CF823166153D200577272 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		DC5E33C5163A496300944FFD /* FileMapping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileMapping.cpp; sourceTree = "<group>"; };
@@ -394,7 +394,7 @@
 				DC0D42B2165EE4F400883586 /* CXObjcDisassemblyWriter.h */,
 				DCFC0CFD166DA2CA0069AE5E /* CXCodeLabel.h */,
 				DCFC0CFE166DA2CA0069AE5E /* CXCodeLabel.m */,
-				DC4C6463165B62910097288E /* CXDocument.xib */,
+				DC4C6463165B62910097288E /* CXDebugUI.xib */,
 				DC4C6466165B62920097288E /* MainMenu.xib */,
 				DC4C6455165B62910097288E /* Supporting Files */,
 			);
@@ -782,7 +782,7 @@
 				DC4C6459165B62910097288E /* InfoPlist.strings in Resources */,
 				DC264EAC165DFFEB00C86BDD /* main.js in Resources */,
 				DC4C645F165B62910097288E /* Credits.rtf in Resources */,
-				DC4C6465165B62910097288E /* CXDocument.xib in Resources */,
+				DC4C6465165B62910097288E /* CXDebugUI.xib in Resources */,
 				DC4C6468165B62920097288E /* MainMenu.xib in Resources */,
 				DC6FEAC91661508400DD415C /* export.png in Resources */,
 				DC6FEACA1661508400DD415C /* label.png in Resources */,
@@ -909,12 +909,12 @@
 			name = Credits.rtf;
 			sourceTree = "<group>";
 		};
-		DC4C6463165B62910097288E /* CXDocument.xib */ = {
+		DC4C6463165B62910097288E /* CXDebugUI.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				DC4C6464165B62910097288E /* en */,
 			);
-			name = CXDocument.xib;
+			name = CXDebugUI.xib;
 			sourceTree = "<group>";
 		};
 		DC4C6466165B62920097288E /* MainMenu.xib */ = {
