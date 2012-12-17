@@ -75,6 +75,16 @@ union StdCLibPPCFILE
 	};
 };
 
+// TODO I have *no idea* what IntEnv is for, I just know that it starts
+// with these four fields, because Unmangle tries to access them.
+struct StdCLib_IntEnv
+{
+	uint16_t a;
+	uint32_t b;
+	uint32_t c;
+	uint32_t d;
+};
+
 const char* StdCLibPPCFILE::OffsetNames[28] = {
 	"_cnt", "_cnt + 1", "_cnt + 2", "_cnt + 3",
 	"_ptr", "_ptr + 1", "_ptr + 2", "_ptr + 3",
@@ -113,9 +123,8 @@ const uint8_t cTypeCharClasses[0x100]={
 	_L, _L, _L, _P, _P, _P, _P, _C
 };
 
-struct StdCLibGlobals
+struct StdCLibScalars
 {
-#pragma mark Globals
 	Common::UInt32 __C_phase;
 	Common::UInt32 __loc;
 	Common::UInt32 __NubAt3;
@@ -131,7 +140,7 @@ struct StdCLibGlobals
 	Common::Real64 _FLT_EPSILON;
 	Common::Real64 _FLT_MAX;
 	Common::Real64 _FLT_MIN;
-	Common::UInt32 _IntEnv;
+	StdCLib_IntEnv _IntEnv;
 	StdCLibPPCFILE _iob[StdCLib_NFILE];
 	Common::UInt32 _lastbuf;
 	Common::Real64 _LDBL_EPSILON;
@@ -146,8 +155,11 @@ struct StdCLibGlobals
 	Common::UInt32 NumericData;
 	Common::UInt32 StandAlone;
 	Common::UInt32 TimeData;
-	
-#pragma mark Housekeeping
+};
+
+struct StdCLibGlobals
+{
+	StdCLibScalars scalars;
 	uint8_t cType[256];
 	Common::IAllocator* allocator;
 	
@@ -157,28 +169,26 @@ struct StdCLibGlobals
 	StdCLibGlobals(Common::IAllocator* allocator)
 	: allocator(allocator)
 	{
-		memset(__target_for_exit, 0, sizeof __target_for_exit);
-		memcpy(cType, cTypeCharClasses, sizeof cType);
+		memset(&scalars, 0, sizeof scalars);
+		memcpy(&cType, cTypeCharClasses, sizeof cType);
 		
-		__p_CType = allocator->ToIntPtr(&cType);
+		scalars.__p_CType = allocator->ToIntPtr(&cType);
 		
-		_iob[0].fptr = fdup(stdin);
-		_iob[1].fptr = fdup(stdout);
-		_iob[2].fptr = fdup(stderr);
-		for (int i = 3; i < StdCLib_NFILE; i++)
-			_iob[i].fptr = nullptr;
+		scalars._iob[0].fptr = fdup(stdin);
+		scalars._iob[1].fptr = fdup(stdout);
+		scalars._iob[2].fptr = fdup(stderr);
 		
-		_DBL_EPSILON = DBL_EPSILON;
-		_DBL_MIN = DBL_MIN;
-		_DBL_MAX = DBL_MAX;
+		scalars._DBL_EPSILON = DBL_EPSILON;
+		scalars._DBL_MIN = DBL_MIN;
+		scalars._DBL_MAX = DBL_MAX;
 		
-		_FLT_EPSILON = FLT_EPSILON;
-		_FLT_MIN = FLT_MIN;
-		_FLT_MAX = FLT_MAX;
+		scalars._FLT_EPSILON = FLT_EPSILON;
+		scalars._FLT_MIN = FLT_MIN;
+		scalars._FLT_MAX = FLT_MAX;
 		
-		_LDBL_EPSILON = DBL_EPSILON;
-		_DBL_MIN = DBL_MIN;
-		_LDBL_MAX = DBL_MAX;
+		scalars._LDBL_EPSILON = DBL_EPSILON;
+		scalars._DBL_MIN = DBL_MIN;
+		scalars._LDBL_MAX = DBL_MAX;
 	}
 };
 
@@ -187,71 +197,70 @@ struct StdCLibGlobals
 
 std::map<off_t, std::string> StdCLibGlobals::FieldOffsets
 {
-	std::make_pair(offsetof(StdCLibGlobals, __C_phase), "__C_phase"),
-	std::make_pair(offsetof(StdCLibGlobals, __loc), "__loc"),
-	std::make_pair(offsetof(StdCLibGlobals, __NubAt3), "__NubAt3"),
-	std::make_pair(offsetof(StdCLibGlobals, __p_CType), "__p_CType"),
-	std::make_pair(offsetof(StdCLibGlobals, __SigEnv), "__SigEnv"),
-	std::make_pair(offsetof(StdCLibGlobals, __target_for_exit), "__target_for_exit"),
-	std::make_pair(offsetof(StdCLibGlobals, __yd), "__yd"),
-	std::make_pair(offsetof(StdCLibGlobals, _CategoryLoc), "_CategoryLoc"),
-	std::make_pair(offsetof(StdCLibGlobals, _DBL_EPSILON), "_DBL_EPSILON"),
-	std::make_pair(offsetof(StdCLibGlobals, _DBL_MAX), "_DBL_MAX"),
-	std::make_pair(offsetof(StdCLibGlobals, _DBL_MIN), "_DBL_MIN"),
-	std::make_pair(offsetof(StdCLibGlobals, _exit_status), "_exit_status"),
-	std::make_pair(offsetof(StdCLibGlobals, _FLT_EPSILON), "_FLT_EPSILON"),
-	std::make_pair(offsetof(StdCLibGlobals, _FLT_MAX), "_FLT_MAX"),
-	std::make_pair(offsetof(StdCLibGlobals, _FLT_MIN), "_FLT_MIN"),
-	std::make_pair(offsetof(StdCLibGlobals, _IntEnv), "_IntEnv"),
-	std::make_pair(offsetof(StdCLibGlobals, _iob), "_iob"),
-	std::make_pair(offsetof(StdCLibGlobals, _lastbuf), "_lastbuf"),
-	std::make_pair(offsetof(StdCLibGlobals, _LDBL_EPSILON), "_LDBL_EPSILON"),
-	std::make_pair(offsetof(StdCLibGlobals, _LDBL_MIN), "_LDBL_MIN"),
-	std::make_pair(offsetof(StdCLibGlobals, _LDBL_MAX), "_LDBL_MAX"),
-	std::make_pair(offsetof(StdCLibGlobals, _PublicTimeInfo), "_PublicTimeInfo"),
-	std::make_pair(offsetof(StdCLibGlobals, _StdDevs), "_StdDevs"),
-	std::make_pair(offsetof(StdCLibGlobals, errno_), "errno"),
-	std::make_pair(offsetof(StdCLibGlobals, MacOSErr), "MacOSErr"),
-	std::make_pair(offsetof(StdCLibGlobals, MoneyData), "MoneyData"),
-	std::make_pair(offsetof(StdCLibGlobals, NoMoreDebugStr), "NoMoreDebugStr"),
-	std::make_pair(offsetof(StdCLibGlobals, NumericData), "NumericData"),
-	std::make_pair(offsetof(StdCLibGlobals, StandAlone), "StandAlone"),
-	std::make_pair(offsetof(StdCLibGlobals, TimeData), "TimeData"),
+	std::make_pair(offsetof(StdCLibScalars, __C_phase), "__C_phase"),
+	std::make_pair(offsetof(StdCLibScalars, __loc), "__loc"),
+	std::make_pair(offsetof(StdCLibScalars, __NubAt3), "__NubAt3"),
+	std::make_pair(offsetof(StdCLibScalars, __p_CType), "__p_CType"),
+	std::make_pair(offsetof(StdCLibScalars, __SigEnv), "__SigEnv"),
+	std::make_pair(offsetof(StdCLibScalars, __target_for_exit), "__target_for_exit"),
+	std::make_pair(offsetof(StdCLibScalars, __yd), "__yd"),
+	std::make_pair(offsetof(StdCLibScalars, _CategoryLoc), "_CategoryLoc"),
+	std::make_pair(offsetof(StdCLibScalars, _DBL_EPSILON), "_DBL_EPSILON"),
+	std::make_pair(offsetof(StdCLibScalars, _DBL_MAX), "_DBL_MAX"),
+	std::make_pair(offsetof(StdCLibScalars, _DBL_MIN), "_DBL_MIN"),
+	std::make_pair(offsetof(StdCLibScalars, _exit_status), "_exit_status"),
+	std::make_pair(offsetof(StdCLibScalars, _FLT_EPSILON), "_FLT_EPSILON"),
+	std::make_pair(offsetof(StdCLibScalars, _FLT_MAX), "_FLT_MAX"),
+	std::make_pair(offsetof(StdCLibScalars, _FLT_MIN), "_FLT_MIN"),
+	std::make_pair(offsetof(StdCLibScalars, _IntEnv), "_IntEnv"),
+	std::make_pair(offsetof(StdCLibScalars, _iob), "_iob"),
+	std::make_pair(offsetof(StdCLibScalars, _lastbuf), "_lastbuf"),
+	std::make_pair(offsetof(StdCLibScalars, _LDBL_EPSILON), "_LDBL_EPSILON"),
+	std::make_pair(offsetof(StdCLibScalars, _LDBL_MIN), "_LDBL_MIN"),
+	std::make_pair(offsetof(StdCLibScalars, _LDBL_MAX), "_LDBL_MAX"),
+	std::make_pair(offsetof(StdCLibScalars, _PublicTimeInfo), "_PublicTimeInfo"),
+	std::make_pair(offsetof(StdCLibScalars, _StdDevs), "_StdDevs"),
+	std::make_pair(offsetof(StdCLibScalars, errno_), "errno"),
+	std::make_pair(offsetof(StdCLibScalars, MacOSErr), "MacOSErr"),
+	std::make_pair(offsetof(StdCLibScalars, MoneyData), "MoneyData"),
+	std::make_pair(offsetof(StdCLibScalars, NoMoreDebugStr), "NoMoreDebugStr"),
+	std::make_pair(offsetof(StdCLibScalars, NumericData), "NumericData"),
+	std::make_pair(offsetof(StdCLibScalars, StandAlone), "StandAlone"),
+	std::make_pair(offsetof(StdCLibScalars, TimeData), "TimeData"),
 };
 
 std::map<std::string, size_t> StdCLibGlobals::FieldLocations
 {
-	std::make_pair("__C_phase", offsetof(StdCLibGlobals, __C_phase)),
-	std::make_pair("__loc", offsetof(StdCLibGlobals, __loc)),
-	std::make_pair("__NubAt3", offsetof(StdCLibGlobals, __NubAt3)),
-	std::make_pair("__p_CType", offsetof(StdCLibGlobals, __p_CType)),
-	std::make_pair("__SigEnv", offsetof(StdCLibGlobals, __SigEnv)),
-	std::make_pair("__target_for_exit", offsetof(StdCLibGlobals, __target_for_exit)),
-	std::make_pair("__yd", offsetof(StdCLibGlobals, __yd)),
-	std::make_pair("_CategoryLoc", offsetof(StdCLibGlobals, _CategoryLoc)),
-	std::make_pair("_DBL_EPSILON", offsetof(StdCLibGlobals, _DBL_EPSILON)),
-	std::make_pair("_DBL_MAX", offsetof(StdCLibGlobals, _DBL_MAX)),
-	std::make_pair("_DBL_MIN", offsetof(StdCLibGlobals, _DBL_MIN)),
-	std::make_pair("_exit_status", offsetof(StdCLibGlobals, _exit_status)),
-	std::make_pair("_FLT_EPSILON", offsetof(StdCLibGlobals, _FLT_EPSILON)),
-	std::make_pair("_FLT_MAX", offsetof(StdCLibGlobals, _FLT_MAX)),
-	std::make_pair("_FLT_MIN", offsetof(StdCLibGlobals, _FLT_MIN)),
-	std::make_pair("_IntEnv", offsetof(StdCLibGlobals, _IntEnv)),
-	std::make_pair("_iob", offsetof(StdCLibGlobals, _iob)),
-	std::make_pair("_lastbuf", offsetof(StdCLibGlobals, _lastbuf)),
-	std::make_pair("_LDBL_EPSILON", offsetof(StdCLibGlobals, _LDBL_EPSILON)),
-	std::make_pair("_LDBL_MIN", offsetof(StdCLibGlobals, _LDBL_MIN)),
-	std::make_pair("_LDBL_MAX", offsetof(StdCLibGlobals, _LDBL_MAX)),
-	std::make_pair("_PublicTimeInfo", offsetof(StdCLibGlobals, _PublicTimeInfo)),
-	std::make_pair("_StdDevs", offsetof(StdCLibGlobals, _StdDevs)),
-	std::make_pair("errno", offsetof(StdCLibGlobals, errno_)),
-	std::make_pair("MacOSErr", offsetof(StdCLibGlobals, MacOSErr)),
-	std::make_pair("MoneyData", offsetof(StdCLibGlobals, MoneyData)),
-	std::make_pair("NoMoreDebugStr", offsetof(StdCLibGlobals, NoMoreDebugStr)),
-	std::make_pair("NumericData", offsetof(StdCLibGlobals, NumericData)),
-	std::make_pair("StandAlone", offsetof(StdCLibGlobals, StandAlone)),
-	std::make_pair("TimeData", offsetof(StdCLibGlobals, TimeData)),
-
+	std::make_pair("__C_phase", offsetof(StdCLibScalars, __C_phase)),
+	std::make_pair("__loc", offsetof(StdCLibScalars, __loc)),
+	std::make_pair("__NubAt3", offsetof(StdCLibScalars, __NubAt3)),
+	std::make_pair("__p_CType", offsetof(StdCLibScalars, __p_CType)),
+	std::make_pair("__SigEnv", offsetof(StdCLibScalars, __SigEnv)),
+	std::make_pair("__target_for_exit", offsetof(StdCLibScalars, __target_for_exit)),
+	std::make_pair("__yd", offsetof(StdCLibScalars, __yd)),
+	std::make_pair("_CategoryLoc", offsetof(StdCLibScalars, _CategoryLoc)),
+	std::make_pair("_DBL_EPSILON", offsetof(StdCLibScalars, _DBL_EPSILON)),
+	std::make_pair("_DBL_MAX", offsetof(StdCLibScalars, _DBL_MAX)),
+	std::make_pair("_DBL_MIN", offsetof(StdCLibScalars, _DBL_MIN)),
+	std::make_pair("_exit_status", offsetof(StdCLibScalars, _exit_status)),
+	std::make_pair("_FLT_EPSILON", offsetof(StdCLibScalars, _FLT_EPSILON)),
+	std::make_pair("_FLT_MAX", offsetof(StdCLibScalars, _FLT_MAX)),
+	std::make_pair("_FLT_MIN", offsetof(StdCLibScalars, _FLT_MIN)),
+	std::make_pair("_IntEnv", offsetof(StdCLibScalars, _IntEnv)),
+	std::make_pair("_iob", offsetof(StdCLibScalars, _iob)),
+	std::make_pair("_lastbuf", offsetof(StdCLibScalars, _lastbuf)),
+	std::make_pair("_LDBL_EPSILON", offsetof(StdCLibScalars, _LDBL_EPSILON)),
+	std::make_pair("_LDBL_MIN", offsetof(StdCLibScalars, _LDBL_MIN)),
+	std::make_pair("_LDBL_MAX", offsetof(StdCLibScalars, _LDBL_MAX)),
+	std::make_pair("_PublicTimeInfo", offsetof(StdCLibScalars, _PublicTimeInfo)),
+	std::make_pair("_StdDevs", offsetof(StdCLibScalars, _StdDevs)),
+	std::make_pair("errno", offsetof(StdCLibScalars, errno_)),
+	std::make_pair("MacOSErr", offsetof(StdCLibScalars, MacOSErr)),
+	std::make_pair("MoneyData", offsetof(StdCLibScalars, MoneyData)),
+	std::make_pair("NoMoreDebugStr", offsetof(StdCLibScalars, NoMoreDebugStr)),
+	std::make_pair("NumericData", offsetof(StdCLibScalars, NumericData)),
+	std::make_pair("StandAlone", offsetof(StdCLibScalars, StandAlone)),
+	std::make_pair("TimeData", offsetof(StdCLibScalars, TimeData)),
 };
 
 #pragma clang diagnostics pop
@@ -321,7 +330,7 @@ SymbolType LibraryLookup(StdCLibGlobals* globals, const char* name, void** resul
 	auto iter = StdCLibGlobals::FieldLocations.find(name);
 	if (iter != StdCLibGlobals::FieldLocations.end())
 	{
-		*result = reinterpret_cast<uint8_t*>(globals) + iter->second;
+		*result = reinterpret_cast<uint8_t*>(&globals->scalars) + iter->second;
 		return DataSymbol;
 	}
 	
@@ -333,7 +342,7 @@ void LibraryFinit(StdCLibGlobals* globals)
 {
 	for (int i = 0; i < StdCLib_NFILE; i++)
 	{
-		FILE* file = globals->_iob[i].fptr;
+		FILE* file = globals->scalars._iob[i].fptr;
 		if (file != nullptr)
 			fclose(file);
 	}
@@ -350,9 +359,9 @@ static FILE* MakeFilePtr(StdCLibGlobals* globals, intptr_t ptr)
 {
 	for (int i = 0; i < StdCLib_NFILE; i++)
 	{
-		intptr_t thisIOB = ToIntPtr(&globals->_iob[i]);
+		intptr_t thisIOB = ToIntPtr(&globals->scalars._iob[i]);
 		if (ptr == thisIOB)
-			return globals->_iob[i].fptr;
+			return globals->scalars._iob[i].fptr;
 	}
 	return nullptr;
 }
@@ -417,7 +426,7 @@ void StdCLib___setjmp(StdCLibGlobals* globals, MachineState* state)
 	jmpBuf[64] = 0;
 	
 	state->r3 = 0;
-	globals->errno_ = 0;
+	globals->scalars.errno_ = 0;
 }
 
 void StdCLib___vec_longjmp(StdCLibGlobals* globals, MachineState* state)
@@ -791,14 +800,14 @@ void StdCLib_faccess(StdCLibGlobals* globals, MachineState* state)
 {
 	fprintf(stderr, "Using 'faccess' with mode %08x\n", state->r4);
 	state->r3 = 0;
-	globals->errno_ = 0;
+	globals->scalars.errno_ = 0;
 }
 
 void StdCLib_fclose(StdCLibGlobals* globals, MachineState* state)
 {
 	for (int i = 0; i < StdCLib_NFILE; i++)
 	{
-		auto& ioBuffer = globals->_iob[i];
+		auto& ioBuffer = globals->scalars._iob[i];
 		intptr_t ioBufferAddress = ToIntPtr(&ioBuffer);
 		if (ioBufferAddress == state->r3)
 		{
@@ -808,7 +817,7 @@ void StdCLib_fclose(StdCLibGlobals* globals, MachineState* state)
 		}
 	}
 	
-	globals->errno_ = EBADF;
+	globals->scalars.errno_ = EBADF;
 	state->r3 = EOF;
 }
 
@@ -860,7 +869,7 @@ void StdCLib_fgets(StdCLibGlobals* globals, MachineState* state)
 	
 	char* result = fgets(buffer, size, fptr);
 	state->r3 = ToIntPtr(result);
-	globals->errno_ = errno;
+	globals->scalars.errno_ = errno;
 }
 
 void StdCLib_fopen(StdCLibGlobals* globals, MachineState* state)
@@ -870,18 +879,18 @@ void StdCLib_fopen(StdCLibGlobals* globals, MachineState* state)
 	
 	for (int i = 0; i < StdCLib_NFILE; i++)
 	{
-		auto& ioBuffer = globals->_iob[i];
+		auto& ioBuffer = globals->scalars._iob[i];
 		if (ioBuffer.fptr == nullptr)
 		{
 			ioBuffer.fptr = fopen(filename, mode);
 			state->r3 = ToIntPtr(&ioBuffer);
-			globals->errno_ = errno;
+			globals->scalars.errno_ = errno;
 			return;
 		}
 	}
 	
 	state->r3 = 0;
-	globals->errno_ = EMFILE;
+	globals->scalars.errno_ = EMFILE;
 }
 
 void StdCLib_fprintf(StdCLibGlobals* globals, MachineState* state)
@@ -890,7 +899,7 @@ void StdCLib_fprintf(StdCLibGlobals* globals, MachineState* state)
 	const char* formatString = ToPointer<const char>(state->r4);
 	// gah, let's just print the format string for now.
 	state->r3 = fputs(formatString, fptr);
-	globals->errno_ = errno;
+	globals->scalars.errno_ = errno;
 }
 
 void StdCLib_fputc(StdCLibGlobals* globals, MachineState* state)
@@ -929,7 +938,7 @@ void StdCLib_fseek(StdCLibGlobals* globals, MachineState* state)
 	int32_t offset = state->r4;
 	int whence = state->r5;
 	state->r3 = fseek(fptr, offset, whence);
-	globals->errno_ = errno;
+	globals->scalars.errno_ = errno;
 }
 
 void StdCLib_fsetfileinfo(StdCLibGlobals* globals, MachineState* state)
@@ -1026,7 +1035,7 @@ void StdCLib_getenv(StdCLibGlobals* globals, MachineState* state)
 	const char* name = ToPointer<const char>(state->r3);
 	char* env = getenv(name);
 	state->r3 = ToIntPtr(env);
-	globals->errno_ = errno;
+	globals->scalars.errno_ = errno;
 }
 
 void StdCLib_getIDstring(StdCLibGlobals* globals, MachineState* state)
@@ -1340,7 +1349,7 @@ void StdCLib_printf(StdCLibGlobals* globals, MachineState* state)
 	const char* formatString = ToPointer<const char>(state->r3);
 	// gah, let's just print the format string for now.
 	state->r3 = puts(formatString);
-	globals->errno_ = errno;
+	globals->scalars.errno_ = errno;
 }
 
 void StdCLib_putc(StdCLibGlobals* globals, MachineState* state)
@@ -1357,7 +1366,7 @@ void StdCLib_puts(StdCLibGlobals* globals, MachineState* state)
 {
 	const char* address = ToPointer<const char>(state->r3);
 	state->r3 = puts(address);
-	globals->errno_ = errno;
+	globals->scalars.errno_ = errno;
 }
 
 void StdCLib_putw(StdCLibGlobals* globals, MachineState* state)
