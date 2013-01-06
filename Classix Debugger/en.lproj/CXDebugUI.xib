@@ -36,10 +36,13 @@
 		</object>
 		<array class="NSMutableArray" key="IBDocument.RootObjects" id="580458321">
 			<object class="NSCustomObject" id="512844837">
-				<string key="NSClassName">CXDocument</string>
+				<string key="NSClassName">CXDebugUIController</string>
 			</object>
 			<object class="NSCustomObject" id="613418571">
 				<string key="NSClassName">FirstResponder</string>
+			</object>
+			<object class="NSCustomObject" id="857092212">
+				<string key="NSClassName">NSWindowController</string>
 			</object>
 			<object class="NSWindowTemplate" id="275939982">
 				<int key="NSWindowStyleMask">15</int>
@@ -207,14 +210,9 @@
 											<object class="WebPreferences" key="Preferences">
 												<string key="Identifier"/>
 												<dictionary class="NSMutableDictionary" key="Values">
-													<boolean value="NO" key="WebKitAllowAnimatedImageLoopingPreferenceKey"/>
-													<boolean value="NO" key="WebKitAllowAnimatedImagesPreferenceKey"/>
 													<integer value="12" key="WebKitDefaultFixedFontSize"/>
 													<integer value="12" key="WebKitDefaultFontSize"/>
-													<boolean value="NO" key="WebKitJavaEnabled"/>
-													<boolean value="NO" key="WebKitJavaScriptCanOpenWindowsAutomatically"/>
 													<integer value="1" key="WebKitMinimumFontSize"/>
-													<boolean value="NO" key="WebKitPluginsEnabled"/>
 												</dictionary>
 											</object>
 											<bool key="UseBackForwardList">YES</bool>
@@ -409,6 +407,7 @@
 																	<string key="NSFrame">{{1, 362}, {145, 16}}</string>
 																	<reference key="NSSuperview" ref="976478822"/>
 																	<reference key="NSWindow"/>
+																	<reference key="NSNextKeyView" ref="751057293"/>
 																	<string key="NSReuseIdentifierKey">_NS:60</string>
 																	<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 																	<int key="NSsFlags">1</int>
@@ -435,6 +434,7 @@
 													<string key="NSFrameSize">{176, 267}</string>
 													<reference key="NSSuperview" ref="834567792"/>
 													<reference key="NSWindow"/>
+													<reference key="NSNextKeyView" ref="976478822"/>
 													<string key="NSReuseIdentifierKey">_NS:11</string>
 													<string key="NSClassName">NSView</string>
 												</object>
@@ -456,6 +456,7 @@
 																			<string key="NSFrameSize">{174, 221}</string>
 																			<reference key="NSSuperview" ref="430712657"/>
 																			<reference key="NSWindow"/>
+																			<reference key="NSNextKeyView" ref="1031677226"/>
 																			<string key="NSReuseIdentifierKey">_NS:13</string>
 																			<bool key="NSEnabled">YES</bool>
 																			<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
@@ -567,6 +568,7 @@
 													<string key="NSFrame">{{0, 277}, {176, 223}}</string>
 													<reference key="NSSuperview" ref="834567792"/>
 													<reference key="NSWindow"/>
+													<reference key="NSNextKeyView" ref="262190337"/>
 													<string key="NSReuseIdentifierKey">_NS:13</string>
 													<string key="NSClassName">NSView</string>
 												</object>
@@ -574,6 +576,7 @@
 											<string key="NSFrameSize">{176, 500}</string>
 											<reference key="NSSuperview" ref="912253566"/>
 											<reference key="NSWindow"/>
+											<reference key="NSNextKeyView" ref="391274256"/>
 											<string key="NSReuseIdentifierKey">_NS:9</string>
 											<int key="NSDividerStyle">3</int>
 										</object>
@@ -581,7 +584,7 @@
 									<string key="NSFrame">{{586, 0}, {178, 500}}</string>
 									<reference key="NSSuperview" ref="21453048"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView" ref="976478822"/>
+									<reference key="NSNextKeyView" ref="834567792"/>
 									<string key="NSReuseIdentifierKey">_NS:13</string>
 									<string key="NSClassName">NSView</string>
 								</object>
@@ -613,14 +616,6 @@
 			<array class="NSMutableArray" key="connectionRecords">
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
-						<string key="label">window</string>
-						<reference key="source" ref="512844837"/>
-						<reference key="destination" ref="275939982"/>
-					</object>
-					<int key="connectionID">18</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
 						<string key="label">disassemblyView</string>
 						<reference key="source" ref="512844837"/>
 						<reference key="destination" ref="807185318"/>
@@ -636,28 +631,12 @@
 					<int key="connectionID">100167</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">navigate:</string>
-						<reference key="source" ref="512844837"/>
-						<reference key="destination" ref="363581664"/>
-					</object>
-					<int key="connectionID">100168</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">navBar</string>
 						<reference key="source" ref="512844837"/>
 						<reference key="destination" ref="625160755"/>
 					</object>
 					<int key="connectionID">100163</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">controlFlow:</string>
-						<reference key="source" ref="512844837"/>
-						<reference key="destination" ref="248731241"/>
-					</object>
-					<int key="connectionID">100192</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -676,6 +655,30 @@
 					<int key="connectionID">100206</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">controlFlow:</string>
+						<reference key="source" ref="512844837"/>
+						<reference key="destination" ref="248731241"/>
+					</object>
+					<int key="connectionID">100207</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">navigate:</string>
+						<reference key="source" ref="512844837"/>
+						<reference key="destination" ref="363581664"/>
+					</object>
+					<int key="connectionID">100208</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">windowController</string>
+						<reference key="source" ref="512844837"/>
+						<reference key="destination" ref="857092212"/>
+					</object>
+					<int key="connectionID">100212</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="275939982"/>
@@ -690,6 +693,14 @@
 						<reference key="destination" ref="512844837"/>
 					</object>
 					<int key="connectionID">100037</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">window</string>
+						<reference key="source" ref="857092212"/>
+						<reference key="destination" ref="275939982"/>
+					</object>
+					<int key="connectionID">100211</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -928,6 +939,11 @@
 						<reference key="object" ref="856592655"/>
 						<reference key="parent" ref="263942796"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">100210</int>
+						<reference key="object" ref="857092212"/>
+						<reference key="parent" ref="0"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -963,6 +979,7 @@
 				<string key="100201.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="100202.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="100205.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="100210.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="5.IBWindowTemplateEditedContentRect">{{133, 170}, {507, 413}}</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -971,13 +988,13 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">100206</int>
+			<int key="maxID">100212</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<object class="IBPartialClassDescription">
-					<string key="className">CXDocument</string>
-					<string key="superclassName">NSDocument</string>
+					<string key="className">CXDebugUIController</string>
+					<string key="superclassName">NSObject</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="controlFlow:">id</string>
 						<string key="goBack:">id</string>
@@ -1023,6 +1040,7 @@
 						<string key="navBar">CXNavBar</string>
 						<string key="outline">NSOutlineView</string>
 						<string key="stackTraceTable">NSTableView</string>
+						<string key="windowController">NSWindowController</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<object class="IBToOneOutletInfo" key="backForward">
@@ -1045,10 +1063,14 @@
 							<string key="name">stackTraceTable</string>
 							<string key="candidateClassName">NSTableView</string>
 						</object>
+						<object class="IBToOneOutletInfo" key="windowController">
+							<string key="name">windowController</string>
+							<string key="candidateClassName">NSWindowController</string>
+						</object>
 					</dictionary>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/CXDocument.h</string>
+						<string key="minorKey">./Classes/CXDebugUIController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

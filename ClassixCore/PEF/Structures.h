@@ -147,9 +147,16 @@ namespace PEF
 		
 		LoaderHeader();
 		
-		SectionWithOffset Main;
-		SectionWithOffset Init;
-		SectionWithOffset Term;
+		union
+		{
+			SectionWithOffset EntryPoints[3];
+			struct
+			{
+				SectionWithOffset Main;
+				SectionWithOffset Init;
+				SectionWithOffset Term;
+			};
+		};
 		
 		Common::UInt32 ImportedLibraryCount;
 		Common::UInt32 ImportedSymbolCount;

@@ -20,48 +20,30 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import <WebKit/WebKit.h>
+#import "CXDisassembly.h"
 #import "CXVirtualMachine.h"
 #import "CXDisassembly.h"
-#import "CXNavBar.h"
-#import "CXStackTrace.h"
-
-@class CXJSAdapter;
+#import "CXDebugUIController.h"
 
 @interface CXDocument : NSDocument
 {
 	CXVirtualMachine* vm;
 	CXDisassembly* disassembly;
-	CXStackTrace* stackTrace;
-	CXJSAdapter* js;
 	
-	uint32_t sp;
-	uint32_t lr;
-	
-	// UI
-	WebView* disassemblyView;
-	CXNavBar* navBar;
-	NSSegmentedControl* backForward;
-	NSOutlineView* outline;
-	NSTableView* stackTraceTable;
+	CXDebugUIController* debugUIController;
+	NSString* executablePath;
+	NSMutableArray* arguments;
+	NSMutableDictionary* environment;
 }
+
+@property (readonly) NSString* executablePath;
+@property (readonly) NSArray* arguments;
+@property (readonly) NSMutableDictionary* environment;
 
 @property (readonly) CXVirtualMachine* vm;
 @property (readonly) CXDisassembly* disassembly;
+@property (readonly) CXDebugUIController* debug;
 
-@property (assign) IBOutlet WebView* disassemblyView;
-@property (assign) IBOutlet CXNavBar* navBar;
-@property (assign) IBOutlet NSSegmentedControl* backForward;
-@property (assign) IBOutlet NSOutlineView* outline;
-@property (assign) IBOutlet NSTableView* stackTraceTable;
-
--(IBAction)goBack:(id)sender;
--(IBAction)goForward:(id)sender;
--(IBAction)run:(id)sender;
--(IBAction)stepOver:(id)sender;
--(IBAction)stepInto:(id)sender;
-
--(IBAction)navigate:(id)sender;
--(IBAction)controlFlow:(id)sender;
+-(IBAction)start:(id)sender;
 
 @end

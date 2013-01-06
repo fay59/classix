@@ -72,6 +72,7 @@
 		DC717075164F6648008D767E /* SystemRegisterInstructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC72740016471CD800DA17E5 /* SystemRegisterInstructions.cpp */; };
 		DC787EAE164F68E30010A288 /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC787EB2164F6A910010A288 /* StdCLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC787EB0164F6A810010A288 /* StdCLib.cpp */; };
+		DC7ECFD816850D830063F14E /* CXDebugUIController.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC7ECFD716850D830063F14E /* CXDebugUIController.mm */; };
 		DC8301EF164FFD770079CE2D /* DlfcnLibraryResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301EC164FFD380079CE2D /* DlfcnLibraryResolver.cpp */; };
 		DC8301F3165006FB0079CE2D /* DlfcnSymbolResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F0165006D00079CE2D /* DlfcnSymbolResolver.cpp */; };
 		DC8301F7165010690079CE2D /* VirtualMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F5165010690079CE2D /* VirtualMachine.cpp */; };
@@ -86,6 +87,7 @@
 		DC9E43CB165EA22400AAC682 /* CXJSONEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9E43CA165EA22400AAC682 /* CXJSONEncode.m */; };
 		DCC4B0E41662FAC100D21C90 /* CXVirtualMachine.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCC4B0E31662FAC100D21C90 /* CXVirtualMachine.mm */; };
 		DCC4B0E91662FBC200D21C90 /* CXRegister.m in Sources */ = {isa = PBXBuildFile; fileRef = DCC4B0E81662FBC200D21C90 /* CXRegister.m */; };
+		DCCA432D167EF7C4001D9AD2 /* CXDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = DCCA432C167EF7C4001D9AD2 /* CXDocument.xib */; };
 		DCCB4607166EF1AB00D599CA /* CXDisassembly.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCCB4606166EF1AB00D599CA /* CXDisassembly.mm */; };
 		DCCBBD36167AFF2B00BEAF3C /* CXStackFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = DCCBBD35167AFF2B00BEAF3C /* CXStackFrame.m */; };
 		DCE0A8A9165732CC0092CEBC /* InstructionDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE0A8A7165732860092CEBC /* InstructionDispatcher.cpp */; };
@@ -182,6 +184,8 @@
 		DC787EAF164F69000010A288 /* StdCLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StdCLib.h; sourceTree = "<group>"; };
 		DC787EB0164F6A810010A288 /* StdCLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StdCLib.cpp; sourceTree = "<group>"; };
 		DC787EB3164F6F110010A288 /* StdCLibFunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StdCLibFunctions.h; sourceTree = "<group>"; };
+		DC7ECFD616850D830063F14E /* CXDebugUIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXDebugUIController.h; sourceTree = "<group>"; };
+		DC7ECFD716850D830063F14E /* CXDebugUIController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CXDebugUIController.mm; sourceTree = "<group>"; };
 		DC8301EC164FFD380079CE2D /* DlfcnLibraryResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DlfcnLibraryResolver.cpp; path = ClassixCore/Libraries/DlfcnLibraryResolver.cpp; sourceTree = SOURCE_ROOT; };
 		DC8301ED164FFD380079CE2D /* DlfcnLibraryResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DlfcnLibraryResolver.h; path = ClassixCore/Libraries/DlfcnLibraryResolver.h; sourceTree = SOURCE_ROOT; };
 		DC8301F0165006D00079CE2D /* DlfcnSymbolResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DlfcnSymbolResolver.cpp; path = ClassixCore/Libraries/DlfcnSymbolResolver.cpp; sourceTree = SOURCE_ROOT; };
@@ -228,6 +232,7 @@
 		DCC4B0E31662FAC100D21C90 /* CXVirtualMachine.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CXVirtualMachine.mm; sourceTree = "<group>"; };
 		DCC4B0E71662FBC200D21C90 /* CXRegister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXRegister.h; sourceTree = "<group>"; };
 		DCC4B0E81662FBC200D21C90 /* CXRegister.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXRegister.m; sourceTree = "<group>"; };
+		DCCA432C167EF7C4001D9AD2 /* CXDocument.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CXDocument.xib; sourceTree = "<group>"; };
 		DCCB4605166EF1AB00D599CA /* CXDisassembly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXDisassembly.h; sourceTree = "<group>"; };
 		DCCB4606166EF1AB00D599CA /* CXDisassembly.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CXDisassembly.mm; sourceTree = "<group>"; };
 		DCCBBD34167AFF2B00BEAF3C /* CXStackFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXStackFrame.h; sourceTree = "<group>"; };
@@ -394,6 +399,7 @@
 				DC0D42B2165EE4F400883586 /* CXObjcDisassemblyWriter.h */,
 				DCFC0CFD166DA2CA0069AE5E /* CXCodeLabel.h */,
 				DCFC0CFE166DA2CA0069AE5E /* CXCodeLabel.m */,
+				DCCA432C167EF7C4001D9AD2 /* CXDocument.xib */,
 				DC4C6463165B62910097288E /* CXDebugUI.xib */,
 				DC4C6466165B62920097288E /* MainMenu.xib */,
 				DC4C6455165B62910097288E /* Supporting Files */,
@@ -646,6 +652,8 @@
 				DCE9880D16604ED700C28F25 /* CXNavBar.m */,
 				DC176D071662A91700C76888 /* CXGradientView.h */,
 				DC176D081662A91700C76888 /* CXGradientView.m */,
+				DC7ECFD616850D830063F14E /* CXDebugUIController.h */,
+				DC7ECFD716850D830063F14E /* CXDebugUIController.mm */,
 			);
 			name = "Custom Controls";
 			sourceTree = "<group>";
@@ -795,6 +803,7 @@
 				DC5CF824166153D200577272 /* arrow.png in Resources */,
 				DC8A501B1665DB5900B72EB7 /* run.png in Resources */,
 				DC307156166884DE00475144 /* breakpoint-end.png in Resources */,
+				DCCA432D167EF7C4001D9AD2 /* CXDocument.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -822,6 +831,7 @@
 				DCCB4607166EF1AB00D599CA /* CXDisassembly.mm in Sources */,
 				DCCBBD36167AFF2B00BEAF3C /* CXStackFrame.m in Sources */,
 				DC5ED1BD167CFF8100C249B7 /* CXStackTrace.m in Sources */,
+				DC7ECFD816850D830063F14E /* CXDebugUIController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

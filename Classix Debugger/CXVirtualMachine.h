@@ -67,7 +67,10 @@ enum CXVirtualMachineSPRIndex
 
 -(id)init;
 
--(BOOL)loadClassicExecutable:(NSString *)executablePath arguments:(NSArray*)args environment:(NSDictionary*)env error:(NSError **)error;
+-(BOOL)loadClassicExecutable:(NSString *)executablePath error:(NSError **)error;
+
+-(void)setArgv:(NSArray*)argv envp:(NSDictionary*)envp;
+-(void)transitionByAddress:(uint32_t)address;
 
 -(NSValue*)fragmentManager;
 -(NSValue*)allocator;

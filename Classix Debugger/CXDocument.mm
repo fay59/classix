@@ -19,103 +19,29 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#include "MachineState.h"
-#include "FragmentManager.h"
-#include "NativeAllocator.h"
-#include "PEFLibraryResolver.h"
-#include "Interpreter.h"
-#include "DlfcnLibraryResolver.h"
-#include "FancyDisassembler.h"
-#include "CXObjcDisassemblyWriter.h"
-#include <unordered_set>
-
 #import "CXDocument.h"
-#import "CXDocumentController.h"
-#import "CXRegister.h"
-#import "CXDBRequest.h"
-#import "CXJSONEncode.h"
-#import "CXJSAdapter.h"
-#import "CXCodeLabel.h"
-#import "CXStackFrame.h"
+#include "IAllocator.h"
+#include "PEFSymbolResolver.h"
 
-static NSImage* exportImage;
-static NSImage* labelImage;
-static NSImage* functionImage;
 
-@interface CXDocument (Private)
-
--(void)buildSymbolMenu;
--(void)highlightPC;
--(void)jumpToPC;
--(void)showDisassembly:(NSString *)labelUniqueName;
--(void)showDisassembly:(NSString *)labelUniqueName address:(uint32_t)address;
--(void)reloadStackTrace;
--(NSImage*)fileIcon16x16:(NSString*)path;
--(NSMenu*)exportMenuForResolver:(const CFM::SymbolResolver*)resolver;
-
-@end
 
 @implementation CXDocument
 
 @synthesize vm;
 @synthesize disassembly;
-
-@synthesize disassemblyView;
-@synthesize navBar;
-@synthesize backForward;
-@synthesize outline;
-@synthesize stackTraceTable;
-
-+(void)initialize
-{
-	NSString* exportPath = [[NSBundle mainBundle] pathForResource:@"export" ofType:@"png"];
-	NSString* labelPath = [[NSBundle mainBundle] pathForResource:@"label" ofType:@"png"];
-	NSString* functionPath = [[NSBundle mainBundle] pathForResource:@"function" ofType:@"png"];
-	exportImage = [[NSImage alloc] initWithContentsOfFile:exportPath];
-	labelImage = [[NSImage alloc] initWithContentsOfFile:labelPath];
-	functionImage = [[NSImage alloc] initWithContentsOfFile:functionPath];
-}
-
--(id)init
-{
-    self = [super init];
-    if (self) {
-		vm = [[CXVirtualMachine alloc] init];
-		js = [[CXJSAdapter alloc] initWithDocument:self];
-    }
-    return self;
-}
+@synthesize arguments;
+@synthesize environment;
+@synthesize executablePath;
+@synthesize debug = debugUIController;
 
 -(NSString *)windowNibName
 {
-	// Override returning the nib file name of the document
-	// If you need to use a subclass of NSWindowController or if your document supports multiple NSWindowControllers, you should remove this method and override -makeWindowControllers instead.
-	return @"CXDebugUI";
+	return @"CXDocument";
 }
 
 -(void)windowControllerDidLoadNib:(NSWindowController *)aController
 {
 	[super windowControllerDidLoadNib:aController];
-	
-	[self buildSymbolMenu];
-	[backForward setEnabled:NO forSegment:0];
-	[backForward setEnabled:NO forSegment:1];
-	[disassemblyView addObserver:self forKeyPath:@"canGoBack" options:NSKeyValueObservingOptionNew context:nullptr];
-	[disassemblyView addObserver:self forKeyPath:@"canGoForward" options:NSKeyValueObservingOptionNew context:nullptr];
-	
-	stackTrace = [[CXStackTrace alloc] initWithDisassembly:disassembly];
-	stackTrace.onFrameSelected = ^(CXStackTrace*, CXStackFrame* frame)
-	{
-		[self showDisassembly:frame.functionLabel.uniqueName address:frame.absoluteAddress];
-	};
-	
-	stackTraceTable.dataSource = stackTrace;
-	stackTraceTable.delegate = stackTrace;
-	[self reloadStackTrace];
-	
-	outline.delegate = vm;
-	outline.dataSource = vm;
-	[self jumpToPC];
 }
 
 +(BOOL)autosavesInPlace
@@ -127,316 +53,79 @@ static NSImage* functionImage;
 {
 	if (!url.isFileURL)
 	{
-		if (outError != nullptr)
+		if (outError != NULL)
 			*outError = [NSError errorWithDomain:CXErrorDomain code:CXErrorCodeNotLocalURL userInfo:nil];
 		return NO;
 	}
 	
-	// FIXME cheap
-	NSArray* arguments = @[url.path];
-	NSDictionary* environment = [NSDictionary dictionary];
-	if ([vm loadClassicExecutable:url.path arguments:arguments environment:environment error:outError])
+	vm = [[CXVirtualMachine alloc] init];
+	executablePath = [url.path retain];
+	if ([vm loadClassicExecutable:executablePath error:outError])
 	{
 		disassembly = [[CXDisassembly alloc] initWithVirtualMachine:vm];
 		return YES;
 	}
+	
 	return NO;
 }
 
--(void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame *)frame
+-(uint32_t)addressOfEntryPoint:(int)entryPointIndex
 {
-	[[sender windowScriptObject] setValue:js forKey:@"cxdb"];
-	[self highlightPC];
-}
-
--(void)dealloc
-{
-	[vm release];
-	[js release];
-	[disassembly release];
-	[stackTrace release];
+	NSParameterAssert(entryPointIndex >= 0 && entryPointIndex < 3);
 	
-	[super dealloc];
-}
-
-#pragma mark -
-
--(IBAction)goBack:(id)sender
-{
-	[disassemblyView goBack];
-}
-
--(IBAction)goForward:(id)sender
-{
-	[disassemblyView goForward];
-}
-
--(IBAction)run:(id)sender
-{
-	[vm run:sender];
-	[outline reloadData];
-	[self reloadStackTrace];
-	[self jumpToPC];
-}
-
--(IBAction)stepInto:(id)sender
-{
-	[vm stepInto:sender];
-	[outline reloadData];
-	[self reloadStackTrace];
-	[self jumpToPC];
-}
-
--(IBAction)stepOver:(id)sender
-{
-	[vm stepOver:sender];
-	[outline reloadData];
-	[self reloadStackTrace];
-	[self jumpToPC];
-}
-
--(IBAction)controlFlow:(id)sender
-{
-	NSInteger segment = [sender selectedSegment];
-	switch (segment)
-	{
-		case 0: return [self run:sender];
-		case 1: return [self stepOver:sender];
-		case 2: return [self stepInto:sender];
-	}
-}
-
--(IBAction)navigate:(id)sender
-{
-	NSInteger segment = [sender selectedSegment];
-	if (segment == 0)
-		[self goBack:sender];
-	else
-		[self goForward:sender];
-}
-
-#pragma mark -
-
--(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if (object == disassemblyView)
-	{
-		if ([keyPath isEqualToString:@"canGoBack"])
-		{
-			BOOL enable = [[change objectForKey:NSKeyValueChangeNewKey] boolValue];
-			[backForward setEnabled:enable forSegment:0];
-		}
-		else if ([keyPath isEqualToString:@"canGoForward"])
-		{
-			BOOL enable = [[change objectForKey:NSKeyValueChangeNewKey] boolValue];
-			[backForward setEnabled:enable forSegment:1];
-		}
-	}
-}
-
--(void)buildSymbolMenu
-{
-	using namespace ClassixCore;
 	using namespace CFM;
+	using namespace PEF;
 	
-	// build the menus with the current resolvers
-	NSMenu* resolverMenu = [[[NSMenu alloc] initWithTitle:@"Debugger"] autorelease];
+	IAllocator* allocator;
+	FragmentManager* cfm;
 	
-	CFM::FragmentManager* cfm;
-	Common::IAllocator* allocator;
-	[[vm fragmentManager] getValue:&cfm];
-	[[vm allocator] getValue:&allocator];
+	[vm.fragmentManager getValue:&cfm];
+	[vm.allocator getValue:&allocator];
 	
 	for (auto iter = cfm->Begin(); iter != cfm->End(); iter++)
 	{
 		const SymbolResolver* resolver = iter->second;
-		std::string name;
 		if (const std::string* fullPath = resolver->FilePath())
 		{
-			std::string::size_type lastSlash = fullPath->find_last_of('/');
-			name = fullPath->substr(lastSlash + 1);
-		}
-		else
-		{
-			std::string::size_type lastSlash = iter->first.find_last_of('/');
-			name = iter->first.substr(lastSlash + 1);
-		}
-		
-		NSString* title = [NSString stringWithCString:name.c_str() encoding:NSUTF8StringEncoding];
-		NSMenuItem* resolverItem = [[[NSMenuItem alloc] initWithTitle:title action:NULL keyEquivalent:@""] autorelease];
-		
-		if (const std::string* path = resolver->FilePath())
-		{
-			NSString* libraryPath = [NSString stringWithCString:path->c_str() encoding:NSUTF8StringEncoding];
-			resolverItem.image = [self fileIcon16x16:libraryPath];
-		}
-		[resolverMenu addItem:resolverItem];
-		
-		NSMenu* submenu = [[[NSMenu alloc] initWithTitle:title] autorelease];
-		resolverItem.submenu = submenu;
-		
-		if (NSMenu* exportsMenu = [self exportMenuForResolver:resolver])
-		{
-			NSMenuItem* exports = [[[NSMenuItem alloc] initWithTitle:@"Exports" action:NULL keyEquivalent:@""] autorelease];
-			exports.submenu = exportsMenu;
-			[submenu addItem:exports];
-		}
-		
-		// unfortunately we have to do typecasts from this point...
-		if (const PEFSymbolResolver* pef = dynamic_cast<const PEFSymbolResolver*>(resolver))
-		{
-			PPCVM::Disassembly::FancyDisassembler disasm(allocator);
-			const PEF::Container& container = pef->GetContainer();
-			NSMutableDictionary* labelToArray = [NSMutableDictionary dictionary];
-			NSMutableDictionary* addressToLabel = [NSMutableDictionary dictionary];
-			for (int i = 0; i < container.Size(); i++)
+			if (*fullPath == executablePath.UTF8String)
 			{
-				const PEF::InstantiableSection& section = container.GetSection(i);
-				PEF::SectionType type = section.GetSectionType();
-				if (type == PEF::SectionType::Code || type == PEF::SectionType::ExecutableData)
+				if (const PEFSymbolResolver* pefResolver = dynamic_cast<const PEFSymbolResolver*>(resolver))
 				{
-					CXObjCDisassemblyWriter writer(i);
-					disasm.Disassemble(container, writer);
-					NSArray* result = writer.GetDisassembly();
-					if (result.count == 0)
-						continue;
+					const Container& container = pefResolver->GetContainer();
+					const LoaderHeader::SectionWithOffset& sectionWithOffset = container.LoaderSection()->Header->EntryPoints[entryPointIndex];
+					if (sectionWithOffset.Section == -1)
+						return -1;
 					
-					NSString* menuTitle = [NSString stringWithCString:section.Name.c_str() encoding:NSUTF8StringEncoding];
-					NSMenuItem* sectionItem = [[[NSMenuItem alloc] initWithTitle:menuTitle action:NULL keyEquivalent:@""] autorelease];
-					NSMutableArray* currentArray = [NSMutableArray array];
-					NSMenu* labelMenu = [[[NSMenu alloc] initWithTitle:menuTitle] autorelease];
-					
-					for (CXCodeLabel* codeLabel in result)
-					{
-						NSArray* instructions = codeLabel.instructions;
-						if (instructions.count == 0)
-							continue;
-						
-						uint32_t address = codeLabel.address;
-						if (codeLabel.isFunction)
-							currentArray = [NSMutableArray array];
-						
-						[currentArray addObject:codeLabel];
-						[labelToArray setObject:currentArray forKey:codeLabel.uniqueName];
-						[addressToLabel setObject:codeLabel.uniqueName forKey:@(address)];
-						
-						NSString* uniqueName = codeLabel.uniqueName;
-						NSString* title = [disassembly displayNameForUniqueName:uniqueName];
-						NSMenuItem* labelMenuItem = [[NSMenuItem alloc] initWithTitle:title action:NULL keyEquivalent:@""];
-						labelMenuItem.representedObject = codeLabel;
-						
-						labelMenuItem.image = codeLabel.isFunction ? functionImage : labelImage;
-						[labelMenu addItem:labelMenuItem];
-					}
-					sectionItem.submenu = labelMenu;
-					[submenu addItem:sectionItem];
+					const InstantiableSection& section = container.GetSection(sectionWithOffset.Section);
+					return allocator->ToIntPtr(section.Data) + sectionWithOffset.Offset;
 				}
 			}
 		}
 	}
-
-	navBar.selectionChanged = ^(CXNavBar* bar, NSMenuItem* selection) {
-		CXCodeLabel* label = [selection representedObject];
-		[self showDisassembly:label.uniqueName];
-	};
-	navBar.menu = resolverMenu;
+	return -1;
 }
 
--(NSImage*)fileIcon16x16:(NSString *)path
+-(void)dealloc
 {
-	const NSSize targetSize = NSMakeSize(16, 16);
-	NSImage* icon = [[NSWorkspace sharedWorkspace] iconForFile:path];
-	NSImage* smallIcon = [[NSImage alloc] initWithSize:targetSize];
-	
-	NSSize actualSize = icon.size;
-	[smallIcon lockFocus];
-	[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
-	[icon drawInRect:NSMakeRect(0, 0, targetSize.width, targetSize.height) fromRect:NSMakeRect(0, 0, actualSize.width, actualSize.height) operation:NSCompositeCopy fraction:1];
-	[smallIcon unlockFocus];
-	
-	return [smallIcon autorelease];
+	[debugUIController release];
+	[executablePath release];
+	[super dealloc];
 }
 
--(void)jumpToPC
-{
-	CXCodeLabel* label = [[disassembly functionDisassemblyForAddress:vm.pc] objectAtIndex:0];
-	[self showDisassembly:label.uniqueName address:vm.pc];
-}
+#pragma mark -
+#pragma mark UI Methods
 
--(void)highlightPC
+-(IBAction)start:(id)sender
 {
-	NSArray* trace = stackTrace.stackTrace;
-	NSMutableArray* addresses = [NSMutableArray arrayWithCapacity:trace.count];
-	for (CXStackFrame* frame in trace)
-		[addresses addObject:@(frame.absoluteAddress)];
-	
-	NSString* scriptArguments = CXJSONEncode(addresses);
-	if (NSString* error = vm.lastError)
-		scriptArguments = [scriptArguments stringByAppendingFormat:@", %@", CXJSONEncode(error)];
-
-	NSString* script = [NSString stringWithFormat:@"HighlightPC(%@)", scriptArguments];
-	[[disassemblyView windowScriptObject] evaluateWebScript:script];
-}
-
--(void)showDisassembly:(NSString *)labelUniqueName
-{
-	NSUInteger documentId = [[CXDocumentController documentController] idOfDocument:self];
-	CXCodeLabel* function = [[disassembly functionDisassemblyForUniqueName:labelUniqueName] objectAtIndex:0];
-	NSString* cxdbUrl = [NSString stringWithFormat:@"cxdb://disassembly/%@/%@#%@", @(documentId), function.uniqueName, labelUniqueName];
-	NSURL* url = [NSURL URLWithString:cxdbUrl];
-	NSURLRequest* request = [NSURLRequest requestWithURL:url];
-	[[disassemblyView mainFrame] loadRequest:request];
-	[self highlightPC];
-}
-
--(void)showDisassembly:(NSString *)labelUniqueName address:(uint32_t)address
-{
-	NSUInteger documentId = [[CXDocumentController documentController] idOfDocument:self];
-	CXCodeLabel* function = [[disassembly functionDisassemblyForUniqueName:labelUniqueName] objectAtIndex:0];
-	NSString* anchor = [NSString stringWithFormat:@"i%08x", address];
-	NSString* cxdbUrl = [NSString stringWithFormat:@"cxdb://disassembly/%@/%@#%@", @(documentId), function.uniqueName, anchor];
-	NSURL* url = [NSURL URLWithString:cxdbUrl];
-	NSURLRequest* request = [NSURLRequest requestWithURL:url];
-	[[disassemblyView mainFrame] loadRequest:request];
-	[self highlightPC];
-}
-
--(void)reloadStackTrace
-{
-	CXRegister* spReg = [vm.gpr objectAtIndex:1];
-	CXRegister* lrReg = [vm.spr objectAtIndex:CXVirtualMachineSPRLRIndex];
-	uint32_t currentSp = spReg.value.unsignedIntValue;
-	uint32_t currentLr = lrReg.value.unsignedIntValue;
-	if (currentSp != sp || currentLr != lr)
+	if (debugUIController == nil)
 	{
-		sp = currentSp;
-		lr = currentLr;
-		[stackTrace feedNumericTrace:vm.stackTrace];
+		// FIXME ugly
+		[vm setArgv:@[executablePath] envp:@{}];
+		[vm transitionByAddress:[self addressOfEntryPoint:0]];
+		
+		debugUIController = [[CXDebugUIController alloc] initWithDocument:self];
+		[debugUIController instantiate];
 	}
-	else
-	{
-		[stackTrace setTopAddress:vm.pc];
-	}
-	[stackTraceTable reloadData];
-}
-
--(NSMenu*)exportMenuForResolver:(const CFM::SymbolResolver *)resolver
-{
-	std::vector<std::string> symbols = resolver->SymbolList();
-	if (symbols.size() == 0)
-		return nil;
-	
-	NSMenu* exportMenu = [[NSMenu alloc] initWithTitle:@"Exports"];
-	for (const std::string& symbol : symbols)
-	{
-		NSString* title = [NSString stringWithCString:symbol.c_str() encoding:NSUTF8StringEncoding];
-		NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:title action:NULL keyEquivalent:@""] autorelease];
-		item.image = exportImage;
-		[item setEnabled:NO];
-		[exportMenu addItem:item];
-	}
-	
-	return [exportMenu autorelease];
 }
 
 @end

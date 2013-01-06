@@ -143,7 +143,7 @@
 	NSMutableString* xhtmlDisassembly = [NSMutableString stringWithString:@"<table id=\"disasm\">"];
 	CXDocument* document = [[CXDocumentController documentController] documentWithId:request.documentId];
 	CXDisassembly* disassembly = document.disassembly;
-	NSArray* disassemblyArray = [document.disassembly functionDisassemblyForUniqueName:uniqueName];
+	NSArray* disassemblyArray = [disassembly functionDisassemblyForUniqueName:uniqueName];
 	
 	for (CXCodeLabel* codeLabel in disassemblyArray)
 	{
@@ -224,7 +224,7 @@
 		case 5:
 		{
 			int32_t reg = [[argument objectForKey:@"gpr"] intValue];
-			return [NSString stringWithFormat:@"<span class=\"ptr\">%i(<span class=\"r%u\">r%u</span>)</span>", value, reg, reg];
+			return [NSString stringWithFormat:@"<span class=\"ptr\">%i(<span class=\"gpr r%u\">r%u</span>)</span>", value, reg, reg];
 		}
 		case 6:
 		{

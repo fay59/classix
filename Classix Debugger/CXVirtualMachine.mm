@@ -201,7 +201,7 @@ struct ClassixCoreVM
 	return self;
 }
 
--(BOOL)loadClassicExecutable:(NSString *)executablePath arguments:(NSArray*)args environment:(NSDictionary*)env error:(NSError **)error
+-(BOOL)loadClassicExecutable:(NSString *)executablePath error:(NSError **)error
 {
 	// TODO check that we haven't already loaded an executable
 	std::string path = [executablePath UTF8String];
@@ -213,19 +213,11 @@ struct ClassixCoreVM
 		return NO;
 	}
 	
-	// do we have a main symbol? let's hope so
-	auto resolver = vm->cfm.GetSymbolResolver(path);
-	auto main = resolver->GetMainAddress();
-	if (main.Universe != CFM::SymbolUniverse::PowerPC)
-	{
-		if (error != nullptr)
-			*error = [NSError errorWithDomain:CXErrorDomain code:CXErrorCodeFileNotExecutable userInfo:@{CXErrorFilePath: executablePath}];
-		return NO;
-	}
-	
-	// from this point, nothing else should fail...
-	auto mainVector = vm->allocator->ToPointer<const PEF::TransitionVector>(main.Address);
-	
+	return YES;
+}
+
+-(void)setArgv:(NSArray *)args envp:(NSDictionary *)env
+{
 	// set argv and envp
 	std::vector<size_t> argvOffsets;
 	std::vector<size_t> envpOffsets;
@@ -256,7 +248,7 @@ struct ClassixCoreVM
 	
 	Common::AutoAllocation& stack = vm->stack;
 	memset(*stack, 0, CXStackSize);
-
+	
 	//  stack layout:
 	// +-------------+
 	// | string area |
@@ -302,7 +294,6 @@ struct ClassixCoreVM
 	// set the stage
 	vm->state.r0 = 0;
 	vm->state.r1 = vm->allocator->ToIntPtr(&argc);
-	vm->state.r2 = mainVector->TableOfContents;
 	vm->state.r3 = args.count;
 	vm->state.r4 = vm->allocator->ToIntPtr(argvArea);
 	vm->state.r5 = vm->allocator->ToIntPtr(envArea);
@@ -318,10 +309,13 @@ struct ClassixCoreVM
 	
 	[changedRegisters removeAllObjects];
 	[changedRegisters addObjectsFromArray:initialRegisters];
-	
-	self.pc = mainVector->EntryPoint;
-	
-	return YES;
+}
+
+-(void)transitionByAddress:(uint32_t)address
+{
+	const PEF::TransitionVector* transition = vm->allocator->ToPointer<PEF::TransitionVector>(address);
+	vm->state.r2 = transition->TableOfContents;
+	pc = transition->EntryPoint;
 }
 
 -(NSValue*)fragmentManager
