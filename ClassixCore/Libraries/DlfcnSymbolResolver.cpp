@@ -34,19 +34,9 @@ namespace ClassixCore
 		globals = library.Init(allocator);
 	}
 	
-	ResolvedSymbol DlfcnSymbolResolver::GetInitAddress()
+	std::vector<ResolvedSymbol> DlfcnSymbolResolver::GetEntryPoints() const
 	{
-		return ResolvedSymbol::Invalid;
-	}
-	
-	ResolvedSymbol DlfcnSymbolResolver::GetMainAddress()
-	{
-		return ResolvedSymbol::Invalid;
-	}
-	
-	ResolvedSymbol DlfcnSymbolResolver::GetTermAddress()
-	{
-		return ResolvedSymbol::Invalid;
+		return std::vector<ResolvedSymbol>();
 	}
 	
 	ResolvedSymbol& DlfcnSymbolResolver::CacheSymbol(const std::string& name, void* address)

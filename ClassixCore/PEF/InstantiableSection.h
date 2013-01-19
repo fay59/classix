@@ -41,6 +41,7 @@ namespace PEF
 		InstantiableSection(const InstantiableSection& that) = delete;
 		InstantiableSection(InstantiableSection&& that);
 		
+		bool IsExecutable() const;
 		SectionType GetSectionType() const;
 		ShareType GetShareType() const;
 		size_t Size() const;

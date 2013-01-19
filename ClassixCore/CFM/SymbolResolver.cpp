@@ -42,6 +42,8 @@ namespace CFM
 		return ResolvedSymbol(SymbolUniverse::Intel, name, address);
 	}
 	
-	CFM::SymbolResolver::~SymbolResolver()
+	const std::string SymbolResolver::MainSymbolName = "<main>";
+	
+	SymbolResolver::~SymbolResolver()
 	{ }
 }

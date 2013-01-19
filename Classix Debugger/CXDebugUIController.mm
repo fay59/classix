@@ -60,6 +60,7 @@ static NSNib* uiNib;
 @synthesize outline;
 @synthesize stackTraceTable;
 @synthesize topLevelObjects;
+@synthesize windowController;
 
 +(void)initialize
 {
@@ -113,6 +114,11 @@ static NSNib* uiNib;
 {
 	[uiNib instantiateWithOwner:self topLevelObjects:&topLevelObjects];
 	[topLevelObjects retain];
+	[self orderFront];
+}
+
+-(void)orderFront
+{
 	[windowController showWindow:self];
 }
 

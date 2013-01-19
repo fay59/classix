@@ -24,8 +24,10 @@
 #include <iomanip>
 #include <memory>
 #include <map>
+#include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <algorithm>
 #include <dlfcn.h>
 
 #include "FragmentManager.h"
@@ -56,8 +58,8 @@ static char classChars[] = {
 static void loadTest(const std::string& path)
 {
 	CFM::FragmentManager fragmentManager;
-	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
-	ClassixCore::DlfcnLibraryResolver dlfcnResolver(Common::NativeAllocator::Instance);
+	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::GetInstance(), fragmentManager);
+	ClassixCore::DlfcnLibraryResolver dlfcnResolver(Common::NativeAllocator::GetInstance());
 	
 	dlfcnResolver.RegisterLibrary("StdCLib");
 	
@@ -69,23 +71,86 @@ static void loadTest(const std::string& path)
 
 static void listExports(const std::string& path)
 {
+	Common::IAllocator* allocator = Common::NativeAllocator::GetInstance();
 	Common::FileMapping mapping(path);
-	PEF::Container container(Common::NativeAllocator::Instance, mapping.begin(), mapping.end());
+	PEF::Container container(allocator, mapping.begin(), mapping.end());
 	
 	const PEF::ExportHashTable& exportTable = container.LoaderSection()->ExportTable;
 	std::cout << exportTable.SymbolCount() << " exports" << endline;
+	
+	struct Export
+	{
+		char type;
+		std::string name;
+		const uint8_t* begin;
+		const uint8_t* end;
+	};
+	
+	uint32_t onlySection = -1;
+	std::vector<Export> exports;
 	for (auto iter = exportTable.begin(); iter != exportTable.end(); iter++)
 	{
 		const PEF::ExportedSymbol* symbol = exportTable.Find(*iter);
-		std::cout << '[' << classChars[symbol->Class] << "] " << symbol->SymbolName << endline;
+		Export e = {
+			.type = classChars[symbol->Class],
+			.name = symbol->SymbolName,
+			.begin = nullptr,
+			.end = nullptr
+		};
+		
+		if (e.type == 'D')
+		{
+			if (symbol->SectionIndex < 0 || symbol->SectionIndex >= container.Size())
+				std::cerr << "data symbol " << symbol->SymbolName << " doesn't live in this container" << std::endl;
+			else
+			{
+				const PEF::InstantiableSection& section = container.GetSection(symbol->SectionIndex);
+				if (onlySection == -1)
+					onlySection = symbol->SectionIndex;
+				else if (onlySection != symbol->SectionIndex)
+					onlySection = -2;
+				e.begin = section.Data + symbol->Offset;
+			}
+		}
+		
+		exports.push_back(e);
 	}
+	
+	// we only support dumping globals when there is just one data section
+	if (onlySection != -2)
+	{
+		std::sort(exports.begin(), exports.end(), [](const Export& a, const Export& b) { return a.begin < b.begin; });
+		const PEF::InstantiableSection& section = container.GetSection(onlySection);
+		const uint8_t* end = section.Data + section.Size();
+		for (auto iter = exports.rbegin(); iter != exports.rend(); iter++)
+		{
+			if (iter->begin == nullptr)
+				break;
+			
+			iter->end = end;
+			end = iter->begin;
+		}
+	}
+	
+	for (const auto& e : exports)
+	{
+		std::cout << '[' << e.type << "] " << e.name;
+		if (e.begin != nullptr && e.end != nullptr)
+		{
+			std::cout << " (" << std::dec << e.end - e.begin << ") =";
+			for (auto iter = e.begin; iter != e.end; iter++)
+				std::cout << ' ' << std::hex << std::setw(2) << std::setfill('0') << (uint32_t)*iter;
+		}
+		std::cout << std::endl;
+	}
+	
 	std::cout << endline;
 }
 
 static void listImports(const std::string& path)
 {
 	Common::FileMapping mapping(path);
-	PEF::Container container(Common::NativeAllocator::Instance, mapping.begin(), mapping.end());
+	PEF::Container container(Common::NativeAllocator::GetInstance(), mapping.begin(), mapping.end());
 	
 	const PEF::LoaderSection* loader = container.LoaderSection();
 	for (auto libIter = loader->LibrariesBegin(); libIter != loader->LibrariesEnd(); libIter++)
@@ -99,9 +164,9 @@ static void listImports(const std::string& path)
 
 static void disassemble(const std::string& path)
 {
-	Common::IAllocator* allocator = Common::NativeAllocator::Instance;
+	Common::IAllocator* allocator = Common::NativeAllocator::GetInstance();
 	CFM::FragmentManager fragmentManager;
-	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::Instance, fragmentManager);
+	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::GetInstance(), fragmentManager);
 	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator);
 	
 	dlfcnResolver.RegisterLibrary("StdCLib");
@@ -136,10 +201,10 @@ static void run(const std::string& path)
 
 static void runMPW(const std::string& path, int argc, const char* argv[], const char* envp[])
 {
-	ClassixCore::DlfcnLibraryResolver dlfcnResolver(Common::NativeAllocator::Instance);
+	ClassixCore::DlfcnLibraryResolver dlfcnResolver(Common::NativeAllocator::GetInstance());
 	dlfcnResolver.RegisterLibrary("StdCLib");
 	
-	Classix::VirtualMachine vm(Common::NativeAllocator::Instance);
+	Classix::VirtualMachine vm(Common::NativeAllocator::GetInstance());
 	vm.AddLibraryResolver(dlfcnResolver);
 	
 	auto stub = vm.LoadMainContainer(path);
@@ -160,7 +225,7 @@ int main(int argc, const char* argv[], const char* envp[])
 	}
 	
 	// keeping this reference around to help printing memory areas
-	Common::NativeAllocator* allocator = Common::NativeAllocator::Instance;
+	Common::NativeAllocator* allocator = Common::NativeAllocator::GetInstance();
 	(void)allocator;
 	
 	std::string mode = argv[1];

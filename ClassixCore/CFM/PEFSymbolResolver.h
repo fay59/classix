@@ -37,19 +37,20 @@ namespace CFM
 		
 		FragmentManager& cfm;
 		
-		ResolvedSymbol Symbolize(const std::string& name, const uint8_t* address);
-		ResolvedSymbol Symbolize(const std::string& name, const PEF::LoaderHeader::SectionWithOffset& sectionWithOffset);
+		ResolvedSymbol Symbolize(const std::string& name, const uint8_t* address) const;
+		ResolvedSymbol Symbolize(const std::string& name, const PEF::LoaderHeader::SectionWithOffset& sectionWithOffset) const;
 		
 	public:
+		static const std::string InitSymbolName;
+		static const std::string TermSymbolName;
+		
 		PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, const std::string& filePath);
 		PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, Common::FileMapping&& mapping);
 		
 		PEF::Container& GetContainer();
 		const PEF::Container& GetContainer() const;
 		
-		virtual ResolvedSymbol GetInitAddress() override;
-		virtual ResolvedSymbol GetMainAddress() override;
-		virtual ResolvedSymbol GetTermAddress() override;
+		virtual std::vector<ResolvedSymbol> GetEntryPoints() const override;
 		
 		virtual const std::string* FilePath() const override;
 		virtual std::vector<std::string> SymbolList() const override;

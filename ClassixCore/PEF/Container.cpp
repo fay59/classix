@@ -73,22 +73,22 @@ namespace PEF
 			throw std::logic_error("container has no loader section");
 	}
 	
-	Container::iterator Container::SectionsBegin()
+	Container::iterator Container::begin()
 	{
 		return sections.begin();
 	}
 	
-	Container::iterator Container::SectionsEnd()
+	Container::iterator Container::end()
 	{
 		return sections.end();
 	}
 	
-	Container::const_iterator Container::SectionsBegin() const
+	Container::const_iterator Container::begin() const
 	{
 		return sections.begin();
 	}
 	
-	Container::const_iterator Container::SectionsEnd() const
+	Container::const_iterator Container::end() const
 	{
 		return sections.end();
 	}

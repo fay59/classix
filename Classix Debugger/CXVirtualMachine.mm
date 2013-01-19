@@ -55,7 +55,6 @@ struct ClassixCoreVM
 	CFM::PEFLibraryResolver pefResolver;
 	ClassixCore::DlfcnLibraryResolver dlfcnResolver;
 	PPCVM::Execution::Interpreter interp;
-	PEF::Container* container;
 	Common::AutoAllocation stack;
 	
 	std::unordered_set<intptr_t> breakpoints;
@@ -67,7 +66,6 @@ struct ClassixCoreVM
 	, pefResolver(allocator, cfm)
 	, dlfcnResolver(allocator)
 	, interp(allocator, &state)
-	, container(nullptr)
 	, stack(allocator->AllocateAuto(CXReverseAllocationDetails("Stack", CXStackSize), CXStackSize))
 	{
 		dlfcnResolver.RegisterLibrary("StdCLib");
@@ -82,38 +80,41 @@ struct ClassixCoreVM
 		if (cfm.LoadContainer(path))
 		{
 			CFM::SymbolResolver* resolver = cfm.GetSymbolResolver(path);
-			if (CFM::PEFSymbolResolver* pefResolver = dynamic_cast<CFM::PEFSymbolResolver*>(resolver))
+			std::vector<CFM::ResolvedSymbol> entryPoints = resolver->GetEntryPoints();
+			for (const CFM::ResolvedSymbol& symbol : entryPoints)
 			{
-				container = &pefResolver->GetContainer();
-				auto main = pefResolver->GetMainAddress();
-				return main.Universe == CFM::SymbolUniverse::PowerPC;
+				if (symbol.Universe == CFM::SymbolUniverse::PowerPC)
+					return true;
 			}
 		}
 		return false;
 	}
 	
-	int SectionForAddress(void* ptr) const
+	bool IsCodeAddress(uint32_t address)
 	{
-		for (int i = 0; i < container->Size(); i++)
+		for (auto iter = cfm.Begin(); iter != cfm.End(); iter++)
 		{
-			auto& section = container->GetSection(i);
-			if (section.Data <= ptr && section.Data + section.Size() > ptr)
-				return i;
+			if (const CFM::PEFSymbolResolver* resolver = dynamic_cast<const CFM::PEFSymbolResolver*>(iter->second))
+			{
+				const PEF::Container& container = resolver->GetContainer();
+				uint32_t base = allocator->ToIntPtr(container.Base);
+				uint32_t end = base + container.Size();
+				if (address >= base && address < end)
+				{
+					for (const PEF::InstantiableSection& section : container)
+					{
+						if (section.IsExecutable())
+						{
+							uint32_t sectionBase = allocator->ToIntPtr(section.Data);
+							uint32_t sectionEnd = sectionBase + section.Size();
+							if (address >= sectionBase && address < sectionEnd)
+								return true;
+						}
+					}
+				}
+			}
 		}
-		return -1;
-	}
-	
-	int SectionForAddress(uint32_t address) const
-	{
-		for (int i = 0; i < container->Size(); i++)
-		{
-			auto& section = container->GetSection(i);
-			uint32_t data = allocator->ToIntPtr(section.Data);
-			uint32_t dataEnd = data + section.Size();
-			if (data <= address && dataEnd > address)
-				return i;
-		}
-		return -1;
+		return false;
 	}
 };
 
@@ -424,8 +425,7 @@ struct ClassixCoreVM
 	for (; stackPointer != stackGuard; stackPointer++)
 	{
 		uint32_t hopefullyBranchAndLinkAddress = *stackPointer - 4;
-		int sectionIndex = vm->SectionForAddress(hopefullyBranchAndLinkAddress);
-		if (sectionIndex != -1)
+		if (vm->IsCodeAddress(hopefullyBranchAndLinkAddress))
 		{
 			const UInt32* hopefullyBranchAndLink = vm->allocator->ToPointer<const UInt32>(hopefullyBranchAndLinkAddress);
 			PPCVM::Instruction inst = hopefullyBranchAndLink->Get();

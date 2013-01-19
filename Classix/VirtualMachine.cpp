@@ -75,10 +75,17 @@ namespace Classix
 			throw std::logic_error("Could not load specified container");
 		
 		auto resolver = fragmentManager.GetSymbolResolver(path);
-		auto main = resolver->GetMainAddress();
-		if (main.Universe != CFM::SymbolUniverse::PowerPC)
-			throw std::logic_error("Container successfully resolved, but main symbol is not a PPC symbol");
-		
-		return MainStub(*this, main);
+		auto entryPoints = resolver->GetEntryPoints();
+		for (const auto& entryPoint : entryPoints)
+		{
+			if (entryPoint.Name == CFM::SymbolResolver::MainSymbolName)
+			{
+				if (entryPoint.Universe == CFM::SymbolUniverse::PowerPC)
+					return MainStub(*this, entryPoint);
+				else
+					throw std::logic_error("Container successfully resolved, but main symbol is not a PPC symbol");
+			}
+		}
+		throw std::logic_error("Container does not contain a main symbol");
 	}
 }

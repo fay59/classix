@@ -58,9 +58,7 @@ namespace ClassixCore
 	public:
 		DlfcnSymbolResolver(Common::IAllocator* allocator, const DlfcnLibrary& library);
 		
-		virtual ResolvedSymbol GetInitAddress() override;
-		virtual ResolvedSymbol GetMainAddress() override;
-		virtual ResolvedSymbol GetTermAddress() override;
+		virtual std::vector<ResolvedSymbol> GetEntryPoints() const override;
 		
 		virtual const std::string* FilePath() const override;
 		virtual std::vector<std::string> SymbolList() const override;

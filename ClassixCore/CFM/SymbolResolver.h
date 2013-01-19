@@ -60,14 +60,15 @@ namespace CFM
 	class SymbolResolver
 	{
 	public:
-		virtual ResolvedSymbol GetInitAddress() = 0;
-		virtual ResolvedSymbol GetMainAddress() = 0;
-		virtual ResolvedSymbol GetTermAddress() = 0;
+		static const std::string MainSymbolName;
+		
+		virtual std::vector<ResolvedSymbol> GetEntryPoints() const = 0;
 		
 		virtual const std::string* FilePath() const = 0;
 		virtual std::vector<std::string> SymbolList() const = 0;
 		
 		virtual ResolvedSymbol ResolveSymbol(const std::string& name) = 0;
+		
 		virtual ~SymbolResolver() = 0;
 	};
 }

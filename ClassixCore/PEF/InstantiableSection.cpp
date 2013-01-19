@@ -244,6 +244,19 @@ namespace PEF
 		that.Data = nullptr;
 	}
 	
+	bool InstantiableSection::IsExecutable() const
+	{
+		switch (GetSectionType())
+		{
+			case SectionType::Code:
+			case SectionType::ExecutableData:
+				return true;
+				
+			default:
+				return false;
+		}
+	}
+	
 	SectionType InstantiableSection::GetSectionType() const
 	{
 		return this->header->SectionType;

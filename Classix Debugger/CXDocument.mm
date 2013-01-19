@@ -33,6 +33,7 @@
 @synthesize environment;
 @synthesize executablePath;
 @synthesize debug = debugUIController;
+@synthesize entryPoints;
 
 -(NSString *)windowNibName
 {
@@ -42,6 +43,35 @@
 -(void)windowControllerDidLoadNib:(NSWindowController *)aController
 {
 	[super windowControllerDidLoadNib:aController];
+	[entryPoints removeAllItems];
+	
+	using namespace CFM;
+	using namespace PEF;
+	
+	IAllocator* allocator;
+	FragmentManager* cfm;
+	
+	[vm.fragmentManager getValue:&cfm];
+	[vm.allocator getValue:&allocator];
+	
+	for (auto iter = cfm->Begin(); iter != cfm->End(); iter++)
+	{
+		const SymbolResolver* resolver = iter->second;
+		if (const std::string* fullPath = resolver->FilePath())
+		{
+			if (*fullPath == executablePath.UTF8String)
+			{
+				std::vector<ResolvedSymbol> executableEntryPoints = resolver->GetEntryPoints();
+				for (const ResolvedSymbol& entryPoint : executableEntryPoints)
+				{
+					NSString* itemName = [NSString stringWithCString:entryPoint.Name.c_str() encoding:NSUTF8StringEncoding];
+					NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:itemName action:NULL keyEquivalent:@""];
+					item.tag = entryPoint.Address;
+					[[entryPoints menu] addItem:item];
+				}
+			}
+		}
+	}
 }
 
 +(BOOL)autosavesInPlace
@@ -69,42 +99,6 @@
 	return NO;
 }
 
--(uint32_t)addressOfEntryPoint:(int)entryPointIndex
-{
-	NSParameterAssert(entryPointIndex >= 0 && entryPointIndex < 3);
-	
-	using namespace CFM;
-	using namespace PEF;
-	
-	IAllocator* allocator;
-	FragmentManager* cfm;
-	
-	[vm.fragmentManager getValue:&cfm];
-	[vm.allocator getValue:&allocator];
-	
-	for (auto iter = cfm->Begin(); iter != cfm->End(); iter++)
-	{
-		const SymbolResolver* resolver = iter->second;
-		if (const std::string* fullPath = resolver->FilePath())
-		{
-			if (*fullPath == executablePath.UTF8String)
-			{
-				if (const PEFSymbolResolver* pefResolver = dynamic_cast<const PEFSymbolResolver*>(resolver))
-				{
-					const Container& container = pefResolver->GetContainer();
-					const LoaderHeader::SectionWithOffset& sectionWithOffset = container.LoaderSection()->Header->EntryPoints[entryPointIndex];
-					if (sectionWithOffset.Section == -1)
-						return -1;
-					
-					const InstantiableSection& section = container.GetSection(sectionWithOffset.Section);
-					return allocator->ToIntPtr(section.Data) + sectionWithOffset.Offset;
-				}
-			}
-		}
-	}
-	return -1;
-}
-
 -(void)dealloc
 {
 	[debugUIController release];
@@ -121,10 +115,17 @@
 	{
 		// FIXME ugly
 		[vm setArgv:@[executablePath] envp:@{}];
-		[vm transitionByAddress:[self addressOfEntryPoint:0]];
+		
+		uint32_t transitionAddress = [entryPoints selectedItem].tag;
+		[vm transitionByAddress:transitionAddress];
 		
 		debugUIController = [[CXDebugUIController alloc] initWithDocument:self];
 		[debugUIController instantiate];
+		debugUIController.windowController.document = self;
+	}
+	else
+	{
+		[debugUIController orderFront];
 	}
 }
 

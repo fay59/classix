@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <array>
 #include "PEFSymbolResolver.h"
 #include "Relocation.h"
 #include "PEFRelocator.h"
@@ -28,6 +29,9 @@
 
 namespace CFM
 {
+	const std::string PEFSymbolResolver::InitSymbolName = "<init>";
+	const std::string PEFSymbolResolver::TermSymbolName = "<term>";
+	
 	PEFSymbolResolver::PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, const std::string& filePath)
 	: PEFSymbolResolver(allocator, cfm, Common::FileMapping(filePath))
 	{ }
@@ -55,7 +59,7 @@ namespace CFM
 		}
 	}
 	
-	ResolvedSymbol PEFSymbolResolver::Symbolize(const std::string& name, const uint8_t *address)
+	ResolvedSymbol PEFSymbolResolver::Symbolize(const std::string& name, const uint8_t *address) const
 	{
 		if (address == nullptr)
 			return ResolvedSymbol::Invalid;
@@ -63,7 +67,7 @@ namespace CFM
 		return ResolvedSymbol::PowerPCSymbol(name, reinterpret_cast<intptr_t>(address));
 	}
 	
-	ResolvedSymbol PEFSymbolResolver::Symbolize(const std::string& name, const PEF::LoaderHeader::SectionWithOffset &sectionWithOffset)
+	ResolvedSymbol PEFSymbolResolver::Symbolize(const std::string& name, const PEF::LoaderHeader::SectionWithOffset &sectionWithOffset) const
 	{
 		if (sectionWithOffset.Section == -1)
 			return ResolvedSymbol::Invalid;
@@ -83,22 +87,20 @@ namespace CFM
 		return container;
 	}
 	
-	ResolvedSymbol PEFSymbolResolver::GetInitAddress()
+	std::vector<ResolvedSymbol> PEFSymbolResolver::GetEntryPoints() const
 	{
-		const LoaderHeader::SectionWithOffset& initInfo = container.LoaderSection()->Header->Init;
-		return Symbolize("<init>", initInfo);
-	}
-	
-	ResolvedSymbol PEFSymbolResolver::GetMainAddress()
-	{
-		const LoaderHeader::SectionWithOffset& mainInfo = container.LoaderSection()->Header->Main;
-		return Symbolize("<main>", mainInfo);
-	}
-	
-	ResolvedSymbol PEFSymbolResolver::GetTermAddress()
-	{
-		const LoaderHeader::SectionWithOffset& termInfo = container.LoaderSection()->Header->Term;
-		return Symbolize("<term>", termInfo);
+		std::vector<ResolvedSymbol> symbols;
+		const std::string* symbolNames[] = {&MainSymbolName, &InitSymbolName, &TermSymbolName};
+		const auto header = container.LoaderSection()->Header;
+		
+		for (size_t i = 0; i < 3; i++)
+		{
+			const auto& entry = header->EntryPoints[i];
+			if (entry.Section != -1)
+				symbols.push_back(Symbolize(*symbolNames[i], entry));
+		}
+		
+		return symbols;
 	}
 	
 	const std::string* PEFSymbolResolver::FilePath() const

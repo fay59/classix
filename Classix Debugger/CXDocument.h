@@ -34,6 +34,8 @@
 	NSString* executablePath;
 	NSMutableArray* arguments;
 	NSMutableDictionary* environment;
+	
+	NSPopUpButton* entryPoints;
 }
 
 @property (readonly) NSString* executablePath;
@@ -43,6 +45,8 @@
 @property (readonly) CXVirtualMachine* vm;
 @property (readonly) CXDisassembly* disassembly;
 @property (readonly) CXDebugUIController* debug;
+
+@property (assign) IBOutlet NSPopUpButton* entryPoints;
 
 -(IBAction)start:(id)sender;
 

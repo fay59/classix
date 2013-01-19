@@ -49,10 +49,11 @@ namespace PEF
 		
 		Container(Common::IAllocator* allocator, const void* base, const void* end);
 		
-		iterator SectionsBegin();
-		iterator SectionsEnd();
-		const_iterator SectionsBegin() const;
-		const_iterator SectionsEnd() const;
+		iterator begin();
+		iterator end();
+		const_iterator begin() const;
+		const_iterator end() const;
+		
 		size_t Size() const;
 		
 		Common::IAllocator* GetAllocator();
