@@ -129,7 +129,7 @@ struct StdCLibScalars
 	Common::UInt32 __loc;
 	Common::UInt32 __NubAt3;
 	Common::UInt32 __p_CType;
-	Common::UInt32 __SigEnv;
+	uint8_t __SigEnv[272];
 	uint32_t __target_for_exit[64];
 	Common::UInt32 __yd;
 	Common::UInt32 _CategoryLoc;
@@ -146,15 +146,15 @@ struct StdCLibScalars
 	Common::Real64 _LDBL_EPSILON;
 	Common::Real64 _LDBL_MIN;
 	Common::Real64 _LDBL_MAX;
-	Common::UInt32 _PublicTimeInfo;
+	Common::UInt64 _PublicTimeInfo;
 	Common::UInt32 _StdDevs;
 	Common::UInt32 errno_;
 	Common::UInt32 MacOSErr;
-	Common::UInt32 MoneyData;
+	Common::UInt64 MoneyData;
 	Common::UInt32 NoMoreDebugStr;
-	Common::UInt32 NumericData;
+	Common::UInt64 NumericData;
 	Common::UInt32 StandAlone;
-	Common::UInt32 TimeData;
+	Common::UInt64 TimeData;
 };
 
 struct StdCLibGlobals
@@ -189,6 +189,12 @@ struct StdCLibGlobals
 		scalars._LDBL_EPSILON = DBL_EPSILON;
 		scalars._DBL_MIN = DBL_MIN;
 		scalars._LDBL_MAX = DBL_MAX;
+		
+		scalars.MoneyData = 0x3100000000000f68ull;
+		scalars.NumericData = 0x3100000000000fc8ull;
+		scalars.TimeData = 0x3100000000000ff0ull;
+		scalars._PublicTimeInfo = 0x3100000000000ff0ull;
+		scalars._CategoryLoc = 0x3030313131000000ull;
 	}
 };
 
