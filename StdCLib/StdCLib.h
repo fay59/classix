@@ -28,11 +28,14 @@
 
 extern "C"
 {
-	struct StdCLibGlobals;
+	namespace StdCLib
+	{
+		struct Globals;
+	}
 
-	StdCLibGlobals* LibraryInit(Common::IAllocator* allocator);
-	SymbolType LibraryLookup(StdCLibGlobals* globals, const char* symbolName, void** symbol);
-	void LibraryFinit(StdCLibGlobals* context);
+	StdCLib::Globals* LibraryInit(Common::IAllocator* allocator);
+	SymbolType LibraryLookup(StdCLib::Globals* globals, const char* symbolName, void** symbol);
+	void LibraryFinit(StdCLib::Globals* context);
 	
 	extern const char* LibrarySymbolNames[];
 }
