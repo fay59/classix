@@ -128,7 +128,7 @@ namespace StdCLib
 		_L, _L, _L, _P, _P, _P, _P, _C
 	};
 
-	typedef uint8_t UnknownType[0x400];
+	typedef uint8_t UnknownType[0x1000];
 	typedef uint32_t JumpBuf[64];
 
 	struct Scalars
