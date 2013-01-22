@@ -100,7 +100,7 @@ namespace PPCVM
 		
 		void FancyDisassembler::DoDisassemble(const Container &container)
 		{
-			for (uint32_t i = 0; i < container.Size(); i++)
+			for (uint32_t i = 0; i < container.size(); i++)
 			{
 				const InstantiableSection& section = container.GetSection(i);
 				if (section.GetSectionType() != SectionType::Code && section.GetSectionType() != SectionType::ExecutableData)

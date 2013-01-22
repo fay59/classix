@@ -59,7 +59,7 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 		{
 			PPCVM::Disassembly::FancyDisassembler disasm(allocator);
 			const PEF::Container& container = pef->GetContainer();
-			for (int i = 0; i < container.Size(); i++)
+			for (int i = 0; i < container.size(); i++)
 			{
 				const PEF::InstantiableSection& section = container.GetSection(i);
 				PEF::SectionType type = section.GetSectionType();

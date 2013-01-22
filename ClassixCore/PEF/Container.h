@@ -46,6 +46,7 @@ namespace PEF
 		typedef std::vector<InstantiableSection>::const_iterator const_iterator;
 		
 		const uint8_t* Base;
+		const uint8_t* End;
 		
 		Container(Common::IAllocator* allocator, const void* base, const void* end);
 		
@@ -54,7 +55,8 @@ namespace PEF
 		const_iterator begin() const;
 		const_iterator end() const;
 		
-		size_t Size() const;
+		size_t size() const;
+		size_t data_size() const;
 		
 		Common::IAllocator* GetAllocator();
 		

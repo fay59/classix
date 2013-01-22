@@ -29,6 +29,7 @@ namespace PEF
 	, header(ContainerHeader::FromPointer(base))
 	, loader(nullptr)
 	, allocator(allocator)
+	, End(static_cast<const uint8_t*>(end))
 	{
 		if (header == nullptr)
 			throw std::logic_error("invalid header");
@@ -93,9 +94,14 @@ namespace PEF
 		return sections.end();
 	}
 	
-	size_t Container::Size() const
+	size_t Container::size() const
 	{
 		return sections.size();
+	}
+	
+	size_t Container::data_size() const
+	{
+		return static_cast<size_t>(End - Base);
 	}
 	
 	Common::IAllocator* Container::GetAllocator()

@@ -97,19 +97,14 @@ struct ClassixCoreVM
 			if (const CFM::PEFSymbolResolver* resolver = dynamic_cast<const CFM::PEFSymbolResolver*>(iter->second))
 			{
 				const PEF::Container& container = resolver->GetContainer();
-				uint32_t base = allocator->ToIntPtr(container.Base);
-				uint32_t end = base + container.Size();
-				if (address >= base && address < end)
+				for (const PEF::InstantiableSection& section : container)
 				{
-					for (const PEF::InstantiableSection& section : container)
+					if (section.IsExecutable())
 					{
-						if (section.IsExecutable())
-						{
-							uint32_t sectionBase = allocator->ToIntPtr(section.Data);
-							uint32_t sectionEnd = sectionBase + section.Size();
-							if (address >= sectionBase && address < sectionEnd)
-								return true;
-						}
+						uint32_t sectionBase = allocator->ToIntPtr(section.Data);
+						uint32_t sectionEnd = sectionBase + section.Size();
+						if (address >= sectionBase && address < sectionEnd)
+							return true;
 					}
 				}
 			}
