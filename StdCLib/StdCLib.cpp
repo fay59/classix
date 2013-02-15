@@ -80,15 +80,13 @@ namespace StdCLib
 		};
 	};
 
-	// TODO I have *no idea* what IntEnv is for, I just know that it starts
-	// with these four fields, because Unmangle tries to access them.
 	struct IntEnv
 	{
-		uint16_t a;
-		uint32_t b;
-		uint32_t c;
-		uint32_t d;
-	};
+		Common::UInt16 unknown;
+		Common::UInt32 argc;
+		Common::UInt32 argv;
+		Common::UInt32 envp;
+	} __attribute__((packed));
 
 	const char* PPCFILE::OffsetNames[28] = {
 		"_cnt", "_cnt + 1", "_cnt + 2", "_cnt + 3",
@@ -133,9 +131,9 @@ namespace StdCLib
 
 	struct Scalars
 	{
-		UnknownType __C_phase;
+		UnknownType __C_phase; // apparently an integer that should not be 5
 		UnknownType __loc;
-		UnknownType __NubAt3;
+		UnknownType __NubAt3; // apparently a function pointer
 		Common::UInt32 __p_CType;
 		UnknownType __SigEnv;
 		JumpBuf __target_for_exit;
@@ -389,6 +387,13 @@ namespace
 
 extern "C"
 {
+	void StdCLib___StdCLib_IntEnvInit(StdCLib::Globals* globals, MachineState* state)
+	{
+		globals->scalars._IntEnv.argc = state->r3;
+		globals->scalars._IntEnv.argv = state->r4;
+		globals->scalars._IntEnv.envp = state->r5;
+	}
+	
 	void StdCLib___abort(StdCLib::Globals* globals, MachineState* state)
 	{
 		abort();

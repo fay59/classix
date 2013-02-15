@@ -39,18 +39,6 @@ namespace
 {
 	using namespace PPCVM;
 	
-	// If the interpreter reaches the address of that symbol, it knows that it needs to stop interpreting.
-	uint32_t EndLocation = 0xdeaddead;
-	
-	template<typename T>
-	struct EndAddress
-	{
-		static const T Value;
-	};
-	
-	template<typename T>
-	const T EndAddress<T>::Value = reinterpret_cast<T>(&EndLocation);
-	
 	inline int32_t SignExt16(int16_t x)
 	{
 		return x;
@@ -92,7 +80,7 @@ namespace PPCVM
 	namespace Execution
 	{
 		Interpreter::Interpreter(Common::IAllocator* allocator, MachineState* state)
-		: state(state), allocator(allocator)
+		: state(state), allocator(allocator), endAddress(allocator->AllocateAuto("Interpreter End Address", 4))
 		{ }
 
 		void Interpreter::Panic(const std::string& error)
@@ -155,8 +143,8 @@ namespace PPCVM
 					else
 					{
 						Instruction inst = instructionCode.Get();
-							Dispatch(inst);
-							currentAddress++;
+						Dispatch(inst);
+						currentAddress++;
 					}
 				}
 				catch (Common::PPCRuntimeException& ex)
@@ -199,8 +187,8 @@ namespace PPCVM
 
 		void Interpreter::Execute(const void* address)
 		{
-			state->gpr[31] = EndAddress<uint32_t>::Value;
-			while (address != EndAddress<const void*>::Value)
+			state->lr = endAddress.GetVirtualAddress();
+			while (address != *endAddress)
 			{
 				address = ExecuteUntilBranch(address);
 			}

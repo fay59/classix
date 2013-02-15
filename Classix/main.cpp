@@ -100,7 +100,7 @@ static void listExports(const std::string& path)
 		
 		if (e.type == 'D')
 		{
-			if (symbol->SectionIndex < 0 || symbol->SectionIndex >= container.Size())
+			if (symbol->SectionIndex < 0 || symbol->SectionIndex >= container.size())
 				std::cerr << "data symbol " << symbol->SymbolName << " doesn't live in this container" << std::endl;
 			else
 			{

@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
+#include <stdexcept>
 
 namespace
 {
@@ -32,6 +33,14 @@ namespace
 		into << "0x";
 		into << std::setw(8) << std::setfill('0') << std::hex << address;
 		return into;
+	}
+	
+	Common::NativeAllocator* TryCreateNativeAllocator()
+	{
+		if (sizeof(uint32_t) == sizeof(void*))
+			return new Common::NativeAllocator;
+		
+		return nullptr;
 	}
 }
 
@@ -58,14 +67,16 @@ namespace Common
 		delete details;
 	}
 	
-	NativeAllocator* NativeAllocator::instance = new NativeAllocator();
+	NativeAllocator* NativeAllocator::instance = TryCreateNativeAllocator();
+	
+	NativeAllocator::NativeAllocator()
+	{
+		if (sizeof(void*) != sizeof(uint32_t))
+			throw std::runtime_error("Cannot use the native allocator in a 64-bits environment");
+	}
 	
 	NativeAllocator* NativeAllocator::GetInstance()
 	{
-		// gotta love bit paranoia
-		if (sizeof(void*) != sizeof(uint32_t))
-			throw std::logic_error("NativeAllocator32 is only usable in 32-bits mode");
-		
 		return instance;
 	}
 	

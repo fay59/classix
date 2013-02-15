@@ -28,6 +28,7 @@ namespace Common
 {
 	class AllocationDetails
 	{
+	protected:
 		std::string allocationName;
 		
 	public:

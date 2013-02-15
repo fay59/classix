@@ -32,7 +32,11 @@ extern "C"
 	{
 		struct Globals;
 	}
+	
+	// not in the actual StdCLib interface (necessary for our glue code)
+	void StdCLib___StdCLib_IntEnvInit(StdCLib::Globals* globals, MachineState* state);
 
+	// actual StdCLib interface
 	void StdCLib___abort(StdCLib::Globals* globals, MachineState* state);
 	void StdCLib___assertprint(StdCLib::Globals* globals, MachineState* state);
 	void StdCLib___DebugMallocHeap(StdCLib::Globals* globals, MachineState* state);

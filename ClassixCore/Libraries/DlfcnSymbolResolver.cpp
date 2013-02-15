@@ -59,6 +59,11 @@ namespace ClassixCore
 		return *transitions.emplace(transitions.end(), vector);
 	}
 	
+	void* DlfcnSymbolResolver::GetGlobals()
+	{
+		return globals;
+	}
+	
 	const std::string* DlfcnSymbolResolver::FilePath() const
 	{
 		return &library.Path;

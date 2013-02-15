@@ -41,6 +41,8 @@ namespace PPCVM
 		{
 			MachineState* state;
 			Common::IAllocator* allocator;
+			Common::AutoAllocation endAddress;
+			
 			const Common::UInt32* currentAddress;
 			const void* branchAddress;
 			const void* ExecuteUntilBranch(const void* address);

@@ -161,13 +161,26 @@ namespace PPCVM
 				// otherwise, only act when r2 is not null
 				else if (r2 != nullptr)
 				{
-					// assume that each time we lwz something from r2 into r12 we're dealing with a transition vector
 					if (opcode.Opcode == "lwz")
 					{
-						if (opcode.Arguments[0].IsGPR(12) && opcode.Arguments[2].IsGPR(2))
+						if (opcode.Arguments[2].IsGPR(2))
 						{
 							int32_t offset = opcode.Arguments[1].Value;
-							r12 = *reinterpret_cast<const UInt32*>(r2 + offset);
+							const UInt32* tocAddress = reinterpret_cast<const UInt32*>(r2 + offset);
+							
+							// assume that each time we lwz something from r2 into r12 we're dealing with a transition vector
+							if (opcode.Arguments[0].IsGPR(12))
+							{
+								r12 = *tocAddress;
+							}
+							try
+							{
+								UInt32 pointedAddress = *tocAddress;
+								uint32_t opcodeAddress = allocator->ToIntPtr(range.Begin + i);
+								metadata.insert(std::make_pair(opcodeAddress, pointedAddress));
+							}
+							catch (Common::AccessViolationException& ex)
+							{ }
 						}
 					}
 					else if (opcode.Opcode == "bctr")

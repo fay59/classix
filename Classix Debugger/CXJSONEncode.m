@@ -57,7 +57,14 @@ NSString* CXJSONEncode(id<NSObject> object)
 		return CXJSONEncodeString((NSString*)object);
 	
 	if ([object isKindOfClass:[NSNumber class]])
+	{
+		NSNumber* number = (NSNumber*)object;
+		double value = [number doubleValue];
+		if (isnan(value) || !isfinite(value))
+			return @"null";
+		
 		return [object description];
+	}
 	
 	if ([object isKindOfClass:[NSDate class]])
 		return [object description];

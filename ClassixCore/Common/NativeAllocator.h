@@ -55,6 +55,8 @@ namespace Common
 	public:
 		static NativeAllocator* GetInstance();
 		
+		NativeAllocator();
+		
 		virtual uint8_t* Allocate(const AllocationDetails& details, size_t size) override;
 		virtual void Deallocate(void* address) override;
 		virtual const AllocationDetails* GetDetails(uint32_t address) const override;

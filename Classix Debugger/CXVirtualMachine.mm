@@ -220,6 +220,7 @@ struct ClassixCoreVM
 	std::vector<char> argvStrings;
 	std::vector<char> envpStrings;
 	
+	args = [NSArray arrayWithObjects:[args objectAtIndex:0], @"sDoSwapInUPP__Q27LThread4Init", nil];
 	for (NSString* arg in args)
 	{
 		const char* begin = arg.UTF8String;
@@ -287,17 +288,32 @@ struct ClassixCoreVM
 	Common::UInt32& argc = *(static_cast<Common::UInt32*>(*stack) + argvOffset - 1);
 	argc = argvOffsets.size();
 	
-	// set the stage
+	// set the registers
 	vm->state.r0 = 0;
 	vm->state.r1 = vm->allocator->ToIntPtr(&argc);
 	vm->state.r3 = args.count;
 	vm->state.r4 = vm->allocator->ToIntPtr(argvArea);
 	vm->state.r5 = vm->allocator->ToIntPtr(envArea);
 	
+	// this also goes to _IntEnv
+	using ClassixCore::DlfcnSymbolResolver;
+	if (CFM::SymbolResolver* resolver = vm->cfm.GetSymbolResolver("StdCLib"))
+	{
+		auto symbol = resolver->ResolveSymbol("__StdCLib_IntEnvInit");
+		NSAssert(symbol.Universe != CFM::SymbolUniverse::LostInTimeAndSpace, @"Found StdCLib but couldn't find __StdCLib_IntEnvInit!");
+		
+		uint32_t r31 = vm->state.r31;
+		PEF::TransitionVector* vector = reinterpret_cast<PEF::TransitionVector*>(symbol.Address);
+		void* intEnvInit = vm->allocator->ToPointer<void>(vector->EntryPoint);
+		vm->state.r2 = vector->TableOfContents;
+		vm->interp.Execute(intEnvInit);
+		vm->state.r31 = r31;
+	}
+	
 	NSArray* gpr = self.gpr;
 	NSArray* initialRegisters = @[
+		[gpr objectAtIndex:0],
 		[gpr objectAtIndex:1],
-		[gpr objectAtIndex:2],
 		[gpr objectAtIndex:3],
 		[gpr objectAtIndex:4],
 		[gpr objectAtIndex:5],
@@ -341,6 +357,12 @@ struct ClassixCoreVM
 			{
 				return [NSString stringWithCString:info.dli_sname encoding:NSUTF8StringEncoding];
 			}
+		}
+		else if (const auto details = allocator->GetDetails(address))
+		{
+			uint32_t offset = allocator->GetAllocationOffset(address);
+			std::string reason = details->GetAllocationDetails(offset);
+			return [NSString stringWithCString:reason.c_str() encoding:NSUTF8StringEncoding];
 		}
 	}
 	catch (Common::PPCRuntimeException& ex)
