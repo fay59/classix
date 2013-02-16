@@ -82,11 +82,16 @@ namespace Common
 		argv.push_back(arg);
 	}
 	
+	void StackPreparator::AddEnvironmentVariable(const std::string& env)
+	{
+		envp.push_back(env);
+	}
+	
 	void StackPreparator::AddEnvironmentVariable(const std::string &key, const std::string &value)
 	{
 		std::stringstream ss;
 		ss << key << '=' << value;
-		envp.push_back(ss.str());
+		AddEnvironmentVariable(ss.str());
 	}
 	
 	StackPreparator::StackInfo StackPreparator::WriteStack(char *stack, uint32_t virtualAddress, size_t stackSize)

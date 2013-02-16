@@ -43,7 +43,20 @@ namespace Common
 		size_t ArgumentCount() const;
 		
 		void AddArgument(const std::string& arg);
+		void AddEnvironmentVariable(const std::string& env);
 		void AddEnvironmentVariable(const std::string& key, const std::string& value);
+		
+		template<typename TIter>
+		void AddArguments(const TIter& begin, const TIter& end)
+		{
+			argv.insert(argv.end(), begin, end);
+		}
+		
+		template<typename TIter>
+		void AddEnvironmentVariables(const TIter& begin, const TIter& end)
+		{
+			envp.insert(envp.end(), begin, end);
+		}
 		
 		StackInfo WriteStack(char* stack, uint32_t virtualAddress, size_t stackSize);
 	};
