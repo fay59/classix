@@ -30,7 +30,7 @@ namespace PPCVM
 {
 	namespace Execution
 	{
-		class InterpreterException : std::exception
+		class InterpreterException : public std::exception
 		{
 			Common::PPCRuntimeException* reason;
 			uint32_t pc;
