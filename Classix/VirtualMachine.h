@@ -27,6 +27,7 @@
 #include "Interpreter.h"
 #include "LibraryResolver.h"
 #include "PEFLibraryResolver.h"
+#include "StackPreparator.h"
 #include <list>
 #include <algorithm>
 
@@ -63,6 +64,8 @@ namespace Classix
 		
 		static void AppendInteger(std::string& string, uint32_t integer);
 		
+		void InitIntEnv();
+		
 	public:
 		uint32_t StackSize;
 		
@@ -79,82 +82,24 @@ namespace Classix
 		template<typename TArgumentIterator, typename TEnvironIterator>
 		uint32_t operator()(TArgumentIterator argBegin, TArgumentIterator argEnd, TEnvironIterator envBegin, TEnvironIterator envEnd)
 		{
-			uint32_t argIndex = 0;
-			std::list<Common::AutoAllocation> allocations;
-			
-			// arguments
-			std::string argumentName = "Argument #";
-			size_t eraseBegin = argumentName.length();
-			for (TArgumentIterator iter = argBegin; iter != argEnd; iter++)
-			{
-				std::string argument = *iter;
-				AppendInteger(argumentName, argIndex);
-				argIndex++;
-				Common::AutoAllocation allocation = vm.allocator->AllocateAuto(argumentName, argument.length());
-				std::copy(argument.begin(), argument.end(), static_cast<char*>(*allocation));
-				
-				argumentName.erase(eraseBegin);
-				allocations.emplace_back(std::move(allocation));
-			}
-			
-			uint32_t argc = allocations.size();
-			Common::AutoAllocation argvAlloc = vm.allocator->AllocateAuto("Argument Array", argc * sizeof(uint32_t));
-			Common::UInt32* argv = static_cast<Common::UInt32*>(*argvAlloc);
-			argIndex = 0;
-			for (auto& allocation : allocations)
-			{
-				argv[argIndex] = allocation.GetVirtualAddress();
-				argIndex++;
-			}
-			
-			// environment
-			auto envAllocsBegin = allocations.end();
-			std::string environName = "Environment String #";
-			eraseBegin = environName.length();
-			for (TEnvironIterator iter = envBegin; iter != envEnd; iter++)
-			{
-				std::string environmentSetting = *iter;
-				AppendInteger(environName, argIndex);
-				argIndex++;
-				Common::AutoAllocation allocation = vm.allocator->AllocateAuto(argumentName, environmentSetting.length());
-				std::copy(environmentSetting.begin(), environmentSetting.end(), static_cast<char*>(*allocation));
-				
-				environName.erase(eraseBegin);
-				allocations.emplace_back(std::move(allocation));
-			}
-			
-			uint32_t envSize = allocations.size() - argc;
-			Common::AutoAllocation envpAlloc = vm.allocator->AllocateAuto("Environment Array", envSize * sizeof(uint32_t));
-			Common::UInt32* envp = static_cast<Common::UInt32*>(*argvAlloc);
-			argIndex = 0;
-			for (auto iter = envAllocsBegin; iter != allocations.end(); iter++)
-			{
-				envp[argIndex] = iter->GetVirtualAddress();
-				argIndex++;
-			}
-			envp[argIndex] = 0;
-			
-			// prepare to start
-			auto mainVector = vm.allocator->ToPointer<const PEF::TransitionVector>(mainSymbol.Address);
 			Common::AutoAllocation stack = vm.allocator->AllocateAuto("Stack", StackSize);
 			
-			// according to http://opensource.apple.com/source/Csu/Csu-47/start.s the following registers should be set to:
-			// r0: 0
-			// r1: stack ptr
-			// r2: (not set, but we set it to the executable's TOC anyways)
-			// r3: argc
-			// r4: argv
-			// r5: envp
-			// r27: (argc+1) * sizeof(char*), but that shouldn't matter
+			Common::StackPreparator stackPrep;
+			stackPrep.AddArguments(argBegin, argEnd);
+			stackPrep.AddEnvironmentVariables(envBegin, envEnd);
+			
+			auto mainVector = vm.allocator->ToPointer<const PEF::TransitionVector>(mainSymbol.Address);
+			auto result = stackPrep.WriteStack(static_cast<char*>(*stack), stack.GetVirtualAddress(), StackSize);
 			
 			vm.state.r0 = 0;
-			vm.state.r1 = stack.GetVirtualAddress() + StackSize - 12;
-			vm.state.r2 = mainVector->TableOfContents;
-			vm.state.r3 = argc;
-			vm.state.r4 = vm.allocator->ToIntPtr(argv);
-			vm.state.r5 = vm.allocator->ToIntPtr(envp);
-			vm.state.r27 = (argc + 1) * sizeof(uint32_t);
+			vm.state.r1 = vm.allocator->ToIntPtr(result.sp - 8);
+			vm.state.r3 = stackPrep.ArgumentCount();
+			vm.state.r4 = vm.allocator->ToIntPtr(result.argv);
+			vm.state.r5 = vm.allocator->ToIntPtr(result.envp);
 			
+			InitIntEnv();
+			
+			vm.state.r2 = mainVector->TableOfContents;
 			const void* entryPoint = vm.allocator->ToPointer<const void>(mainVector->EntryPoint);
 			vm.interpreter.Execute(entryPoint);
 			return vm.state.r3;

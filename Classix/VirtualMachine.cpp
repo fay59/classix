@@ -20,6 +20,7 @@
 //
 
 #include "VirtualMachine.h"
+#include "DlfcnSymbolResolver.h"
 
 namespace Classix
 {
@@ -29,14 +30,22 @@ namespace Classix
 		StackSize = 0x100000;
 	}
 	
-	void MainStub::AppendInteger(std::string &string, uint32_t integer)
+	void MainStub::InitIntEnv()
 	{
-		char digit = integer % 10 + '0';
-		int leftover = integer / 10;
-		if (leftover > 0)
-			AppendInteger(string, leftover);
-		
-		string += digit;
+		// arguments also go to _IntEnv
+		using ClassixCore::DlfcnSymbolResolver;
+		if (CFM::SymbolResolver* resolver = vm.fragmentManager.GetSymbolResolver("StdCLib"))
+		{
+			auto symbol = resolver->ResolveSymbol("__StdCLib_IntEnvInit");
+			assert(symbol.Universe != CFM::SymbolUniverse::LostInTimeAndSpace && "Found StdCLib but couldn't find __StdCLib_IntEnvInit!");
+			
+			uint32_t r31 = vm.state.r31;
+			PEF::TransitionVector* vector = reinterpret_cast<PEF::TransitionVector*>(symbol.Address);
+			void* intEnvInit = vm.allocator->ToPointer<void>(vector->EntryPoint);
+			vm.state.r2 = vector->TableOfContents;
+			vm.interpreter.Execute(intEnvInit);
+			vm.state.r31 = r31;
+		}
 	}
 	
 	uint32_t MainStub::operator()(const std::string& argv0)
