@@ -36,6 +36,7 @@
 #include "NativeCall.h"
 #include "CXReverseAllocationDetails.h"
 #include "InstructionDecoder.h"
+#include "StackPreparator.h"
 
 NSNumber* CXVirtualMachineGPRKey = @(CXRegisterGPR);
 NSNumber* CXVirtualMachineFPRKey = @(CXRegisterFPR);
@@ -214,86 +215,31 @@ struct ClassixCoreVM
 
 -(void)setArgv:(NSArray *)args envp:(NSDictionary *)env
 {
-	// set argv and envp
-	std::vector<size_t> argvOffsets;
-	std::vector<size_t> envpOffsets;
-	std::vector<char> argvStrings;
-	std::vector<char> envpStrings;
+	Common::StackPreparator stackPrep;
+	for (NSString* string in args)
+		stackPrep.AddArgument(string.UTF8String);
 	
-	args = [NSArray arrayWithObjects:[args objectAtIndex:0], @"sDoSwapInUPP__Q27LThread4Init", nil];
-	for (NSString* arg in args)
-	{
-		const char* begin = arg.UTF8String;
-		const char* end = begin + strlen(begin) + 1;
-		argvOffsets.push_back(argvStrings.size());
-		argvStrings.insert(argvStrings.end(), begin, end);
-	}
+	stackPrep.AddArgument("foo");
+	stackPrep.AddArgument("bar");
+	stackPrep.AddArgument("baz");
+	stackPrep.AddArgument("frob");
+	stackPrep.AddArgument("nicate");
 	
 	for (NSString* key in env)
 	{
-		const char* keyBegin = key.UTF8String;
-		const char* keyEnd = keyBegin + strlen(keyBegin);
-		envpOffsets.push_back(envpStrings.size());
-		envpStrings.insert(envpStrings.end(), keyBegin, keyEnd);
-		envpStrings.push_back('=');
-		
 		NSString* value = [env objectForKey:key];
-		const char* valueBegin = value.UTF8String;
-		const char* valueEnd = valueBegin + strlen(valueBegin) + 1;
-		envpStrings.insert(envpStrings.end(), valueBegin, valueEnd);
+		stackPrep.AddEnvironmentVariable(key.UTF8String, value.UTF8String);
 	}
 	
 	Common::AutoAllocation& stack = vm->stack;
-	memset(*stack, 0, CXStackSize);
-	
-	//  stack layout:
-	// +-------------+
-	// | string area |
-	// +-------------+
-	// |      0      |
-	// +-------------+
-	// |    env[n]   |
-	// +-------------+
-	//        :
-	// +-------------+
-	// |    env[0]   |
-	// +-------------+
-	// |      0      |
-	// +-------------+
-	// | arg[argc-1] |
-	// +-------------+
-	//        :
-	// +-------------+
-	// |    arg[0]   |
-	// +-------------+
-	// |     argc    | <-- sp
-	// +-------------+
-	
-	const uint32_t stackAddress = stack.GetVirtualAddress();
-	const NSUInteger stringAreaOffset = CXStackSize - envpStrings.size() - argvStrings.size();
-	char* stringArea = static_cast<char*>(*stack) + stringAreaOffset;
-	memcpy(stringArea, argvStrings.data(), argvStrings.size());
-	memcpy(stringArea + argvStrings.size(), envpStrings.data(), envpStrings.size());
-	
-	const NSUInteger envOffset = (stringAreaOffset - (envpOffsets.size() + 1) * sizeof(uint32_t)) / 4;
-	Common::UInt32* envArea = static_cast<Common::UInt32*>(*stack) + envOffset;
-	for (size_t i = 0; i < envpOffsets.size(); i++)
-		envArea[i] = stackAddress + stringAreaOffset + envpOffsets[i];
-	
-	const NSUInteger argvOffset = envOffset - argvOffsets.size() - 1;
-	Common::UInt32* argvArea = static_cast<Common::UInt32*>(*stack) + argvOffset;
-	for (size_t i = 0; i < argvOffsets.size(); i++)
-		argvArea[i] = stackAddress + stringAreaOffset + envpStrings.size() + argvOffsets[i];
-	
-	Common::UInt32& argc = *(static_cast<Common::UInt32*>(*stack) + argvOffset - 1);
-	argc = argvOffsets.size();
+	auto result = stackPrep.WriteStack(static_cast<char*>(*stack), stack.GetVirtualAddress(), CXStackSize);
 	
 	// set the registers
 	vm->state.r0 = 0;
-	vm->state.r1 = vm->allocator->ToIntPtr(&argc);
-	vm->state.r3 = args.count;
-	vm->state.r4 = vm->allocator->ToIntPtr(argvArea);
-	vm->state.r5 = vm->allocator->ToIntPtr(envArea);
+	vm->state.r1 = vm->allocator->ToIntPtr(result.sp - 8);
+	vm->state.r3 = stackPrep.ArgumentCount();
+	vm->state.r4 = vm->allocator->ToIntPtr(result.argv);
+	vm->state.r5 = vm->allocator->ToIntPtr(result.envp);
 	
 	// this also goes to _IntEnv
 	using ClassixCore::DlfcnSymbolResolver;
@@ -504,7 +450,7 @@ struct ClassixCoreVM
 	try
 	{
 		eip = vm->interp.ExecuteOne(eip);
-		self.pc = vm->allocator->ToIntPtr(const_cast<void*>(eip));
+		self.pc = vm->allocator->ToIntPtr(eip);
 		self.lastError = nil;
 	}
 	catch (PPCVM::Execution::InterpreterException& ex)
