@@ -125,6 +125,11 @@ namespace Common
 		: AsBigEndian(0)
 		{ }
 		
+		inline explicit BigEndianInt(TNativeInt nativeInt)
+		{
+			Set(nativeInt);
+		}
+		
 		static inline self FromBigEndian(TNativeInt value)
 		{
 			self result;
