@@ -93,6 +93,7 @@ namespace Common
 	uint8_t* NativeAllocator::Allocate(const AllocationDetails& reason, size_t size)
 	{
 		uint8_t* allocation = static_cast<uint8_t*>(malloc(size));
+		memset(allocation, ScribbleAllocPattern, size);
 		uint32_t address = ToIntPtr(allocation);
 		ranges.emplace(std::make_pair(address, AllocatedRange(allocation, allocation + size, reason)));
 		return allocation;

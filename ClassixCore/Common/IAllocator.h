@@ -76,6 +76,13 @@ namespace Common
 		
 #pragma mark -
 	public:
+		enum IAllocatorConstants
+		{
+			ScribbleAllocPattern = 0xaf,
+			ScribbleFreePattern = 0xbe,
+			ScribbleStackPattern = 0xcd
+		};
+		
 		uint8_t* Allocate(const std::string& zoneName, size_t size);
 		AutoAllocation AllocateAuto(const std::string& zoneName, size_t size);
 		AutoAllocation AllocateAuto(const AllocationDetails& details, size_t size);
