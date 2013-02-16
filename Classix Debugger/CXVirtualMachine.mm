@@ -219,12 +219,6 @@ struct ClassixCoreVM
 	for (NSString* string in args)
 		stackPrep.AddArgument(string.UTF8String);
 	
-	stackPrep.AddArgument("foo");
-	stackPrep.AddArgument("bar");
-	stackPrep.AddArgument("baz");
-	stackPrep.AddArgument("frob");
-	stackPrep.AddArgument("nicate");
-	
 	for (NSString* key in env)
 	{
 		NSString* value = [env objectForKey:key];
