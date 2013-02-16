@@ -37,7 +37,8 @@
 		@selector(representationsOfSPR:),
 		@selector(representationsOfCR:),
 		@selector(representationsOfMemoryAddress:),
-		@selector(jsonize:)
+		@selector(jsonize:),
+		@selector(setDisplayName:ofLabel:)
 	};
 	
 	for (int i = 0; i < sizeof validSelectors / sizeof(SEL); i++)
@@ -152,6 +153,11 @@
 		[breakpoints addObject:number];
 		return YES;
 	}
+}
+
+-(void)setDisplayName:(NSString *)displayName ofLabel:(NSString *)labelUniqueID
+{
+	[document.disassembly setDisplayName:displayName forUniqueName:labelUniqueID];
 }
 
 -(void)dealloc

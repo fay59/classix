@@ -45,6 +45,8 @@
 -(NSArray*)breakpoints;
 -(BOOL)toggleBreakpoint:(uint32_t)address;
 
+-(void)setDisplayName:(NSString*)displayName ofLabel:(NSString*)labelUniqueID;
+
 -(void)dealloc;
 
 @end

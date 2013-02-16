@@ -184,3 +184,20 @@ span.gpr, span.fpr, span.spr, span.cr, span.ptr {
 	font-weight: bold;
 	text-align: right;
 }
+
+.func-name {
+	-webkit-transition-property: border-color;
+	box-sizing: border-box;
+	width: 100%;
+	font-family: Consolas, monospace;
+	font-size: 9pt;
+	border: 2px rgba(238,238,238, 0) inset;
+}
+
+.func-name:hover {
+	border: 2px rgba(238, 238, 238, 0.5) inset;
+}
+
+.func-name:focus {
+	border: 2px rgb(238, 238, 238) inset;
+}

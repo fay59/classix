@@ -264,3 +264,22 @@ document.addEventListener("click", function(event)
 	}
 	document.body.className = "";
 });
+
+document.addEventListener("keydown", function(event)
+{
+	if (event.which == 13)
+	{
+		event.target.blur();
+		event.stopPropagation();
+		event.preventDefault();
+	}
+});
+
+document.addEventListener("change", function(event)
+{
+	var target = event.target;
+	if (target.classList.contains("func-name"))
+	{
+		cxdb.setDisplayName_ofLabel_(target.value, target.id);
+	}
+});

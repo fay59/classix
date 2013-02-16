@@ -39,6 +39,15 @@
 
 @implementation CXDBURLProtocol
 
+static NSString* CXHTMLSpecialChars(NSString* string)
+{
+	NSMutableString* mutable = [string mutableCopy];
+	[mutable replaceOccurrencesOfString:@"\"" withString:@"&amp;" options:0 range:NSMakeRange(0, mutable.length)];
+	[mutable replaceOccurrencesOfString:@"<" withString:@"&lt;" options:0 range:NSMakeRange(0, mutable.length)];
+	[mutable replaceOccurrencesOfString:@">" withString:@"&gt;" options:0 range:NSMakeRange(0, mutable.length)];
+	return [mutable autorelease];
+}
+
 +(NSString*)CXDBProtocolScheme
 {
 	return @"cxdb";
@@ -153,7 +162,7 @@
 		
 		NSString* labelUniqueName = codeLabel.uniqueName;
 		NSString* labelDisplayName = [disassembly displayNameForUniqueName:labelUniqueName];
-		[xhtmlDisassembly appendFormat:@"<tr><th/><th colspan=\"5\" id=\"%@\">%@</th></tr>", labelUniqueName, labelDisplayName];
+		[xhtmlDisassembly appendFormat:@"<tr><th/><th colspan=\"5\"><input type=\"text\" id=\"%@\" class=\"func-name\" value=\"%@\"/></th></tr>", labelUniqueName, labelDisplayName];
 		for (NSDictionary* instruction in instructions)
 		{
 			uint32_t location = [[instruction objectForKey:@"location"] integerValue];
