@@ -25,6 +25,7 @@
 #import "CXJSONEncode.h"
 #import "CXDocumentController.h"
 #import "CXRegister.h"
+#import "CXHexFormatter.h"
 
 #include "SymbolResolver.h"
 #include "IAllocator.h"
@@ -104,6 +105,10 @@ static NSNib* uiNib;
 	stackTraceTable.dataSource = stackTrace;
 	stackTraceTable.delegate = stackTrace;
 	[self reloadStackTrace];
+	
+	CXHexFormatter* formatter = [[[CXHexFormatter alloc] init] autorelease];
+	NSTableColumn* column = [outline tableColumnWithIdentifier:@"Value"];
+	[column.dataCell setFormatter:formatter];
 	
 	outline.delegate = parent.vm;
 	outline.dataSource = parent.vm;

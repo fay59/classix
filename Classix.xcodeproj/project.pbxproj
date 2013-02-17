@@ -87,6 +87,7 @@
 		DC9E43BF165E896A00AAC682 /* CXDBURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9E43BE165E896A00AAC682 /* CXDBURLProtocol.m */; };
 		DC9E43C3165E8E6900AAC682 /* CXDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9E43C2165E8E6900AAC682 /* CXDocumentController.m */; };
 		DC9E43CB165EA22400AAC682 /* CXJSONEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9E43CA165EA22400AAC682 /* CXJSONEncode.m */; };
+		DCB4970916D0883800F38D0A /* CXHexFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB4970816D0883800F38D0A /* CXHexFormatter.m */; };
 		DCC4B0E41662FAC100D21C90 /* CXVirtualMachine.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCC4B0E31662FAC100D21C90 /* CXVirtualMachine.mm */; };
 		DCC4B0E91662FBC200D21C90 /* CXRegister.m in Sources */ = {isa = PBXBuildFile; fileRef = DCC4B0E81662FBC200D21C90 /* CXRegister.m */; };
 		DCCA432D167EF7C4001D9AD2 /* CXDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = DCCA432C167EF7C4001D9AD2 /* CXDocument.xib */; };
@@ -231,6 +232,8 @@
 		DCB00B9D163B6DAD003C88CA /* MachineState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MachineState.cpp; sourceTree = "<group>"; };
 		DCB00B9E163B6DAD003C88CA /* MachineState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachineState.h; sourceTree = "<group>"; };
 		DCB00BA1163B9367003C88CA /* BigEndian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigEndian.h; sourceTree = "<group>"; };
+		DCB4970716D0883800F38D0A /* CXHexFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXHexFormatter.h; sourceTree = "<group>"; };
+		DCB4970816D0883800F38D0A /* CXHexFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXHexFormatter.m; sourceTree = "<group>"; };
 		DCBCB091166019F300FDCC35 /* step-into.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "step-into.png"; sourceTree = "<group>"; };
 		DCBCB092166019F300FDCC35 /* step-over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "step-over.png"; sourceTree = "<group>"; };
 		DCC3DC3016338A7900792F4A /* Classix */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Classix; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -409,6 +412,8 @@
 				DC0D42B2165EE4F400883586 /* CXObjcDisassemblyWriter.h */,
 				DCFC0CFD166DA2CA0069AE5E /* CXCodeLabel.h */,
 				DCFC0CFE166DA2CA0069AE5E /* CXCodeLabel.m */,
+				DCB4970716D0883800F38D0A /* CXHexFormatter.h */,
+				DCB4970816D0883800F38D0A /* CXHexFormatter.m */,
 				DCCA432C167EF7C4001D9AD2 /* CXDocument.xib */,
 				DC4C6463165B62910097288E /* CXDebugUI.xib */,
 				DC4C6466165B62920097288E /* MainMenu.xib */,
@@ -649,8 +654,8 @@
 				DC5ED1BC167CFF8100C249B7 /* CXStackTrace.m */,
 				DCCBBD34167AFF2B00BEAF3C /* CXStackFrame.h */,
 				DCCBBD35167AFF2B00BEAF3C /* CXStackFrame.m */,
-				DC86E080166C03730027F40E /* CXReverseAllocationDetails.cpp */,
 				DC86E081166C03730027F40E /* CXReverseAllocationDetails.h */,
+				DC86E080166C03730027F40E /* CXReverseAllocationDetails.cpp */,
 			);
 			name = Debugging;
 			sourceTree = "<group>";
@@ -843,6 +848,7 @@
 				DCCBBD36167AFF2B00BEAF3C /* CXStackFrame.m in Sources */,
 				DC5ED1BD167CFF8100C249B7 /* CXStackTrace.m in Sources */,
 				DC7ECFD816850D830063F14E /* CXDebugUIController.mm in Sources */,
+				DCB4970916D0883800F38D0A /* CXHexFormatter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
