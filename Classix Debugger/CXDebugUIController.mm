@@ -120,6 +120,10 @@ static NSNib* uiNib;
 	[uiNib instantiateWithOwner:self topLevelObjects:&topLevelObjects];
 	[topLevelObjects retain];
 	[self orderFront];
+	
+	NSURL* executable = parent.executableURL;
+	windowController.window.representedURL = executable;
+	windowController.window.title = executable.lastPathComponent;;
 }
 
 -(void)orderFront

@@ -215,7 +215,6 @@ static NSString* CXDebugDocumentUTI = @"com.felixcloutier.classix.document";
 		
 		debugUIController = [[CXDebugUIController alloc] initWithDocument:self];
 		[debugUIController instantiate];
-		debugUIController.windowController.document = self;
 	}
 	else
 	{
