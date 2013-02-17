@@ -37,6 +37,12 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 	return CXFindNextSmaller(sortedArray, number, 0, sortedArray.count);
 }
 
+@interface CXDisassembly (Private)
+
+-(NSString*)findBetterNameForLabel:(CXCodeLabel*)label;
+
+@end
+
 @implementation CXDisassembly
 
 -(id)initWithVirtualMachine:(CXVirtualMachine*)aVm
@@ -169,11 +175,63 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 	if (CXCodeLabel* label = [self labelDisassemblyForUniqueName:uniqueName])
 	{
 		if (NSString* displayName = [vm symbolNameOfAddress:label.address])
+		{
+			if ([displayName hasPrefix:@"Instantiable section"])
+			{
+				// that's not a very good name... can we come up with anything better?
+				if (NSString* betterName = [self findBetterNameForLabel:label])
+				{
+					return betterName;
+				}
+			}
+			
 			return displayName;
+		}
 		return label.label;
 	}
 	
 	return @"<unnamed>";
+}
+
+-(NSString*)findBetterNameForLabel:(CXCodeLabel *)label
+{
+	if (label.isFunction)
+	{
+		// is this function a stub for an import?
+		// use a dirty cheap approximative to find out: stubs are usually 6 instructions and end with a bctr that
+		// has metadata
+		if (label.length == 6)
+		{
+			NSDictionary* lastInstruction = [label.instructions objectAtIndex:5];
+			if (NSString* description = [lastInstruction objectForKey:@"target"])
+			{
+				return [NSString stringWithFormat:@"stub for %@", description];
+			}
+		}
+	}
+	else
+	{
+		// is this label an offset of a named function?
+		NSInteger labelIndex = [orderedAddresses indexOfObject:@(label.address)];
+		labelIndex--;
+		while (labelIndex > -1)
+		{
+			uint32_t address = [[orderedAddresses objectAtIndex:labelIndex] unsignedIntValue];
+			CXCodeLabel* previousLabel = [self labelDisassemblyForAddress:address];
+			if (previousLabel.isFunction)
+			{
+				NSString* functionName = [self displayNameForUniqueName:previousLabel.uniqueName];
+				if (![functionName hasPrefix:@"Instantiable section"])
+				{
+					uint32_t offset = label.address - previousLabel.address;
+					return [NSString stringWithFormat:@"%@ +%u", functionName, offset];
+				}
+			}
+			labelIndex--;
+		}
+	}
+	
+	return nil;
 }
 
 -(void)setDisplayName:(NSString *)displayName forUniqueName:(NSString *)uniqueName

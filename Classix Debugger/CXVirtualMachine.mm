@@ -298,7 +298,7 @@ struct ClassixCoreVM
 				return [NSString stringWithCString:info.dli_sname encoding:NSUTF8StringEncoding];
 			}
 		}
-		else if (const auto details = allocator->GetDetails(address))
+		else if (const Common::AllocationDetails* details = allocator->GetDetails(address))
 		{
 			uint32_t offset = allocator->GetAllocationOffset(address);
 			std::string reason = details->GetAllocationDetails(offset);
