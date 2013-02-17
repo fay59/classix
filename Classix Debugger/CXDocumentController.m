@@ -66,6 +66,12 @@
 	[super removeDocument:document];
 }
 
+-(NSString*)defaultType
+{
+	// this ensures that the app won't try to create a new untitled document
+	return nil;
+}
+
 -(void)dealloc
 {
 	[docToId release];

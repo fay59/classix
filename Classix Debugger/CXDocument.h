@@ -31,14 +31,14 @@
 	CXDisassembly* disassembly;
 	
 	CXDebugUIController* debugUIController;
-	NSString* executablePath;
+	NSURL* executableURL;
 	NSMutableArray* arguments;
 	NSMutableDictionary* environment;
 	
 	NSPopUpButton* entryPoints;
 }
 
-@property (readonly) NSString* executablePath;
+@property (readonly) NSURL* executableURL;
 @property (readonly) NSArray* arguments;
 @property (readonly) NSMutableDictionary* environment;
 
@@ -47,6 +47,10 @@
 @property (readonly) CXDebugUIController* debug;
 
 @property (assign) IBOutlet NSPopUpButton* entryPoints;
+
+-(BOOL)readExecutableFromURL:(NSURL*)url error:(NSError**)error;
+-(BOOL)readDebugDocumentFromURL:(NSURL*)url error:(NSError**)error;
+-(BOOL)useExecutableURL:(NSURL*)url error:(NSError**)error;
 
 -(IBAction)start:(id)sender;
 

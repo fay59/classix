@@ -23,17 +23,29 @@
 #include "IAllocator.h"
 #include "PEFSymbolResolver.h"
 
-
-
 @implementation CXDocument
+
+static NSString* CXExecutableUTI = @"public.executable";
+static NSString* CXDebugDocumentUTI = @"com.felixcloutier.classix.document";
 
 @synthesize vm;
 @synthesize disassembly;
 @synthesize arguments;
 @synthesize environment;
-@synthesize executablePath;
 @synthesize debug = debugUIController;
 @synthesize entryPoints;
+@synthesize executableURL;
+
+-(id)init
+{
+	if (!(self = [super init]))
+		return nil;
+	
+	arguments = [[NSMutableArray alloc] init];
+	environment = [[NSMutableDictionary alloc] init];
+	
+	return self;
+}
 
 -(NSString *)windowNibName
 {
@@ -59,7 +71,7 @@
 		const SymbolResolver* resolver = iter->second;
 		if (const std::string* fullPath = resolver->FilePath())
 		{
-			if (*fullPath == executablePath.UTF8String)
+			if (*fullPath == executableURL.path.UTF8String)
 			{
 				std::vector<ResolvedSymbol> executableEntryPoints = resolver->GetEntryPoints();
 				for (const ResolvedSymbol& entryPoint : executableEntryPoints)
@@ -88,33 +100,115 @@
 		return NO;
 	}
 	
-	vm = [[CXVirtualMachine alloc] init];
-	executablePath = [url.path retain];
-	if ([vm loadClassicExecutable:executablePath error:outError])
+	if (UTTypeConformsTo((CFStringRef)typeName, (CFStringRef)CXDebugDocumentUTI))
 	{
-		disassembly = [[CXDisassembly alloc] initWithVirtualMachine:vm];
+		return [self readDebugDocumentFromURL:url error:outError];
+	}
+	else if (UTTypeConformsTo((CFStringRef)typeName, (CFStringRef)CXExecutableUTI))
+	{
+		return [self readExecutableFromURL:url error:outError];
+	}
+	
+	return NO;
+}
+
+-(BOOL)writeToURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError **)outError
+{
+	NSData* bookmark = [executableURL bookmarkDataWithOptions:NSURLBookmarkCreationPreferFileIDResolution includingResourceValuesForKeys:nil relativeToURL:nil error:outError];
+	if (bookmark == nil)
+	{
+		return NO;
+	}
+	
+	NSMutableArray* saveArguments = [arguments mutableCopy];
+	[saveArguments removeObjectAtIndex:0];
+	
+	NSDictionary* saveInfo = @{
+		@"executable": bookmark,
+		@"argv": saveArguments,
+		@"envp": environment,
+		@"labels": disassembly.displayNames
+	};
+	
+	return [saveInfo writeToURL:url atomically:YES];
+}
+
+-(void)dealloc
+{
+	[vm release];
+	[disassembly release];
+	
+	[debugUIController release];
+	[executableURL release];
+	[arguments release];
+	[environment release];
+	
+	[super dealloc];
+}
+
+#pragma mark -
+#pragma mark Non-overrides
+
+-(BOOL)readDebugDocumentFromURL:(NSURL *)url error:(NSError **)error
+{
+	NSDictionary* savedSettings = [[[NSDictionary alloc] initWithContentsOfURL:url] autorelease];
+	if (savedSettings != nil)
+	{
+		NSData* bookmark = [savedSettings objectForKey:@"executable"];
+		NSURL* savedURL = [NSURL URLByResolvingBookmarkData:bookmark options:NSURLBookmarkResolutionWithoutUI relativeToURL:nil bookmarkDataIsStale:NULL error:error];
+		if (savedURL != nil)
+		{
+			if ([self useExecutableURL:savedURL error:error])
+			{
+				[environment release];
+				environment = [[savedSettings objectForKey:@"envp"] mutableCopy];
+				
+				[arguments removeAllObjects];
+				[arguments addObject:executableURL.path];
+				[arguments addObjectsFromArray:[savedSettings objectForKey:@"argv"]];
+				
+				disassembly.displayNames = [savedSettings objectForKey:@"labels"];
+				return YES;
+			}
+		}
+	}
+	
+	return NO;
+}
+
+-(BOOL)readExecutableFromURL:(NSURL *)url error:(NSError **)error
+{
+	if ([self useExecutableURL:url error:error])
+	{
+		self.fileURL = nil;
+		self.displayName = url.lastPathComponent;
+		self.fileType = CXDebugDocumentUTI;
+		[self updateChangeCount:1];
 		return YES;
 	}
 	
 	return NO;
 }
 
--(void)dealloc
+-(BOOL)useExecutableURL:(NSURL *)path error:(NSError **)error
 {
-	[debugUIController release];
-	[executablePath release];
-	[super dealloc];
+	executableURL = [path copy];
+	vm = [[CXVirtualMachine alloc] init];
+	if ([vm loadClassicExecutable:executableURL.path error:error])
+	{
+		disassembly = [[CXDisassembly alloc] initWithVirtualMachine:vm];
+		arguments = [[NSMutableArray alloc] initWithObjects:executableURL.path, nil];
+		return YES;
+	}
+	return NO;
 }
-
-#pragma mark -
-#pragma mark UI Methods
 
 -(IBAction)start:(id)sender
 {
 	if (debugUIController == nil)
 	{
 		// FIXME ugly
-		[vm setArgv:@[executablePath] envp:@{}];
+		[vm setArgv:arguments envp:environment];
 		
 		uint32_t transitionAddress = [entryPoints selectedItem].tag;
 		[vm transitionByAddress:transitionAddress];

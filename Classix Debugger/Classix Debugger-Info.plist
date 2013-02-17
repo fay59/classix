@@ -14,13 +14,36 @@
 			<key>CFBundleTypeIconFile</key>
 			<string></string>
 			<key>CFBundleTypeName</key>
-			<string>DocumentType</string>
+			<string>Classix Debug Environment</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>????</string>
 			</array>
 			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.felixcloutier.classix.document</string>
+			</array>
+			<key>NSDocumentClass</key>
+			<string>CXDocument</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Mac OS Classic Application</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>APPL</string>
+				<string>stub</string>
+				<string>MPST</string>
+			</array>
+			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.felixcloutier.classix.executable</string>
+				<string>com.apple.application-file</string>
+			</array>
 			<key>NSDocumentClass</key>
 			<string>CXDocument</string>
 		</dict>
@@ -53,5 +76,51 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>com.apple.property-list</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Classix Debug Environment</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.felixcloutier.classix.document</string>
+			<key>UTTypeReferenceURL</key>
+			<string>https://github.com/zneak/classix</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>ix</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.executable</string>
+				<string>public.item</string>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Mac OS Classic Program</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.felixcloutier.classix.executable</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>com.apple.ostype</key>
+				<array>
+					<string>APPL</string>
+					<string>stub</string>
+					<string>MPST</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>
