@@ -23,6 +23,12 @@
 #include "IAllocator.h"
 #include "PEFSymbolResolver.h"
 
+@interface CXDocument (Private)
+
+-(void)notifyDisassembly:(CXDisassembly*)disasm changedDisplayNameOfLabel:(NSString*)label;
+
+@end
+
 @implementation CXDocument
 
 static NSString* CXExecutableUTI = @"public.executable";
@@ -183,7 +189,7 @@ static NSString* CXDebugDocumentUTI = @"com.felixcloutier.classix.document";
 		self.fileURL = nil;
 		self.displayName = url.lastPathComponent;
 		self.fileType = CXDebugDocumentUTI;
-		[self updateChangeCount:1];
+		[self updateChangeCount:NSChangeDone];
 		return YES;
 	}
 	
@@ -197,6 +203,7 @@ static NSString* CXDebugDocumentUTI = @"com.felixcloutier.classix.document";
 	if ([vm loadClassicExecutable:executableURL.path error:error])
 	{
 		disassembly = [[CXDisassembly alloc] initWithVirtualMachine:vm];
+		[disassembly registerNameChangeCallbackObject:self selector:@selector(notifyDisassembly:changedDisplayNameOfLabel:)];
 		arguments = [[NSMutableArray alloc] initWithObjects:executableURL.path, nil];
 		return YES;
 	}
@@ -220,6 +227,11 @@ static NSString* CXDebugDocumentUTI = @"com.felixcloutier.classix.document";
 	{
 		[debugUIController orderFront];
 	}
+}
+
+-(void)notifyDisassembly:(CXDisassembly*)disasm changedDisplayNameOfLabel:(NSString*)label
+{
+	[self updateChangeCount:NSChangeDone];
 }
 
 @end

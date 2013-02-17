@@ -10,6 +10,8 @@
 #import "CXVirtualMachine.h"
 #import "CXCodeLabel.h"
 
+struct CXDisassemblyCXX;
+
 @interface CXDisassembly : NSObject
 {
 	CXVirtualMachine* vm;
@@ -17,6 +19,7 @@
 	NSDictionary* addressesToUniqueNames;
 	NSDictionary* disassembly;
 	NSArray* orderedAddresses;
+	struct CXDisassemblyCXX* cxx;
 }
 
 @property (copy) NSMutableDictionary* displayNames;
@@ -33,6 +36,9 @@
 
 -(NSString*)displayNameForUniqueName:(NSString*)uniqueName;
 -(void)setDisplayName:(NSString*)displayName forUniqueName:(NSString*)uniqueName;
+
+-(void)registerNameChangeCallbackObject:(id)target selector:(SEL)selector;
+-(void)unregisterNameChangeCallbackObject:(id)target;
 
 -(void)dealloc;
 

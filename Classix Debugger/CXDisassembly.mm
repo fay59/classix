@@ -7,10 +7,56 @@
 //
 
 #import "CXDisassembly.h"
+#include <set>
 #include "FragmentManager.h"
 #include "PEFSymbolResolver.h"
 #include "FancyDisassembler.h"
 #include "CXObjcDisassemblyWriter.h"
+
+struct CXDisassemblyCXX
+{
+	struct Callback
+	{
+		id target;
+		SEL selector;
+		
+		Callback(id target, SEL selector)
+		{
+			this->target = [target retain];
+			this->selector = selector;
+		}
+		
+		Callback(const Callback& that)
+		{
+			this->target = [that.target retain];
+			this->selector = that.selector;
+		}
+		
+		Callback(Callback&& that)
+		{
+			this->target = that.target;
+			that.target = nil;
+			this->selector = that.selector;
+		}
+		
+		void operator()(CXDisassembly* disasm, NSString* uniqueName) const
+		{
+			[target performSelector:selector withObject:disasm withObject:uniqueName];
+		}
+		
+		bool operator<(const Callback& that) const
+		{
+			return target < that.target;
+		}
+		
+		~Callback()
+		{
+			[target release];
+		}
+	};
+	
+	std::set<Callback> callbacks;
+};
 
 static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number, NSUInteger partitionBegin, NSUInteger size)
 {
@@ -91,6 +137,7 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 	addressesToUniqueNames = [uniqueNames copy];
 	disassembly = [disassemblyDictionary copy];
 	displayNames = [[NSMutableDictionary alloc] init];
+	cxx = new CXDisassemblyCXX;
 	
 	return self;
 }
@@ -243,6 +290,18 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 -(void)setDisplayName:(NSString *)displayName forUniqueName:(NSString *)uniqueName
 {
 	[displayNames setObject:displayName forKey:uniqueName];
+	for (const CXDisassemblyCXX::Callback& callback : cxx->callbacks)
+		callback(self, uniqueName);
+}
+
+-(void)registerNameChangeCallbackObject:(id)target selector:(SEL)selector
+{
+	cxx->callbacks.emplace(target, selector);
+}
+
+-(void)unregisterNameChangeCallbackObject:(id)target
+{
+	cxx->callbacks.erase(CXDisassemblyCXX::Callback(target, NULL));
 }
 
 -(void)dealloc
@@ -252,6 +311,8 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 	[disassembly release];
 	[orderedAddresses release];
 	[vm release];
+	delete cxx;
+	
 	[super dealloc];
 }
 
