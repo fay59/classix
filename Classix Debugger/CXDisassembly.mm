@@ -200,12 +200,17 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 		// is this function a stub for an import?
 		// use a dirty cheap approximative to find out: stubs are usually 6 instructions and end with a bctr that
 		// has metadata
-		if (label.length == 6)
+		if (label.length == 6 * sizeof(PPCVM::Instruction))
 		{
 			NSDictionary* lastInstruction = [label.instructions objectAtIndex:5];
-			if (NSString* description = [lastInstruction objectForKey:@"target"])
+			id description = [lastInstruction objectForKey:@"target"];
+			if (description != nil && description != NSNull.null)
 			{
-				return [NSString stringWithFormat:@"stub for %@", description];
+				uint32_t address = [description unsignedIntValue];
+				if (NSString* displayName = [vm symbolNameOfAddress:address])
+				{
+					return [NSString stringWithFormat:@"stub for %@", displayName];
+				}
 			}
 		}
 	}
@@ -226,6 +231,7 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 					uint32_t offset = label.address - previousLabel.address;
 					return [NSString stringWithFormat:@"%@ +%u", functionName, offset];
 				}
+				break;
 			}
 			labelIndex--;
 		}
