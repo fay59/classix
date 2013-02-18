@@ -231,9 +231,9 @@ struct ClassixCoreVM
 	// set the registers
 	vm->state.r0 = 0;
 	vm->state.r1 = vm->allocator->ToIntPtr(result.sp - 8);
-	vm->state.r3 = stackPrep.ArgumentCount();
-	vm->state.r4 = vm->allocator->ToIntPtr(result.argv);
-	vm->state.r5 = vm->allocator->ToIntPtr(result.envp);
+	vm->state.r3 = vm->state.r27 = stackPrep.ArgumentCount();
+	vm->state.r4 = vm->state.r28 = vm->allocator->ToIntPtr(result.argv);
+	vm->state.r5 = vm->state.r29 = vm->allocator->ToIntPtr(result.envp);
 	
 	// this also goes to _IntEnv
 	using ClassixCore::DlfcnSymbolResolver;
