@@ -21,6 +21,8 @@
 
 #include <cstdio>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <iomanip>
 #include <memory>
 #include <map>
@@ -55,21 +57,7 @@ static char classChars[] = {
 	[PEF::SymbolClasses::GlueSymbol] = 'G'
 };
 
-static void loadTest(const std::string& path)
-{
-	CFM::FragmentManager fragmentManager;
-	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::GetInstance(), fragmentManager);
-	ClassixCore::DlfcnLibraryResolver dlfcnResolver(Common::NativeAllocator::GetInstance());
-	
-	dlfcnResolver.RegisterLibrary("StdCLib");
-	
-	fragmentManager.LibraryResolvers.push_back(&pefResolver);
-	fragmentManager.LibraryResolvers.push_back(&dlfcnResolver);
-	
-	fragmentManager.LoadContainer(path);
-}
-
-static void listExports(const std::string& path)
+static int listExports(const std::string& path)
 {
 	Common::IAllocator* allocator = Common::NativeAllocator::GetInstance();
 	Common::FileMapping mapping(path);
@@ -145,9 +133,10 @@ static void listExports(const std::string& path)
 	}
 	
 	std::cout << endline;
+	return 0;
 }
 
-static void listImports(const std::string& path)
+static int listImports(const std::string& path)
 {
 	Common::FileMapping mapping(path);
 	PEF::Container container(Common::NativeAllocator::GetInstance(), mapping.begin(), mapping.end());
@@ -160,9 +149,10 @@ static void listImports(const std::string& path)
 			std::cout << "  [" << classChars[symbol.Class] << "] " << symbol.Name << endline;
 		std::cout << endline;
 	}
+	return 0;
 }
 
-static void disassemble(const std::string& path)
+static int disassemble(const std::string& path)
 {
 	Common::IAllocator* allocator = Common::NativeAllocator::GetInstance();
 	CFM::FragmentManager fragmentManager;
@@ -180,26 +170,24 @@ static void disassemble(const std::string& path)
 		if (CFM::PEFSymbolResolver* pefResolver = dynamic_cast<CFM::PEFSymbolResolver*>(resolver))
 		{
 			PEF::Container& container = pefResolver->GetContainer();
-			OStreamDisassemblyWriter writer(std::cout);
+			OStreamDisassemblyWriter writer(allocator, std::cout);
 			PPCVM::Disassembly::FancyDisassembler(allocator).Disassemble(container, writer);
 		}
 		else
 		{
 			std::cerr << path << " is loadable, but is not a PEF container" << std::endl;
+			return -1;
 		}
 	}
 	else
 	{
 		std::cerr << "Couln't load " << path << std::endl;
+		return -2;
 	}
+	return 0;
 }
 
-static void run(const std::string& path)
-{
-	throw std::logic_error("direct main invocation is not supported");
-}
-
-static void runMPW(const std::string& path, int argc, const char* argv[], const char* envp[])
+static int run(const std::string& path, int argc, const char* argv[], const char* envp[])
 {
 	ClassixCore::DlfcnLibraryResolver dlfcnResolver(Common::NativeAllocator::GetInstance());
 	dlfcnResolver.RegisterLibrary("StdCLib");
@@ -208,21 +196,59 @@ static void runMPW(const std::string& path, int argc, const char* argv[], const 
 	vm.AddLibraryResolver(dlfcnResolver);
 	
 	auto stub = vm.LoadMainContainer(path);
-	stub(argc, argv, envp);
+	return stub(argc, argv, envp);
+}
+
+static int inflateAndDump(const std::string& path, const std::string& targetDir)
+{
+	Common::IAllocator* allocator = Common::NativeAllocator::GetInstance();
+	CFM::FragmentManager fragmentManager;
+	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::GetInstance(), fragmentManager);
+	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator);
+	
+	dlfcnResolver.RegisterLibrary("StdCLib");
+	
+	fragmentManager.LibraryResolvers.push_back(&pefResolver);
+	fragmentManager.LibraryResolvers.push_back(&dlfcnResolver);
+	
+	if (fragmentManager.LoadContainer(path))
+	{
+		for (auto iter = fragmentManager.Begin(); iter != fragmentManager.End(); iter++)
+		{
+			if (CFM::PEFSymbolResolver* resolver = dynamic_cast<CFM::PEFSymbolResolver*>(iter->second))
+			{
+				PEF::Container& container = resolver->GetContainer();
+				for (PEF::InstantiableSection& section : container)
+				{
+					std::stringstream pathSS;
+					pathSS << targetDir << '/' << section.Name;
+					std::fstream fileOut(pathSS.str(), std::ios_base::out | std::ios_base::binary);
+					fileOut.write(reinterpret_cast<char*>(section.Data), section.Size());
+				}
+			}
+		}
+	}
+	else
+	{
+		std::cerr << "Couln't load " << path << std::endl;
+		return -2;
+	}
+	return 0;
+}
+
+static int usage()
+{
+	std::cerr << "usage: Classix -e file # list exports" << std::endl;
+	std::cerr << "       Classix -i file # list imports" << std::endl;
+	std::cerr << "       Classix -d file # disassemble code sections" << std::endl;
+	std::cerr << "       Classix -r file # run the file" << std::endl;
+	std::cerr << "       Classix -z file target # dump sections to target directory" << std::endl;
+	return 1;
 }
 
 int main(int argc, const char* argv[], const char* envp[])
 {
-	if (argc < 3)
-	{
-		std::cerr << "usage: Classix -o file # tries to load fragment" << std::endl;
-		std::cerr << "       Classix -e file # tries to list exports" << std::endl;
-		std::cerr << "       Classix -i file # tries to list imports" << std::endl;
-		std::cerr << "       Classix -d file # tries to disassemble code sections" << std::endl;
-		std::cerr << "       Classix -r file # tries to *gasp* run the file" << std::endl;
-		std::cerr << "       Classix -mpw file # tries to run the file as a MPW executable" << std::endl;
-		return 1;
-	}
+	if (argc < 3) return usage();
 	
 	// keeping this reference around to help printing memory areas
 	Common::NativeAllocator* allocator = Common::NativeAllocator::GetInstance();
@@ -233,18 +259,20 @@ int main(int argc, const char* argv[], const char* envp[])
 	
 	try
 	{
-		if (mode == "-o")
-			loadTest(path);
-		else if (mode == "-e")
-			listExports(path);
+		if (mode == "-e")
+			return listExports(path);
 		else if (mode == "-i")
-			listImports(path);
+			return listImports(path);
 		else if (mode == "-d")
-			disassemble(path);
+			return disassemble(path);
 		else if (mode == "-r")
-			run(path);
-		else if (mode == "-mpw")
-			runMPW(path, argc - 2, argv + 2, envp);
+			return run(path, argc - 2, argv + 2, envp);
+		else if (mode == "-z")
+		{
+			if (argc != 4) return usage();
+			std::string targetDir = argv[3];
+			return inflateAndDump(path, targetDir);
+		}
 	}
 	catch (std::exception& error)
 	{
