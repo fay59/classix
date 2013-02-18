@@ -27,20 +27,28 @@ using namespace PPCVM::Disassembly;
 
 static char endline = '\n';
 
-OStreamDisassemblyWriter::OStreamDisassemblyWriter(std::ostream& into)
-: into(into)
+OStreamDisassemblyWriter::OStreamDisassemblyWriter(Common::IAllocator* allocator, std::ostream& into)
+: into(into), allocator(allocator)
 { }
 
 void OStreamDisassemblyWriter::EnterSection(const PEF::InstantiableSection& section, uint32_t sectionIndex)
 {
-	into << "Section " << section.Name << " (" << sectionIndex << "):" << endline;
+	into << "Section \"" << section.Name << "\" (" << sectionIndex << "):" << endline;
 }
 
 void OStreamDisassemblyWriter::EnterLabel(const PPCVM::Disassembly::InstructionRange &label, uint32_t labelAddress)
 {
 	if (label.Begin != label.End)
 	{
-		into << "\t\t" << (label.IsFunction ? ".fn" : ".lb");
+		if (label.IsFunction)
+		{
+			into << endline << "\t\t.fn";
+		}
+		else
+		{
+			into << "\t\t.lb";
+		}
+		
 		into << std::setw(8) << std::right << std::setfill('0') << std::hex;
 		into << labelAddress << ":" << endline;
 	}
@@ -50,9 +58,25 @@ void OStreamDisassemblyWriter::VisitOpcode(const PPCVM::Disassembly::Disassemble
 {
 	into << std::setw(8) << std::setfill('0') << std::right << std::hex << opcodeAddress << ' ';
 	into << '\t' << std::setw(12) << std::setfill(' ') << std::left << opcode.Opcode;
-	into << std::setw(24) << opcode.ArgumentsString();
+	into << std::setw(28) << opcode.ArgumentsString();
 	if (metadata != nullptr)
-		into << '<' << *metadata << '>';
+	{
+		into << '<';
+		uint32_t relatedAddress = *metadata;
+		if (opcode.Opcode[0] == 'b')
+		{
+			into << (opcode.Opcode.back() == 'l' ? ".fn" : ".lb");
+			into << std::hex << std::setw(8) << std::right << std::setfill('0');
+			into << relatedAddress;
+		}
+		else
+		{
+			uint32_t offset = allocator->GetAllocationOffset(relatedAddress);
+			uint32_t base = relatedAddress - offset;
+			into << allocator->GetDetails(base)->GetAllocationDetails(offset);
+		}
+		into << '>';
+	}
 	
 	into << endline;
 }
