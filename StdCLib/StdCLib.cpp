@@ -297,7 +297,11 @@ namespace StdCLib
 					if (iter->second == "_iob")
 					{
 						ss << '[' << (subOffset / sizeof (PPCFILE)) << ']';
-						ss << '.' << PPCFILE::OffsetNames[subOffset % sizeof (PPCFILE)];
+						uint32_t fieldOffset = subOffset % sizeof(PPCFILE);
+						if (fieldOffset != 0)
+						{
+							ss << '.' << PPCFILE::OffsetNames[fieldOffset];
+						}
 					}
 					else if (subOffset != 0)
 					{
