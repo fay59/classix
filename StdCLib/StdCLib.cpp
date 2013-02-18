@@ -484,6 +484,8 @@ extern "C"
 
 	void StdCLib__BreakPoint(StdCLib::Globals* globals, MachineState* state)
 	{
+		const char* reason = ToPointer<char>(state->r3);
+		printf("Interrupted by %s", reason);
 		__asm__ ("int $3");
 	}
 
