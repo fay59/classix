@@ -236,18 +236,15 @@ struct ClassixCoreVM
 	vm->state.r5 = vm->state.r29 = vm->allocator->ToIntPtr(result.envp);
 	
 	// this also goes to _IntEnv
-	using ClassixCore::DlfcnSymbolResolver;
 	if (CFM::SymbolResolver* resolver = vm->cfm.GetSymbolResolver("StdCLib"))
 	{
 		auto symbol = resolver->ResolveSymbol("__StdCLib_IntEnvInit");
 		NSAssert(symbol.Universe != CFM::SymbolUniverse::LostInTimeAndSpace, @"Found StdCLib but couldn't find __StdCLib_IntEnvInit!");
 		
-		uint32_t r31 = vm->state.r31;
 		PEF::TransitionVector* vector = reinterpret_cast<PEF::TransitionVector*>(symbol.Address);
 		void* intEnvInit = vm->allocator->ToPointer<void>(vector->EntryPoint);
 		vm->state.r2 = vector->TableOfContents;
 		vm->interp.Execute(intEnvInit);
-		vm->state.r31 = r31;
 	}
 	
 	NSArray* gpr = self.gpr;

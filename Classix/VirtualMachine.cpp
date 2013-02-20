@@ -33,18 +33,15 @@ namespace Classix
 	void MainStub::InitIntEnv()
 	{
 		// arguments also go to _IntEnv
-		using ClassixCore::DlfcnSymbolResolver;
 		if (CFM::SymbolResolver* resolver = vm.fragmentManager.GetSymbolResolver("StdCLib"))
 		{
 			auto symbol = resolver->ResolveSymbol("__StdCLib_IntEnvInit");
 			assert(symbol.Universe != CFM::SymbolUniverse::LostInTimeAndSpace && "Found StdCLib but couldn't find __StdCLib_IntEnvInit!");
 			
-			uint32_t r31 = vm.state.r31;
 			PEF::TransitionVector* vector = reinterpret_cast<PEF::TransitionVector*>(symbol.Address);
 			void* intEnvInit = vm.allocator->ToPointer<void>(vector->EntryPoint);
 			vm.state.r2 = vector->TableOfContents;
 			vm.interpreter.Execute(intEnvInit);
-			vm.state.r31 = r31;
 		}
 	}
 	
