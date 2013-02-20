@@ -98,32 +98,32 @@ namespace StdCLib
 		"_file", "_file + 1", "_file + 2", "_file + 3",
 	};
 
-	#define _U		 01
-	#define _L		 02
-	#define _N		 04
-	#define _S		 010
-	#define _P		 020
-	#define _C		 040
-	#define _B		 0100
-	#define _X		 0200
+	#define _UPP		 0x01
+	#define _LOW		 0x02
+	#define _DIG		 0x04
+	#define _WSP		 0x08
+	#define _PUN		 0x10
+	#define _CTL		 0x20
+	#define _BLA		 0x40
+	#define _HEX		 0x80
 
 	const uint8_t cTypeCharClasses[0x100]={
-		_C, _C, _C, _C, _C, _C, _C, _C,
-		_C, _C|_S, _C|_S, _C|_S, _C|_S, _C|_S, _C, _C,
-		_C, _C, _C, _C, _C, _C, _C, _C,
-		_C, _C, _C, _C, _C, _C, _C, _C,
-		_S|_B, _P, _P, _P, _P, _P, _P, _P,
-		_P, _P, _P, _P, _P, _P, _P, _P,
-		_N, _N, _N, _N, _N, _N, _N, _N,
-		_N, _N, _P, _P, _P, _P, _P, _P,
-		_P, _U|_X, _U|_X, _U|_X, _U|_X, _U|_X, _U|_X, _U,
-		_U, _U, _U, _U, _U, _U, _U, _U,
-		_U, _U, _U, _U, _U, _U, _U, _U,
-		_U, _U, _U, _P, _P, _P, _P, _P,
-		_P, _L|_X, _L|_X, _L|_X, _L|_X, _L|_X, _L|_X, _L,
-		_L, _L, _L, _L, _L, _L, _L, _L,
-		_L, _L, _L, _L, _L, _L, _L, _L,
-		_L, _L, _L, _P, _P, _P, _P, _C
+		_CTL, _CTL, _CTL, _CTL, _CTL, _CTL, _CTL, _CTL,
+		_CTL, _CTL|_WSP, _CTL|_WSP, _CTL|_WSP, _CTL|_WSP, _CTL|_WSP, _CTL, _CTL,
+		_CTL, _CTL, _CTL, _CTL, _CTL, _CTL, _CTL, _CTL,
+		_CTL, _CTL, _CTL, _CTL, _CTL, _CTL, _CTL, _CTL,
+		_WSP|_BLA, _PUN, _PUN, _PUN, _PUN, _PUN, _PUN, _PUN,
+		_PUN, _PUN, _PUN, _PUN, _PUN, _PUN, _PUN, _PUN,
+		_DIG, _DIG, _DIG, _DIG, _DIG, _DIG, _DIG, _DIG,
+		_DIG, _DIG, _PUN, _PUN, _PUN, _PUN, _PUN, _PUN,
+		_PUN, _UPP|_HEX, _UPP|_HEX, _UPP|_HEX, _UPP|_HEX, _UPP|_HEX, _UPP|_HEX, _UPP,
+		_UPP, _UPP, _UPP, _UPP, _UPP, _UPP, _UPP, _UPP,
+		_UPP, _UPP, _UPP, _UPP, _UPP, _UPP, _UPP, _UPP,
+		_UPP, _UPP, _UPP, _PUN, _PUN, _PUN, _PUN, _PUN,
+		_PUN, _LOW|_HEX, _LOW|_HEX, _LOW|_HEX, _LOW|_HEX, _LOW|_HEX, _LOW|_HEX, _LOW,
+		_LOW, _LOW, _LOW, _LOW, _LOW, _LOW, _LOW, _LOW,
+		_LOW, _LOW, _LOW, _LOW, _LOW, _LOW, _LOW, _LOW,
+		_LOW, _LOW, _LOW, _PUN, _PUN, _PUN, _PUN, _CTL
 	};
 
 	typedef uint8_t UnknownType[0x1000];
