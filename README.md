@@ -18,9 +18,9 @@ library work, making it potentially much faster than a classic virtual machine
 with a CPU emulator.
 
 Classix is currently licensed under the GPL v3.0 license as a legal requirement
-(it uses [Dolphin][5] code, which is itself GPL). The license may be changed to
-something less restrictive in the future if we make the interpreter different
-enough from Dolphin's.
+(it largely uses [Dolphin][5]'s interpreter code, which is itself GPL). The
+license may be changed to something less restrictive in the future if someone
+writes a new interpreter.
 
 ## Using Classix
 
@@ -30,12 +30,15 @@ getting it at the moment.
 
 ## State of the Project
 
-Classix is currently able to do _some_ of the work of the Code Fragment Manager,
-the [system component responsible for loading executables and running them][4].
-It is able to load PowerPC PEF executables, but not 68k PEF executables, nor
-XCOFF executables (of any architecture). Design changes will be necessary to
-support 68k emulation (though XCOFF loading should be rather "easy"). It also
-does not support any of the runtime features of the CFM; it's only able to link
+Classix is currently able to perform the application startup activities of the
+Code Fragment Manager, the [system component responsible for loading executables
+and running them][4] (that is, Classix is able to perform the startup dynamic
+linking). It is able to load PowerPC PEF executables, but not 68k PEF
+executables, nor XCOFF executables (of any architecture). Design changes will be
+necessary to support 68k emulation (though XCOFF loading should be rather
+"easy").
+
+It does not support any of the runtime features of the CFM; it's only able to link
 together applications and libraries at startup.
 
 The PowerPC emulator is based on [Dolphin][5]'s interpreter, with some important
@@ -44,14 +47,15 @@ accesses raw memory directly, does not use global state to represent CPU
 registers, and does not need to implement supervisor-level PPC instructions).
 
 It is currently possible to run very simple programs inside Classix, like "Hello
-World" programs. However, interpreter bugs (most likely introduced by us) causes
-anything non-trivial to fail.
+World" programs. However, some issues (especially with the reimplementation of
+Classic libraries) prevent anything non-trivial from completing successfully.
 
 ## General Design of the Project
 
 Classix is implemented as a library, `ClassixCore`, that projects link against.
-This library is programmed in C++11. Global state is strictly forbidden, and up
-to now this has served us well.
+This library is programmed in object-oriented C++11. Since I also have an acute
+phobia of global state, there is very little mutable global state. Up to now, it
+has served me well.
 
 The library itself has several components:
 
@@ -62,20 +66,23 @@ The library itself has several components:
 * A `ClassixCore` namespace, that handles communication with the external world
   (it includes the component responsible for bridging to native functions).
 
-Around that are built the _classix_ command-line executable, a general-purpose
+Around that are built the `classix` command-line executable, a general-purpose
 tool to use the ClassixCore library, and the _Classix Debugger_, a Cocoa
-application that serves as a debugging GUI (because debugging PowerPC
+application that serves as a debugging GUI (because debugging emulated PowerPC
 applications from within lldb in Xcode is a real pain). The project also
-includes an incomplete implementation of the _StdCLib_ Mac OS 9 shared library.
+includes an incomplete and unreliable implementation of the _StdCLib_ Mac OS 9
+shared library.
 
 ### Memory Management
 
-Classes that need to be able to allocate memory visible to the emulator pass
-around an `IAllocator` instance. An `IAllocator`'s responsibility is to allocate
-and deallocate memory in the address range that the PowerPC emulator need to be
-able to access. Right now, the only allocator is the native allocator, that
-simply uses `malloc` and `free`, and it only works on 32-bits platforms because
-of that.
+Classes that need to be able to deal with memory visible to the emulator pass
+around an `IAllocator` instance. An `IAllocator`'s responsibility is to
+allocate and deallocate memory in the address range that the PowerPC emulator
+need to be able to access, and to translate `uint32_t` virtual PowerPC addresses
+into native pointers. Right now, the only allocator is the native allocator,
+that simply uses `malloc` and `free`, and it only works on 32-bits platforms
+because of that. (The 32-bits allocator is also the sole singleton of the
+project.)
 
 There are a number of services that clients can use to ease memory management.
 The `IAllocator` class can return a RAII-style allocation object that frees the
