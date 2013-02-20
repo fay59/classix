@@ -161,12 +161,12 @@ namespace StdCLib
 		Common::UInt64 NumericData;
 		Common::UInt32 StandAlone;
 		Common::UInt64 TimeData;
+		uint8_t cType[256];
 	};
 
 	struct Globals
 	{
 		Scalars scalars;
-		uint8_t cType[256];
 		Common::IAllocator* allocator;
 		
 		static std::map<off_t, std::string> FieldOffsets;
@@ -176,9 +176,9 @@ namespace StdCLib
 		: allocator(allocator)
 		{
 			memset(&scalars, 0, sizeof scalars);
-			memcpy(&cType, cTypeCharClasses, sizeof cType);
+			memcpy(&scalars.cType, cTypeCharClasses, sizeof scalars.cType);
 			
-			scalars.__p_CType = allocator->ToIntPtr(&cType);
+			scalars.__p_CType = allocator->ToIntPtr(&scalars.cType);
 			
 			scalars._iob[0].fptr = fdup(stdin);
 			scalars._iob[1].fptr = fdup(stdout);
@@ -239,6 +239,7 @@ namespace StdCLib
 		std::make_pair(offsetof(Scalars, NumericData), "NumericData"),
 		std::make_pair(offsetof(Scalars, StandAlone), "StandAlone"),
 		std::make_pair(offsetof(Scalars, TimeData), "TimeData"),
+		std::make_pair(offsetof(Scalars, cType), "cType"),
 	};
 
 	std::map<std::string, size_t> Globals::FieldLocations
@@ -273,6 +274,7 @@ namespace StdCLib
 		std::make_pair("NumericData", offsetof(Scalars, NumericData)),
 		std::make_pair("StandAlone", offsetof(Scalars, StandAlone)),
 		std::make_pair("TimeData", offsetof(Scalars, TimeData)),
+		std::make_pair("cType", offsetof(Scalars, cType)),
 	};
 
 	#pragma clang diagnostics pop
