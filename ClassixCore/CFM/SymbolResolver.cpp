@@ -25,19 +25,19 @@ namespace CFM
 {
 	const ResolvedSymbol ResolvedSymbol::Invalid(SymbolUniverse::LostInTimeAndSpace, "<invalid>", 0);
 	
-	ResolvedSymbol::ResolvedSymbol(SymbolUniverse universe, const std::string& name, intptr_t address)
+	ResolvedSymbol::ResolvedSymbol(SymbolUniverse universe, const std::string& name, uint32_t address)
 	: Name(name)
 	{
 		Universe = universe;
 		Address = address;
 	}
 	
-	ResolvedSymbol ResolvedSymbol::PowerPCSymbol(const std::string& name, intptr_t address)
+	ResolvedSymbol ResolvedSymbol::PowerPCSymbol(const std::string& name, uint32_t address)
 	{
 		return ResolvedSymbol(SymbolUniverse::PowerPC, name, address);
 	}
 	
-	ResolvedSymbol ResolvedSymbol::IntelSymbol(const std::string& name, intptr_t address)
+	ResolvedSymbol ResolvedSymbol::IntelSymbol(const std::string& name, uint32_t address)
 	{
 		return ResolvedSymbol(SymbolUniverse::Intel, name, address);
 	}

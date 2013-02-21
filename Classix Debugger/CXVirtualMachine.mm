@@ -58,8 +58,6 @@ struct ClassixCoreVM
 	PPCVM::Execution::Interpreter interp;
 	Common::AutoAllocation stack;
 	
-	std::unordered_set<intptr_t> breakpoints;
-	
 	ClassixCoreVM(Common::IAllocator* allocator)
 	: allocator(allocator)
 	, state()

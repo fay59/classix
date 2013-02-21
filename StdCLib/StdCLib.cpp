@@ -379,11 +379,11 @@ extern "C"
 
 namespace
 {
-	FILE* MakeFilePtr(StdCLib::Globals* globals, intptr_t ptr)
+	FILE* MakeFilePtr(StdCLib::Globals* globals, uint32_t ptr)
 	{
 		for (int i = 0; i < StdCLib::NFILE; i++)
 		{
-			intptr_t thisIOB = ToIntPtr(&globals->scalars._iob[i]);
+			uint32_t thisIOB = ToIntPtr(&globals->scalars._iob[i]);
 			if (ptr == thisIOB)
 				return globals->scalars._iob[i].fptr;
 		}
@@ -844,7 +844,7 @@ extern "C"
 		for (int i = 0; i < StdCLib::NFILE; i++)
 		{
 			auto& ioBuffer = globals->scalars._iob[i];
-			intptr_t ioBufferAddress = ToIntPtr(&ioBuffer);
+			uint32_t ioBufferAddress = ToIntPtr(&ioBuffer);
 			if (ioBufferAddress == state->r3)
 			{
 				state->r3 = fclose(ioBuffer.fptr);

@@ -18,6 +18,7 @@
 		DC0D42B3165EE4F500883586 /* CXObjcDisassemblyWriter.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC0D42B1165EE4F400883586 /* CXObjcDisassemblyWriter.mm */; };
 		DC161F021661F7A900B76B61 /* CXDBRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = DC161F011661F7A900B76B61 /* CXDBRequest.m */; };
 		DC176D091662A91700C76888 /* CXGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC176D081662A91700C76888 /* CXGradientView.m */; };
+		DC1BCF5016D1943F00551326 /* tree.png in Resources */ = {isa = PBXBuildFile; fileRef = DC1BCF4F16D1943F00551326 /* tree.png */; };
 		DC264EA7165DF76A00C86BDD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC264EA6165DF76A00C86BDD /* WebKit.framework */; };
 		DC264EAC165DFFEB00C86BDD /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAA165DFFEB00C86BDD /* main.js */; };
 		DC29C3D2166AB92400B35EF7 /* AllocationDetails.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC29C3D0166AB92400B35EF7 /* AllocationDetails.cpp */; };
@@ -131,6 +132,7 @@
 		DC161F011661F7A900B76B61 /* CXDBRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXDBRequest.m; sourceTree = "<group>"; };
 		DC176D071662A91700C76888 /* CXGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXGradientView.h; sourceTree = "<group>"; };
 		DC176D081662A91700C76888 /* CXGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXGradientView.m; sourceTree = "<group>"; };
+		DC1BCF4F16D1943F00551326 /* tree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tree.png; sourceTree = "<group>"; };
 		DC264EA6165DF76A00C86BDD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		DC264EAA165DFFEB00C86BDD /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
 		DC264EAB165DFFEB00C86BDD /* cxdb.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = cxdb.css; sourceTree = "<group>"; };
@@ -344,6 +346,7 @@
 			isa = PBXGroup;
 			children = (
 				DC307155166884DE00475144 /* breakpoint-end.png */,
+				DC1BCF4F16D1943F00551326 /* tree.png */,
 				DC5CF823166153D200577272 /* arrow.png */,
 				DCE988131660B3D900C28F25 /* export.png */,
 				DCE988101660A9B400C28F25 /* label.png */,
@@ -820,6 +823,7 @@
 				DC8A501B1665DB5900B72EB7 /* run.png in Resources */,
 				DC307156166884DE00475144 /* breakpoint-end.png in Resources */,
 				DCCA432D167EF7C4001D9AD2 /* CXDocument.xib in Resources */,
+				DC1BCF5016D1943F00551326 /* tree.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

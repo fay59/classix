@@ -44,7 +44,7 @@ namespace Common
 			~AllocatedRange();
 		};
 		
-		std::map<intptr_t, AllocatedRange> ranges;
+		std::map<uint32_t, AllocatedRange> ranges;
 		
 		const AllocatedRange* GetAllocationRange(uint32_t address) const;
 		

@@ -64,7 +64,7 @@ namespace CFM
 		if (address == nullptr)
 			return ResolvedSymbol::Invalid;
 		
-		return ResolvedSymbol::PowerPCSymbol(name, reinterpret_cast<intptr_t>(address));
+		return ResolvedSymbol::PowerPCSymbol(name, allocator->ToIntPtr(address));
 	}
 	
 	ResolvedSymbol PEFSymbolResolver::Symbolize(const std::string& name, const PEF::LoaderHeader::SectionWithOffset &sectionWithOffset) const

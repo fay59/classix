@@ -196,15 +196,15 @@ namespace PPCVM
 
 		void Interpreter::bx(Instruction inst)
 		{
-			intptr_t address = reinterpret_cast<intptr_t>(currentAddress);
+			uint32_t address = allocator->ToIntPtr(currentAddress);
 			if (inst.LK)
 				state->lr = address + 4;
 			
-			intptr_t target = SignExt26(inst.LI << 2);
+			uint32_t target = SignExt26(inst.LI << 2);
 			if (!inst.AA)
 				target += address;
 			
-			branchAddress = reinterpret_cast<const void*>(target);
+			branchAddress = allocator->ToPointer<const void>(target);
 			CHECK_JUMP_TARGET();
 		}
 
@@ -220,16 +220,16 @@ namespace PPCVM
 			bool counter = only_condition_check || ctr_check;
 			bool condition = only_counter_check || (GetCRBit(state, inst.BI) == uint32_t(true_false));
 			
-			intptr_t address = reinterpret_cast<intptr_t>(currentAddress);
+			uint32_t address = allocator->ToIntPtr(currentAddress);
 			if (counter && condition)
 			{
 				if (inst.LK)
 					state->lr = address + 4;
 					
-				intptr_t target = SignExt16(inst.BD << 2);
+				uint32_t target = SignExt16(inst.BD << 2);
 				if (!inst.AA)
 					target += address;
-				branchAddress = reinterpret_cast<const void*>(target);
+				branchAddress = allocator->ToPointer<const void>(target);
 				CHECK_JUMP_TARGET();
 			}
 		}
@@ -245,9 +245,9 @@ namespace PPCVM
 			if (counter & condition)
 			{
 				if (inst.LK_3)
-					state->lr = reinterpret_cast<intptr_t>(currentAddress + 1);
+					state->lr = allocator->ToIntPtr(currentAddress + 1);
 				
-				branchAddress = reinterpret_cast<const void*>(state->lr & ~3);
+				branchAddress = allocator->ToPointer<const void>(state->lr & ~3);
 				CHECK_JUMP_TARGET();
 			}
 		}
@@ -259,9 +259,9 @@ namespace PPCVM
 			if (condition)
 			{
 				if (inst.LK_3)
-					state->lr = reinterpret_cast<intptr_t>(currentAddress + 1);
+					state->lr = allocator->ToIntPtr(currentAddress + 1);
 				
-				branchAddress = reinterpret_cast<const void*>(state->ctr & ~3);
+				branchAddress = allocator->ToPointer<const void>(state->ctr & ~3);
 				CHECK_JUMP_TARGET();
 			}
 		}

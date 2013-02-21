@@ -47,14 +47,14 @@ namespace CFM
 	{
 		SymbolUniverse Universe;
 		std::string Name;
-		intptr_t Address;
+		uint32_t Address;
 		
 		static const ResolvedSymbol Invalid;
 		
-		ResolvedSymbol(SymbolUniverse universe, const std::string& name, intptr_t address);
+		ResolvedSymbol(SymbolUniverse universe, const std::string& name, uint32_t address);
 		
-		static ResolvedSymbol PowerPCSymbol(const std::string& name, intptr_t address);
-		static ResolvedSymbol IntelSymbol(const std::string& name, intptr_t address);
+		static ResolvedSymbol PowerPCSymbol(const std::string& name, uint32_t address);
+		static ResolvedSymbol IntelSymbol(const std::string& name, uint32_t address);
 	};
 	
 	class SymbolResolver
