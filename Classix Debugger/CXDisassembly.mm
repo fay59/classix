@@ -20,56 +20,32 @@
 //
 
 #import "CXDisassembly.h"
-#include <set>
 #include "FragmentManager.h"
 #include "PEFSymbolResolver.h"
 #include "FancyDisassembler.h"
 #include "CXObjcDisassemblyWriter.h"
+#include <CommonCrypto/CommonCrypto.h>
+
+struct SectionInfo
+{
+	char md5[33];
+	const PEF::InstantiableSection* section;
+	
+	SectionInfo(const PEF::InstantiableSection* section)
+	{
+		this->section = section;
+		CXObjCDisassemblyWriter::GetSectionMD5(*section, md5);
+		md5[32] = 0;
+	}
+};
 
 struct CXDisassemblyCXX
 {
-	struct Callback
-	{
-		id target;
-		SEL selector;
-		
-		Callback(id target, SEL selector)
-		{
-			this->target = [target retain];
-			this->selector = selector;
-		}
-		
-		Callback(const Callback& that)
-		{
-			this->target = [that.target retain];
-			this->selector = that.selector;
-		}
-		
-		Callback(Callback&& that)
-		{
-			this->target = that.target;
-			that.target = nil;
-			this->selector = that.selector;
-		}
-		
-		void operator()(CXDisassembly* disasm, NSString* uniqueName) const
-		{
-			[target performSelector:selector withObject:disasm withObject:uniqueName];
-		}
-		
-		bool operator<(const Callback& that) const
-		{
-			return target < that.target;
-		}
-		
-		~Callback()
-		{
-			[target release];
-		}
-	};
-	
-	std::set<Callback> callbacks;
+	std::vector<SectionInfo> sections;
 };
+
+NSString* CXDisassemblyUniqueNameKey = @"uniqueName";
+NSString* CXDisassemblyDisplayNameKey = @"displayName";
 
 static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number, NSUInteger partitionBegin, NSUInteger size)
 {
@@ -104,6 +80,8 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 
 @implementation CXDisassembly
 
+@synthesize nameChanged;
+
 -(id)initWithVirtualMachine:(CXVirtualMachine*)aVm
 {
 	if (!(self = [super init]))
@@ -118,6 +96,8 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 	[vm.allocator getValue:&allocator];
 	[vm.fragmentManager getValue:&cfm];
 	
+	cxx = new CXDisassemblyCXX;
+	
 	for (auto iter = cfm->Begin(); iter != cfm->End(); iter++)
 	{
 		if (const CFM::PEFSymbolResolver* pef = dynamic_cast<const CFM::PEFSymbolResolver*>(iter->second))
@@ -130,6 +110,8 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 				PEF::SectionType type = section.GetSectionType();
 				if (type != PEF::SectionType::Code && type != PEF::SectionType::ExecutableData)
 					continue;
+				
+				cxx->sections.emplace_back(&section);
 				
 				CXObjCDisassemblyWriter writer(i);
 				disasm.Disassemble(container, writer);
@@ -150,7 +132,7 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 	addressesToUniqueNames = [uniqueNames copy];
 	disassembly = [disassemblyDictionary copy];
 	displayNames = [[NSMutableDictionary alloc] init];
-	cxx = new CXDisassemblyCXX;
+	nameChanged = [[CXEvent alloc] initWithOwner:self];
 	
 	return self;
 }
@@ -220,11 +202,56 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 	return nil;
 }
 
--(NSString*)closestUniqueNameToAddress:(uint32_t)address
+-(NSString*)closestLabelUniqueNameToAddress:(uint32_t)address
 {
 	NSUInteger index = CXFindNextSmaller(orderedAddresses, @(address));
 	NSNumber* closestAddress = [orderedAddresses objectAtIndex:index];
 	return [addressesToUniqueNames objectForKey:closestAddress];
+}
+
+-(NSString*)uniqueNameForAddress:(uint32_t)address
+{
+	Common::IAllocator* allocator;
+	[vm.allocator getValue:&allocator];
+	const unsigned char* pointer = allocator->ToPointer<unsigned char>(address);
+	
+	for (const SectionInfo& info : cxx->sections)
+	{
+		if (info.section->Data < pointer && info.section->Data + info.section->Size() > pointer)
+		{
+			return [NSString stringWithFormat:@"%s%08x", info.md5, pointer - info.section->Data];
+		}
+	}
+	return nil;
+}
+
+-(uint32_t)addressForUniqueName:(NSString *)uniqueName
+{
+	char md5[32];
+	char offsetString[8];
+	uint32_t offset;
+	[uniqueName getBytes:md5 maxLength:sizeof md5 usedLength:nullptr encoding:NSASCIIStringEncoding options:nil range:NSMakeRange(0, sizeof md5) remainingRange:nullptr];
+	[uniqueName getBytes:offsetString maxLength:sizeof offsetString usedLength:nullptr encoding:NSASCIIStringEncoding options:nil range:NSMakeRange(sizeof md5, sizeof offsetString) remainingRange:nullptr];
+	sscanf(offsetString, "%08x", &offset);
+	
+	for (const SectionInfo& info : cxx->sections)
+	{
+		if (strncmp(md5, info.md5, sizeof md5) == 0)
+		{
+			if (info.section->Size() - 4 >= offset)
+			{
+				Common::IAllocator* allocator;
+				[vm.allocator getValue:&allocator];
+				return allocator->ToIntPtr(info.section->Data + offset);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	
+	return 0;
 }
 
 -(NSString*)displayNameForUniqueName:(NSString *)uniqueName
@@ -303,18 +330,7 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 -(void)setDisplayName:(NSString *)displayName forUniqueName:(NSString *)uniqueName
 {
 	[displayNames setObject:displayName forKey:uniqueName];
-	for (const CXDisassemblyCXX::Callback& callback : cxx->callbacks)
-		callback(self, uniqueName);
-}
-
--(void)registerNameChangeCallbackObject:(id)target selector:(SEL)selector
-{
-	cxx->callbacks.emplace(target, selector);
-}
-
--(void)unregisterNameChangeCallbackObject:(id)target
-{
-	cxx->callbacks.erase(CXDisassemblyCXX::Callback(target, NULL));
+	[nameChanged triggerWithData:@{CXDisassemblyUniqueNameKey: uniqueName, CXDisassemblyDisplayNameKey: displayName}];
 }
 
 -(void)dealloc
@@ -324,7 +340,7 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 	[disassembly release];
 	[orderedAddresses release];
 	[vm release];
-	delete cxx;
+	[nameChanged release];
 	
 	[super dealloc];
 }

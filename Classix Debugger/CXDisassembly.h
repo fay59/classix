@@ -22,6 +22,10 @@
 #import <Foundation/Foundation.h>
 #import "CXVirtualMachine.h"
 #import "CXCodeLabel.h"
+#import "CXEvent.h"
+
+extern NSString* CXDisassemblyUniqueNameKey;
+extern NSString* CXDisassemblyDisplayNameKey;
 
 struct CXDisassemblyCXX;
 
@@ -32,9 +36,11 @@ struct CXDisassemblyCXX;
 	NSDictionary* addressesToUniqueNames;
 	NSDictionary* disassembly;
 	NSArray* orderedAddresses;
+	CXEvent* nameChanged;
 	struct CXDisassemblyCXX* cxx;
 }
 
+@property (readonly) CXEvent* nameChanged;
 @property (copy) NSMutableDictionary* displayNames;
 
 -(id)initWithVirtualMachine:(CXVirtualMachine*)vm;
@@ -45,13 +51,12 @@ struct CXDisassemblyCXX;
 -(CXCodeLabel*)labelDisassemblyForUniqueName:(NSString*)uniqueName;
 -(CXCodeLabel*)labelDisassemblyForAddress:(uint32_t)address;
 
--(NSString*)closestUniqueNameToAddress:(uint32_t)address;
+-(NSString*)closestLabelUniqueNameToAddress:(uint32_t)address;
+-(NSString*)uniqueNameForAddress:(uint32_t)address;
+-(uint32_t)addressForUniqueName:(NSString*)uniqueName;
 
 -(NSString*)displayNameForUniqueName:(NSString*)uniqueName;
 -(void)setDisplayName:(NSString*)displayName forUniqueName:(NSString*)uniqueName;
-
--(void)registerNameChangeCallbackObject:(id)target selector:(SEL)selector;
--(void)unregisterNameChangeCallbackObject:(id)target;
 
 -(void)dealloc;
 

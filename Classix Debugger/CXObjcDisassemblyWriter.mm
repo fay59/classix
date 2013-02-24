@@ -28,20 +28,24 @@ CXObjCDisassemblyWriter::CXObjCDisassemblyWriter(uint32_t desiredSection)
 	result = [[NSMutableArray alloc] init];
 }
 
-void CXObjCDisassemblyWriter::EnterSection(const PEF::InstantiableSection &section, uint32_t sectionIndex)
+void CXObjCDisassemblyWriter::GetSectionMD5(const PEF::InstantiableSection &section, char *output)
 {
 	static const char hexChars[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+	unsigned char md5[16];
+	CC_MD5(section.Data, section.Size(), md5);
+	for (int i = 0; i < sizeof(md5); i++)
+	{
+		output[i * 2] = hexChars[md5[i] >> 4];
+		output[i * 2 + 1] = hexChars[md5[i] & 0xf];
+	}
+}
+
+void CXObjCDisassemblyWriter::EnterSection(const PEF::InstantiableSection &section, uint32_t sectionIndex)
+{
 	inSection = sectionIndex == desiredSection;
 	if (inSection)
 	{
-		unsigned char md5[16];
-		CC_MD5(section.Data, section.Size(), md5);
-		for (int i = 0; i < sizeof(md5); i++)
-		{
-			sectionMD5[i * 2] = hexChars[md5[i] >> 4];
-			sectionMD5[i * 2 + 1] = hexChars[md5[i] & 0xf];
-		}
-		
+		GetSectionMD5(section, sectionMD5);
 		sectionBase = section.GetDataLocation();
 	}
 }

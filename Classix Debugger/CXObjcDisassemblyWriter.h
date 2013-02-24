@@ -38,6 +38,8 @@ class CXObjCDisassemblyWriter : public PPCVM::Disassembly::DisassemblyWriter
 	bool inSection;
 	
 public:
+	static void GetSectionMD5(const PEF::InstantiableSection& section, char* output);
+	
 	CXObjCDisassemblyWriter(uint32_t desiredSection);
 	
 	virtual void EnterSection(const PEF::InstantiableSection& section, uint32_t sectionIndex) override;
