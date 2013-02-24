@@ -34,14 +34,6 @@ namespace
 		into << std::setw(8) << std::setfill('0') << std::hex << address;
 		return into;
 	}
-	
-	Common::NativeAllocator* TryCreateNativeAllocator()
-	{
-		if (sizeof(uint32_t) == sizeof(void*))
-			return new Common::NativeAllocator;
-		
-		return nullptr;
-	}
 }
 
 namespace Common
@@ -67,17 +59,10 @@ namespace Common
 		delete details;
 	}
 	
-	NativeAllocator* NativeAllocator::instance = TryCreateNativeAllocator();
-	
 	NativeAllocator::NativeAllocator()
 	{
 		if (sizeof(void*) != sizeof(uint32_t))
 			throw std::runtime_error("Cannot use the native allocator in a 64-bits environment");
-	}
-	
-	NativeAllocator* NativeAllocator::GetInstance()
-	{
-		return instance;
 	}
 	
 	void* NativeAllocator::IntPtrToPointer(uint32_t value) const

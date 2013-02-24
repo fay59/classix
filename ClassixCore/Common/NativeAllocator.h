@@ -29,7 +29,6 @@ namespace Common
 {
 	class NativeAllocator : public IAllocator
 	{
-		static NativeAllocator* instance;
 		struct AllocatedRange
 		{
 			void* start;
@@ -53,8 +52,6 @@ namespace Common
 		virtual uint32_t PointerToIntPtr(const void* address) const override;
 		
 	public:
-		static NativeAllocator* GetInstance();
-		
 		NativeAllocator();
 		
 		virtual uint8_t* Allocate(const AllocationDetails& details, size_t size) override;

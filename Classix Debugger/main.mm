@@ -26,9 +26,6 @@
 
 int main(int argc, char *argv[])
 {
-	Common::NativeAllocator* allocator = Common::NativeAllocator::GetInstance();
-	(void)allocator;
-	
 	[CXDBURLProtocol class];
 	[[CXDocumentController alloc] init];
 	return NSApplicationMain(argc, (const char **)argv);

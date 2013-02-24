@@ -56,6 +56,8 @@
 
 -(id)initWithDocument:(CXDocument*)document;
 
+-(BOOL)isWindowAlive;
+
 -(void)awakeFromNib;
 -(void)instantiate;
 -(void)orderFront;

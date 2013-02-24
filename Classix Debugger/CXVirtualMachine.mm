@@ -63,8 +63,8 @@ struct ClassixCoreVM
 	PPCVM::Execution::Interpreter interp;
 	Common::AutoAllocation stack;
 	
-	ClassixCoreVM(Common::IAllocator* allocator)
-	: allocator(allocator)
+	ClassixCoreVM()
+	: allocator(new Common::NativeAllocator)
 	, state()
 	, cfm()
 	, pefResolver(allocator, cfm)
@@ -114,6 +114,11 @@ struct ClassixCoreVM
 			}
 		}
 		return false;
+	}
+	
+	~ClassixCoreVM()
+	{
+		delete allocator;
 	}
 };
 
@@ -165,7 +170,7 @@ struct ClassixCoreVM
 	if (!(self = [super init]))
 		return nil;
 	
-	vm = new ClassixCoreVM(Common::NativeAllocator::GetInstance());
+	vm = new ClassixCoreVM;
 	
 	NSMutableArray* gpr = [NSMutableArray arrayWithCapacity:32];
 	NSMutableArray* fpr = [NSMutableArray arrayWithCapacity:32];

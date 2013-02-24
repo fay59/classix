@@ -59,9 +59,9 @@ static char classChars[] = {
 
 static int listExports(const std::string& path)
 {
-	Common::IAllocator* allocator = Common::NativeAllocator::GetInstance();
+	Common::NativeAllocator allocator;
 	Common::FileMapping mapping(path);
-	PEF::Container container(allocator, mapping.begin(), mapping.end());
+	PEF::Container container(&allocator, mapping.begin(), mapping.end());
 	
 	const PEF::ExportHashTable& exportTable = container.LoaderSection()->ExportTable;
 	std::cout << exportTable.SymbolCount() << " exports" << endline;
@@ -138,8 +138,9 @@ static int listExports(const std::string& path)
 
 static int listImports(const std::string& path)
 {
+	Common::NativeAllocator allocator;
 	Common::FileMapping mapping(path);
-	PEF::Container container(Common::NativeAllocator::GetInstance(), mapping.begin(), mapping.end());
+	PEF::Container container(&allocator, mapping.begin(), mapping.end());
 	
 	const PEF::LoaderSection* loader = container.LoaderSection();
 	for (auto libIter = loader->LibrariesBegin(); libIter != loader->LibrariesEnd(); libIter++)
@@ -154,10 +155,10 @@ static int listImports(const std::string& path)
 
 static int disassemble(const std::string& path)
 {
-	Common::IAllocator* allocator = Common::NativeAllocator::GetInstance();
+	Common::NativeAllocator allocator;
 	CFM::FragmentManager fragmentManager;
-	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::GetInstance(), fragmentManager);
-	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator);
+	CFM::PEFLibraryResolver pefResolver(&allocator, fragmentManager);
+	ClassixCore::DlfcnLibraryResolver dlfcnResolver(&allocator);
 	
 	dlfcnResolver.RegisterLibrary("StdCLib");
 	
@@ -170,8 +171,8 @@ static int disassemble(const std::string& path)
 		if (CFM::PEFSymbolResolver* pefResolver = dynamic_cast<CFM::PEFSymbolResolver*>(resolver))
 		{
 			PEF::Container& container = pefResolver->GetContainer();
-			OStreamDisassemblyWriter writer(allocator, std::cout);
-			PPCVM::Disassembly::FancyDisassembler(allocator).Disassemble(container, writer);
+			OStreamDisassemblyWriter writer(&allocator, std::cout);
+			PPCVM::Disassembly::FancyDisassembler(&allocator).Disassemble(container, writer);
 		}
 		else
 		{
@@ -189,10 +190,11 @@ static int disassemble(const std::string& path)
 
 static int run(const std::string& path, int argc, const char* argv[], const char* envp[])
 {
-	ClassixCore::DlfcnLibraryResolver dlfcnResolver(Common::NativeAllocator::GetInstance());
+	Common::NativeAllocator allocator;
+	ClassixCore::DlfcnLibraryResolver dlfcnResolver(&allocator);
 	dlfcnResolver.RegisterLibrary("StdCLib");
 	
-	Classix::VirtualMachine vm(Common::NativeAllocator::GetInstance());
+	Classix::VirtualMachine vm(&allocator);
 	vm.AddLibraryResolver(dlfcnResolver);
 	
 	auto stub = vm.LoadMainContainer(path);
@@ -201,10 +203,10 @@ static int run(const std::string& path, int argc, const char* argv[], const char
 
 static int inflateAndDump(const std::string& path, const std::string& targetDir)
 {
-	Common::IAllocator* allocator = Common::NativeAllocator::GetInstance();
+	Common::NativeAllocator allocator;
 	CFM::FragmentManager fragmentManager;
-	CFM::PEFLibraryResolver pefResolver(Common::NativeAllocator::GetInstance(), fragmentManager);
-	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator);
+	CFM::PEFLibraryResolver pefResolver(&allocator, fragmentManager);
+	ClassixCore::DlfcnLibraryResolver dlfcnResolver(&allocator);
 	
 	dlfcnResolver.RegisterLibrary("StdCLib");
 	
@@ -249,10 +251,6 @@ static int usage()
 int main(int argc, const char* argv[], const char* envp[])
 {
 	if (argc < 3) return usage();
-	
-	// keeping this reference around to help printing memory areas
-	Common::NativeAllocator* allocator = Common::NativeAllocator::GetInstance();
-	(void)allocator;
 	
 	std::string mode = argv[1];
 	std::string path = argv[2];

@@ -248,19 +248,20 @@ static NSString* CXDebugDocumentUTI = @"com.felixcloutier.classix.document";
 
 -(IBAction)start:(id)sender
 {
-	if (debugUIController == nil)
+	if ([debugUIController isWindowAlive])
+	{
+		[debugUIController orderFront];
+	}
+	else
 	{
 		[vm setArgv:arguments envp:environment];
 		
 		uint32_t transitionAddress = [entryPoints selectedItem].tag;
 		[vm transitionByAddress:transitionAddress];
 		
+		[debugUIController release];
 		debugUIController = [[CXDebugUIController alloc] initWithDocument:self];
 		[debugUIController instantiate];
-	}
-	else
-	{
-		[debugUIController orderFront];
 	}
 }
 

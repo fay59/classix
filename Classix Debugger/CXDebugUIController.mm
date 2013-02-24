@@ -87,6 +87,11 @@ static NSNib* uiNib;
 	return self;
 }
 
+-(BOOL)isWindowAlive
+{
+	return [windowController.window isVisible];
+}
+
 -(void)awakeFromNib
 {
 	[self buildSymbolMenu];
