@@ -46,6 +46,11 @@ NSNumber* CXVirtualMachineCRKey = @(CXRegisterCR);
 NSString* CXErrorDomain = @"Classix Error Domain";
 NSString* CXErrorFilePath = @"File URL";
 
+NSString* CXVirtualMachineBreakpointChangeTypeKey = @"breakpointChange";
+NSString* CXVirtualMachineBreakpointAddressKey = @"breakpointAddress";
+NSString* CXVirtualMachineAddedBreakpoint = @"added breakpoint";
+NSString* CXVirtualMachineRemovedBreakpoint = @"removed breakpoint";
+
 const NSUInteger CXStackSize = 0x100000;
 
 struct ClassixCoreVM
@@ -121,9 +126,10 @@ struct ClassixCoreVM
 @implementation CXVirtualMachine
 
 @synthesize allRegisters = registers;
-@synthesize breakpoints;
 @synthesize pc;
 @synthesize lastError;
+@synthesize breakpointsChanged;
+@synthesize breakpoints;
 
 -(void)setLastError:(NSString *)aLastError
 {
@@ -192,6 +198,8 @@ struct ClassixCoreVM
 		CXVirtualMachineSPRKey: spr,
 		CXVirtualMachineCRKey: cr
 	} retain];
+	
+	breakpointsChanged = [[CXEvent alloc] initWithOwner:self];
 	
 	return self;
 }
@@ -355,6 +363,51 @@ struct ClassixCoreVM
 	}
 }
 
+-(void)addBreakpoint:(uint32_t)address
+{
+	if (![self breakpointExists:address])
+	{
+		[breakpoints addObject:@(address)];
+		NSDictionary* changes = @{
+			CXVirtualMachineBreakpointChangeTypeKey: CXVirtualMachineAddedBreakpoint,
+			CXVirtualMachineBreakpointAddressKey:@(address)
+		};
+		[breakpointsChanged triggerWithData:changes];
+	}
+}
+
+-(void)removeBreakpoint:(uint32_t)address
+{
+	if ([self breakpointExists:address])
+	{
+		[breakpoints removeObject:@(address)];
+		NSDictionary* changes = @{
+			CXVirtualMachineBreakpointChangeTypeKey: CXVirtualMachineRemovedBreakpoint,
+			CXVirtualMachineBreakpointAddressKey:@(address)
+		};
+		[breakpointsChanged triggerWithData:changes];
+	}
+}
+
+-(BOOL)toggleBreakpoint:(uint32_t)address
+{
+	if ([self breakpointExists:address])
+	{
+		[self removeBreakpoint:address];
+		return NO;
+	}
+	else
+	{
+		[self addBreakpoint:address];
+		return YES;
+	}
+}
+
+-(BOOL)breakpointExists:(uint32_t)address
+{
+	return [breakpoints containsObject:@(address)];
+}
+
 -(NSArray*)stackTrace
 {
 	using Common::UInt32;
@@ -482,6 +535,7 @@ struct ClassixCoreVM
 	[registers release];
 	[breakpoints release];
 	[changedRegisters release];
+	[breakpointsChanged release];
 	[super dealloc];
 }
 

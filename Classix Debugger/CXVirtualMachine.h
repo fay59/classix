@@ -20,6 +20,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "CXEvent.h"
 
 struct ClassixCoreVM;
 
@@ -30,6 +31,11 @@ extern NSNumber* CXVirtualMachineSPRKey;
 
 extern NSString* CXErrorDomain;
 extern NSString* CXErrorFilePath;
+
+extern NSString* CXVirtualMachineBreakpointChangeTypeKey;
+extern NSString* CXVirtualMachineBreakpointAddressKey;
+extern NSString* CXVirtualMachineAddedBreakpoint;
+extern NSString* CXVirtualMachineRemovedBreakpoint;
 
 enum CXErrorCode
 {
@@ -53,6 +59,7 @@ enum CXVirtualMachineSPRIndex
 	NSMutableSet* breakpoints;
 	NSMutableSet* changedRegisters;
 	NSString* lastError;
+	CXEvent* breakpointsChanged;
 	uint32_t pc;
 }
 
@@ -62,8 +69,9 @@ enum CXVirtualMachineSPRIndex
 @property (readonly) NSArray* cr;
 @property (readonly) NSArray* spr;
 @property (readonly) NSString* lastError;
-@property (readonly) NSMutableSet* breakpoints;
+@property (readonly) NSSet* breakpoints;
 @property (readonly) NSDictionary* allRegisters; // split by category
+@property (readonly) CXEvent* breakpointsChanged;
 
 -(id)init;
 
@@ -80,6 +88,11 @@ enum CXVirtualMachineSPRIndex
 -(NSNumber*)wordAtAddress:(unsigned)address;
 -(NSNumber*)floatAtAddress:(unsigned)address;
 -(NSNumber*)doubleAtAddress:(unsigned)address;
+
+-(void)addBreakpoint:(uint32_t)address;
+-(void)removeBreakpoint:(uint32_t)address;
+-(BOOL)toggleBreakpoint:(uint32_t)address;
+-(BOOL)breakpointExists:(uint32_t)address;
 
 -(NSArray*)stackTrace;
 

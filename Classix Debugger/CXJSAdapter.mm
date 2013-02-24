@@ -141,18 +141,7 @@
 
 -(BOOL)toggleBreakpoint:(uint32_t)address
 {
-	NSMutableSet* breakpoints = document.vm.breakpoints;
-	NSNumber* number = @(address);
-	if ([breakpoints containsObject:number])
-	{
-		[breakpoints removeObject:number];
-		return NO;
-	}
-	else
-	{
-		[breakpoints addObject:number];
-		return YES;
-	}
+	return [document.vm toggleBreakpoint:address];
 }
 
 -(void)setDisplayName:(NSString *)displayName ofLabel:(NSString *)labelUniqueID

@@ -25,7 +25,7 @@
 
 @interface CXDocument (Private)
 
--(void)notifyDisassembly:(CXDisassembly*)disasm changedDisplayNameOfLabel:(NSString*)label;
+-(void)attachEvents;
 
 @end
 
@@ -106,16 +106,26 @@ static NSString* CXDebugDocumentUTI = @"com.felixcloutier.classix.document";
 		return NO;
 	}
 	
+	BOOL result;
+	
 	if (UTTypeConformsTo((CFStringRef)typeName, (CFStringRef)CXDebugDocumentUTI))
 	{
-		return [self readDebugDocumentFromURL:url error:outError];
+		result = [self readDebugDocumentFromURL:url error:outError];
 	}
 	else if (UTTypeConformsTo((CFStringRef)typeName, (CFStringRef)CXExecutableUTI))
 	{
-		return [self readExecutableFromURL:url error:outError];
+		result = [self readExecutableFromURL:url error:outError];
+	}
+	else
+	{
+		*outError = [NSError errorWithDomain:CXErrorDomain code:CXErrorCodeFileNotExecutable userInfo:nil];
+		return NO;
 	}
 	
-	return NO;
+	if (result)
+		[self attachEvents];
+	
+	return result;
 }
 
 -(BOOL)writeToURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError **)outError
@@ -129,11 +139,21 @@ static NSString* CXDebugDocumentUTI = @"com.felixcloutier.classix.document";
 	NSMutableArray* saveArguments = [arguments mutableCopy];
 	[saveArguments removeObjectAtIndex:0];
 	
+	NSMutableArray* breakpoints = [NSMutableArray arrayWithCapacity:vm.breakpoints.count];
+	for (NSNumber* address in vm.breakpoints)
+	{
+		if (NSString* uniqueName = [disassembly uniqueNameForAddress:address.unsignedIntValue])
+		{
+			[breakpoints addObject:uniqueName];
+		}
+	}
+	
 	NSDictionary* saveInfo = @{
 		@"executable": bookmark,
 		@"argv": saveArguments,
 		@"envp": environment,
-		@"labels": disassembly.displayNames
+		@"labels": disassembly.displayNames,
+		@"breakpoints": breakpoints
 	};
 	
 	return [saveInfo writeToURL:url atomically:YES];
@@ -174,6 +194,15 @@ static NSString* CXDebugDocumentUTI = @"com.felixcloutier.classix.document";
 				[arguments addObjectsFromArray:[savedSettings objectForKey:@"argv"]];
 				
 				disassembly.displayNames = [savedSettings objectForKey:@"labels"];
+				
+				NSArray* breakpoints = [savedSettings objectForKey:@"breakpoints"];
+				for (NSString* addressName in breakpoints)
+				{
+					uint32_t address = [disassembly addressForUniqueName:addressName];
+					if (address != 0)
+						[vm addBreakpoint:address];
+				}
+				
 				return YES;
 			}
 		}
@@ -203,18 +232,24 @@ static NSString* CXDebugDocumentUTI = @"com.felixcloutier.classix.document";
 	if ([vm loadClassicExecutable:executableURL.path error:error])
 	{
 		disassembly = [[CXDisassembly alloc] initWithVirtualMachine:vm];
-		[disassembly registerNameChangeCallbackObject:self selector:@selector(notifyDisassembly:changedDisplayNameOfLabel:)];
 		arguments = [[NSMutableArray alloc] initWithObjects:executableURL.path, nil];
+		
 		return YES;
 	}
 	return NO;
+}
+
+-(void)attachEvents
+{
+	CXEventListener updateChanges = ^(id owner, NSDictionary *eventData) { [self updateChangeCount:NSChangeDone]; };
+	[disassembly.nameChanged attach:updateChanges];
+	[vm.breakpointsChanged attach:updateChanges];
 }
 
 -(IBAction)start:(id)sender
 {
 	if (debugUIController == nil)
 	{
-		// FIXME ugly
 		[vm setArgv:arguments envp:environment];
 		
 		uint32_t transitionAddress = [entryPoints selectedItem].tag;
@@ -227,11 +262,6 @@ static NSString* CXDebugDocumentUTI = @"com.felixcloutier.classix.document";
 	{
 		[debugUIController orderFront];
 	}
-}
-
--(void)notifyDisassembly:(CXDisassembly*)disasm changedDisplayNameOfLabel:(NSString*)label
-{
-	[self updateChangeCount:NSChangeDone];
 }
 
 @end
