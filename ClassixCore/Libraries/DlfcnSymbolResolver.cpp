@@ -108,5 +108,8 @@ namespace ClassixCore
 	}
 	
 	DlfcnSymbolResolver::~DlfcnSymbolResolver()
-	{ }
+	{
+		if (library.Finit != nullptr)
+			library.Finit(globals);
+	}
 }
