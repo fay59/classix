@@ -38,8 +38,8 @@ namespace
 	inline T* GetEffectivePointer(Common::IAllocator* allocator, MachineState* state, Instruction inst)
 	{
 		uint32_t address = inst.RA
-		? state->gpr[inst.RA] + inst.SIMM_16
-		: inst.SIMM_16;
+			? state->gpr[inst.RA] + inst.SIMM_16
+			: inst.SIMM_16;
 		return allocator->ToPointer<T>(address);
 	}
 	
@@ -54,8 +54,8 @@ namespace
 	inline T* GetEffectivePointerX(Common::IAllocator* allocator, MachineState* state, Instruction inst)
 	{
 		uint32_t address = inst.RA
-		? state->gpr[inst.RA] + state->gpr[inst.RB]
-		: state->gpr[inst.RB];
+			? state->gpr[inst.RA] + state->gpr[inst.RB]
+			: state->gpr[inst.RB];
 		return allocator->ToPointer<T>(address);
 	}
 	
@@ -102,7 +102,8 @@ namespace PPCVM
 		
 		void Interpreter::lfd(Instruction inst)
 		{
-			state->fpr[inst.FD] = *GetEffectivePointer<Real64>(allocator, state, inst);
+			Real64* ptr = GetEffectivePointer<Real64>(allocator, state, inst);
+			state->fpr[inst.FD] = *ptr;
 		}
 		
 		void Interpreter::lfdu(Instruction inst)
