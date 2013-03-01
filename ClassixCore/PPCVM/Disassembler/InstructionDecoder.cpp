@@ -169,7 +169,14 @@ namespace PPCVM
 		
 		IADAB(addc);
 		IADAB(adde);
-		IADAI(addi, addi);
+		IMPL(addi)
+		{
+			if (i.RA == 0)
+				Emit(i, "li", g(i.RD), hex(i.SIMM_16));
+			else
+				Emit(i, "addi", g(i.RD), g(i.RA), hex(i.SIMM_16));
+		}
+		
 		IADAI(addic, addic);
 		IADAI(addic_rc, addic.);
 		IADAI(addis, addis);
