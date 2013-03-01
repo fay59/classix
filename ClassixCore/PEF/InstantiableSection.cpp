@@ -272,6 +272,11 @@ namespace PEF
 		return header->ExecutionSize;
 	}
 	
+	size_t InstantiableSection::AbsoluteOffset() const
+	{
+		return header->ContainerOffset;
+	}
+	
 	uint32_t InstantiableSection::GetDataLocation() const
 	{
 		return allocator->ToIntPtr(Data);

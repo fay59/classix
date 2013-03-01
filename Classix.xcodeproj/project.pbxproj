@@ -88,6 +88,10 @@
 		DC9E43C3165E8E6900AAC682 /* CXDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9E43C2165E8E6900AAC682 /* CXDocumentController.m */; };
 		DC9E43CB165EA22400AAC682 /* CXJSONEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9E43CA165EA22400AAC682 /* CXJSONEncode.m */; };
 		DCB4970916D0883800F38D0A /* CXHexFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB4970816D0883800F38D0A /* CXHexFormatter.m */; };
+		DCB8737016E05A5B00D87513 /* DummyLibraryResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCB8736E16E05A5B00D87513 /* DummyLibraryResolver.cpp */; };
+		DCB8737116E05A5B00D87513 /* DummyLibraryResolver.h in Headers */ = {isa = PBXBuildFile; fileRef = DCB8736F16E05A5B00D87513 /* DummyLibraryResolver.h */; };
+		DCB8737416E05B0B00D87513 /* DummySymbolResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCB8737216E05B0B00D87513 /* DummySymbolResolver.cpp */; };
+		DCB8737516E05B0B00D87513 /* DummySymbolResolver.h in Headers */ = {isa = PBXBuildFile; fileRef = DCB8737316E05B0B00D87513 /* DummySymbolResolver.h */; };
 		DCC4B0E41662FAC100D21C90 /* CXVirtualMachine.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCC4B0E31662FAC100D21C90 /* CXVirtualMachine.mm */; };
 		DCC4B0E91662FBC200D21C90 /* CXRegister.m in Sources */ = {isa = PBXBuildFile; fileRef = DCC4B0E81662FBC200D21C90 /* CXRegister.m */; };
 		DCCA432D167EF7C4001D9AD2 /* CXDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = DCCA432C167EF7C4001D9AD2 /* CXDocument.xib */; };
@@ -235,6 +239,10 @@
 		DCB00BA1163B9367003C88CA /* BigEndian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigEndian.h; sourceTree = "<group>"; };
 		DCB4970716D0883800F38D0A /* CXHexFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXHexFormatter.h; sourceTree = "<group>"; };
 		DCB4970816D0883800F38D0A /* CXHexFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXHexFormatter.m; sourceTree = "<group>"; };
+		DCB8736E16E05A5B00D87513 /* DummyLibraryResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DummyLibraryResolver.cpp; sourceTree = "<group>"; };
+		DCB8736F16E05A5B00D87513 /* DummyLibraryResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DummyLibraryResolver.h; sourceTree = "<group>"; };
+		DCB8737216E05B0B00D87513 /* DummySymbolResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DummySymbolResolver.cpp; sourceTree = "<group>"; };
+		DCB8737316E05B0B00D87513 /* DummySymbolResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DummySymbolResolver.h; sourceTree = "<group>"; };
 		DCBCB091166019F300FDCC35 /* step-into.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "step-into.png"; sourceTree = "<group>"; };
 		DCBCB092166019F300FDCC35 /* step-over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "step-over.png"; sourceTree = "<group>"; };
 		DCC3DC3016338A7900792F4A /* Classix */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Classix; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -538,6 +546,10 @@
 				DC40D01E1635B4A0008CA9BC /* PEFSymbolResolver.h */,
 				DC40D0271635CBD1008CA9BC /* PEFLibraryResolver.cpp */,
 				DC40D0281635CBD1008CA9BC /* PEFLibraryResolver.h */,
+				DCB8736E16E05A5B00D87513 /* DummyLibraryResolver.cpp */,
+				DCB8736F16E05A5B00D87513 /* DummyLibraryResolver.h */,
+				DCB8737216E05B0B00D87513 /* DummySymbolResolver.cpp */,
+				DCB8737316E05B0B00D87513 /* DummySymbolResolver.h */,
 				DC6847C91638C258003E906D /* PEFRelocator.cpp */,
 				DC6847CA1638C258003E906D /* PEFRelocator.h */,
 				DC94F106163C80E8004538C5 /* SymbolResolutionException.cpp */,
@@ -599,8 +611,8 @@
 				DC5E33C5163A496300944FFD /* FileMapping.cpp */,
 				DC5E33C6163A496300944FFD /* FileMapping.h */,
 				DC07B1781669D1AD00A78205 /* PPCRuntimeException.h */,
-				DC07B1731669CF2300A78205 /* AccessViolationException.cpp */,
 				DC07B1741669CF2300A78205 /* AccessViolationException.h */,
+				DC07B1731669CF2300A78205 /* AccessViolationException.cpp */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -700,6 +712,8 @@
 				DC86E08B166C2D390027F40E /* PanicException.h in Headers */,
 				DCF538C6167C37B9000D6E02 /* InstructionDecoder.h in Headers */,
 				DC5EE2EC16CE068200B2629F /* StackPreparator.h in Headers */,
+				DCB8737116E05A5B00D87513 /* DummyLibraryResolver.h in Headers */,
+				DCB8737516E05B0B00D87513 /* DummySymbolResolver.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -911,6 +925,8 @@
 				DC86E08A166C2D390027F40E /* PanicException.cpp in Sources */,
 				DCF538C5167C37B9000D6E02 /* InstructionDecoder.cpp in Sources */,
 				DC5EE2EB16CE068200B2629F /* StackPreparator.cpp in Sources */,
+				DCB8737016E05A5B00D87513 /* DummyLibraryResolver.cpp in Sources */,
+				DCB8737416E05B0B00D87513 /* DummySymbolResolver.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

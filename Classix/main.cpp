@@ -31,6 +31,8 @@
 #include <unordered_set>
 #include <algorithm>
 #include <dlfcn.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "FragmentManager.h"
 #include "PEFLibraryResolver.h"
@@ -43,6 +45,7 @@
 #include "NativeCall.h"
 #include "FancyDisassembler.h"
 #include "OStreamDisassemblyWriter.h"
+#include "DummyLibraryResolver.h"
 
 // be super-generous: apps on Mac OS 9, by default, have a 32 KB stack
 // but we give them 1 MB since messing with ApplLimit has no effect
@@ -153,6 +156,120 @@ static int listImports(const std::string& path)
 	return 0;
 }
 
+static int patchExecutable(const std::string& path, const std::string& outPath)
+{
+	Common::NativeAllocator allocator;
+	CFM::FragmentManager fragmentManager;
+	CFM::PEFLibraryResolver pefResolver(&allocator, fragmentManager);
+	CFM::DummyLibraryResolver dummyResolver;
+	
+	fragmentManager.LibraryResolvers.push_back(&pefResolver);
+	fragmentManager.LibraryResolvers.push_back(&dummyResolver);
+	
+	if (!fragmentManager.LoadContainer(path))
+	{
+		std::cerr << "Couldn't load " << path << std::endl;
+		return -4;
+	}
+	
+	CFM::PEFSymbolResolver* resolver = dynamic_cast<CFM::PEFSymbolResolver*>(fragmentManager.GetSymbolResolver(path));
+	if (resolver == nullptr)
+	{
+		std::cerr << "Loaded executable isn't a PowerPC executable" << std::endl;
+		return -3;
+	}
+	
+	auto entryPoints = resolver->GetEntryPoints();
+	Common::UInt32* transitionVectorAddress = nullptr;
+	for (const auto& entryPoint : entryPoints)
+	{
+		if (entryPoint.Name == CFM::SymbolResolver::MainSymbolName)
+		{
+			if (entryPoint.Universe != CFM::SymbolUniverse::PowerPC)
+			{
+				std::cerr << "Entry point isn't a PowerPC entry point" << std::endl;
+				return -3;
+			}
+			
+			transitionVectorAddress = allocator.ToPointer<Common::UInt32>(entryPoint.Address);
+			break;
+		}
+	}
+	
+	if (transitionVectorAddress == nullptr)
+	{
+		std::cerr << "Couldn't find any main transition vector" << std::endl;
+		return -5;
+	}
+	
+	PPCVM::Instruction* instructions = allocator.ToPointer<PPCVM::Instruction>(*transitionVectorAddress);
+	PPCVM::Instruction* branch = instructions + 12;
+	if (branch->hex == Common::UInt32::FromBigEndian(0x41820010)) // beq 0x10
+	{
+		// find the actual offset
+		int sectionIndex = -1;
+		ptrdiff_t offset = 0;
+		PEF::Container& container = resolver->GetContainer();
+		for (uint32_t i = 0; i < container.size(); i++)
+		{
+			const PEF::InstantiableSection& section = container.GetSection(i);
+			const uint8_t* branchAddress = reinterpret_cast<uint8_t*>(branch);
+			if (branchAddress > section.Data && branchAddress < section.Data + section.Size())
+			{
+				sectionIndex = i;
+				offset = branchAddress - section.Data;
+				break;
+			}
+		}
+		
+		if (sectionIndex == -1)
+		{
+			std::cerr << "couldn't find the section of the main function" << std::endl;
+			return -1;
+		}
+		
+		PPCVM::Instruction nopBuilder = 0;
+		nopBuilder.OPCD = 24;
+		Common::UInt32 nop = Common::UInt32(nopBuilder.hex);
+		
+		off_t beqLocation = container.GetSection(sectionIndex).AbsoluteOffset() + offset;
+		int fd = open(outPath.c_str(), O_CREAT | O_TRUNC | O_WRONLY);
+		if (fd < 0)
+		{
+			perror("open");
+			return -1;
+		}
+		
+		Common::FileMapping mapping(path);
+		if (write(fd, mapping.begin(), static_cast<size_t>(mapping.size())) < 0)
+		{
+			perror("write");
+			close(fd);
+			return -1;
+		}
+		
+		if (lseek(fd, beqLocation, SEEK_SET) < 0)
+		{
+			perror("lseek");
+			close(fd);
+			return -1;
+		}
+		
+		if (write(fd, &nop, sizeof nop) < 0)
+		{
+			perror("write");
+			close(fd);
+			return -1;
+		}
+		
+		close(fd);
+		return 0;
+	}
+	
+	std::cerr << "Unexpected instruction at this offset of the main symbol" << std::endl;
+	return -2;
+}
+
 static int disassemble(const std::string& path)
 {
 	Common::NativeAllocator allocator;
@@ -241,6 +358,7 @@ static int inflateAndDump(const std::string& path, const std::string& targetDir)
 static int usage()
 {
 	std::cerr << "usage: Classix -e file # list exports" << std::endl;
+	std::cerr << "       Classix -b file out-file # patch executable to always call _BreakPoint at start" << std::endl;
 	std::cerr << "       Classix -i file # list imports" << std::endl;
 	std::cerr << "       Classix -d file # disassemble code sections" << std::endl;
 	std::cerr << "       Classix -r file # run the file" << std::endl;
@@ -259,6 +377,13 @@ int main(int argc, const char* argv[], const char* envp[])
 	{
 		if (mode == "-e")
 			return listExports(path);
+		else if (mode == "-b")
+		{
+			if (argc < 4) return usage();
+			
+			std::string outPath = argv[3];
+			return patchExecutable(path, outPath);
+		}
 		else if (mode == "-i")
 			return listImports(path);
 		else if (mode == "-d")

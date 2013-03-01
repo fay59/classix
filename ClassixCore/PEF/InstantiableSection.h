@@ -45,6 +45,7 @@ namespace PEF
 		SectionType GetSectionType() const;
 		ShareType GetShareType() const;
 		size_t Size() const;
+		size_t AbsoluteOffset() const;
 		uint32_t GetDataLocation() const;
 		
 		~InstantiableSection();
