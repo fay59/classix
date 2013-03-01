@@ -62,8 +62,6 @@ namespace Classix
 		
 		MainStub(VirtualMachine& vm, CFM::ResolvedSymbol mainSymbol);
 		
-		static void AppendInteger(std::string& string, uint32_t integer);
-		
 		void InitIntEnv();
 		
 	public:
