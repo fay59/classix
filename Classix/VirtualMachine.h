@@ -119,7 +119,11 @@ namespace Classix
 		template<typename TArgumentIterator, typename TEnvironIterator>
 		ProgramControlHandle Instantiate(TArgumentIterator argBegin, TArgumentIterator argEnd, TEnvironIterator envBegin, TEnvironIterator envEnd)
 		{
-			return ProgramControlHandle(vm, StackSize, argBegin, argEnd, envBegin, envEnd);
+			ProgramControlHandle handle(vm, StackSize, argBegin, argEnd, envBegin, envEnd);
+			
+			PEF::TransitionVector* vector = vm.allocator->ToPointer<PEF::TransitionVector>(mainSymbol.Address);
+			handle.BeginTransition(*vector);
+			return handle;
 		}
 		
 		uint32_t operator()(const std::string& argv0);
