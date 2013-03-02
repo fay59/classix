@@ -336,7 +336,7 @@ struct ClassixCoreVM
 		const Common::UInt32* atAddress = vm->allocator->ToPointer<const Common::UInt32>(address);
 		return @(atAddress->Get());
 	}
-	catch (Common::AccessViolationException&)
+	catch (Common::PPCRuntimeException&)
 	{
 		return nil;
 	}
@@ -349,7 +349,7 @@ struct ClassixCoreVM
 		const Common::Real32* atAddress = vm->allocator->ToPointer<const Common::Real32>(address);
 		return @(atAddress->Get());
 	}
-	catch (Common::AccessViolationException&)
+	catch (Common::PPCRuntimeException&)
 	{
 		return nil;
 	}
@@ -362,7 +362,7 @@ struct ClassixCoreVM
 		const Common::Real64* atAddress = vm->allocator->ToPointer<const Common::Real64>(address);
 		return @(atAddress->Get());
 	}
-	catch (Common::AccessViolationException&)
+	catch (Common::PPCRuntimeException&)
 	{
 		return nil;
 	}
