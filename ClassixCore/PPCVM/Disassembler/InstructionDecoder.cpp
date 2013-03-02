@@ -209,13 +209,88 @@ namespace PPCVM
 		ILASB(nand);
 		IADA(neg);
 		ILASB(nor);
-		ILASB(or);
+		IMPL(orx)
+		{
+			if (i.RS == i.RB)
+				Emit(i, "mr", g(i.RA), g(i.RB));
+			else
+				Emit(i, opX("or", i.RC), g(i.RA), g(i.RS), g(i.RB));
+		}
+		
 		ILASB(orc);
 		BODY(ori, Emit(i, "ori", g(i.RA), g(i.RS), hex(i.UIMM)));
 		BODY(oris, Emit(i, "oris", g(i.RA), g(i.RS), hex(i.UIMM)));
 		
 		IROT(rlwimi);
-		IROT(rlwinm); // TODO simplified mnemonics (8-164)
+		
+		// this would need so many unit tests my head hurts
+		// http://publib.boulder.ibm.com/infocenter/pseries/v5r3/index.jsp?topic=/com.ibm.aix.aixassem/doc/alangref/fixed_rotate_shift32.htm
+		IMPL(rlwinmx)
+		{
+			if (i.ME == 31)
+			{
+				if (i.MB == 0)
+				{
+					if (i.SH < 16)
+						Emit(i, opX("rotlwi", i.RC), g(i.RA), g(i.RS), hex(i.SH));
+					else
+						Emit(i, opX("rotrwi", i.RC), g(i.RA), g(i.RS), hex(32 - i.SH));
+				}
+				else
+				{
+					if (i.SH == 0)
+						Emit(i, opX("clrwi", i.RC), g(i.RA), g(i.RS), hex(i.MB));
+					else
+					{
+						if (32 - i.MB == i.SH)
+							Emit(i, opX("srwi", i.RC), g(i.RA), g(i.RS), hex(i.MB));
+						else
+						{
+							uint32_t n = 32 - i.MB;
+							Emit(i, opX("extrwi", i.RC), g(i.RA), g(i.RS), hex(n), hex(i.SH - n));
+						}
+					}
+				}
+			}
+			else
+			{
+				if (i.MB == 0)
+				{
+					if (i.SH == 0)
+						Emit(i, opX("clrrwi", i.RC), g(i.RA), g(i.RS), hex(31 - i.ME));
+					else
+					{
+						if (31 - i.ME == i.SH)
+							Emit(i, opX("slwi", i.RC), g(i.RA), g(i.RS), hex(i.SH));
+						else
+							Emit(i, opX("extlwi", i.RC), g(i.RA), g(i.RS), hex(i.SH), hex(i.ME + 1));
+					}
+				}
+				else
+				{
+					if (i.MB == 32 - i.SH)
+					{
+						uint32_t n = i.ME + 1 - i.MB;
+						Emit(i, opX("inslwi", i.RC), g(i.RA), g(i.RS), hex(n), hex(i.MB));
+					}
+					else if (31 - i.ME == i.MB)
+					{
+						uint32_t b = i.SH + i.MB;
+						Emit(i, opX("clrslwi", i.RC), g(i.RA), g(i.RS), hex(b), hex(i.MB));
+					}
+					else
+					{
+						uint32_t b = i.MB;
+						uint32_t n = i.ME + 1 - b;
+						if (i.SH == 32 - (b + n))
+							Emit(i, opX("insrwi", i.RC), g(i.RA), g(i.RS), hex(n), hex(b));
+						else
+							Emit(i, opX("rlwinm", i.RC), g(i.RA), g(i.RS), hex(i.SH), hex(i.MB), hex(i.ME));
+					}
+				}
+			}
+		}
+		
 		IROT(rlwnm);
 		
 		ILASB(slw);
