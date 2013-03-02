@@ -68,6 +68,7 @@ namespace CFM
 		virtual std::vector<std::string> SymbolList() const = 0;
 		
 		virtual ResolvedSymbol ResolveSymbol(const std::string& name) = 0;
+		virtual std::vector<ResolvedSymbol> GetEntryPoints() = 0;
 		
 		virtual ~SymbolResolver() = 0;
 	};

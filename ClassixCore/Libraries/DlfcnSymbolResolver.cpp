@@ -34,7 +34,7 @@ namespace ClassixCore
 		globals = library.Init(allocator);
 	}
 	
-	std::vector<ResolvedSymbol> DlfcnSymbolResolver::GetEntryPoints() const
+	std::vector<ResolvedSymbol> DlfcnSymbolResolver::GetEntryPoints()
 	{
 		return std::vector<ResolvedSymbol>();
 	}

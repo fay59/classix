@@ -24,7 +24,7 @@
 
 namespace CFM
 {
-	std::vector<ResolvedSymbol> DummySymbolResolver::GetEntryPoints() const
+	std::vector<ResolvedSymbol> DummySymbolResolver::GetEntryPoints()
 	{
 		return std::vector<ResolvedSymbol>();
 	}

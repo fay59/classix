@@ -50,12 +50,11 @@ namespace CFM
 		PEF::Container& GetContainer();
 		const PEF::Container& GetContainer() const;
 		
-		virtual std::vector<ResolvedSymbol> GetEntryPoints() const override;
-		
 		virtual const std::string* FilePath() const override;
 		virtual std::vector<std::string> SymbolList() const override;
 		
 		virtual ResolvedSymbol ResolveSymbol(const std::string& symbolName) override;
+		virtual std::vector<ResolvedSymbol> GetEntryPoints() override;
 		
 		virtual ~PEFSymbolResolver() override;
 	};
