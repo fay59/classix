@@ -98,7 +98,7 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 	
 	cxx = new CXDisassemblyCXX;
 	
-	for (auto iter = cfm->Begin(); iter != cfm->End(); iter++)
+	for (auto iter = cfm->begin(); iter != cfm->end(); iter++)
 	{
 		if (const CFM::PEFSymbolResolver* pef = dynamic_cast<const CFM::PEFSymbolResolver*>(iter->second))
 		{

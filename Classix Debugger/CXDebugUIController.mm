@@ -334,7 +334,7 @@ static NSNib* uiNib;
 	[[parent.vm fragmentManager] getValue:&cfm];
 	[[parent.vm allocator] getValue:&allocator];
 	
-	for (auto iter = cfm->Begin(); iter != cfm->End(); iter++)
+	for (auto iter = cfm->begin(); iter != cfm->end(); iter++)
 	{
 		const SymbolResolver* resolver = iter->second;
 		std::string name;

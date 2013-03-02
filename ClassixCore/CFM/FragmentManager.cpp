@@ -60,12 +60,22 @@ namespace CFM
 		return symbol;
 	}
 	
-	FragmentManager::SymbolResolverIterator FragmentManager::Begin() const
+	FragmentManager::iterator FragmentManager::begin()
 	{
 		return resolvers.begin();
 	}
 	
-	FragmentManager::SymbolResolverIterator FragmentManager::End() const
+	FragmentManager::iterator FragmentManager::end()
+	{
+		return resolvers.end();
+	}
+	
+	FragmentManager::const_iterator FragmentManager::begin() const
+	{
+		return resolvers.begin();
+	}
+	
+	FragmentManager::const_iterator FragmentManager::end() const
 	{
 		return resolvers.end();
 	}

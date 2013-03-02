@@ -220,9 +220,9 @@ static int inflateAndDump(const std::string& path, const std::string& targetDir)
 	
 	if (fragmentManager.LoadContainer(path))
 	{
-		for (auto iter = fragmentManager.Begin(); iter != fragmentManager.End(); iter++)
+		for (auto& pair : fragmentManager)
 		{
-			if (CFM::PEFSymbolResolver* resolver = dynamic_cast<CFM::PEFSymbolResolver*>(iter->second))
+			if (CFM::PEFSymbolResolver* resolver = dynamic_cast<CFM::PEFSymbolResolver*>(pair.second))
 			{
 				PEF::Container& container = resolver->GetContainer();
 				for (PEF::InstantiableSection& section : container)

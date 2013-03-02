@@ -38,7 +38,8 @@ namespace CFM
 		std::map<std::string, SymbolResolver*> resolvers;
 		
 	public:
-		typedef std::map<std::string, SymbolResolver*>::const_iterator SymbolResolverIterator;
+		typedef std::map<std::string, SymbolResolver*>::const_iterator const_iterator;
+		typedef std::map<std::string, SymbolResolver*>::iterator iterator;
 		FragmentManager();
 		FragmentManager(const FragmentManager& that) = delete;
 		
@@ -47,8 +48,11 @@ namespace CFM
 		bool LoadContainer(const std::string& name);
 		ResolvedSymbol ResolveSymbol(const std::string& container, const std::string& name);
 		
-		SymbolResolverIterator Begin() const;
-		SymbolResolverIterator End() const;
+		iterator begin();
+		iterator end();
+		const_iterator begin() const;
+		const_iterator end() const;
+		
 		SymbolResolver* GetSymbolResolver(const std::string& resolver);
 	};
 }

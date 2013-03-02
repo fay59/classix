@@ -72,9 +72,9 @@ static NSString* CXDebugDocumentUTI = @"com.felixcloutier.classix.document";
 	[vm.fragmentManager getValue:&cfm];
 	[vm.allocator getValue:&allocator];
 	
-	for (auto iter = cfm->Begin(); iter != cfm->End(); iter++)
+	for (auto iter = cfm->begin(); iter != cfm->end(); iter++)
 	{
-		const SymbolResolver* resolver = iter->second;
+		SymbolResolver* resolver = iter->second;
 		if (const std::string* fullPath = resolver->FilePath())
 		{
 			if (*fullPath == executableURL.path.UTF8String)

@@ -36,6 +36,7 @@ namespace Common
 		struct StackInfo
 		{
 			char* sp;
+			uint32_t argc;
 			char* argv;
 			char* envp;
 		};

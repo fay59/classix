@@ -28,6 +28,7 @@
 #include "LibraryResolver.h"
 #include "PEFLibraryResolver.h"
 #include "StackPreparator.h"
+#include <deque>
 #include <list>
 #include <algorithm>
 
@@ -62,7 +63,7 @@ namespace Classix
 		
 		MainStub(VirtualMachine& vm, CFM::ResolvedSymbol mainSymbol);
 		
-		void InitIntEnv();
+		uint32_t RunSymbol(Common::StackPreparator::StackInfo& stackPrepInfo, CFM::ResolvedSymbol& symbol);
 		
 	public:
 		uint32_t StackSize;
@@ -86,21 +87,32 @@ namespace Classix
 			stackPrep.AddArguments(argBegin, argEnd);
 			stackPrep.AddEnvironmentVariables(envBegin, envEnd);
 			
-			auto mainVector = vm.allocator->ToPointer<const PEF::TransitionVector>(mainSymbol.Address);
 			auto result = stackPrep.WriteStack(static_cast<char*>(*stack), stack.GetVirtualAddress(), StackSize);
 			
-			vm.state.r0 = 0;
-			vm.state.r1 = vm.allocator->ToIntPtr(result.sp - 8);
-			vm.state.r3 = vm.state.r27 = stackPrep.ArgumentCount();
-			vm.state.r4 = vm.state.r28 = vm.allocator->ToIntPtr(result.argv);
-			vm.state.r5 = vm.state.r29 = vm.allocator->ToIntPtr(result.envp);
+			// collect init and term symbols
+			std::deque<CFM::ResolvedSymbol> initSymbols, termSymbols;
+			for (auto& pair : vm.fragmentManager)
+			{
+				CFM::SymbolResolver* resolver = pair.second;
+				auto entryPoints = resolver->GetEntryPoints();
+				for (auto& entryPoint : entryPoints)
+				{
+					if (entryPoint.Name == CFM::SymbolResolver::InitSymbolName)
+						initSymbols.push_back(entryPoint);
+					else if (entryPoint.Name == CFM::SymbolResolver::TermSymbolName)
+						termSymbols.push_back(entryPoint);
+				}
+			}
 			
-			InitIntEnv();
+			for (auto& symbol : initSymbols)
+				RunSymbol(result, symbol);
 			
-			vm.state.r2 = mainVector->TableOfContents;
-			const void* entryPoint = vm.allocator->ToPointer<const void>(mainVector->EntryPoint);
-			vm.interpreter.Execute(entryPoint);
-			return vm.state.r3;
+			uint32_t executionResult = RunSymbol(result, mainSymbol);
+			
+			for (auto& symbol : termSymbols)
+				RunSymbol(result, symbol);
+			
+			return executionResult;
 		}
 	};
 }

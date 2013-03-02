@@ -30,19 +30,20 @@ namespace Classix
 		StackSize = 0x100000;
 	}
 	
-	void MainStub::InitIntEnv()
+	uint32_t MainStub::RunSymbol(Common::StackPreparator::StackInfo& stackPrepInfo, CFM::ResolvedSymbol& symbol)
 	{
-		// arguments also go to _IntEnv
-		if (CFM::SymbolResolver* resolver = vm.fragmentManager.GetSymbolResolver("StdCLib"))
-		{
-			auto symbol = resolver->ResolveSymbol("__StdCLib_IntEnvInit");
-			assert(symbol.Universe != CFM::SymbolUniverse::LostInTimeAndSpace && "Found StdCLib but couldn't find __StdCLib_IntEnvInit!");
-			
-			PEF::TransitionVector* vector = reinterpret_cast<PEF::TransitionVector*>(symbol.Address);
-			void* intEnvInit = vm.allocator->ToPointer<void>(vector->EntryPoint);
-			vm.state.r2 = vector->TableOfContents;
-			vm.interpreter.Execute(intEnvInit);
-		}
+		vm.state.r0 = 0;
+		vm.state.r1 = vm.allocator->ToIntPtr(stackPrepInfo.sp - 8);
+		vm.state.r3 = vm.state.r27 = stackPrepInfo.argc;
+		vm.state.r4 = vm.state.r28 = vm.allocator->ToIntPtr(stackPrepInfo.argv);
+		vm.state.r5 = vm.state.r29 = vm.allocator->ToIntPtr(stackPrepInfo.envp);
+		
+		auto vector = vm.allocator->ToPointer<const PEF::TransitionVector>(symbol.Address);
+		vm.state.r2 = vector->TableOfContents;
+		const void* entryPoint = vm.allocator->ToPointer<const void>(vector->EntryPoint);
+		vm.interpreter.Execute(entryPoint);
+		
+		return vm.state.r3;
 	}
 	
 	uint32_t MainStub::operator()(const std::string& argv0)

@@ -162,6 +162,7 @@ namespace Common
 		builder.Write<uint32_t>(argv.size());
 		
 		result.sp = builder.sp;
+		result.argc = argv.size();
 		return result;
 	}
 }

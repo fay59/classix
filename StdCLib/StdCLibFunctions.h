@@ -33,7 +33,7 @@ extern "C"
 		struct Globals;
 	}
 	
-	// not in the actual StdCLib interface (necessary for our glue code)
+	// <init> function
 	void StdCLib___StdCLib_IntEnvInit(StdCLib::Globals* globals, MachineState* state);
 
 	// actual StdCLib interface

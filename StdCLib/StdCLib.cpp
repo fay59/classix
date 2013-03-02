@@ -35,6 +35,7 @@
 #include "BigEndian.h"
 #include "StdCLib.h"
 #include "StdCLibFunctions.h"
+#include "SymbolResolver.h"
 
 using PPCVM::MachineState;
 
@@ -338,6 +339,9 @@ extern "C"
 
 	SymbolType LibraryLookup(StdCLib::Globals* globals, const char* name, void** result)
 	{
+		if (name == CFM::SymbolResolver::InitSymbolName)
+			name = "__StdCLib_IntEnvInit";
+		
 		char functionName[36] = "StdCLib_";
 		char* end = stpncpy(functionName + 8, name, 27);
 		assert(*end == '\0' && "symbol name is too long");
