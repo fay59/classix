@@ -24,6 +24,9 @@
 namespace CFM
 {
 	const ResolvedSymbol ResolvedSymbol::Invalid(SymbolUniverse::LostInTimeAndSpace, "<invalid>", 0);
+	const std::string SymbolResolver::MainSymbolName = "<main>";
+	const std::string SymbolResolver::InitSymbolName = "<init>";
+	const std::string SymbolResolver::TermSymbolName = "<term>";
 	
 	ResolvedSymbol::ResolvedSymbol(SymbolUniverse universe, const std::string& name, uint32_t address)
 	: Name(name)
@@ -41,8 +44,6 @@ namespace CFM
 	{
 		return ResolvedSymbol(SymbolUniverse::Intel, name, address);
 	}
-	
-	const std::string SymbolResolver::MainSymbolName = "<main>";
 	
 	SymbolResolver::~SymbolResolver()
 	{ }

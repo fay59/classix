@@ -41,9 +41,6 @@ namespace CFM
 		ResolvedSymbol Symbolize(const std::string& name, const PEF::LoaderHeader::SectionWithOffset& sectionWithOffset) const;
 		
 	public:
-		static const std::string InitSymbolName;
-		static const std::string TermSymbolName;
-		
 		PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, const std::string& filePath);
 		PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, Common::FileMapping&& mapping);
 		

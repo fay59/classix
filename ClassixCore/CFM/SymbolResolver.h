@@ -61,8 +61,8 @@ namespace CFM
 	{
 	public:
 		static const std::string MainSymbolName;
-		
-		virtual std::vector<ResolvedSymbol> GetEntryPoints() const = 0;
+		static const std::string InitSymbolName;
+		static const std::string TermSymbolName;
 		
 		virtual const std::string* FilePath() const = 0;
 		virtual std::vector<std::string> SymbolList() const = 0;

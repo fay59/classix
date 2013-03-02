@@ -36,7 +36,17 @@ namespace ClassixCore
 	
 	std::vector<ResolvedSymbol> DlfcnSymbolResolver::GetEntryPoints()
 	{
-		return std::vector<ResolvedSymbol>();
+		std::vector<ResolvedSymbol> entryPoints;
+		const std::string* symbolNames[] = {&MainSymbolName, &InitSymbolName, &TermSymbolName};
+		
+		for (size_t i = 0; i < 3; i++)
+		{
+			ResolvedSymbol symbol = ResolveSymbol(*symbolNames[i]);
+			if (symbol.Universe == SymbolUniverse::Intel)
+				entryPoints.push_back(symbol);
+		}
+		
+		return entryPoints;
 	}
 	
 	ResolvedSymbol& DlfcnSymbolResolver::CacheSymbol(const std::string& name, void* address)

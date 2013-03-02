@@ -44,6 +44,8 @@ namespace ClassixCore
 		typedef SymbolType (*LookupFunction)(void*, const char*, void**);
 		typedef void (*FinitFunction)(void*);
 		
+		typedef void (*ExportedFunction)(void*, PPCVM::MachineState*);
+		
 		std::string Path;
 		std::string Name;
 		InitFunction Init;

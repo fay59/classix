@@ -29,9 +29,6 @@
 
 namespace CFM
 {
-	const std::string PEFSymbolResolver::InitSymbolName = "<init>";
-	const std::string PEFSymbolResolver::TermSymbolName = "<term>";
-	
 	PEFSymbolResolver::PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, const std::string& filePath)
 	: PEFSymbolResolver(allocator, cfm, Common::FileMapping(filePath))
 	{ }
