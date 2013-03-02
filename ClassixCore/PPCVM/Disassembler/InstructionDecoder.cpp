@@ -239,7 +239,7 @@ namespace PPCVM
 				else
 				{
 					if (i.SH == 0)
-						Emit(i, opX("clrwi", i.RC), g(i.RA), g(i.RS), hex(i.MB));
+						Emit(i, opX("clrlwi", i.RC), g(i.RA), g(i.RS), hex(i.MB));
 					else
 					{
 						if (32 - i.MB == i.SH)
