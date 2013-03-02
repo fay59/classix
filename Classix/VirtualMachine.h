@@ -35,10 +35,12 @@
 namespace Classix
 {
 	class MainStub;
+	class ProgramControlHandle;
 	
 	class VirtualMachine
 	{
 		friend class MainStub;
+		friend class ProgramControlHandle;
 		
 		Common::IAllocator* allocator;
 		PPCVM::MachineState state;
@@ -54,43 +56,26 @@ namespace Classix
 		MainStub LoadMainContainer(const std::string& path);
 	};
 	
-	class MainStub
+	class ProgramControlHandle
 	{
-		friend class VirtualMachine;
+		friend class MainStub;
 		
 		VirtualMachine& vm;
-		CFM::ResolvedSymbol mainSymbol;
-		
-		MainStub(VirtualMachine& vm, CFM::ResolvedSymbol mainSymbol);
-		
-		uint32_t RunSymbol(Common::StackPreparator::StackInfo& stackPrepInfo, CFM::ResolvedSymbol& symbol);
-		
-	public:
-		uint32_t StackSize;
-		
-		uint32_t operator()(const std::string& argv0);
-		uint32_t operator()(int argc, const char** argv);
-		uint32_t operator()(int argc, const char** argv, const char** envp);
-		
-		template<typename TArgumentIterator>
-		inline uint32_t operator()(TArgumentIterator argBegin, TArgumentIterator argEnd)
-		{
-			return this->operator()(argBegin, argEnd, static_cast<char**>(nullptr), static_cast<char**>(nullptr));
-		}
+		Common::AutoAllocation stack;
+		Common::StackPreparator::StackInfo stackInfo;
+		std::deque<CFM::ResolvedSymbol> initSymbols;
+		std::deque<CFM::ResolvedSymbol> termSymbols;
 		
 		template<typename TArgumentIterator, typename TEnvironIterator>
-		uint32_t operator()(TArgumentIterator argBegin, TArgumentIterator argEnd, TEnvironIterator envBegin, TEnvironIterator envEnd)
+		ProgramControlHandle(VirtualMachine& vm, uint32_t stackSize, TArgumentIterator argBegin, TArgumentIterator argEnd, TEnvironIterator envBegin, TEnvironIterator envEnd)
+		: vm(vm), stack(vm.allocator->AllocateAuto("Stack", stackSize))
 		{
-			Common::AutoAllocation stack = vm.allocator->AllocateAuto("Stack", StackSize);
-			
 			Common::StackPreparator stackPrep;
 			stackPrep.AddArguments(argBegin, argEnd);
 			stackPrep.AddEnvironmentVariables(envBegin, envEnd);
 			
-			auto result = stackPrep.WriteStack(static_cast<char*>(*stack), stack.GetVirtualAddress(), StackSize);
+			stackInfo = stackPrep.WriteStack(static_cast<char*>(*stack), stack.GetVirtualAddress(), stackSize);
 			
-			// collect init and term symbols
-			std::deque<CFM::ResolvedSymbol> initSymbols, termSymbols;
 			for (auto& pair : vm.fragmentManager)
 			{
 				CFM::SymbolResolver* resolver = pair.second;
@@ -105,14 +90,52 @@ namespace Classix
 			}
 			
 			for (auto& symbol : initSymbols)
-				RunSymbol(result, symbol);
-			
-			uint32_t executionResult = RunSymbol(result, mainSymbol);
-			
-			for (auto& symbol : termSymbols)
-				RunSymbol(result, symbol);
-			
-			return executionResult;
+				RunSymbol(symbol);
+		}
+		
+	public:
+		uint32_t RunSymbol(CFM::ResolvedSymbol& symbol);
+		
+		uint32_t pc;
+		
+		void BeginTransition(const PEF::TransitionVector& vector);
+		void StepOver();
+		void StepInto();
+		void RunTo(uint32_t address);
+	};
+	
+	class MainStub
+	{
+		friend class VirtualMachine;
+		
+		VirtualMachine& vm;
+		CFM::ResolvedSymbol mainSymbol;
+		
+		MainStub(VirtualMachine& vm, CFM::ResolvedSymbol mainSymbol);
+		
+	public:
+		uint32_t StackSize;
+		
+		template<typename TArgumentIterator, typename TEnvironIterator>
+		ProgramControlHandle Instantiate(TArgumentIterator argBegin, TArgumentIterator argEnd, TEnvironIterator envBegin, TEnvironIterator envEnd)
+		{
+			return ProgramControlHandle(vm, StackSize, argBegin, argEnd, envBegin, envEnd);
+		}
+		
+		uint32_t operator()(const std::string& argv0);
+		uint32_t operator()(int argc, const char** argv);
+		uint32_t operator()(int argc, const char** argv, const char** envp);
+		
+		template<typename TArgumentIterator>
+		inline uint32_t operator()(TArgumentIterator argBegin, TArgumentIterator argEnd)
+		{
+			return this->operator()(argBegin, argEnd, static_cast<char**>(nullptr), static_cast<char**>(nullptr));
+		}
+		
+		template<typename TArgumentIterator, typename TEnvironIterator>
+		uint32_t operator()(TArgumentIterator argBegin, TArgumentIterator argEnd, TEnvironIterator envBegin, TEnvironIterator envEnd)
+		{
+			return Instantiate(argBegin, argEnd, envBegin, envEnd).RunSymbol(mainSymbol);
 		}
 	};
 }

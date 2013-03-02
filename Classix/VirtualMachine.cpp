@@ -21,29 +21,65 @@
 
 #include "VirtualMachine.h"
 #include "DlfcnSymbolResolver.h"
+#include <unordered_set>
 
 namespace Classix
 {
+	uint32_t ProgramControlHandle::RunSymbol(CFM::ResolvedSymbol& symbol)
+	{
+		auto vector = vm.allocator->ToPointer<const PEF::TransitionVector>(symbol.Address);
+		BeginTransition(*vector);
+		vm.interpreter.Execute(vm.allocator->ToPointer<void>(pc));
+		return vm.state.r3;
+	}
+	
+	void ProgramControlHandle::BeginTransition(const PEF::TransitionVector &vector)
+	{
+		vm.state.r0 = 0;
+		vm.state.r1 = vm.allocator->ToIntPtr(stackInfo.sp - 8);
+		vm.state.r3 = vm.state.r27 = stackInfo.argc;
+		vm.state.r4 = vm.state.r28 = vm.allocator->ToIntPtr(stackInfo.argv);
+		vm.state.r5 = vm.state.r29 = vm.allocator->ToIntPtr(stackInfo.envp);
+		
+		vm.state.r2 = vector.TableOfContents;
+		pc = vector.EntryPoint;
+	}
+	
+	void ProgramControlHandle::StepInto()
+	{
+		const void* newPC = vm.interpreter.ExecuteOne(vm.allocator->ToPointer<void>(pc));
+		pc = vm.allocator->ToIntPtr(newPC);
+	}
+	
+	void ProgramControlHandle::StepOver()
+	{
+		Common::UInt32 word = *vm.allocator->ToPointer<Common::UInt32>(pc);
+		PPCVM::Instruction inst = word.Get();
+		if (inst.OPCD == 18 && inst.LK == 1)
+		{
+			uint32_t sp = vm.state.r1;
+			uint32_t desiredPC = pc + 4;
+			do
+			{
+				RunTo(desiredPC);
+			} while (vm.state.r1 != sp);
+		}
+		else
+			StepInto();
+	}
+	
+	void ProgramControlHandle::RunTo(uint32_t address)
+	{
+		std::unordered_set<const void*> until = {vm.allocator->ToPointer<void>(address)};
+		const void* eip = vm.allocator->ToPointer<const void>(pc);
+		eip = vm.interpreter.ExecuteUntil(eip, until);
+		pc = vm.allocator->ToIntPtr(eip);
+	}
+	
 	MainStub::MainStub(VirtualMachine& vm, CFM::ResolvedSymbol mainSymbol)
 	: vm(vm), mainSymbol(mainSymbol)
 	{
 		StackSize = 0x100000;
-	}
-	
-	uint32_t MainStub::RunSymbol(Common::StackPreparator::StackInfo& stackPrepInfo, CFM::ResolvedSymbol& symbol)
-	{
-		vm.state.r0 = 0;
-		vm.state.r1 = vm.allocator->ToIntPtr(stackPrepInfo.sp - 8);
-		vm.state.r3 = vm.state.r27 = stackPrepInfo.argc;
-		vm.state.r4 = vm.state.r28 = vm.allocator->ToIntPtr(stackPrepInfo.argv);
-		vm.state.r5 = vm.state.r29 = vm.allocator->ToIntPtr(stackPrepInfo.envp);
-		
-		auto vector = vm.allocator->ToPointer<const PEF::TransitionVector>(symbol.Address);
-		vm.state.r2 = vector->TableOfContents;
-		const void* entryPoint = vm.allocator->ToPointer<const void>(vector->EntryPoint);
-		vm.interpreter.Execute(entryPoint);
-		
-		return vm.state.r3;
 	}
 	
 	uint32_t MainStub::operator()(const std::string& argv0)
