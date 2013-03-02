@@ -484,8 +484,17 @@ struct ClassixCoreVM
 
 -(IBAction)stepOver:(id)sender
 {
-	NSLog(@"*** step over is not currently supported; stepping into instead");
-	[self stepInto:sender];
+	Common::UInt32 word = *vm->allocator->ToPointer<Common::UInt32>(pc);
+	PPCVM::Instruction inst = word.Get();
+	if (inst.OPCD == 18 && inst.LK == 1)
+	{
+		uint32_t sp = vm->state.r1;
+		do
+		{
+			[self runTo:pc + 4];
+		} while (vm->state.r1 != sp);
+	}
+	else [self stepInto:sender];
 }
 
 -(IBAction)stepInto:(id)sender
