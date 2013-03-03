@@ -85,6 +85,7 @@ enum CXVirtualMachineSPRIndex
 
 -(NSString*)symbolNameOfAddress:(unsigned)address;
 -(NSString*)explainAddress:(unsigned)address;
+-(NSString*)stringAtAddress:(unsigned)address;
 -(NSNumber*)wordAtAddress:(unsigned)address;
 -(NSNumber*)floatAtAddress:(unsigned)address;
 -(NSNumber*)doubleAtAddress:(unsigned)address;

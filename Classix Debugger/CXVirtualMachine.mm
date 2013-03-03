@@ -24,6 +24,7 @@
 
 #include <dlfcn.h>
 #include <unordered_set>
+#include <algorithm>
 
 #include "MachineState.h"
 #include "FragmentManager.h"
@@ -333,6 +334,39 @@ struct ClassixCoreVM
 		std::string description = details->GetAllocationDetails(offset);
 		return [NSString stringWithCString:description.c_str() encoding:NSUTF8StringEncoding];
 	}
+	return nil;
+}
+
+-(NSString*)stringAtAddress:(unsigned int)address
+{
+	try
+	{
+		const char* atAddress = vm->allocator->ToPointer<const char>(address);
+		uint32_t offset = vm->allocator->GetAllocationOffset(address);
+		uint32_t limit = vm->allocator->GetDetails(address)->Size() - offset;
+		size_t length = strnlen(atAddress, limit);
+		
+		// check that the few couple characters are printable
+		bool valid = true;
+		for (size_t i = 0; i < std::min(length, size_t(8)); i++)
+		{
+			if (atAddress[i] < 0x20)
+			{
+				valid = false;
+				break;
+			}
+		}
+		
+		if (valid)
+		{
+			// initWithBytesNoCopy takes a non-const pointer because it is allowed to free the buffer in some circumstance;
+			// but in our case no such thing will happen, so it is safe to use a const_cast
+			NSString* result = [[NSString alloc] initWithBytesNoCopy:const_cast<char*>(atAddress) length:length encoding:NSMacOSRomanStringEncoding freeWhenDone:NO];
+			return [result autorelease];
+		}
+	}
+	catch (Common::PPCRuntimeException&)
+	{ }
 	return nil;
 }
 

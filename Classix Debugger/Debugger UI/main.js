@@ -187,7 +187,7 @@ function BeginShowPreview(element)
 		popover.style.marginTop = element.offsetHeight + "px";
 		popoverDiv.appendChild(popover);
 		
-		var possibleKeys = ["address", "condition", "signed", "unsigned", "float", "double", "pointer", "*unsigned", "*signed", "*float", "*double"];
+		var possibleKeys = ["address", "condition", "signed", "unsigned", "float", "double", "pointer", "*unsigned", "*signed", "*float", "*double", "char*"];
 		for (var i = 0; i < 32; i++) possibleKeys.unshift("r" + i);
 		for (var i = 0; i < possibleKeys.length; i++)
 		{

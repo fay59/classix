@@ -120,6 +120,9 @@
 		
 		if (NSNumber* memoryValue = [document.vm doubleAtAddress:memoryAddress])
 			[representations setObject:memoryValue forKey:@"*double"];
+		
+		if (NSString* stringValue = [document.vm stringAtAddress:memoryAddress])
+			[representations setObject:stringValue forKey:@"char*"];
 	}
 	else
 	{
