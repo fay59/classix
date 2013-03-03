@@ -27,7 +27,7 @@ using namespace PPCVM::Disassembly;
 
 static char endline = '\n';
 
-OStreamDisassemblyWriter::OStreamDisassemblyWriter(Common::IAllocator* allocator, std::ostream& into)
+OStreamDisassemblyWriter::OStreamDisassemblyWriter(Common::IAllocator& allocator, std::ostream& into)
 : into(into), allocator(allocator)
 { }
 
@@ -71,9 +71,9 @@ void OStreamDisassemblyWriter::VisitOpcode(const PPCVM::Disassembly::Disassemble
 		}
 		else
 		{
-			uint32_t offset = allocator->GetAllocationOffset(relatedAddress);
+			uint32_t offset = allocator.GetAllocationOffset(relatedAddress);
 			uint32_t base = relatedAddress - offset;
-			into << allocator->GetDetails(base)->GetAllocationDetails(offset);
+			into << allocator.GetDetails(base)->GetAllocationDetails(offset);
 		}
 		into << '>';
 	}

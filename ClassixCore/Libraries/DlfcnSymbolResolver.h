@@ -46,7 +46,7 @@ namespace ClassixCore
 		void* globals;
 		
 		// symbol cache
-		Common::IAllocator* allocator;
+		Common::IAllocator& allocator;
 		Common::STAllocator<uint8_t> stlAllocator;
 		std::list<PEF::TransitionVector, Common::STAllocator<PEF::TransitionVector>> transitions;
 		std::deque<NativeCall, Common::STAllocator<NativeCall>> nativeCalls;
@@ -56,7 +56,7 @@ namespace ClassixCore
 		PEF::TransitionVector& MakeTransitionVector(const std::string& symbolName, void* address);
 		
 	public:
-		DlfcnSymbolResolver(Common::IAllocator* allocator, const DlfcnLibrary& library);
+		DlfcnSymbolResolver(Common::IAllocator& allocator, const DlfcnLibrary& library);
 		
 		void* GetGlobals();
 		

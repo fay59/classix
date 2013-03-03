@@ -64,12 +64,12 @@ namespace ClassixCore
 	
 	class DlfcnLibraryResolver : public CFM::LibraryResolver
 	{
-		Common::IAllocator* allocator;
+		Common::IAllocator& allocator;
 		std::unordered_map<std::string, DlfcnLibrary> libraries;
 		std::deque<DlfcnSymbolResolver> resolvers;
 		
 	public:
-		DlfcnLibraryResolver(Common::IAllocator* allocator);
+		DlfcnLibraryResolver(Common::IAllocator& allocator);
 		
 		void RegisterLibrary(const std::string& cfmName);
 		void RegisterLibrary(const std::string& cfmName, const std::string& path);

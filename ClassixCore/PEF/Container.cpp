@@ -24,7 +24,7 @@
 
 namespace PEF
 {
-	Container::Container(Common::IAllocator* allocator, const void* base, const void* end)
+	Container::Container(Common::IAllocator& allocator, const void* base, const void* end)
 	: Base(static_cast<const uint8_t*>(base))
 	, header(ContainerHeader::FromPointer(base))
 	, loader(nullptr)
@@ -104,7 +104,7 @@ namespace PEF
 		return static_cast<size_t>(End - Base);
 	}
 	
-	Common::IAllocator* Container::GetAllocator()
+	Common::IAllocator& Container::GetAllocator()
 	{
 		return allocator;
 	}

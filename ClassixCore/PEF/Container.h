@@ -35,11 +35,11 @@ namespace PEF
 {
 	class Container
 	{
+		Common::IAllocator& allocator;
 		const ContainerHeader* header;
 		std::vector<InstantiableSection> sections;
 		std::vector<int32_t> instantiableSectionIndices;
 		LoaderSection* loader;
-		Common::IAllocator* allocator;
 		
 	public:
 		typedef std::vector<InstantiableSection>::iterator iterator;
@@ -48,7 +48,7 @@ namespace PEF
 		const uint8_t* Base;
 		const uint8_t* End;
 		
-		Container(Common::IAllocator* allocator, const void* base, const void* end);
+		Container(Common::IAllocator& allocator, const void* base, const void* end);
 		
 		iterator begin();
 		iterator end();
@@ -58,7 +58,7 @@ namespace PEF
 		size_t size() const;
 		size_t data_size() const;
 		
-		Common::IAllocator* GetAllocator();
+		Common::IAllocator& GetAllocator();
 		
 		InstantiableSection& GetSection(uint32_t index);
 		const InstantiableSection& GetSection(uint32_t index) const;

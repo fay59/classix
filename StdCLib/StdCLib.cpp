@@ -169,18 +169,18 @@ namespace StdCLib
 	{
 		Scalars scalars;
 		uint8_t padding[32]; // just some buffer space before we get to the allocator
-		Common::IAllocator* allocator;
+		Common::IAllocator& allocator;
 		
 		static std::map<off_t, std::string> FieldOffsets;
 		static std::map<std::string, size_t> FieldLocations;
 		
 		Globals(Common::IAllocator* allocator)
-		: allocator(allocator)
+		: allocator(*allocator)
 		{
 			memset(&scalars, 0, sizeof scalars);
 			memcpy(&scalars.cType, cTypeCharClasses, sizeof scalars.cType);
 			
-			scalars.__p_CType = allocator->ToIntPtr(&scalars.cType);
+			scalars.__p_CType = this->allocator.ToIntPtr(&scalars.cType);
 			
 			scalars._iob[0].fptr = fdup(stdin);
 			scalars._iob[1].fptr = fdup(stdout);
@@ -372,15 +372,15 @@ extern "C"
 			if (file != nullptr)
 				fclose(file);
 		}
-		globals->allocator->Deallocate(globals);
+		globals->allocator.Deallocate(globals);
 	}
 }
 
 #pragma mark -
 #pragma mark Implementation
 
-#define ToPointer	globals->allocator->ToPointer
-#define ToIntPtr	globals->allocator->ToIntPtr
+#define ToPointer	globals->allocator.ToPointer
+#define ToIntPtr	globals->allocator.ToIntPtr
 
 namespace
 {

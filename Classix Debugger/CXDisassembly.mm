@@ -102,7 +102,7 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 	{
 		if (const CFM::PEFSymbolResolver* pef = dynamic_cast<const CFM::PEFSymbolResolver*>(iter->second))
 		{
-			PPCVM::Disassembly::FancyDisassembler disasm(allocator);
+			PPCVM::Disassembly::FancyDisassembler disasm(*allocator);
 			const PEF::Container& container = pef->GetContainer();
 			for (int i = 0; i < container.size(); i++)
 			{

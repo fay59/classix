@@ -71,7 +71,7 @@ namespace ClassixCore
 		dlclose(dlHandle);
 	}
 	
-	DlfcnLibraryResolver::DlfcnLibraryResolver(Common::IAllocator* allocator)
+	DlfcnLibraryResolver::DlfcnLibraryResolver(Common::IAllocator& allocator)
 	: allocator(allocator)
 	{ }
 	

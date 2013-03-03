@@ -26,31 +26,31 @@ namespace
 {
 	using namespace PPCVM;
 	
-	inline bool GetCRBit(MachineState* state, int bit)
+	inline bool GetCRBit(MachineState& state, int bit)
 	{
 		int crIndex = bit / 4;
 		int bitIndex = 3 - (bit & 3);
-		return (state->cr[crIndex] >> bitIndex) & 1;
+		return (state.cr[crIndex] >> bitIndex) & 1;
 	}
 	
-	inline void SetCRBit(MachineState* state, int bit, bool value)
+	inline void SetCRBit(MachineState& state, int bit, bool value)
 	{
 		int bitIndex = bit / 4;
 		int bitValue = 8 >> (bit & 3);
 		if (value)
-			state->cr[bitIndex] |= bitValue;
+			state.cr[bitIndex] |= bitValue;
 		else
-			state->cr[bitIndex] &= ~bitValue;
+			state.cr[bitIndex] &= ~bitValue;
 	}
 	
-	inline int GetCRField(MachineState* state, int field)
+	inline int GetCRField(MachineState& state, int field)
 	{
-		return state->cr[field];
+		return state.cr[field];
 	}
 	
-	inline void SetCRField(MachineState* state, int field, uint8_t value)
+	inline void SetCRField(MachineState& state, int field, uint8_t value)
 	{
-		state->cr[field] = value;
+		state.cr[field] = value;
 	}
 }
 
@@ -116,13 +116,13 @@ namespace PPCVM
 		
 		void Interpreter::mcrxr(Instruction inst)
 		{
-			SetCRField(state, inst.CRFD, state->xer >> 28);
-			state->xer &= ~0xF0000000; // clear 0-3
+			SetCRField(state, inst.CRFD, state.xer >> 28);
+			state.xer &= ~0xF0000000; // clear 0-3
 		}
 		
 		void Interpreter::mfcr(Instruction inst)
 		{
-			state->gpr[inst.RD] = state->GetCR();
+			state.gpr[inst.RD] = state.GetCR();
 		}
 		
 		void Interpreter::mffsx(Instruction inst)
@@ -136,15 +136,15 @@ namespace PPCVM
 			switch (spr)
 			{
 				case 1: // xer
-					state->gpr[inst.RD] = state->xer;
+					state.gpr[inst.RD] = state.xer;
 					break;
 					
 				case 8: // lr
-					state->gpr[inst.RD] = state->lr;
+					state.gpr[inst.RD] = state.lr;
 					break;
 					
 				case 9: // ctr
-					state->gpr[inst.RD] = state->ctr;
+					state.gpr[inst.RD] = state.ctr;
 					break;
 					
 				default:
@@ -163,7 +163,7 @@ namespace PPCVM
 			uint32_t crm = inst.CRM;
 			if (crm == 0xFF)
 			{
-				state->SetCR(state->gpr[inst.RS]);
+				state.SetCR(state.gpr[inst.RS]);
 			}
 			else
 			{
@@ -173,7 +173,7 @@ namespace PPCVM
 					if (crm & (1 << i))
 						mask |= 0xF << (i*4);
 				}
-				state->SetCR((state->GetCR() & ~mask) | (state->gpr[inst.RS] & mask));
+				state.SetCR((state.GetCR() & ~mask) | (state.gpr[inst.RS] & mask));
 			}
 		}
 		
@@ -203,15 +203,15 @@ namespace PPCVM
 			switch (spr)
 			{
 				case 1: // xer
-					state->xer = state->gpr[inst.RD];
+					state.xer = state.gpr[inst.RD];
 					break;
 					
 				case 8: // lr
-					state->lr = state->gpr[inst.RD];
+					state.lr = state.gpr[inst.RD];
 					break;
 					
 				case 9: // ctr
-					state->ctr = state->gpr[inst.RD];
+					state.ctr = state.gpr[inst.RD];
 					break;
 					
 				default:

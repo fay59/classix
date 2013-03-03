@@ -39,8 +39,8 @@ namespace PPCVM
 	{
 		class Interpreter : public InstructionDispatcher<Interpreter>
 		{
-			MachineState* state;
-			Common::IAllocator* allocator;
+			MachineState& state;
+			Common::IAllocator& allocator;
 			Common::AutoAllocation endAddress;
 			
 			const Common::UInt32* currentAddress;
@@ -49,7 +49,7 @@ namespace PPCVM
 			const void* ExecuteNative(const NativeCall* address);
 			
 		public:
-			Interpreter(Common::IAllocator* allocator, MachineState* state);
+			Interpreter(Common::IAllocator& allocator, MachineState& state);
 			
 			void Execute(const void* address);
 			const void* ExecuteOne(const void* address);
@@ -289,7 +289,7 @@ namespace PPCVM
 				}
 				catch (Common::PPCRuntimeException& ex)
 				{
-					uint32_t pc = allocator->ToIntPtr(const_cast<Common::UInt32*>(currentAddress));
+					uint32_t pc = allocator.ToIntPtr(const_cast<Common::UInt32*>(currentAddress));
 					throw InterpreterException(pc, ex);
 				}
 				

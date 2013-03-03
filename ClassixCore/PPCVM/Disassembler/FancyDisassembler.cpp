@@ -53,7 +53,7 @@ namespace PPCVM
 #pragma mark -
 #pragma mark Section Disassembler
 		
-		SectionDisassembler::SectionDisassembler(Common::IAllocator* allocator, uint32_t sectionNumber, const InstantiableSection& section)
+		SectionDisassembler::SectionDisassembler(Common::IAllocator& allocator, uint32_t sectionNumber, const InstantiableSection& section)
 		: allocator(allocator), section(section)
 		{
 			disasm = new Disassembler(allocator, SectionBegin(section), SectionEnd(section));
@@ -75,11 +75,11 @@ namespace PPCVM
 			{
 				auto& section = iter->second;
 				Common::UInt32* sectionBase = const_cast<Common::UInt32*>(section.Begin);
-				writer.EnterLabel(section, allocator->ToIntPtr(sectionBase));
+				writer.EnterLabel(section, allocator.ToIntPtr(sectionBase));
 				
 				for (int i = 0; i < section.Opcodes.size(); i++)
 				{
-					uint32_t opcodeAddress = allocator->ToIntPtr(sectionBase + i);
+					uint32_t opcodeAddress = allocator.ToIntPtr(sectionBase + i);
 					MetadataMap::iterator iter = metadata.find(opcodeAddress);
 					const uint32_t* targetAddress = iter == metadata.end() ? nullptr : &iter->second;
 					writer.VisitOpcode(section.Opcodes[i], opcodeAddress, targetAddress);
@@ -94,7 +94,7 @@ namespace PPCVM
 		
 #pragma mark -
 #pragma mark Fancy Disassembler
-		FancyDisassembler::FancyDisassembler(Common::IAllocator* allocator)
+		FancyDisassembler::FancyDisassembler(Common::IAllocator& allocator)
 		: allocator(allocator)
 		{ }
 		
@@ -129,14 +129,14 @@ namespace PPCVM
 				{
 					const uint8_t* vectorAddress = mainSection.Data + mainLocation.Offset;
 					const TransitionVector* vector = reinterpret_cast<const TransitionVector*>(vectorAddress);
-					const UInt32* realAddress = allocator->ToPointer<UInt32>(vector->EntryPoint);
+					const UInt32* realAddress = allocator.ToPointer<UInt32>(vector->EntryPoint);
 					
 					// find in which section the real address belongs
 					for (auto& pair : sections)
 					{
 						if (auto range = pair.second.disasm->FindRange(realAddress))
 						{
-							r2Values[range] = allocator->ToPointer<uint8_t>(vector->TableOfContents);
+							r2Values[range] = allocator.ToPointer<uint8_t>(vector->TableOfContents);
 							break;
 						}
 					}
@@ -176,7 +176,7 @@ namespace PPCVM
 							try
 							{
 								UInt32 pointedAddress = *tocAddress;
-								uint32_t opcodeAddress = allocator->ToIntPtr(range.Begin + i);
+								uint32_t opcodeAddress = allocator.ToIntPtr(range.Begin + i);
 								metadata.insert(std::make_pair(opcodeAddress, pointedAddress));
 							}
 							catch (Common::AccessViolationException& ex)
@@ -187,12 +187,12 @@ namespace PPCVM
 					{
 						try
 						{
-							const TransitionVector* target = allocator->ToPointer<TransitionVector>(r12);
-							const NativeCall* native = allocator->ToPointer<NativeCall>(target->EntryPoint);
+							const TransitionVector* target = allocator.ToPointer<TransitionVector>(r12);
+							const NativeCall* native = allocator.ToPointer<NativeCall>(target->EntryPoint);
 							if (native->Tag == PPCVM::Execution::NativeTag)
 							{
 								// since it's a native call, add the tag address as metadata
-								uint32_t opcodeAddress = allocator->ToIntPtr(range.Begin + i);
+								uint32_t opcodeAddress = allocator.ToIntPtr(range.Begin + i);
 								metadata.insert(std::make_pair(opcodeAddress, target->EntryPoint));
 							}
 							else
@@ -200,8 +200,8 @@ namespace PPCVM
 								// this probably points to another section of the executable.
 								// I'm not too sure how it works because most applications only have
 								// one code section.
-								const UInt32* targetLabel = allocator->ToPointer<UInt32>(target->EntryPoint);
-								const uint8_t* targetToc = allocator->ToPointer<uint8_t>(target->TableOfContents);
+								const UInt32* targetLabel = allocator.ToPointer<UInt32>(target->EntryPoint);
+								const uint8_t* targetToc = allocator.ToPointer<uint8_t>(target->TableOfContents);
 								
 								// For now, let's hope that this points to the same executable section.
 								TryFollowBranch(&range, range.Begin + i, targetLabel, targetToc);
@@ -219,8 +219,8 @@ namespace PPCVM
 			if (auto targetRange = rangeToDisasm[range]->FindRange(targetAddress))
 			{
 				Common::UInt32* base = const_cast<Common::UInt32*>(currentAddress);
-				uint32_t address = allocator->ToIntPtr(base);
-				uint32_t targetAddress = allocator->ToIntPtr(targetRange->Begin);
+				uint32_t address = allocator.ToIntPtr(base);
+				uint32_t targetAddress = allocator.ToIntPtr(targetRange->Begin);
 				metadata.insert(std::make_pair(address, targetAddress));
 				if (r2 != nullptr && unprocessedRanges.count(targetRange))
 					r2Values.insert(std::make_pair(targetRange, r2));

@@ -372,7 +372,7 @@ static NSNib* uiNib;
 		// unfortunately we have to do typecasts from this point...
 		if (const PEFSymbolResolver* pef = dynamic_cast<const PEFSymbolResolver*>(resolver))
 		{
-			PPCVM::Disassembly::FancyDisassembler disasm(allocator);
+			PPCVM::Disassembly::FancyDisassembler disasm(*allocator);
 			const PEF::Container& container = pef->GetContainer();
 			NSMutableDictionary* labelToArray = [NSMutableDictionary dictionary];
 			NSMutableDictionary* addressToLabel = [NSMutableDictionary dictionary];

@@ -26,7 +26,7 @@ namespace PPCVM
 {
 	namespace Disassembly
 	{
-		Disassembler::Disassembler(Common::IAllocator* allocator, const Common::UInt32* begin, const Common::UInt32* end)
+		Disassembler::Disassembler(Common::IAllocator& allocator, const Common::UInt32* begin, const Common::UInt32* end)
 		: begin(begin), end(end)
 		{
 			assert(begin <= end && "End before begin");
@@ -59,7 +59,7 @@ namespace PPCVM
 			}
 		}
 		
-		void Disassembler::bx(Common::IAllocator* allocator, const Common::UInt32* address)
+		void Disassembler::bx(Common::IAllocator& allocator, const Common::UInt32* address)
 		{
 			Instruction inst = address->Get();
 			if (inst.LK == 0)
@@ -69,13 +69,13 @@ namespace PPCVM
 			}
 			
 			const Common::UInt32* target = inst.AA
-				? allocator->ToPointer<const Common::UInt32>(inst.LI << 2)
+				? allocator.ToPointer<Common::UInt32>(inst.LI << 2)
 				: address + inst.LI;
 			auto iter = labels.insert(std::make_pair(target, InstructionRange(allocator, target))).first;
 			iter->second.IsFunction |= inst.LK;
 		}
 		
-		void Disassembler::bcx(Common::IAllocator *allocator, const Common::UInt32 *address)
+		void Disassembler::bcx(Common::IAllocator& allocator, const Common::UInt32 *address)
 		{
 			Instruction inst = address->Get();
 			if (inst.LK == 0 && (inst.BO & 0b10100) == 0b10100)
@@ -85,13 +85,13 @@ namespace PPCVM
 			}
 			
 			const Common::UInt32* target = inst.AA
-				? allocator->ToPointer<const Common::UInt32>(inst.BD << 2)
+				? allocator.ToPointer<Common::UInt32>(inst.BD << 2)
 				: address + inst.BD;
 			auto iter = labels.insert(std::make_pair(target, InstructionRange(allocator, target))).first;
 			iter->second.IsFunction |= inst.LK;
 		}
 		
-		void Disassembler::bcctrx(Common::IAllocator *allocator, const Common::UInt32 *address)
+		void Disassembler::bcctrx(Common::IAllocator& allocator, const Common::UInt32 *address)
 		{
 			Instruction inst = address->Get();
 			if (inst.LK == 0 && (inst.BO & 0b10100) == 0b10100)
@@ -103,7 +103,7 @@ namespace PPCVM
 			// indirect branch, no idea where this is going.
 		}
 		
-		void Disassembler::bclrx(Common::IAllocator *allocator, const Common::UInt32 *address)
+		void Disassembler::bclrx(Common::IAllocator& allocator, const Common::UInt32 *address)
 		{
 			Instruction inst = address->Get();
 			if (inst.LK == 0 && (inst.BO & 0b10100) == 0b10100)

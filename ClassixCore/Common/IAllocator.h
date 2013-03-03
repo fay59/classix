@@ -36,10 +36,10 @@ namespace Common
 	class AutoAllocation
 	{
 		uint32_t address;
-		IAllocator* allocator;
+		IAllocator& allocator;
 		
 	public:
-		AutoAllocation(IAllocator* allocator, size_t size, const AllocationDetails& details);
+		AutoAllocation(IAllocator& allocator, size_t size, const AllocationDetails& details);
 		AutoAllocation(const AutoAllocation& that) = delete;
 		AutoAllocation(AutoAllocation&& that);
 		
@@ -126,7 +126,7 @@ namespace Common
 		T* ToPointer(uint32_t value) const
 		{
 #ifdef DEBUG
-			AccessViolationException::Check(this, value, sizeof(T));
+			AccessViolationException::Check(*this, value, sizeof(T));
 #endif
 			return reinterpret_cast<T*>(IntPtrToPointer(value));
 		}
@@ -135,7 +135,7 @@ namespace Common
 		T* ToArray(uint32_t value, size_t count) const
 		{
 #ifdef DEBUG
-			AccessViolationException::Check(this, value, sizeof(T) * count);
+			AccessViolationException::Check(*this, value, sizeof(T) * count);
 #endif
 			return reinterpret_cast<T*>(IntPtrToPointer(value));
 		}
@@ -150,13 +150,13 @@ namespace Common
 	template<typename T>
 	T* AutoAllocation::ToPointer()
 	{
-		return allocator->ToPointer<T>(address);
+		return allocator.ToPointer<T>(address);
 	}
 	
 	template<typename T>
 	T* AutoAllocation::ToArray(size_t count)
 	{
-		return allocator->ToArray<T>(address, count);
+		return allocator.ToArray<T>(address, count);
 	}
 }
 

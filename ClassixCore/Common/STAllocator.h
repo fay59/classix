@@ -35,7 +35,7 @@ namespace Common
 		template<typename U>
 		friend class STAllocator;
 		
-		IAllocator* allocator;
+		IAllocator& allocator;
 		std::shared_ptr<std::string> nextName;
 		
 	public:
@@ -52,7 +52,7 @@ namespace Common
 			*nextName = str;
 		}
 		
-		STAllocator(IAllocator* allocator)
+		STAllocator(IAllocator& allocator)
 		: allocator(allocator), nextName(new std::string)
 		{ }
 		
@@ -66,13 +66,13 @@ namespace Common
 		
 		pointer allocate(size_type n, void* hint = nullptr)
 		{
-			pointer result = reinterpret_cast<pointer>(allocator->Allocate(*nextName, sizeof(T) * n));
+			pointer result = reinterpret_cast<pointer>(allocator.Allocate(*nextName, sizeof(T) * n));
 			return result;
 		}
 		
 		void deallocate(pointer p, size_type n)
 		{
-			allocator->Deallocate(p);
+			allocator.Deallocate(p);
 		}
 		
 		void construct(pointer p, const_reference copyFrom)

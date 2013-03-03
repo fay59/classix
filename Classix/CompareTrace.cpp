@@ -132,10 +132,10 @@ public:
 int compareTrace(const std::string& path, const std::string& tracePath)
 {
 	Common::NativeAllocator allocator;
-	ClassixCore::DlfcnLibraryResolver dlfcnResolver(&allocator);
+	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator);
 	dlfcnResolver.RegisterLibrary("StdCLib");
 	
-	Classix::VirtualMachine vm(&allocator);
+	Classix::VirtualMachine vm(allocator);
 	vm.AddLibraryResolver(dlfcnResolver);
 	
 	Classix::MainStub stub = vm.LoadMainContainer(path);
@@ -144,7 +144,7 @@ int compareTrace(const std::string& path, const std::string& tracePath)
 	
 	// BIG ASSUMPTION: `main` is the first function in the instantiable section
 	// (the right way to do this would be to find the jump destination from __start)
-	uint32_t mainAddress = handle.pc - vm.allocator->GetAllocationOffset(handle.pc);
+	uint32_t mainAddress = handle.pc - allocator.GetAllocationOffset(handle.pc);
 	handle.RunTo(mainAddress);
 	
 	uint32_t lastPC = 0;

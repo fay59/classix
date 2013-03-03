@@ -32,17 +32,17 @@ namespace Common
 	
 	class AccessViolationException : public PPCRuntimeException
 	{
-		const IAllocator* allocator;
+		const IAllocator& allocator;
 		uint32_t address;
 		size_t size;
 		std::string description;
 		
 	public:
-		static void Check(const IAllocator* allocator, uint32_t address, size_t size);
+		static void Check(const IAllocator& allocator, uint32_t address, size_t size);
 		
-		AccessViolationException(const IAllocator* allocator, uint32_t address, size_t size);
+		AccessViolationException(const IAllocator& allocator, uint32_t address, size_t size);
 		
-		const IAllocator* GetAllocator() const;
+		const IAllocator& GetAllocator() const;
 		uint32_t GetAddress() const;
 		size_t GetSize() const;
 		

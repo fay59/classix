@@ -24,14 +24,14 @@
 
 namespace ClassixCore
 {
-	DlfcnSymbolResolver::DlfcnSymbolResolver(Common::IAllocator* allocator, const DlfcnLibrary& library)
+	DlfcnSymbolResolver::DlfcnSymbolResolver(Common::IAllocator& allocator, const DlfcnLibrary& library)
 	: library(library)
 	, allocator(allocator)
 	, stlAllocator(allocator)
 	, transitions(stlAllocator)
 	, nativeCalls(stlAllocator)
 	{
-		globals = library.Init(allocator);
+		globals = library.Init(&allocator);
 	}
 	
 	std::vector<ResolvedSymbol> DlfcnSymbolResolver::GetEntryPoints()
@@ -51,7 +51,7 @@ namespace ClassixCore
 	
 	ResolvedSymbol& DlfcnSymbolResolver::CacheSymbol(const std::string& name, void* address)
 	{
-		uint32_t ppcAddress = allocator->ToIntPtr(address);
+		uint32_t ppcAddress = allocator.ToIntPtr(address);
 		return symbols.emplace(std::make_pair(name, ResolvedSymbol::IntelSymbol(name, ppcAddress))).first->second;
 	}
 	
@@ -62,8 +62,8 @@ namespace ClassixCore
 		NativeCall& call = nativeCalls.back();
 		
 		PEF::TransitionVector vector;
-		vector.EntryPoint = allocator->ToIntPtr(&call);
-		vector.TableOfContents = allocator->ToIntPtr(globals);
+		vector.EntryPoint = allocator.ToIntPtr(&call);
+		vector.TableOfContents = allocator.ToIntPtr(globals);
 		
 		stlAllocator.SetNextName("Transition Vector [" + symbolName + "]");
 		return *transitions.emplace(transitions.end(), vector);

@@ -121,7 +121,7 @@ namespace Common
 	{
 		auto range = GetAllocationRange(address);
 		if (range == nullptr)
-			throw AccessViolationException(this, address, 0);
+			throw AccessViolationException(*this, address, 0);
 		
 		return address - ToIntPtr(range->start);
 	}

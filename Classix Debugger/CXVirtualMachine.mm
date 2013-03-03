@@ -56,7 +56,7 @@ const NSUInteger CXStackSize = 0x100000;
 
 struct ClassixCoreVM
 {
-	Common::IAllocator* allocator;
+	Common::NativeAllocator allocator;
 	PPCVM::MachineState state;
 	CFM::FragmentManager cfm;
 	CFM::PEFLibraryResolver pefResolver;
@@ -65,13 +65,12 @@ struct ClassixCoreVM
 	Common::AutoAllocation stack;
 	
 	ClassixCoreVM()
-	: allocator(new Common::NativeAllocator)
-	, state()
+	: state()
 	, cfm()
 	, pefResolver(allocator, cfm)
 	, dlfcnResolver(allocator)
-	, interp(allocator, &state)
-	, stack(allocator->AllocateAuto(CXReverseAllocationDetails("Stack", CXStackSize), CXStackSize))
+	, interp(allocator, state)
+	, stack(allocator.AllocateAuto(CXReverseAllocationDetails("Stack", CXStackSize), CXStackSize))
 	{
 		dlfcnResolver.RegisterLibrary("StdCLib");
 		cfm.LibraryResolvers.push_back(&pefResolver);
@@ -106,7 +105,7 @@ struct ClassixCoreVM
 				{
 					if (section.IsExecutable())
 					{
-						uint32_t sectionBase = allocator->ToIntPtr(section.Data);
+						uint32_t sectionBase = allocator.ToIntPtr(section.Data);
 						uint32_t sectionEnd = sectionBase + section.Size();
 						if (address >= sectionBase && address < sectionEnd)
 							return true;
@@ -120,15 +119,10 @@ struct ClassixCoreVM
 	void PrepareState(const Common::StackPreparator::StackInfo& info)
 	{
 		state.r0 = 0;
-		state.r1 = allocator->ToIntPtr(info.sp - 8);
+		state.r1 = allocator.ToIntPtr(info.sp - 8);
 		state.r3 = state.r27 = info.argc;
-		state.r4 = state.r28 = allocator->ToIntPtr(info.argv);
-		state.r5 = state.r29 = allocator->ToIntPtr(info.envp);
-	}
-	
-	~ClassixCoreVM()
-	{
-		delete allocator;
+		state.r4 = state.r28 = allocator.ToIntPtr(info.argv);
+		state.r5 = state.r29 = allocator.ToIntPtr(info.envp);
 	}
 };
 
@@ -259,7 +253,7 @@ struct ClassixCoreVM
 				PEF::TransitionVector* vector = reinterpret_cast<PEF::TransitionVector*>(entryPoint.Address);
 				vm->PrepareState(result);
 				vm->state.r2 = vector->TableOfContents;
-				vm->interp.Execute(vm->allocator->ToPointer<void>(vector->EntryPoint));
+				vm->interp.Execute(vm->allocator.ToPointer<void>(vector->EntryPoint));
 			}
 		}
 	}
@@ -281,7 +275,7 @@ struct ClassixCoreVM
 
 -(void)transitionByAddress:(uint32_t)address
 {
-	const PEF::TransitionVector* transition = vm->allocator->ToPointer<PEF::TransitionVector>(address);
+	const PEF::TransitionVector* transition = vm->allocator.ToPointer<PEF::TransitionVector>(address);
 	vm->state.r2 = transition->TableOfContents;
 	pc = transition->EntryPoint;
 }
@@ -294,17 +288,17 @@ struct ClassixCoreVM
 
 -(NSValue*)allocator
 {
-	Common::IAllocator* allocator = vm->allocator;
+	Common::IAllocator* allocator = &vm->allocator;
 	return [NSValue value:&allocator withObjCType:@encode(typeof allocator)];
 }
 
 -(NSString*)symbolNameOfAddress:(unsigned int)address
 {
 	using namespace PPCVM::Execution;
-	Common::IAllocator* allocator = vm->allocator;
+	Common::IAllocator& allocator = vm->allocator;
 	try
 	{
-		const NativeCall* pointer = allocator->ToPointer<NativeCall>(address);
+		const NativeCall* pointer = allocator.ToPointer<NativeCall>(address);
 		if (pointer->Tag == NativeTag)
 		{
 			Dl_info info;
@@ -314,9 +308,9 @@ struct ClassixCoreVM
 				return [NSString stringWithCString:info.dli_sname encoding:NSUTF8StringEncoding];
 			}
 		}
-		else if (const Common::AllocationDetails* details = allocator->GetDetails(address))
+		else if (const Common::AllocationDetails* details = allocator.GetDetails(address))
 		{
-			uint32_t offset = allocator->GetAllocationOffset(address);
+			uint32_t offset = allocator.GetAllocationOffset(address);
 			std::string reason = details->GetAllocationDetails(offset);
 			return [NSString stringWithCString:reason.c_str() encoding:NSUTF8StringEncoding];
 		}
@@ -328,9 +322,9 @@ struct ClassixCoreVM
 
 -(NSString*)explainAddress:(unsigned)address
 {
-	if (const Common::AllocationDetails* details = vm->allocator->GetDetails(address))
+	if (const Common::AllocationDetails* details = vm->allocator.GetDetails(address))
 	{
-		uint32_t offset = vm->allocator->GetAllocationOffset(address);
+		uint32_t offset = vm->allocator.GetAllocationOffset(address);
 		std::string description = details->GetAllocationDetails(offset);
 		return [NSString stringWithCString:description.c_str() encoding:NSUTF8StringEncoding];
 	}
@@ -341,9 +335,9 @@ struct ClassixCoreVM
 {
 	try
 	{
-		const char* atAddress = vm->allocator->ToPointer<const char>(address);
-		uint32_t offset = vm->allocator->GetAllocationOffset(address);
-		uint32_t limit = vm->allocator->GetDetails(address)->Size() - offset;
+		const char* atAddress = vm->allocator.ToPointer<const char>(address);
+		uint32_t offset = vm->allocator.GetAllocationOffset(address);
+		uint32_t limit = vm->allocator.GetDetails(address)->Size() - offset;
 		size_t length = strnlen(atAddress, limit);
 		
 		// check that the few couple characters are printable
@@ -374,7 +368,7 @@ struct ClassixCoreVM
 {
 	try
 	{
-		const Common::UInt32* atAddress = vm->allocator->ToPointer<const Common::UInt32>(address);
+		const Common::UInt32* atAddress = vm->allocator.ToPointer<const Common::UInt32>(address);
 		return @(atAddress->Get());
 	}
 	catch (Common::PPCRuntimeException&)
@@ -387,7 +381,7 @@ struct ClassixCoreVM
 {
 	try
 	{
-		const Common::Real32* atAddress = vm->allocator->ToPointer<const Common::Real32>(address);
+		const Common::Real32* atAddress = vm->allocator.ToPointer<const Common::Real32>(address);
 		return @(atAddress->Get());
 	}
 	catch (Common::PPCRuntimeException&)
@@ -400,7 +394,7 @@ struct ClassixCoreVM
 {
 	try
 	{
-		const Common::Real64* atAddress = vm->allocator->ToPointer<const Common::Real64>(address);
+		const Common::Real64* atAddress = vm->allocator.ToPointer<const Common::Real64>(address);
 		return @(atAddress->Get());
 	}
 	catch (Common::PPCRuntimeException&)
@@ -465,12 +459,12 @@ struct ClassixCoreVM
 	// this relies on the fact that the stack is allocated on a 4-byte boundary
 	uint32_t stackWord = vm->state.r1 & ~0b11;
 	const UInt32* stackGuard = static_cast<UInt32*>(*vm->stack) + CXStackSize / sizeof (UInt32);
-	uint32_t stackEnd = vm->allocator->ToIntPtr(stackGuard);
+	uint32_t stackEnd = vm->allocator.ToIntPtr(stackGuard);
 	uint32_t stackWordCount = (stackEnd - stackWord) / sizeof (UInt32);
 	
 	const UInt32* stackPointer;
 	
-	try { stackPointer = vm->allocator->ToArray<const UInt32>(stackWord, stackWordCount); }
+	try { stackPointer = vm->allocator.ToArray<const UInt32>(stackWord, stackWordCount); }
 	catch (Common::AccessViolationException&) { return nil; }
 	
 	for (; stackPointer != stackGuard; stackPointer++)
@@ -478,7 +472,7 @@ struct ClassixCoreVM
 		uint32_t hopefullyBranchAndLinkAddress = *stackPointer - 4;
 		if (vm->IsCodeAddress(hopefullyBranchAndLinkAddress))
 		{
-			const UInt32* hopefullyBranchAndLink = vm->allocator->ToPointer<const UInt32>(hopefullyBranchAndLinkAddress);
+			const UInt32* hopefullyBranchAndLink = vm->allocator.ToPointer<const UInt32>(hopefullyBranchAndLinkAddress);
 			PPCVM::Instruction inst = hopefullyBranchAndLink->Get();
 			int opcd = inst.OPCD;
 			int subop = inst.SUBOP10;
@@ -501,17 +495,17 @@ struct ClassixCoreVM
 	std::unordered_set<const void*> cppBreakpoints;
 	for (NSNumber* number in breakpoints)
 	{
-		const void* address = vm->allocator->ToPointer<const void>(number.unsignedIntValue);
+		const void* address = vm->allocator.ToPointer<const void>(number.unsignedIntValue);
 		cppBreakpoints.insert(address);
 	}
 	
-	const void* eip = vm->allocator->ToPointer<void>(pc);
+	const void* eip = vm->allocator.ToPointer<void>(pc);
 	PPCVM::MachineState oldState = vm->state;
 	
 	try
 	{
 		eip = vm->interp.ExecuteUntil(eip, cppBreakpoints);
-		self.pc = vm->allocator->ToIntPtr(const_cast<void*>(eip));
+		self.pc = vm->allocator.ToIntPtr(const_cast<void*>(eip));
 		self.lastError = nil;
 	}
 	catch (PPCVM::Execution::InterpreterException& ex)
@@ -525,7 +519,7 @@ struct ClassixCoreVM
 
 -(IBAction)stepOver:(id)sender
 {
-	Common::UInt32 word = *vm->allocator->ToPointer<Common::UInt32>(pc);
+	Common::UInt32 word = *vm->allocator.ToPointer<Common::UInt32>(pc);
 	PPCVM::Instruction inst = word.Get();
 	if (inst.OPCD == 18 && inst.LK == 1)
 	{
@@ -544,11 +538,11 @@ struct ClassixCoreVM
 	using namespace PPCVM::Execution;
 	
 	PPCVM::MachineState oldState = vm->state;
-	const void* eip = vm->allocator->ToPointer<const void>(pc);
+	const void* eip = vm->allocator.ToPointer<const void>(pc);
 	try
 	{
 		eip = vm->interp.ExecuteOne(eip);
-		self.pc = vm->allocator->ToIntPtr(eip);
+		self.pc = vm->allocator.ToIntPtr(eip);
 		self.lastError = nil;
 	}
 	catch (PPCVM::Execution::InterpreterException& ex)
@@ -567,13 +561,13 @@ struct ClassixCoreVM
 
 -(void)runTo:(uint32_t)location
 {
-	std::unordered_set<const void*> until = {vm->allocator->ToPointer<const void>(location)};
-	const void* eip = vm->allocator->ToPointer<const void>(pc);
+	std::unordered_set<const void*> until = {vm->allocator.ToPointer<const void>(location)};
+	const void* eip = vm->allocator.ToPointer<const void>(pc);
 	PPCVM::MachineState oldState = vm->state;
 	try
 	{
 		eip = vm->interp.ExecuteUntil(eip, until);
-		self.pc = vm->allocator->ToIntPtr(const_cast<void*>(eip));
+		self.pc = vm->allocator.ToIntPtr(const_cast<void*>(eip));
 		self.lastError = nil;
 	}
 	catch (PPCVM::Execution::InterpreterException& ex)

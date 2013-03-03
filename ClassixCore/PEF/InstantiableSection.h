@@ -30,14 +30,14 @@ namespace PEF
 {
 	class InstantiableSection
 	{
+		Common::IAllocator& allocator;
 		const SectionHeader* header;
-		Common::IAllocator* allocator;
 		
 	public:
 		std::string Name;
 		uint8_t* Data;
 		
-		InstantiableSection(Common::IAllocator* allocator, const SectionHeader* header, const std::string& name, const uint8_t* base, const uint8_t* end);
+		InstantiableSection(Common::IAllocator& allocator, const SectionHeader* header, const std::string& name, const uint8_t* base, const uint8_t* end);
 		InstantiableSection(const InstantiableSection& that) = delete;
 		InstantiableSection(InstantiableSection&& that);
 		

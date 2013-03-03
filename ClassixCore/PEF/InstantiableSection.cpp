@@ -193,7 +193,7 @@ namespace
 
 namespace PEF
 {
-	InstantiableSection::InstantiableSection(Common::IAllocator* allocator, const SectionHeader* header, const std::string& name, const uint8_t* base, const uint8_t* end)
+	InstantiableSection::InstantiableSection(Common::IAllocator& allocator, const SectionHeader* header, const std::string& name, const uint8_t* base, const uint8_t* end)
 	: allocator(allocator)
 	{
 		uint32_t packedSize = header->PackedSize;
@@ -206,7 +206,7 @@ namespace PEF
 		
 		this->header = header;
 		Name = name;
-		Data = allocator->Allocate(name, totalSize);
+		Data = allocator.Allocate(name, totalSize);
 		
 		switch (GetSectionType())
 		{
@@ -237,7 +237,7 @@ namespace PEF
 	}
 	
 	InstantiableSection::InstantiableSection(InstantiableSection&& that)
-	: Name(std::move(that.Name))
+	: Name(std::move(that.Name)), allocator(that.allocator)
 	{
 		header = that.header;
 		Data = that.Data;
@@ -279,11 +279,11 @@ namespace PEF
 	
 	uint32_t InstantiableSection::GetDataLocation() const
 	{
-		return allocator->ToIntPtr(Data);
+		return allocator.ToIntPtr(Data);
 	}
 	
 	InstantiableSection::~InstantiableSection()
 	{
-		allocator->Deallocate(Data);
+		allocator.Deallocate(Data);
 	}
 }

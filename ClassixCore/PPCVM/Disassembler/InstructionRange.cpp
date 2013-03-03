@@ -28,7 +28,7 @@ namespace PPCVM
 {
 	namespace Disassembly
 	{
-		InstructionRange::InstructionRange(Common::IAllocator* allocator, const Common::UInt32* begin)
+		InstructionRange::InstructionRange(Common::IAllocator& allocator, const Common::UInt32* begin)
 		: Begin(begin), End(nullptr), allocator(allocator), TableOfContents(nullptr)
 		{
 			Instruction first = begin->Get();
@@ -41,7 +41,7 @@ namespace PPCVM
 			End = end;
 			
 			char functionName[] = "00000000";
-			sprintf(functionName, "%08x", allocator->ToIntPtr(const_cast<Common::UInt32*>(Begin)));
+			sprintf(functionName, "%08x", allocator.ToIntPtr(const_cast<Common::UInt32*>(Begin)));
 			Name = functionName;
 			
 			InstructionDecoder decoder;

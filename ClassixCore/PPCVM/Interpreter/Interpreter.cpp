@@ -49,9 +49,9 @@ namespace
 		return (x & 0x02000000) ? (x | 0xfc000000) : x;
 	}
 	
-	inline bool GetCRBit(MachineState* state, int bit)
+	inline bool GetCRBit(MachineState& state, int bit)
 	{
-		return (state->cr[bit / 4] >> (3 - (bit & 3))) & 1;
+		return (state.cr[bit / 4] >> (3 - (bit & 3))) & 1;
 	}
 	
 	const char* BaseName(const char* path)
@@ -79,8 +79,8 @@ namespace PPCVM
 {
 	namespace Execution
 	{
-		Interpreter::Interpreter(Common::IAllocator* allocator, MachineState* state)
-		: state(state), allocator(allocator), endAddress(allocator->AllocateAuto("Interpreter End Address", 4))
+		Interpreter::Interpreter(Common::IAllocator& allocator, MachineState& state)
+		: state(state), allocator(allocator), endAddress(allocator.AllocateAuto("Interpreter End Address", 4))
 		{ }
 
 		void Interpreter::Panic(const std::string& error)
@@ -121,9 +121,9 @@ namespace PPCVM
 			}
 #endif
 			
-			void* libGlobals = allocator->ToPointer<void>(state->r2);
-			function->Callback(libGlobals, state);
-			return allocator->ToPointer<const void>(state->lr);
+			void* libGlobals = allocator.ToPointer<void>(state.r2);
+			function->Callback(libGlobals, &state);
+			return allocator.ToPointer<const void>(state.lr);
 		}
 
 		const void* Interpreter::ExecuteUntilBranch(const void* address)
@@ -149,7 +149,7 @@ namespace PPCVM
 				}
 				catch (Common::PPCRuntimeException& ex)
 				{
-					uint32_t pc = allocator->ToIntPtr(const_cast<Common::UInt32*>(currentAddress));
+					uint32_t pc = allocator.ToIntPtr(const_cast<Common::UInt32*>(currentAddress));
 					throw InterpreterException(pc, ex);
 				}
 			} while (branchAddress == nullptr);
@@ -178,7 +178,7 @@ namespace PPCVM
 			}
 			catch (Common::PPCRuntimeException& ex)
 			{
-				uint32_t pc = allocator->ToIntPtr(const_cast<Common::UInt32*>(currentAddress));
+				uint32_t pc = allocator.ToIntPtr(const_cast<Common::UInt32*>(currentAddress));
 				throw InterpreterException(pc, ex);
 			}
 			
@@ -187,7 +187,7 @@ namespace PPCVM
 
 		void Interpreter::Execute(const void* address)
 		{
-			state->lr = endAddress.GetVirtualAddress();
+			state.lr = endAddress.GetVirtualAddress();
 			while (address != *endAddress)
 			{
 				address = ExecuteUntilBranch(address);
@@ -196,40 +196,40 @@ namespace PPCVM
 
 		void Interpreter::bx(Instruction inst)
 		{
-			uint32_t address = allocator->ToIntPtr(currentAddress);
+			uint32_t address = allocator.ToIntPtr(currentAddress);
 			if (inst.LK)
-				state->lr = address + 4;
+				state.lr = address + 4;
 			
 			uint32_t target = SignExt26(inst.LI << 2);
 			if (!inst.AA)
 				target += address;
 			
-			branchAddress = allocator->ToPointer<const void>(target);
+			branchAddress = allocator.ToPointer<const void>(target);
 			CHECK_JUMP_TARGET();
 		}
 
 		void Interpreter::bcx(Instruction inst)
 		{
 			if ((inst.BO & BO_DONT_DECREMENT_FLAG) == 0)
-				state->ctr--;
+				state.ctr--;
 
 			const bool true_false = ((inst.BO >> 3) & 1);
 			const bool only_counter_check = ((inst.BO >> 4) & 1);
 			const bool only_condition_check = ((inst.BO >> 2) & 1);
-			int ctr_check = ((state->ctr != 0) ^ (inst.BO >> 1)) & 1;
+			int ctr_check = ((state.ctr != 0) ^ (inst.BO >> 1)) & 1;
 			bool counter = only_condition_check || ctr_check;
 			bool condition = only_counter_check || (GetCRBit(state, inst.BI) == uint32_t(true_false));
 			
-			uint32_t address = allocator->ToIntPtr(currentAddress);
+			uint32_t address = allocator.ToIntPtr(currentAddress);
 			if (counter && condition)
 			{
 				if (inst.LK)
-					state->lr = address + 4;
+					state.lr = address + 4;
 					
 				uint32_t target = SignExt16(inst.BD << 2);
 				if (!inst.AA)
 					target += address;
-				branchAddress = allocator->ToPointer<const void>(target);
+				branchAddress = allocator.ToPointer<const void>(target);
 				CHECK_JUMP_TARGET();
 			}
 		}
@@ -237,17 +237,17 @@ namespace PPCVM
 		void Interpreter::bclrx(Instruction inst)
 		{
 			if ((inst.BO_2 & BO_DONT_DECREMENT_FLAG) == 0)
-				state->ctr--;
+				state.ctr--;
 
-			int counter = ((inst.BO_2 >> 2) | ((state->ctr != 0) ^ (inst.BO_2 >> 1))) & 1;
+			int counter = ((inst.BO_2 >> 2) | ((state.ctr != 0) ^ (inst.BO_2 >> 1))) & 1;
 			int condition = ((inst.BO_2 >> 4) | (GetCRBit(state, inst.BI_2) == ((inst.BO_2 >> 3) & 1))) & 1;
 
 			if (counter & condition)
 			{
 				if (inst.LK_3)
-					state->lr = allocator->ToIntPtr(currentAddress + 1);
+					state.lr = allocator.ToIntPtr(currentAddress + 1);
 				
-				branchAddress = allocator->ToPointer<const void>(state->lr & ~3);
+				branchAddress = allocator.ToPointer<const void>(state.lr & ~3);
 				CHECK_JUMP_TARGET();
 			}
 		}
@@ -259,9 +259,9 @@ namespace PPCVM
 			if (condition)
 			{
 				if (inst.LK_3)
-					state->lr = allocator->ToIntPtr(currentAddress + 1);
+					state.lr = allocator.ToIntPtr(currentAddress + 1);
 				
-				branchAddress = allocator->ToPointer<const void>(state->ctr & ~3);
+				branchAddress = allocator.ToPointer<const void>(state.ctr & ~3);
 				CHECK_JUMP_TARGET();
 			}
 		}

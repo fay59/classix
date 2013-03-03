@@ -38,7 +38,7 @@ namespace PPCVM
 	{
 		class InstructionRange
 		{
-			Common::IAllocator* allocator;
+			Common::IAllocator& allocator;
 			
 		public:
 			std::string Name;
@@ -48,7 +48,7 @@ namespace PPCVM
 			const Common::UInt32* TableOfContents;
 			std::vector<DisassembledOpcode> Opcodes;
 			
-			InstructionRange(Common::IAllocator* allocator, const Common::UInt32* begin);
+			InstructionRange(Common::IAllocator& allocator, const Common::UInt32* begin);
 			
 			void CompleteRange(const Common::UInt32* base, const Common::UInt32* end);
 		};

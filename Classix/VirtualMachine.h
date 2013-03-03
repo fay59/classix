@@ -43,14 +43,17 @@ namespace Classix
 		friend class ProgramControlHandle;
 		
 		PPCVM::MachineState state;
+		Common::IAllocator& allocator;
+		
+	public:
+		CFM::FragmentManager fragmentManager;
+		
+	private:
 		CFM::PEFLibraryResolver pefResolver;
 		PPCVM::Execution::Interpreter interpreter;
 		
 	public:
-		Common::IAllocator* allocator;
-		CFM::FragmentManager fragmentManager;
-		
-		VirtualMachine(Common::IAllocator* allocator);
+		VirtualMachine(Common::IAllocator& allocator);
 		
 		void AddLibraryResolver(CFM::LibraryResolver& resolver);
 		
@@ -69,7 +72,7 @@ namespace Classix
 		
 		template<typename TArgumentIterator, typename TEnvironIterator>
 		ProgramControlHandle(VirtualMachine& vm, uint32_t stackSize, TArgumentIterator argBegin, TArgumentIterator argEnd, TEnvironIterator envBegin, TEnvironIterator envEnd)
-		: vm(vm), stack(vm.allocator->AllocateAuto("Stack", stackSize))
+		: vm(vm), stack(vm.allocator.AllocateAuto("Stack", stackSize))
 		{
 			Common::StackPreparator stackPrep;
 			stackPrep.AddArguments(argBegin, argEnd);
@@ -122,7 +125,7 @@ namespace Classix
 		{
 			ProgramControlHandle handle(vm, StackSize, argBegin, argEnd, envBegin, envEnd);
 			
-			PEF::TransitionVector* vector = vm.allocator->ToPointer<PEF::TransitionVector>(mainSymbol.Address);
+			PEF::TransitionVector* vector = vm.allocator.ToPointer<PEF::TransitionVector>(mainSymbol.Address);
 			handle.BeginTransition(*vector);
 			return handle;
 		}

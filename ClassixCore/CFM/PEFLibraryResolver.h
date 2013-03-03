@@ -33,11 +33,11 @@ namespace CFM
 	class PEFLibraryResolver : public LibraryResolver
 	{
 		FragmentManager& cfm;
-		Common::IAllocator* allocator;
+		Common::IAllocator& allocator;
 		std::deque<PEFSymbolResolver> resolvers;
 		
 	public:
-		PEFLibraryResolver(Common::IAllocator* allocator, FragmentManager& manager);
+		PEFLibraryResolver(Common::IAllocator& allocator, FragmentManager& manager);
 						   
 		virtual SymbolResolver* ResolveLibrary(const std::string& name) override;
 		virtual ~PEFLibraryResolver() override;

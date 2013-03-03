@@ -23,29 +23,28 @@
 
 namespace Common
 {
-	AutoAllocation::AutoAllocation(IAllocator* allocator, size_t size, const AllocationDetails& details)
+	AutoAllocation::AutoAllocation(IAllocator& allocator, size_t size, const AllocationDetails& details)
 	: allocator(allocator)
 	{
-		void* pointer = allocator->Allocate(details, size);
-		address = allocator->ToIntPtr(pointer);
+		void* pointer = allocator.Allocate(details, size);
+		address = allocator.ToIntPtr(pointer);
 	}
 
 	AutoAllocation::AutoAllocation(AutoAllocation&& that)
 	: allocator(that.allocator)
 	{
 		address = that.address;
-		that.allocator = nullptr;
 		that.address = 0;
 	}
 
 	void* AutoAllocation::operator*()
 	{
-		return allocator->ToPointer<void>(address);
+		return allocator.ToPointer<void>(address);
 	}
 
 	const void* AutoAllocation::operator*() const
 	{
-		return allocator->ToPointer<const void>(address);
+		return allocator.ToPointer<const void>(address);
 	}
 
 	uint32_t AutoAllocation::GetVirtualAddress() const
@@ -55,8 +54,8 @@ namespace Common
 
 	AutoAllocation::~AutoAllocation()
 	{
-		if (allocator != nullptr && address != 0)
-			allocator->Deallocate(**this);
+		if (address != 0)
+			allocator.Deallocate(**this);
 	}
 
 	AutoAllocation IAllocator::AllocateAuto(const std::string& zoneName, size_t size)
@@ -66,7 +65,7 @@ namespace Common
 	
 	AutoAllocation IAllocator::AllocateAuto(const Common::AllocationDetails &details, size_t size)
 	{
-		return AutoAllocation(this, size, details);
+		return AutoAllocation(*this, size, details);
 	}
 	
 	uint8_t* IAllocator::Allocate(const std::string &zoneName, size_t size)

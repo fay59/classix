@@ -39,16 +39,16 @@ namespace PPCVM
 			
 			std::map<const Common::UInt32*, InstructionRange> labels;
 			
-			void bcx(Common::IAllocator* allocator, const Common::UInt32* address);
-			void bx(Common::IAllocator* allocator, const Common::UInt32* address);
-			void bcctrx(Common::IAllocator* allocator, const Common::UInt32* address);
-			void bclrx(Common::IAllocator* allocator, const Common::UInt32* address);
+			void bcx(Common::IAllocator& allocator, const Common::UInt32* address);
+			void bx(Common::IAllocator& allocator, const Common::UInt32* address);
+			void bcctrx(Common::IAllocator& allocator, const Common::UInt32* address);
+			void bclrx(Common::IAllocator& allocator, const Common::UInt32* address);
 			
 		public:
 			typedef std::map<const Common::UInt32*, InstructionRange>::iterator iterator;
 			typedef std::map<const Common::UInt32*, InstructionRange>::const_iterator const_iterator;
 			
-			Disassembler(Common::IAllocator* allocator, const Common::UInt32* begin, const Common::UInt32* end);
+			Disassembler(Common::IAllocator& allocator, const Common::UInt32* begin, const Common::UInt32* end);
 			
 			InstructionRange* FindRange(const Common::UInt32* address);
 			const InstructionRange* FindRange(const Common::UInt32* address) const;

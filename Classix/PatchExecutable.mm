@@ -62,7 +62,7 @@ int patchExecutable(const std::string& path, const std::string& outPath)
 {
 	Common::NativeAllocator allocator;
 	CFM::FragmentManager fragmentManager;
-	CFM::PEFLibraryResolver pefResolver(&allocator, fragmentManager);
+	CFM::PEFLibraryResolver pefResolver(allocator, fragmentManager);
 	CFM::DummyLibraryResolver dummyResolver;
 	
 	fragmentManager.LibraryResolvers.push_back(&pefResolver);

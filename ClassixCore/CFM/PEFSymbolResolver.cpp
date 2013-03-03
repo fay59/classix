@@ -29,11 +29,11 @@
 
 namespace CFM
 {
-	PEFSymbolResolver::PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, const std::string& filePath)
+	PEFSymbolResolver::PEFSymbolResolver(Common::IAllocator& allocator, FragmentManager& cfm, const std::string& filePath)
 	: PEFSymbolResolver(allocator, cfm, Common::FileMapping(filePath))
 	{ }
 	
-	PEFSymbolResolver::PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, Common::FileMapping&& mapping)
+	PEFSymbolResolver::PEFSymbolResolver(Common::IAllocator& allocator, FragmentManager& cfm, Common::FileMapping&& mapping)
 	: mapping(std::move(mapping))
 	, allocator(allocator)
 	, container(allocator, this->mapping.begin(), this->mapping.end())
@@ -61,7 +61,7 @@ namespace CFM
 		if (address == nullptr)
 			return ResolvedSymbol::Invalid;
 		
-		return ResolvedSymbol::PowerPCSymbol(name, allocator->ToIntPtr(address));
+		return ResolvedSymbol::PowerPCSymbol(name, allocator.ToIntPtr(address));
 	}
 	
 	ResolvedSymbol PEFSymbolResolver::Symbolize(const std::string& name, const PEF::LoaderHeader::SectionWithOffset &sectionWithOffset) const

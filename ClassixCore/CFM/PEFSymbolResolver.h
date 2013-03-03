@@ -33,7 +33,7 @@ namespace CFM
 	{
 		Common::FileMapping mapping;
 		PEF::Container container;
-		Common::IAllocator* allocator;
+		Common::IAllocator& allocator;
 		
 		FragmentManager& cfm;
 		
@@ -41,8 +41,8 @@ namespace CFM
 		ResolvedSymbol Symbolize(const std::string& name, const PEF::LoaderHeader::SectionWithOffset& sectionWithOffset) const;
 		
 	public:
-		PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, const std::string& filePath);
-		PEFSymbolResolver(Common::IAllocator* allocator, FragmentManager& cfm, Common::FileMapping&& mapping);
+		PEFSymbolResolver(Common::IAllocator& allocator, FragmentManager& cfm, const std::string& filePath);
+		PEFSymbolResolver(Common::IAllocator& allocator, FragmentManager& cfm, Common::FileMapping&& mapping);
 		
 		PEF::Container& GetContainer();
 		const PEF::Container& GetContainer() const;
