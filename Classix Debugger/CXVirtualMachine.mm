@@ -116,6 +116,15 @@ struct ClassixCoreVM
 		return false;
 	}
 	
+	void PrepareState(const Common::StackPreparator::StackInfo& info)
+	{
+		state.r0 = 0;
+		state.r1 = allocator->ToIntPtr(info.sp - 8);
+		state.r3 = state.r27 = info.argc;
+		state.r4 = state.r28 = allocator->ToIntPtr(info.argv);
+		state.r5 = state.r29 = allocator->ToIntPtr(info.envp);
+	}
+	
 	~ClassixCoreVM()
 	{
 		delete allocator;
@@ -238,24 +247,23 @@ struct ClassixCoreVM
 	Common::AutoAllocation& stack = vm->stack;
 	auto result = stackPrep.WriteStack(static_cast<char*>(*stack), stack.GetVirtualAddress(), CXStackSize);
 	
-	// set the registers
-	vm->state.r0 = 0;
-	vm->state.r1 = vm->allocator->ToIntPtr(result.sp - 8);
-	vm->state.r3 = vm->state.r27 = stackPrep.ArgumentCount();
-	vm->state.r4 = vm->state.r28 = vm->allocator->ToIntPtr(result.argv);
-	vm->state.r5 = vm->state.r29 = vm->allocator->ToIntPtr(result.envp);
-	
-	// this also goes to _IntEnv
-	if (CFM::SymbolResolver* resolver = vm->cfm.GetSymbolResolver("StdCLib"))
+	for (auto& pair : vm->cfm)
 	{
-		auto symbol = resolver->ResolveSymbol("__StdCLib_IntEnvInit");
-		NSAssert(symbol.Universe != CFM::SymbolUniverse::LostInTimeAndSpace, @"Found StdCLib but couldn't find __StdCLib_IntEnvInit!");
-		
-		PEF::TransitionVector* vector = reinterpret_cast<PEF::TransitionVector*>(symbol.Address);
-		void* intEnvInit = vm->allocator->ToPointer<void>(vector->EntryPoint);
-		vm->state.r2 = vector->TableOfContents;
-		vm->interp.Execute(intEnvInit);
+		CFM::SymbolResolver* resolver = pair.second;
+		auto entryPoints = resolver->GetEntryPoints();
+		for (auto& entryPoint : entryPoints)
+		{
+			if (entryPoint.Name == CFM::SymbolResolver::InitSymbolName)
+			{
+				PEF::TransitionVector* vector = reinterpret_cast<PEF::TransitionVector*>(entryPoint.Address);
+				vm->PrepareState(result);
+				vm->state.r2 = vector->TableOfContents;
+				vm->interp.Execute(vm->allocator->ToPointer<void>(vector->EntryPoint));
+			}
+		}
 	}
+	
+	vm->PrepareState(result);
 	
 	NSArray* gpr = self.gpr;
 	NSArray* initialRegisters = @[
