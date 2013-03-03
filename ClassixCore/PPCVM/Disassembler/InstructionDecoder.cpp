@@ -218,7 +218,13 @@ namespace PPCVM
 		}
 		
 		ILASB(orc);
-		BODY(ori, Emit(i, "ori", g(i.RA), g(i.RS), hex(i.UIMM)));
+		IMPL(ori)
+		{
+			if (i.RA == 0 && i.RS == 0 && i.UIMM == 0)
+				Emit(i, "nop");
+			else
+				Emit(i, "ori", g(i.RA), g(i.RS), hex(i.UIMM));
+		}
 		BODY(oris, Emit(i, "oris", g(i.RA), g(i.RS), hex(i.UIMM)));
 		
 		IROT(rlwimi);
