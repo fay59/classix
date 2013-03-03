@@ -28,13 +28,17 @@ namespace Common
 {
 	class AllocationDetails
 	{
+		size_t size;
+		
 	protected:
 		std::string allocationName;
 		
 	public:
-		AllocationDetails(const std::string& name);
+		AllocationDetails(const std::string& name, size_t size);
 		
 		const std::string& GetAllocationName() const;
+		size_t Size() const;
+		
 		virtual std::string GetAllocationDetails(uint32_t offset) const;
 		virtual AllocationDetails* ToHeapAlloc() const;
 		

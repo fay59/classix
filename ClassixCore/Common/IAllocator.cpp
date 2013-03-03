@@ -61,7 +61,7 @@ namespace Common
 
 	AutoAllocation IAllocator::AllocateAuto(const std::string& zoneName, size_t size)
 	{
-		return AllocateAuto(AllocationDetails(zoneName), size);
+		return AllocateAuto(AllocationDetails(zoneName, size), size);
 	}
 	
 	AutoAllocation IAllocator::AllocateAuto(const Common::AllocationDetails &details, size_t size)
@@ -71,7 +71,7 @@ namespace Common
 	
 	uint8_t* IAllocator::Allocate(const std::string &zoneName, size_t size)
 	{
-		return Allocate(AllocationDetails(zoneName), size);
+		return Allocate(AllocationDetails(zoneName, size), size);
 	}
 
 	IAllocator::~IAllocator()

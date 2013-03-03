@@ -23,15 +23,15 @@
 #include <sstream>
 #include <cassert>
 
-CXReverseAllocationDetails::CXReverseAllocationDetails(const std::string& name, uint32_t offset)
-: Common::AllocationDetails(name), endOffset(offset)
+CXReverseAllocationDetails::CXReverseAllocationDetails(const std::string& name, uint32_t size)
+: Common::AllocationDetails(name, size)
 { }
 
 std::string CXReverseAllocationDetails::GetAllocationDetails(uint32_t offset) const
 {
-	assert(offset < endOffset && "offset out of bounds");
+	assert(offset < Size() && "offset out of bounds");
 	std::stringstream ss;
-	ss << GetAllocationName() << " -" << endOffset - offset;
+	ss << GetAllocationName() << " -" << Size() - offset;
 	return ss.str();
 }
 

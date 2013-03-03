@@ -105,7 +105,7 @@ namespace Common
 		template<typename T, typename ...TParams>
 		T* Allocate(const std::string& zoneName, TParams... params)
 		{
-			return Allocate(AllocationDetails(zoneName), params...);
+			return Allocate(AllocationDetails(zoneName, sizeof(T)), params...);
 		}
 		
 		template<typename T, typename ...TParams>

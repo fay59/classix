@@ -24,8 +24,8 @@
 
 namespace Common
 {
-	AllocationDetails::AllocationDetails(const std::string& name)
-	: allocationName(name)
+	AllocationDetails::AllocationDetails(const std::string& name, size_t size)
+	: size(size), allocationName(name)
 	{ }
 	
 	const std::string& AllocationDetails::GetAllocationName() const
@@ -38,6 +38,11 @@ namespace Common
 		std::stringstream ss;
 		ss << allocationName << " +" << offset;
 		return ss.str();
+	}
+	
+	size_t AllocationDetails::Size() const
+	{
+		return size;
 	}
 	
 	AllocationDetails* AllocationDetails::ToHeapAlloc() const

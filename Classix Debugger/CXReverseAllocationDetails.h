@@ -26,10 +26,8 @@
 
 class CXReverseAllocationDetails : public Common::AllocationDetails
 {
-	uint32_t endOffset;
-	
 public:
-	CXReverseAllocationDetails(const std::string& name, uint32_t endOffset);
+	CXReverseAllocationDetails(const std::string& name, uint32_t size);
 	
 	virtual std::string GetAllocationDetails(uint32_t offset) const override;
 	virtual AllocationDetails* ToHeapAlloc() const override;

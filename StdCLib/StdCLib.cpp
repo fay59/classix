@@ -168,6 +168,7 @@ namespace StdCLib
 	struct Globals
 	{
 		Scalars scalars;
+		uint8_t padding[32]; // just some buffer space before we get to the allocator
 		Common::IAllocator* allocator;
 		
 		static std::map<off_t, std::string> FieldOffsets;
@@ -284,7 +285,7 @@ namespace StdCLib
 	{
 	public:
 		GlobalsDetails()
-		: Common::AllocationDetails("StdCLib Globals")
+		: Common::AllocationDetails("StdCLib Globals", sizeof(Globals))
 		{ }
 		
 		virtual std::string GetAllocationDetails(uint32_t offset) const override
