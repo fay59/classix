@@ -170,14 +170,21 @@ struct ClassixCoreVM
 	if (!(self = [super init]))
 		return nil;
 	
-	vm = new ClassixCoreVM;
+	breakpoints = [[NSMutableSet alloc] init];
+	changedRegisters = [[NSMutableSet alloc] initWithCapacity:75];
+	breakpointsChanged = [[CXEvent alloc] initWithOwner:self];
 	
+	return self;
+}
+
+-(BOOL)loadClassicExecutable:(NSString *)executablePath error:(NSError **)error
+{
+	delete vm;
+	vm = new ClassixCoreVM;
 	NSMutableArray* gpr = [NSMutableArray arrayWithCapacity:32];
 	NSMutableArray* fpr = [NSMutableArray arrayWithCapacity:32];
 	NSMutableArray* cr = [NSMutableArray arrayWithCapacity:8];
 	NSMutableArray* spr = [NSMutableArray array];
-	breakpoints = [[NSMutableSet alloc] init];
-	changedRegisters = [[NSMutableSet alloc] initWithCapacity:75];
 	
 	for (int i = 0; i < 32; i++)
 	{
@@ -204,14 +211,6 @@ struct ClassixCoreVM
 		CXVirtualMachineCRKey: cr
 	} retain];
 	
-	breakpointsChanged = [[CXEvent alloc] initWithOwner:self];
-	
-	return self;
-}
-
--(BOOL)loadClassicExecutable:(NSString *)executablePath error:(NSError **)error
-{
-	// TODO check that we haven't already loaded an executable
 	std::string path = [executablePath UTF8String];
 	
 	if (!vm->LoadContainer(path))
@@ -489,9 +488,10 @@ struct ClassixCoreVM
 	if (inst.OPCD == 18 && inst.LK == 1)
 	{
 		uint32_t sp = vm->state.r1;
+		uint32_t desiredPC = pc + 4;
 		do
 		{
-			[self runTo:pc + 4];
+			[self runTo:desiredPC];
 		} while (vm->state.r1 != sp);
 	}
 	else [self stepInto:sender];

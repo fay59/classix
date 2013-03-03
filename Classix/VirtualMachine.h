@@ -42,13 +42,14 @@ namespace Classix
 		friend class MainStub;
 		friend class ProgramControlHandle;
 		
-		Common::IAllocator* allocator;
 		PPCVM::MachineState state;
 		CFM::PEFLibraryResolver pefResolver;
-		CFM::FragmentManager fragmentManager;
 		PPCVM::Execution::Interpreter interpreter;
 		
 	public:
+		Common::IAllocator* allocator;
+		CFM::FragmentManager fragmentManager;
+		
 		VirtualMachine(Common::IAllocator* allocator);
 		
 		void AddLibraryResolver(CFM::LibraryResolver& resolver);

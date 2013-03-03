@@ -18,6 +18,7 @@
 		DC0D42B3165EE4F500883586 /* CXObjcDisassemblyWriter.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC0D42B1165EE4F400883586 /* CXObjcDisassemblyWriter.mm */; };
 		DC161F021661F7A900B76B61 /* CXDBRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = DC161F011661F7A900B76B61 /* CXDBRequest.m */; };
 		DC176D091662A91700C76888 /* CXGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC176D081662A91700C76888 /* CXGradientView.m */; };
+		DC1FB13916E2962C00E9C7E5 /* CompareTrace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC1FB13816E2962C00E9C7E5 /* CompareTrace.cpp */; };
 		DC264EA7165DF76A00C86BDD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC264EA6165DF76A00C86BDD /* WebKit.framework */; };
 		DC264EAC165DFFEB00C86BDD /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAA165DFFEB00C86BDD /* main.js */; };
 		DC29C3D2166AB92400B35EF7 /* AllocationDetails.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC29C3D0166AB92400B35EF7 /* AllocationDetails.cpp */; };
@@ -92,6 +93,7 @@
 		DCB8737116E05A5B00D87513 /* DummyLibraryResolver.h in Headers */ = {isa = PBXBuildFile; fileRef = DCB8736F16E05A5B00D87513 /* DummyLibraryResolver.h */; };
 		DCB8737416E05B0B00D87513 /* DummySymbolResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCB8737216E05B0B00D87513 /* DummySymbolResolver.cpp */; };
 		DCB8737516E05B0B00D87513 /* DummySymbolResolver.h in Headers */ = {isa = PBXBuildFile; fileRef = DCB8737316E05B0B00D87513 /* DummySymbolResolver.h */; };
+		DCB8737716E06AAB00D87513 /* PatchExecutable.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCB8737616E06AAB00D87513 /* PatchExecutable.mm */; };
 		DCC4B0E41662FAC100D21C90 /* CXVirtualMachine.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCC4B0E31662FAC100D21C90 /* CXVirtualMachine.mm */; };
 		DCC4B0E91662FBC200D21C90 /* CXRegister.m in Sources */ = {isa = PBXBuildFile; fileRef = DCC4B0E81662FBC200D21C90 /* CXRegister.m */; };
 		DCCA432D167EF7C4001D9AD2 /* CXDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = DCCA432C167EF7C4001D9AD2 /* CXDocument.xib */; };
@@ -136,6 +138,7 @@
 		DC161F011661F7A900B76B61 /* CXDBRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXDBRequest.m; sourceTree = "<group>"; };
 		DC176D071662A91700C76888 /* CXGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXGradientView.h; sourceTree = "<group>"; };
 		DC176D081662A91700C76888 /* CXGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXGradientView.m; sourceTree = "<group>"; };
+		DC1FB13816E2962C00E9C7E5 /* CompareTrace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CompareTrace.cpp; sourceTree = "<group>"; };
 		DC264EA6165DF76A00C86BDD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		DC264EAA165DFFEB00C86BDD /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
 		DC264EAB165DFFEB00C86BDD /* cxdb.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = cxdb.css; sourceTree = "<group>"; };
@@ -243,6 +246,7 @@
 		DCB8736F16E05A5B00D87513 /* DummyLibraryResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DummyLibraryResolver.h; sourceTree = "<group>"; };
 		DCB8737216E05B0B00D87513 /* DummySymbolResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DummySymbolResolver.cpp; sourceTree = "<group>"; };
 		DCB8737316E05B0B00D87513 /* DummySymbolResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DummySymbolResolver.h; sourceTree = "<group>"; };
+		DCB8737616E06AAB00D87513 /* PatchExecutable.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PatchExecutable.mm; sourceTree = "<group>"; };
 		DCBCB091166019F300FDCC35 /* step-into.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "step-into.png"; sourceTree = "<group>"; };
 		DCBCB092166019F300FDCC35 /* step-over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "step-over.png"; sourceTree = "<group>"; };
 		DCC3DC3016338A7900792F4A /* Classix */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Classix; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -566,6 +570,8 @@
 			children = (
 				DC9D8D4E164F644200036FDD /* Classix.1 */,
 				DC9D8D4C164F642000036FDD /* main.cpp */,
+				DCB8737616E06AAB00D87513 /* PatchExecutable.mm */,
+				DC1FB13816E2962C00E9C7E5 /* CompareTrace.cpp */,
 				DC8301F5165010690079CE2D /* VirtualMachine.cpp */,
 				DC8301F6165010690079CE2D /* VirtualMachine.h */,
 				DC0D42A9165EDDBB00883586 /* OStreamDisassemblyWriter.cpp */,
@@ -937,6 +943,8 @@
 				DC9D8D4D164F642000036FDD /* main.cpp in Sources */,
 				DC8301F7165010690079CE2D /* VirtualMachine.cpp in Sources */,
 				DC0D42AB165EDDBB00883586 /* OStreamDisassemblyWriter.cpp in Sources */,
+				DCB8737716E06AAB00D87513 /* PatchExecutable.mm in Sources */,
+				DC1FB13916E2962C00E9C7E5 /* CompareTrace.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -243,14 +243,17 @@ static int inflateAndDump(const std::string& path, const std::string& targetDir)
 	return 0;
 }
 
+int compareTrace(const std::string& path, const std::string& tracePath);
+
 static int usage()
 {
 	std::cerr << "usage: Classix -e file # list exports" << std::endl;
-	std::cerr << "       Classix -b file out-file # patch executable to always call _BreakPoint at start" << std::endl;
 	std::cerr << "       Classix -i file # list imports" << std::endl;
 	std::cerr << "       Classix -d file # disassemble code sections" << std::endl;
 	std::cerr << "       Classix -r file # run the file" << std::endl;
+	std::cerr << "       Classix -b file out-file # patch executable to always call _BreakPoint at start" << std::endl;
 	std::cerr << "       Classix -z file target # dump sections to target directory" << std::endl;
+	std::cerr << "       Classix -c file trace # execute and compare to MacsBug trace" << std::endl;
 	return 1;
 }
 
@@ -259,31 +262,32 @@ int main(int argc, const char* argv[], const char* envp[])
 	if (argc < 3) return usage();
 	
 	std::string mode = argv[1];
-	std::string path = argv[2];
+	std::string ppcPath = argv[2];
 	
 	try
 	{
 		if (mode == "-e")
-			return listExports(path);
-		else if (mode == "-b")
+			return listExports(ppcPath);
+		else if (mode == "-i")
+			return listImports(ppcPath);
+		else if (mode == "-d")
+			return disassemble(ppcPath);
+		else if (mode == "-r")
+			return run(ppcPath, argc - 2, argv + 2, envp);
+		else
 		{
 			if (argc < 4) return usage();
+			std::string secondArg = argv[3];
 			
-			std::string outPath = argv[3];
-			return patchExecutable(path, outPath);
+			if (mode == "-b")
+				return patchExecutable(ppcPath, secondArg);
+			else if (mode == "-z")
+				return inflateAndDump(ppcPath, secondArg);
+			else if (mode == "-c")
+				return compareTrace(ppcPath, secondArg);
 		}
-		else if (mode == "-i")
-			return listImports(path);
-		else if (mode == "-d")
-			return disassemble(path);
-		else if (mode == "-r")
-			return run(path, argc - 2, argv + 2, envp);
-		else if (mode == "-z")
-		{
-			if (argc != 4) return usage();
-			std::string targetDir = argv[3];
-			return inflateAndDump(path, targetDir);
-		}
+		
+		return usage();
 	}
 	catch (std::exception& error)
 	{
