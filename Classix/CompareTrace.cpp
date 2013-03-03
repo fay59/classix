@@ -152,7 +152,7 @@ int compareTrace(const std::string& path, const std::string& tracePath)
 	MacsBugTrace trace(tracePath);
 	while (trace.ReadNext())
 	{
-		std::cout << std::right << std::hex << std::setw(8) << std::setfill('0') << mainAddress + trace.pcOffset << ' ' << trace.opcode << ' ';
+		std::cout << '+' << std::right << std::hex << std::setw(8) << std::setfill('0') << trace.pcOffset << ' ' << trace.opcode << ' ';
 		std::cout << std::left << std::setfill(' ') << std::setw(8) << trace.instructionName << trace.arguments << std::endl;
 		
 		uint32_t offset = handle.pc - mainAddress;
