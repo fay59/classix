@@ -149,7 +149,7 @@ namespace PPCVM
 				}
 				catch (Common::PPCRuntimeException& ex)
 				{
-					uint32_t pc = allocator.ToIntPtr(const_cast<Common::UInt32*>(currentAddress));
+					uint32_t pc = allocator.ToIntPtr(currentAddress);
 					throw InterpreterException(pc, ex);
 				}
 			} while (branchAddress == nullptr);
@@ -178,7 +178,7 @@ namespace PPCVM
 			}
 			catch (Common::PPCRuntimeException& ex)
 			{
-				uint32_t pc = allocator.ToIntPtr(const_cast<Common::UInt32*>(currentAddress));
+				uint32_t pc = allocator.ToIntPtr(currentAddress);
 				throw InterpreterException(pc, ex);
 			}
 			

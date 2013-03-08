@@ -41,7 +41,7 @@ namespace PPCVM
 			End = end;
 			
 			char functionName[] = "00000000";
-			sprintf(functionName, "%08x", allocator.ToIntPtr(const_cast<Common::UInt32*>(Begin)));
+			sprintf(functionName, "%08x", allocator.ToIntPtr(Begin));
 			Name = functionName;
 			
 			InstructionDecoder decoder;

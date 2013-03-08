@@ -340,7 +340,7 @@ struct ClassixCoreVM
 		uint32_t limit = vm->allocator.GetDetails(address)->Size() - offset;
 		size_t length = strnlen(atAddress, limit);
 		
-		// check that the few couple characters are printable
+		// check that the first few couple characters are printable
 		bool valid = true;
 		for (size_t i = 0; i < std::min(length, size_t(8)); i++)
 		{
@@ -353,9 +353,10 @@ struct ClassixCoreVM
 		
 		if (valid)
 		{
-			// initWithBytesNoCopy takes a non-const pointer because it is allowed to free the buffer in some circumstance;
+			// initWithBytesNoCopy takes a non-const pointer because it is allowed to free the buffer in some circumstances;
 			// but in our case no such thing will happen, so it is safe to use a const_cast
-			NSString* result = [[NSString alloc] initWithBytesNoCopy:const_cast<char*>(atAddress) length:length encoding:NSMacOSRomanStringEncoding freeWhenDone:NO];
+			char* mutableString = const_cast<char*>(atAddress);
+			NSString* result = [[NSString alloc] initWithBytesNoCopy:mutableString length:length encoding:NSMacOSRomanStringEncoding freeWhenDone:NO];
 			return [result autorelease];
 		}
 	}
@@ -505,7 +506,7 @@ struct ClassixCoreVM
 	try
 	{
 		eip = vm->interp.ExecuteUntil(eip, cppBreakpoints);
-		self.pc = vm->allocator.ToIntPtr(const_cast<void*>(eip));
+		self.pc = vm->allocator.ToIntPtr(eip);
 		self.lastError = nil;
 	}
 	catch (PPCVM::Execution::InterpreterException& ex)
@@ -567,7 +568,7 @@ struct ClassixCoreVM
 	try
 	{
 		eip = vm->interp.ExecuteUntil(eip, until);
-		self.pc = vm->allocator.ToIntPtr(const_cast<void*>(eip));
+		self.pc = vm->allocator.ToIntPtr(eip);
 		self.lastError = nil;
 	}
 	catch (PPCVM::Execution::InterpreterException& ex)

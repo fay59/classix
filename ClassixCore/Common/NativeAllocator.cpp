@@ -96,14 +96,13 @@ namespace Common
 	
 	const NativeAllocator::AllocatedRange* NativeAllocator::GetAllocationRange(uint32_t address) const
 	{
-		NativeAllocator* self = const_cast<NativeAllocator*>(this);
 		for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
 		{
 			const auto& range = iter->second;
-			if (self->ToIntPtr(range.end) < address)
+			if (ToIntPtr(range.end) < address)
 				continue;
 			
-			if (self->ToIntPtr(range.start) > address)
+			if (ToIntPtr(range.start) > address)
 				break;
 			
 			return &range;
@@ -143,7 +142,7 @@ namespace Common
 	
 	void NativeAllocator::PrintParentZone(const void* address) const
 	{
-		uint32_t intAddress = ToIntPtr(const_cast<void*>(address));
+		uint32_t intAddress = ToIntPtr(address);
 		auto range = GetAllocationRange(intAddress);
 		if (range == nullptr)
 			std::cout << address << " was not allocated" << std::endl;

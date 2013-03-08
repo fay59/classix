@@ -74,7 +74,7 @@ namespace PPCVM
 			for (auto iter = disasm->Begin(); iter != disasm->End(); iter++)
 			{
 				auto& section = iter->second;
-				Common::UInt32* sectionBase = const_cast<Common::UInt32*>(section.Begin);
+				const Common::UInt32* sectionBase = section.Begin;
 				writer.EnterLabel(section, allocator.ToIntPtr(sectionBase));
 				
 				for (int i = 0; i < section.Opcodes.size(); i++)
@@ -218,7 +218,7 @@ namespace PPCVM
 		{
 			if (auto targetRange = rangeToDisasm[range]->FindRange(targetAddress))
 			{
-				Common::UInt32* base = const_cast<Common::UInt32*>(currentAddress);
+				const Common::UInt32* base = currentAddress;
 				uint32_t address = allocator.ToIntPtr(base);
 				uint32_t targetAddress = allocator.ToIntPtr(targetRange->Begin);
 				metadata.insert(std::make_pair(address, targetAddress));
