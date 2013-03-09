@@ -44,6 +44,15 @@ namespace
 	}
 	
 	template<typename T>
+	inline T* GetEffectiveArrayPointer(Common::IAllocator& allocator, MachineState& state, Instruction inst, size_t count)
+	{
+		uint32_t address = inst.RA
+			? state.gpr[inst.RA] + inst.SIMM_16
+			: inst.SIMM_16;
+		return allocator.ToArray<T>(address, count);
+	}
+	
+	template<typename T>
 	inline T* GetEffectivePointerU(Common::IAllocator& allocator, MachineState& state, Instruction inst)
 	{
 		uint32_t address = state.gpr[inst.RA] + inst.SIMM_16;
@@ -207,17 +216,12 @@ namespace PPCVM
 		
 		void Interpreter::lmw(Instruction inst)
 		{
-			// first copy locally, then write to registers: that way, if a segfault
-			// occurs, registers are still clean.
-			uint32_t words[32];
-			UInt32* address = GetEffectivePointer<UInt32>(allocator, state, inst);
+			UInt32* address = GetEffectiveArrayPointer<UInt32>(allocator, state, inst, 32 - inst.RD);
 			for (int i = inst.RD; i < 32; i++)
 			{
-				words[i] = *address;
+				state.gpr[i] = *address;
 				address++;
 			}
-			
-			memcpy(state.gpr + inst.RD, words + inst.RD, (32 - inst.RD) * sizeof(uint32_t));
 		}
 		
 		void Interpreter::lswi(Instruction inst)
