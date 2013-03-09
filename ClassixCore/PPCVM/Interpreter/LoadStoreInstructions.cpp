@@ -217,7 +217,7 @@ namespace PPCVM
 				address++;
 			}
 			
-			memcpy(state.gpr + inst.RD, words + inst.RD, 32 - inst.RD);
+			memcpy(state.gpr + inst.RD, words + inst.RD, (32 - inst.RD) * sizeof(uint32_t));
 		}
 		
 		void Interpreter::lswi(Instruction inst)
