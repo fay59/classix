@@ -80,7 +80,6 @@ namespace
 			{
 				case 0b000: // zero
 				{
-					//std::cerr << "zeroing " << argument << " bytes" << std::endl;
 					memset(output, 0, argument);
 					output += argument;
 					
@@ -91,7 +90,6 @@ namespace
 					
 				case 0b001: // block copy
 				{
-					//std::cerr << "copying " << argument << " bytes" << std::endl;
 					memcpy(output, input, argument);
 					output += argument;
 					input += argument;
@@ -107,7 +105,6 @@ namespace
 					uint32_t consumedLength = ReadVariableLengthInteger(input, repeatCount);
 					input += consumedLength;
 					
-					//std::cerr << "repeating " << argument << " bytes " << repeatCount << " times" << std::endl;
 					for (uint32_t i = 0; i < repeatCount + 1; i++)
 					{
 						memcpy(output, input, argument);
@@ -115,7 +112,7 @@ namespace
 					}
 					input += argument;
 					
-					assert(input == initialInputPosition + argument && "pattern was not correctly interpreted");
+					assert(input == initialInputPosition + argument + consumedLength && "pattern was not correctly interpreted");
 					assert(output == initialOutputPosition + argument * (repeatCount + 1) && "output was not correctly written");
 					break;
 				}
@@ -132,7 +129,6 @@ namespace
 					
 					const uint8_t* commonData = input;
 					input += commonSize;
-					//std::cerr << "interleaving " << customSize << " custom bytes with " << argument << " common bytes, " << repeatCount << " times" << std::endl;
 					
 					for (uint32_t i = 0; i < repeatCount; i++)
 					{
@@ -162,7 +158,6 @@ namespace
 					consumedLength += ReadVariableLengthInteger(input + consumedLength, repeatCount);
 					input += consumedLength;
 					
-					//std::cerr << "interleaving " << customSize << " custom bytes with " << argument << " zeroed bytes, " << repeatCount << " times" << std::endl;
 					for (uint32_t i = 0; i < repeatCount; i++)
 					{
 						memset(output, 0, zeroSize);

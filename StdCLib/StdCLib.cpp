@@ -558,7 +558,7 @@ extern "C"
 	{
 		const char* reason = ToPointer<char>(state->r3);
 		printf("Interrupted by %s", reason);
-		__asm__ ("int $3");
+		asm("int $3");
 	}
 
 	void StdCLib__bufsync(StdCLib::Globals* globals, MachineState* state)
