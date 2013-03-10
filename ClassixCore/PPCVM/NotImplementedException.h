@@ -1,5 +1,5 @@
 //
-// TrapException.h
+// NotImplementedException.h
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,24 +19,28 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef TRAPEXCEPTION_H
-#define TRAPEXCEPTION_H
+#ifndef __Classix__NotImplementedException__
+#define __Classix__NotImplementedException__
 
 #include "PPCRuntimeException.h"
 #include <string>
 
 namespace PPCVM
 {
-	class TrapException : public Common::PPCRuntimeException
+	class NotImplementedException : public Common::PPCRuntimeException
 	{
-		std::string trapName;
-	public:
-		TrapException(const std::string& trapName);
+		std::string functionName;
+		std::string description;
+		std::string fullMessage;
 		
-		virtual Common::PPCRuntimeException* ToHeapAlloc() const override;
+	public:
+		explicit NotImplementedException(const std::string& function);
+		NotImplementedException(const std::string& function, const std::string& description);
+		
+		virtual PPCRuntimeException* ToHeapAlloc() const override;
 		virtual const char* what() const noexcept override;
-		virtual ~TrapException() override;
+		virtual ~NotImplementedException() override;
 	};
 }
 
-#endif
+#endif /* defined(__Classix__NotImplementedException__) */

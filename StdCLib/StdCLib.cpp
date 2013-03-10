@@ -37,6 +37,7 @@
 #include "StdCLib.h"
 #include "StdCLibFunctions.h"
 #include "SymbolResolver.h"
+#include "NotImplementedException.h"
 
 using PPCVM::MachineState;
 
@@ -331,7 +332,7 @@ namespace StdCLib
 	
 	// TODO handle the vararg calling convention correctly: this can fail horribly with large calls, or calls that
 	// have floats as first and second arguments
-	std::string StringPrintF(const std::string& formatString, Globals& globals, const uint32_t* gpr, const double* fpr) noexcept
+	std::string StringPrintF(const std::string& formatString, Globals& globals, const uint32_t* gpr, const double* fpr)
 	{
 		std::string doubleTypes = "aAeEfFgG";
 		std::regex rx("%([0-9]+\\$)?(#?)(0?)(-?)( ?)(\\+?)('?)([0-9]?)(\\.[0-9]*)?[hLljtzq]*[diouxXDOUeEfFgGaAcCsSpn]");
@@ -345,7 +346,7 @@ namespace StdCLib
 			matchStart += match.position();
 			result << std::string(lastMatchEnd, matchStart);
 			
-			char* out;
+			char* out = nullptr;
 			const std::string& formatSpecifier = match[0].str();
 			auto reverseIter = formatSpecifier.rbegin();
 			if (*reverseIter == 's' || *reverseIter == 'S')
@@ -356,7 +357,9 @@ namespace StdCLib
 			}
 			else if (doubleTypes.find_first_of(*reverseIter) != std::string::npos)
 			{
-				assert(*(reverseIter + 1) != 'L' && "long doubles not supported");
+				if (*(reverseIter + 1) == 'L')
+					throw PPCVM::NotImplementedException(__func__, "Long doubles are not supported in format strings");
+				
 				asprintf(&out, formatSpecifier.c_str(), *fpr);
 				fpr++;
 			}
@@ -463,42 +466,42 @@ extern "C"
 	
 	void StdCLib___abort(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib___assertprint(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib___DebugMallocHeap(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib___GetTrapType(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib___growFileTable(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib___NumToolboxTraps(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib___RestoreInitialCFragWorld(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib___RevertCFragWorld(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib___setjmp(StdCLib::Globals* globals, MachineState* state)
@@ -526,27 +529,27 @@ extern "C"
 
 	void StdCLib___vec_longjmp(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib___vec_setjmp(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__addDevHandler(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__badPtr(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__Bogus(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__BreakPoint(StdCLib::Globals* globals, MachineState* state)
@@ -558,87 +561,87 @@ extern "C"
 
 	void StdCLib__bufsync(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__c2pstrcpy(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__coClose(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__coExit(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__coFAccess(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__coIoctl(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__coRead(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__coreIOExit(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__coWrite(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__cvt(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__DoExitProcs(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__doprnt(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__doscan(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__exit(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__faccess(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__filbuf(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__findiop(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__flsbuf(StdCLib::Globals* globals, MachineState* state)
@@ -652,242 +655,242 @@ extern "C"
 
 	void StdCLib__fsClose(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__fsFAccess(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__fsIoctl(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__fsRead(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__FSSpec2Path(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__fsWrite(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__GetAliasInfo(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__getDevHandler(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__getIOPort(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__memchr(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__memcpy(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__ResolveFileAlias(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__rmemcpy(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__RTExit(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__RTInit(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__SA_DeletePtr(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__SA_GetPID(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__SA_SetPtrSize(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__syClose(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__syFAccess(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__syIoctl(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__syRead(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__syWrite(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__uerror(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__wrtchk(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib__xflsbuf(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_abort(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_abs(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_access(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_asctime(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_atexit(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_atof(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_atoi(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_atol(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_atoll(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_binhex(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_bsearch(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_calloc(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_clearerr(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_clock(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_close(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_ConvertTheString(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_creat(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_ctime(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_difftime(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_div(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_dup(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_ecvt(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_exit(StdCLib::Globals* globals, MachineState* state)
@@ -924,42 +927,42 @@ extern "C"
 
 	void StdCLib_fcntl(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_fcvt(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_fdopen(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_feof(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_ferror(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_fflush(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_fgetc(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_fgetpos(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_fgets(StdCLib::Globals* globals, MachineState* state)
@@ -1005,32 +1008,32 @@ extern "C"
 
 	void StdCLib_fputc(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_fputs(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_fread(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_free(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_freopen(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_fscanf(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_fseek(StdCLib::Globals* globals, MachineState* state)
@@ -1044,87 +1047,87 @@ extern "C"
 
 	void StdCLib_fsetfileinfo(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_fsetpos(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_FSMakeFSSpec_Long(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_FSp_creat(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_FSp_faccess(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_FSp_fopen(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_FSp_freopen(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_FSp_fsetfileinfo(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_FSp_open(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_FSp_remove(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_FSp_rename(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_FSp_unlink(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_FSSpec2Path_Long(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_ftell(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_fwrite(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_getc(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_getchar(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_getenv(StdCLib::Globals* globals, MachineState* state)
@@ -1141,192 +1144,192 @@ extern "C"
 
 	void StdCLib_getIDstring(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_getpid(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_gets(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_getw(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_gmtime(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_IEResolvePath(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_ioctl(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_isalnum(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_isalpha(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_isascii(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_iscntrl(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_isdigit(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_isgraph(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_islower(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_isprint(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_ispunct(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_isspace(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_isupper(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_isxdigit(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_labs(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_ldiv(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_llabs(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_lldiv(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_localeconv(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_localtime(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_longjmp(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_lseek(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_MakeResolvedFSSpec(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_MakeResolvedFSSpec_Long(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_MakeResolvedPath(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_MakeResolvedPath_Long(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_MakeTheLocaleString(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_malloc(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_mblen(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_mbstowcs(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_mbtowc(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_memccpy(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_memchr(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_memcmp(StdCLib::Globals* globals, MachineState* state)
@@ -1347,102 +1350,102 @@ extern "C"
 
 	void StdCLib_memmove(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_memset(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_mktemp(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_mktime(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_open(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_ParseTheLocaleString(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_perror(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_PLpos(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_PLstrcat(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_PLstrchr(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_PLstrcmp(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_PLstrcpy(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_PLstrlen(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_PLstrncat(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_PLstrncmp(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_PLstrncpy(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_PLstrpbrk(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_PLstrrchr(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_PLstrspn(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_PLstrstr(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_printf(StdCLib::Globals* globals, MachineState* state)
@@ -1455,12 +1458,12 @@ extern "C"
 
 	void StdCLib_putc(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_putchar(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_puts(StdCLib::Globals* globals, MachineState* state)
@@ -1472,122 +1475,122 @@ extern "C"
 
 	void StdCLib_putw(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_qsort(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_raise(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_rand(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_read(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_realloc(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_remove(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_rename(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_ResolveFolderAliases(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_ResolveFolderAliases_Long(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_ResolvePath(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_ResolvePath_Long(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_rewind(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_scanf(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_setbuf(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_setenv(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_setlocale(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_setvbuf(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_signal(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_sprintf(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_srand(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_sscanf(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strcat(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strchr(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strcmp(StdCLib::Globals* globals, MachineState* state)
@@ -1599,7 +1602,7 @@ extern "C"
 
 	void StdCLib_strcoll(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strcpy(StdCLib::Globals* globals, MachineState* state)
@@ -1611,17 +1614,17 @@ extern "C"
 
 	void StdCLib_strcspn(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strerror(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strftime(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strlen(StdCLib::Globals* globals, MachineState* state)
@@ -1632,22 +1635,22 @@ extern "C"
 
 	void StdCLib_strncat(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strncmp(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strncpy(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strpbrk(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strrchr(StdCLib::Globals* globals, MachineState* state)
@@ -1660,72 +1663,72 @@ extern "C"
 
 	void StdCLib_strspn(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strstr(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strtod(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strtok(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strtol(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strtoll(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strtoul(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strtoull(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_strxfrm(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_system(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_time(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_tmpfile(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_tmpnam(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_toascii(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_tolower(StdCLib::Globals* globals, MachineState* state)
@@ -1735,71 +1738,71 @@ extern "C"
 
 	void StdCLib_toupper(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_TrapAvailable(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_ungetc(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_unlink(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_vec_calloc(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_vec_free(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_vec_malloc(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_vec_realloc(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_vfprintf(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_vprintf(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_vsprintf(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_wcstombs(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_wctomb(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 
 	void StdCLib_write(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		throw PPCVM::NotImplementedException(__func__);
 	}
 }
