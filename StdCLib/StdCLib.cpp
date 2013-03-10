@@ -384,6 +384,8 @@ namespace StdCLib
 			lastMatchEnd = matchStart;
 			matchStart += match.length();
 		}
+		
+		result << std::string(lastMatchEnd, formatString.end());
 		return result.str();
 	}
 }
