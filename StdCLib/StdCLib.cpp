@@ -26,6 +26,7 @@
 #include <map>
 #include <string>
 #include <sstream>
+#include <regex>
 
 #include <dlfcn.h>
 #include <unistd.h>
@@ -327,6 +328,61 @@ namespace StdCLib
 		virtual ~GlobalsDetails() override
 		{}
 	};
+	
+	// TODO handle the vararg calling convention correctly: this can fail horribly with large calls, or calls that
+	// have floats as first and second arguments
+	std::string StringPrintF(const std::string& formatString, Globals& globals, const uint32_t* gpr, const double* fpr) noexcept
+	{
+		std::string doubleTypes = "aAeEfFgG";
+		std::regex rx("%([0-9]+\\$)?(#?)(0?)(-?)( ?)(\\+?)('?)([0-9]?)(\\.[0-9]*)?[hLljtzq]*[diouxXDOUeEfFgGaAcCsSpn]");
+		std::smatch match;
+		
+		std::stringstream result;
+		std::string::const_iterator lastMatchEnd = formatString.begin();
+		std::string::const_iterator matchStart = formatString.begin();
+		while (std::regex_search(matchStart, formatString.cend(), match, rx))
+		{
+			matchStart += match.position();
+			result << std::string(lastMatchEnd, matchStart);
+			
+			char* out;
+			const std::string& formatSpecifier = match[0].str();
+			auto reverseIter = formatSpecifier.rbegin();
+			if (*reverseIter == 's' || *reverseIter == 'S')
+			{
+				const char* pointer = globals.allocator.ToPointer<char>(*gpr);
+				asprintf(&out, formatSpecifier.c_str(), pointer);
+				gpr++;
+			}
+			else if (doubleTypes.find_first_of(*reverseIter) != std::string::npos)
+			{
+				assert(*(reverseIter + 1) != 'L' && "long doubles not supported");
+				asprintf(&out, formatSpecifier.c_str(), *fpr);
+				fpr++;
+			}
+			else
+			{
+				if (*(reverseIter + 1) == 'l' && *(reverseIter + 2) == 'l')
+				{
+					uint64_t argument = ((uint64_t)gpr[0] << 32) | gpr[1];
+					asprintf(&out, formatSpecifier.c_str(), argument);
+					gpr += 2;
+				}
+				else
+				{
+					asprintf(&out, formatSpecifier.c_str(), *gpr);
+					gpr++;
+				}
+			}
+			
+			result << out;
+			free(out);
+			
+			lastMatchEnd = matchStart;
+			matchStart += match.length();
+		}
+		return result.str();
+	}
 }
 
 #pragma mark -
@@ -587,7 +643,11 @@ extern "C"
 
 	void StdCLib__flsbuf(StdCLib::Globals* globals, MachineState* state)
 	{
-		abort();
+		int character = state->r3;
+		FILE* fptr = MakeFilePtr(globals, state->r4);
+		fputc(character, fptr);
+		fflush(fptr);
+		state->r3 = character & 0xff;
 	}
 
 	void StdCLib__fsClose(StdCLib::Globals* globals, MachineState* state)
@@ -1388,8 +1448,8 @@ extern "C"
 	void StdCLib_printf(StdCLib::Globals* globals, MachineState* state)
 	{
 		const char* formatString = ToPointer<const char>(state->r3);
-		// gah, let's just print the format string for now.
-		state->r3 = puts(formatString);
+		std::string toPrint = StdCLib::StringPrintF(formatString, *globals, state->gpr + 4, state->fpr);
+		state->r3 = printf("%s", toPrint.c_str());
 		globals->scalars.errno_ = errno;
 	}
 
