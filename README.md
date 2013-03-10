@@ -24,9 +24,10 @@ writes a new interpreter.
 
 ## Using Classix
 
-Classix is still under heavy development and nothing useful can be done with it
-right now. If you're not a developer, you're not going to be interested in
-getting it at the moment.
+Classix is still under heavy development and most non-trivial programs will not
+run correctly. It might do the job if you want to run simple MPW tools (the most
+complex MPW tool I am able to run right now is `Unmangle`), but GUI applications
+are currently out of reach.
 
 ## State of the Project
 
@@ -38,8 +39,8 @@ executables, nor XCOFF executables (of any architecture). Design changes will be
 necessary to support 68k emulation (though XCOFF loading should be rather
 "easy").
 
-It does not support any of the runtime features of the CFM; it's only able to link
-together applications and libraries at startup.
+It does not support any of the runtime features of the CFM; it's only able to
+link together applications and libraries at startup.
 
 The PowerPC emulator is based on [Dolphin][5]'s interpreter, with some important
 changes made to better achieve certain goals (for instance, our interpreter
@@ -47,8 +48,7 @@ accesses raw memory directly, does not use global state to represent CPU
 registers, and does not need to implement supervisor-level PPC instructions).
 
 It is currently possible to run very simple programs inside Classix, like "Hello
-World" programs. However, some issues (especially with the reimplementation of
-Classic libraries) prevent anything non-trivial from completing successfully.
+World" programs.
 
 ## General Design of the Project
 
