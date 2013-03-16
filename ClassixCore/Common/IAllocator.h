@@ -102,6 +102,21 @@ namespace Common
 			return GetDetails(address) != nullptr;
 		}
 		
+		// Bless takes an existing pointer and validates it through ToPointer again.
+		// If the concrete implementation of IntPtrToPointer does no validation, then this method is pretty much
+		// useless.
+		template<typename T>
+		T* Bless(T* pointer)
+		{
+			return ToPointer<T>(ToIntPtr(pointer));
+		}
+		
+		template<typename T>
+		const T* Bless(const T* pointer)
+		{
+			return ToPointer<T>(ToIntPtr(pointer));
+		}
+		
 		template<typename T, typename ...TParams>
 		T* Allocate(const std::string& zoneName, TParams... params)
 		{
