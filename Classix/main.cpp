@@ -77,7 +77,7 @@ static int listExports(const std::string& path)
 		const uint8_t* end;
 	};
 	
-	uint32_t onlySection = -1;
+	int16_t onlySection = -1;
 	std::vector<Export> exports;
 	for (auto iter = exportTable.begin(); iter != exportTable.end(); iter++)
 	{
@@ -108,7 +108,7 @@ static int listExports(const std::string& path)
 	}
 	
 	// we only support dumping globals when there is just one data section
-	if (onlySection != -2)
+	if (onlySection >= 0)
 	{
 		std::sort(exports.begin(), exports.end(), [](const Export& a, const Export& b) { return a.begin < b.begin; });
 		const PEF::InstantiableSection& section = container.GetSection(onlySection);
