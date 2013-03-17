@@ -77,7 +77,6 @@ void CXObjCDisassemblyWriter::VisitOpcode(const PPCVM::Disassembly::Disassembled
 		if (arg.Format == PPCVM::Disassembly::OpcodeArgumentFormat::Offset)
 		{
 			i++;
-			assert(opcode.Arguments[i].Format == PPCVM::Disassembly::OpcodeArgumentFormat::GPR);
 			[objcOpcode setObject:@(opcode.Arguments[i].Value) forKey:@"gpr"];
 		}
 		[arguments addObject:objcOpcode];
