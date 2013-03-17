@@ -234,6 +234,19 @@ static NSString* CXDebugDocumentUTI = @"com.felixcloutier.classix.document";
 		disassembly = [[CXDisassembly alloc] initWithVirtualMachine:vm];
 		arguments = [[NSMutableArray alloc] initWithObjects:executableURL.path, nil];
 		
+		if (disassembly == nil || arguments == nil)
+		{
+			[disassembly release];
+			[arguments release];
+			[vm release];
+			disassembly = nil;
+			arguments = nil;
+			vm = nil;
+			
+			*error = [NSError errorWithDomain:CXErrorDomain code:CXErrorCodeInternalError userInfo:nil];
+			return NO;
+		}
+		
 		return YES;
 	}
 	return NO;

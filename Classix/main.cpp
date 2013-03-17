@@ -163,12 +163,10 @@ static int disassemble(const std::string& path)
 	Common::NativeAllocator allocator;
 	CFM::FragmentManager fragmentManager;
 	CFM::PEFLibraryResolver pefResolver(allocator, fragmentManager);
-	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator);
-	
-	dlfcnResolver.RegisterLibrary("StdCLib");
+	CFM::DummyLibraryResolver resolver;
 	
 	fragmentManager.LibraryResolvers.push_back(&pefResolver);
-	fragmentManager.LibraryResolvers.push_back(&dlfcnResolver);
+	fragmentManager.LibraryResolvers.push_back(&resolver);
 	
 	if (fragmentManager.LoadContainer(path))
 	{

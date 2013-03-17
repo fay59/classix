@@ -71,9 +71,16 @@ void OStreamDisassemblyWriter::VisitOpcode(const PPCVM::Disassembly::Disassemble
 		}
 		else
 		{
-			uint32_t offset = allocator.GetAllocationOffset(relatedAddress);
-			uint32_t base = relatedAddress - offset;
-			into << allocator.GetDetails(base)->GetAllocationDetails(offset);
+			try
+			{
+				uint32_t offset = allocator.GetAllocationOffset(relatedAddress);
+				uint32_t base = relatedAddress - offset;
+				into << allocator.GetDetails(base)->GetAllocationDetails(offset);
+			}
+			catch (Common::AccessViolationException& ex)
+			{
+				into << "access violation";
+			}
 		}
 		into << '>';
 	}

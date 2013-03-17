@@ -39,6 +39,7 @@ extern NSString* CXVirtualMachineRemovedBreakpoint;
 
 enum CXErrorCode
 {
+	CXErrorCodeInternalError = -1,
 	CXErrorCodeNotLocalURL = 1,
 	CXErrorCodeFileNotLoadable = 2,
 	CXErrorCoreExecutableAlreadyLoaded = 3,

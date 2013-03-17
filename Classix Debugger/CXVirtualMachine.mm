@@ -38,6 +38,7 @@
 #include "CXReverseAllocationDetails.h"
 #include "InstructionDecoder.h"
 #include "StackPreparator.h"
+#include "DummyLibraryResolver.h"
 
 NSNumber* CXVirtualMachineGPRKey = @(CXRegisterGPR);
 NSNumber* CXVirtualMachineFPRKey = @(CXRegisterFPR);
@@ -60,21 +61,22 @@ struct ClassixCoreVM
 	PPCVM::MachineState state;
 	CFM::FragmentManager cfm;
 	CFM::PEFLibraryResolver pefResolver;
+	CFM::DummyLibraryResolver dummyResolver;
 	ClassixCore::DlfcnLibraryResolver dlfcnResolver;
 	PPCVM::Execution::Interpreter interp;
 	Common::AutoAllocation stack;
 	
 	ClassixCoreVM()
-	: state()
-	, cfm()
-	, pefResolver(allocator, cfm)
+	: pefResolver(allocator, cfm)
 	, dlfcnResolver(allocator)
 	, interp(allocator, state)
 	, stack(allocator.AllocateAuto(CXReverseAllocationDetails("Stack", CXStackSize), CXStackSize))
 	{
 		dlfcnResolver.RegisterLibrary("StdCLib");
+		dlfcnResolver.RegisterLibrary("InterfaceLib");
 		cfm.LibraryResolvers.push_back(&pefResolver);
 		cfm.LibraryResolvers.push_back(&dlfcnResolver);
+		cfm.LibraryResolvers.push_back(&dummyResolver);
 	}
 	
 	bool LoadContainer(const std::string& path)

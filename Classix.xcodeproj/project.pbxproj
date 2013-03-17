@@ -266,7 +266,7 @@
 		DC5ED1BC167CFF8100C249B7 /* CXStackTrace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXStackTrace.m; sourceTree = "<group>"; };
 		DC5EE2E916CE068200B2629F /* StackPreparator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StackPreparator.cpp; sourceTree = "<group>"; };
 		DC5EE2EA16CE068200B2629F /* StackPreparator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StackPreparator.h; sourceTree = "<group>"; };
-		DC6286D316F42B6C00265AA6 /* InterfaceLib.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = InterfaceLib.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC6286D316F42B6C00265AA6 /* libInterfaceLib.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libInterfaceLib.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC6286D716F42B6D00265AA6 /* InterfaceLibProj.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = InterfaceLibProj.xcconfig; sourceTree = "<group>"; };
 		DC6286D816F42B6D00265AA6 /* InterfaceLibTarget.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = InterfaceLibTarget.xcconfig; sourceTree = "<group>"; };
 		DC6286E116F4F1E800265AA6 /* AEDataModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AEDataModel.cpp; sourceTree = "<group>"; };
@@ -745,8 +745,8 @@
 		DC787EAC164F689F0010A288 /* Classix Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				DC6286D416F42B6C00265AA6 /* InterfaceLib */,
 				DC787EAD164F68BB0010A288 /* StdCLib */,
+				DC6286D416F42B6C00265AA6 /* InterfaceLib */,
 			);
 			name = "Classix Libraries";
 			sourceTree = "<group>";
@@ -927,7 +927,7 @@
 				DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */,
 				DC787EA8164F68990010A288 /* libStdCLib.dylib */,
 				DC4C644B165B62910097288E /* Classix Debugger.app */,
-				DC6286D316F42B6C00265AA6 /* InterfaceLib.dylib */,
+				DC6286D316F42B6C00265AA6 /* libInterfaceLib.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1044,7 +1044,7 @@
 			);
 			name = InterfaceLib;
 			productName = InterfaceLib;
-			productReference = DC6286D316F42B6C00265AA6 /* InterfaceLib.dylib */;
+			productReference = DC6286D316F42B6C00265AA6 /* libInterfaceLib.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		DC787EA7164F68990010A288 /* StdCLib */ = {
@@ -1416,6 +1416,7 @@
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -1427,6 +1428,7 @@
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

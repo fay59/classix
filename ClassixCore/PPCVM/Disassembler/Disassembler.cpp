@@ -68,11 +68,16 @@ namespace PPCVM
 				labels.insert(std::make_pair(lr, InstructionRange(allocator, lr)));
 			}
 			
-			const Common::UInt32* target = inst.AA
-				? allocator.ToPointer<Common::UInt32>(inst.LI << 2)
-				: address + inst.LI;
-			auto iter = labels.insert(std::make_pair(target, InstructionRange(allocator, target))).first;
-			iter->second.IsFunction |= inst.LK;
+			try
+			{
+				const Common::UInt32* target = inst.AA
+					? allocator.ToPointer<Common::UInt32>(inst.LI << 2)
+					: allocator.Bless(address + inst.LI);
+				auto iter = labels.insert(std::make_pair(target, InstructionRange(allocator, target))).first;
+				iter->second.IsFunction |= inst.LK;
+			}
+			catch (Common::AccessViolationException& ex)
+			{ }
 		}
 		
 		void Disassembler::bcx(Common::IAllocator& allocator, const Common::UInt32 *address)
@@ -84,11 +89,16 @@ namespace PPCVM
 				labels.insert(std::make_pair(lr, InstructionRange(allocator, lr)));
 			}
 			
-			const Common::UInt32* target = inst.AA
-				? allocator.ToPointer<Common::UInt32>(inst.BD << 2)
-				: address + inst.BD;
-			auto iter = labels.insert(std::make_pair(target, InstructionRange(allocator, target))).first;
-			iter->second.IsFunction |= inst.LK;
+			try
+			{
+				const Common::UInt32* target = inst.AA
+					? allocator.ToPointer<Common::UInt32>(inst.BD << 2)
+					: allocator.Bless(address + inst.BD);
+				auto iter = labels.insert(std::make_pair(target, InstructionRange(allocator, target))).first;
+				iter->second.IsFunction |= inst.LK;
+			}
+			catch (Common::AccessViolationException& ex)
+			{ }
 		}
 		
 		void Disassembler::bcctrx(Common::IAllocator& allocator, const Common::UInt32 *address)

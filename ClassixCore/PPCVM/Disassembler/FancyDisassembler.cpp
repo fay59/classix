@@ -183,7 +183,7 @@ namespace PPCVM
 							{ }
 						}
 					}
-					else if (opcode.Opcode == "bctr")
+					else if (opcode.Opcode == "bctr" && r12 != 0)
 					{
 						try
 						{
