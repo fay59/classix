@@ -12,12 +12,20 @@
 
 namespace InterfaceLib
 {
-	struct Globals {};
+	struct Globals
+	{
+		uint8_t padding[0x1000];
+		Common::IAllocator& allocator;
+		
+		Globals(Common::IAllocator& allocator)
+		: allocator(allocator)
+		{ }
+	};
 }
 
 InterfaceLib::Globals* LibraryInit(Common::IAllocator* allocator)
 {
-	return nullptr;
+	return allocator->Allocate<InterfaceLib::Globals>("InterfaceLib globals", *allocator);
 }
 
 SymbolType LibraryLookup(InterfaceLib::Globals* globals, const char* symbolName, void** result)
@@ -38,5 +46,5 @@ SymbolType LibraryLookup(InterfaceLib::Globals* globals, const char* symbolName,
 
 void LibraryFinit(InterfaceLib::Globals* context)
 {
-	
+	context->allocator.Deallocate(context);
 }

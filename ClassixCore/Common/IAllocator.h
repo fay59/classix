@@ -26,6 +26,7 @@
 #include <cstddef>
 #include <cassert>
 #include <string>
+#include <utility>
 #include "AllocationDetails.h"
 #include "AccessViolationException.h"
 
@@ -117,16 +118,16 @@ namespace Common
 		}
 		
 		template<typename T, typename ...TParams>
-		T* Allocate(const std::string& zoneName, TParams... params)
+		T* Allocate(const std::string& zoneName, TParams&&... params)
 		{
-			return Allocate(AllocationDetails(zoneName, sizeof(T)), params...);
+			return Allocate<T>(AllocationDetails(zoneName, sizeof(T)), std::forward<TParams>(params)...);
 		}
 		
 		template<typename T, typename ...TParams>
-		T* Allocate(const AllocationDetails& details, TParams... params)
+		T* Allocate(const AllocationDetails& details, TParams&&... params)
 		{
 			T* object = reinterpret_cast<T*>(Allocate(details, sizeof(T)));
-			return new (object) T(params...);
+			return new (object) T(std::forward<TParams>(params)...);
 		}
 		
 		template<typename T>
