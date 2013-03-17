@@ -24,6 +24,7 @@
 #include "PEFSymbolResolver.h"
 #include "FancyDisassembler.h"
 #include "CXObjcDisassemblyWriter.h"
+#include "PPCRuntimeException.h"
 #include <CommonCrypto/CommonCrypto.h>
 
 struct SectionInfo
@@ -98,34 +99,42 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 	
 	cxx = new CXDisassemblyCXX;
 	
-	for (auto iter = cfm->begin(); iter != cfm->end(); iter++)
+	try
 	{
-		if (const CFM::PEFSymbolResolver* pef = dynamic_cast<const CFM::PEFSymbolResolver*>(iter->second))
+		for (auto iter = cfm->begin(); iter != cfm->end(); iter++)
 		{
-			PPCVM::Disassembly::FancyDisassembler disasm(*allocator);
-			const PEF::Container& container = pef->GetContainer();
-			for (int i = 0; i < container.size(); i++)
+			if (const CFM::PEFSymbolResolver* pef = dynamic_cast<const CFM::PEFSymbolResolver*>(iter->second))
 			{
-				const PEF::InstantiableSection& section = container.GetSection(i);
-				PEF::SectionType type = section.GetSectionType();
-				if (type != PEF::SectionType::Code && type != PEF::SectionType::ExecutableData)
-					continue;
-				
-				cxx->sections.emplace_back(&section);
-				
-				CXObjCDisassemblyWriter writer(i);
-				disasm.Disassemble(container, writer);
-				NSArray* result = writer.GetDisassembly();
-				if (result.count == 0)
-					continue;
-				
-				for (CXCodeLabel* label in result)
+				PPCVM::Disassembly::FancyDisassembler disasm(*allocator);
+				const PEF::Container& container = pef->GetContainer();
+				for (int i = 0; i < container.size(); i++)
 				{
-					[uniqueNames setObject:label.uniqueName forKey:@(label.address)];
-					[disassemblyDictionary setObject:label forKey:label.uniqueName];
+					const PEF::InstantiableSection& section = container.GetSection(i);
+					PEF::SectionType type = section.GetSectionType();
+					if (type != PEF::SectionType::Code && type != PEF::SectionType::ExecutableData)
+						continue;
+					
+					cxx->sections.emplace_back(&section);
+					
+					CXObjCDisassemblyWriter writer(i);
+					disasm.Disassemble(container, writer);
+					NSArray* result = writer.GetDisassembly();
+					if (result.count == 0)
+						continue;
+					
+					for (CXCodeLabel* label in result)
+					{
+						[uniqueNames setObject:label.uniqueName forKey:@(label.address)];
+						[disassemblyDictionary setObject:label forKey:label.uniqueName];
+					}
 				}
 			}
 		}
+	}
+	catch (Common::PPCRuntimeException& ex)
+	{
+		[self release];
+		return nil;
 	}
 	
 	orderedAddresses = [[[uniqueNames allKeys] sortedArrayUsingSelector:@selector(compare:)] retain];
