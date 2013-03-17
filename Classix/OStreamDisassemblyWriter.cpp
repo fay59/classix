@@ -69,6 +69,10 @@ void OStreamDisassemblyWriter::VisitOpcode(const PPCVM::Disassembly::Disassemble
 			into << std::hex << std::setw(8) << std::right << std::setfill('0');
 			into << relatedAddress;
 		}
+		else if (relatedAddress == 0)
+		{
+			into << "missing symbol";
+		}
 		else
 		{
 			try

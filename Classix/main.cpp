@@ -194,11 +194,14 @@ static int disassemble(const std::string& path)
 static int run(const std::string& path, int argc, const char* argv[], const char* envp[])
 {
 	Common::NativeAllocator allocator;
+	CFM::DummyLibraryResolver dummyResolver;
 	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator);
 	dlfcnResolver.RegisterLibrary("StdCLib");
+	dlfcnResolver.RegisterLibrary("InterfaceLib");
 	
 	Classix::VirtualMachine vm(allocator);
 	vm.AddLibraryResolver(dlfcnResolver);
+	vm.AddLibraryResolver(dummyResolver);
 	
 	auto stub = vm.LoadMainContainer(path);
 	return stub(argc, argv, envp);
