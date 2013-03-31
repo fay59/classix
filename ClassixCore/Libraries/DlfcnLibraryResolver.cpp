@@ -21,7 +21,6 @@
 
 #include <dlfcn.h>
 #include "DlfcnLibraryResolver.h"
-#include "DlfcnSymbolResolver.h"
 
 namespace ClassixCore
 {
@@ -36,13 +35,14 @@ namespace ClassixCore
 	}
 	
 	DlfcnLibrary::DlfcnLibrary(DlfcnLibrary&& that)
-	: Path(that.Path), Name(that.Name)
 	{
-		Init = that.Init;
-		Lookup = that.Lookup;
-		Finit = that.Finit;
-		dlHandle = that.dlHandle;
+		Path = std::move(that.Path);
+		Name = std::move(that.Name);
+		OnLoad = std::move(that.OnLoad);
+		Lookup = std::move(that.Lookup);
+		OnUnload = std::move(that.OnUnload);
 		Symbols = that.Symbols;
+		dlHandle = that.dlHandle;
 		that.dlHandle = nullptr;
 	}
 	
@@ -52,17 +52,17 @@ namespace ClassixCore
 		if (dlHandle == nullptr)
 			throw std::logic_error(dlerror());
 		
-		Init = dlsym<InitFunction>(dlHandle, "LibraryInit");
+		OnLoad = dlsym<OnLoadFunction>(dlHandle, "LibraryLoad");
 		Lookup = dlsym<LookupFunction>(dlHandle, "LibraryLookup");
-		Finit = dlsym<FinitFunction>(dlHandle, "LibraryFinit");
+		OnUnload = dlsym<OnUnloadFunction>(dlHandle, "LibraryUnload");
 		Symbols = dlsym<const char**>(dlHandle, "LibrarySymbolNames");
 		
-		if (Init == nullptr || Lookup == nullptr || Finit == nullptr)
+		if (OnLoad == nullptr || Lookup == nullptr || OnUnload == nullptr || Symbols == nullptr)
 			throw std::logic_error("Incomplete library");
 		
 		// get the full file path
 		Dl_info info;
-		Path = dladdr(reinterpret_cast<void*>(Init), &info) == 0 ? path : info.dli_fname;
+		Path = dladdr(reinterpret_cast<void*>(OnLoad), &info) == 0 ? path : info.dli_fname;
 		Name = Path.substr(path.find_last_of('/') + 1);
 	}
 	

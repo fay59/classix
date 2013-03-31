@@ -33,9 +33,9 @@ extern "C"
 		struct Globals;
 	}
 
-	StdCLib::Globals* LibraryInit(Common::IAllocator* allocator);
+	StdCLib::Globals* LibraryLoad(Common::IAllocator* allocator);
 	SymbolType LibraryLookup(StdCLib::Globals* globals, const char* symbolName, void** symbol);
-	void LibraryFinit(StdCLib::Globals* context);
+	void LibraryUnload(StdCLib::Globals* context);
 	
 	extern const char* LibrarySymbolNames[];
 }

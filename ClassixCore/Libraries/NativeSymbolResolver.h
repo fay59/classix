@@ -27,6 +27,7 @@
 #include <list>
 #include <deque>
 
+#include "NativeLibrary.h"
 #include "IAllocator.h"
 #include "STAllocator.h"
 #include "Structures.h"
@@ -40,9 +41,9 @@ namespace ClassixCore
 	
 	class DlfcnLibrary;
 	
-	class DlfcnSymbolResolver : public SymbolResolver
+	class NativeSymbolResolver : public SymbolResolver
 	{
-		const DlfcnLibrary& library;
+		const NativeLibrary& library;
 		void* globals;
 		
 		// symbol cache
@@ -56,9 +57,10 @@ namespace ClassixCore
 		PEF::TransitionVector& MakeTransitionVector(const std::string& symbolName, void* address);
 		
 	public:
-		DlfcnSymbolResolver(Common::IAllocator& allocator, const DlfcnLibrary& library);
+		NativeSymbolResolver(Common::IAllocator& allocator, const NativeLibrary& library);
 		
 		void* GetGlobals();
+		const void* GetGlobals() const;
 		
 		virtual const std::string* FilePath() const override;
 		virtual std::vector<std::string> SymbolList() const override;
@@ -66,7 +68,7 @@ namespace ClassixCore
 		virtual ResolvedSymbol ResolveSymbol(const std::string& name) override;
 		virtual std::vector<ResolvedSymbol> GetEntryPoints() override;
 		
-		virtual ~DlfcnSymbolResolver() override;
+		virtual ~NativeSymbolResolver() override;
 	};
 }
 

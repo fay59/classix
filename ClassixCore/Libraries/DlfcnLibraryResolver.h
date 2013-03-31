@@ -27,49 +27,34 @@
 #include <deque>
 
 #include "LibraryResolver.h"
+#include "NativeLibrary.h"
 #include "MachineState.h"
 #include "IAllocator.h"
 #include "SymbolType.h"
-#include "DlfcnSymbolResolver.h"
+#include "NativeSymbolResolver.h"
 
 namespace ClassixCore
 {
-	struct DlfcnLibrary
+	class DlfcnLibrary : public NativeLibrary
 	{
-	private:
 		void* dlHandle;
 		
 	public:
-		typedef void* (*InitFunction)(Common::IAllocator*);
-		typedef SymbolType (*LookupFunction)(void*, const char*, void**);
-		typedef void (*FinitFunction)(void*);
-		
-		typedef void (*ExportedFunction)(void*, PPCVM::MachineState*);
-		
-		std::string Path;
-		std::string Name;
-		InitFunction Init;
-		LookupFunction Lookup;
-		FinitFunction Finit;
-		const char** Symbols;
-		
 		DlfcnLibrary(const std::string& path);
-		DlfcnLibrary(const DlfcnLibrary& that) = delete;
 		DlfcnLibrary(DlfcnLibrary&& that);
 		
-		~DlfcnLibrary();
+		virtual ~DlfcnLibrary() override;
 	};
-	
-	class DlfcnSymbolResolver;
 	
 	class DlfcnLibraryResolver : public CFM::LibraryResolver
 	{
 		Common::IAllocator& allocator;
 		std::unordered_map<std::string, DlfcnLibrary> libraries;
-		std::deque<DlfcnSymbolResolver> resolvers;
+		std::deque<NativeSymbolResolver> resolvers;
 		
 	public:
 		DlfcnLibraryResolver(Common::IAllocator& allocator);
+		DlfcnLibraryResolver(const DlfcnLibraryResolver&) = delete;
 		
 		void RegisterLibrary(const std::string& cfmName);
 		void RegisterLibrary(const std::string& cfmName, const std::string& path);

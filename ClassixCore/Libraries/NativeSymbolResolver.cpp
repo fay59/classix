@@ -1,5 +1,5 @@
 //
-// DlfcnSymbolResolver.cpp
+// NativeSymbolResolver.cpp
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,22 +19,21 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#include "DlfcnSymbolResolver.h"
-#include "DlfcnLibraryResolver.h"
+#include "NativeSymbolResolver.h"
 
 namespace ClassixCore
 {
-	DlfcnSymbolResolver::DlfcnSymbolResolver(Common::IAllocator& allocator, const DlfcnLibrary& library)
+	NativeSymbolResolver::NativeSymbolResolver(Common::IAllocator& allocator, const NativeLibrary& library)
 	: library(library)
 	, allocator(allocator)
 	, stlAllocator(allocator)
 	, transitions(stlAllocator)
 	, nativeCalls(stlAllocator)
 	{
-		globals = library.Init(&allocator);
+		globals = library.OnLoad(&allocator);
 	}
 	
-	std::vector<ResolvedSymbol> DlfcnSymbolResolver::GetEntryPoints()
+	std::vector<ResolvedSymbol> NativeSymbolResolver::GetEntryPoints()
 	{
 		std::vector<ResolvedSymbol> entryPoints;
 		const std::string* symbolNames[] = {&MainSymbolName, &InitSymbolName, &TermSymbolName};
@@ -49,13 +48,13 @@ namespace ClassixCore
 		return entryPoints;
 	}
 	
-	ResolvedSymbol& DlfcnSymbolResolver::CacheSymbol(const std::string& name, void* address)
+	ResolvedSymbol& NativeSymbolResolver::CacheSymbol(const std::string& name, void* address)
 	{
 		uint32_t ppcAddress = allocator.ToIntPtr(address);
 		return symbols.emplace(std::make_pair(name, ResolvedSymbol::IntelSymbol(name, ppcAddress))).first->second;
 	}
 	
-	PEF::TransitionVector& DlfcnSymbolResolver::MakeTransitionVector(const std::string& symbolName, void* address)
+	PEF::TransitionVector& NativeSymbolResolver::MakeTransitionVector(const std::string& symbolName, void* address)
 	{
 		stlAllocator.SetNextName("Native Call Trampoline Block");
 		nativeCalls.emplace_back((NativeCallback)address);
@@ -69,17 +68,22 @@ namespace ClassixCore
 		return *transitions.emplace(transitions.end(), vector);
 	}
 	
-	void* DlfcnSymbolResolver::GetGlobals()
+	void* NativeSymbolResolver::GetGlobals()
 	{
 		return globals;
 	}
 	
-	const std::string* DlfcnSymbolResolver::FilePath() const
+	const void* NativeSymbolResolver::GetGlobals() const
+	{
+		return globals;
+	}
+	
+	const std::string* NativeSymbolResolver::FilePath() const
 	{
 		return &library.Path;
 	}
 	
-	std::vector<std::string> DlfcnSymbolResolver::SymbolList() const
+	std::vector<std::string> NativeSymbolResolver::SymbolList() const
 	{
 		std::vector<std::string> symbols;
 		if (const char** nameIter = library.Symbols)
@@ -93,7 +97,7 @@ namespace ClassixCore
 		return symbols;
 	}
 	
-	ResolvedSymbol DlfcnSymbolResolver::ResolveSymbol(const std::string& name)
+	ResolvedSymbol NativeSymbolResolver::ResolveSymbol(const std::string& name)
 	{
 		// do we have a cached version?
 		auto iter = symbols.find(name);
@@ -117,9 +121,9 @@ namespace ClassixCore
 		}
 	}
 	
-	DlfcnSymbolResolver::~DlfcnSymbolResolver()
+	NativeSymbolResolver::~NativeSymbolResolver()
 	{
-		if (library.Finit != nullptr)
-			library.Finit(globals);
+		if (library.OnUnload != nullptr)
+			library.OnUnload(globals);
 	}
 }

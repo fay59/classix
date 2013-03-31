@@ -163,12 +163,14 @@
 		DC787EB2164F6A910010A288 /* StdCLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC787EB0164F6A810010A288 /* StdCLib.cpp */; };
 		DC7ECFD816850D830063F14E /* CXDebugUIController.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC7ECFD716850D830063F14E /* CXDebugUIController.mm */; };
 		DC8301EF164FFD770079CE2D /* DlfcnLibraryResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301EC164FFD380079CE2D /* DlfcnLibraryResolver.cpp */; };
-		DC8301F3165006FB0079CE2D /* DlfcnSymbolResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F0165006D00079CE2D /* DlfcnSymbolResolver.cpp */; };
+		DC8301F3165006FB0079CE2D /* NativeSymbolResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F0165006D00079CE2D /* NativeSymbolResolver.cpp */; };
 		DC8301F7165010690079CE2D /* VirtualMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F5165010690079CE2D /* VirtualMachine.cpp */; };
 		DC86E082166C03730027F40E /* CXReverseAllocationDetails.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC86E080166C03730027F40E /* CXReverseAllocationDetails.cpp */; };
 		DC86E08A166C2D390027F40E /* PanicException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC86E088166C2D380027F40E /* PanicException.cpp */; };
 		DC86E08B166C2D390027F40E /* PanicException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC86E089166C2D390027F40E /* PanicException.h */; };
 		DC8A501B1665DB5900B72EB7 /* run.png in Resources */ = {isa = PBXBuildFile; fileRef = DC8A501A1665DB5900B72EB7 /* run.png */; };
+		DC930A9F170888D100B739B1 /* NativeLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = DC930A9D170888D100B739B1 /* NativeLibrary.h */; };
+		DC930AA11708BA4800B739B1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC930AA01708BA4800B739B1 /* CoreFoundation.framework */; };
 		DC9D8D4D164F642000036FDD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC9D8D4C164F642000036FDD /* main.cpp */; };
 		DC9D8D4F164F645900036FDD /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC9E43BF165E896A00AAC682 /* CXDBURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9E43BE165E896A00AAC682 /* CXDBURLProtocol.m */; };
@@ -194,6 +196,8 @@
 		DCF538C5167C37B9000D6E02 /* InstructionDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF538C3167C37B9000D6E02 /* InstructionDecoder.cpp */; };
 		DCF538C6167C37B9000D6E02 /* InstructionDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = DCF538C4167C37B9000D6E02 /* InstructionDecoder.h */; };
 		DCFC0CFF166DA2CA0069AE5E /* CXCodeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DCFC0CFE166DA2CA0069AE5E /* CXCodeLabel.m */; };
+		DCFE917F1707FDE4002A4086 /* BundleLibraryResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFE917D1707FDE4002A4086 /* BundleLibraryResolver.cpp */; };
+		DCFE91801707FDE4002A4086 /* BundleLibraryResolver.h in Headers */ = {isa = PBXBuildFile; fileRef = DCFE917E1707FDE4002A4086 /* BundleLibraryResolver.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -377,8 +381,8 @@
 		DC7ECFD716850D830063F14E /* CXDebugUIController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CXDebugUIController.mm; sourceTree = "<group>"; };
 		DC8301EC164FFD380079CE2D /* DlfcnLibraryResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DlfcnLibraryResolver.cpp; path = ClassixCore/Libraries/DlfcnLibraryResolver.cpp; sourceTree = SOURCE_ROOT; };
 		DC8301ED164FFD380079CE2D /* DlfcnLibraryResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DlfcnLibraryResolver.h; path = ClassixCore/Libraries/DlfcnLibraryResolver.h; sourceTree = SOURCE_ROOT; };
-		DC8301F0165006D00079CE2D /* DlfcnSymbolResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DlfcnSymbolResolver.cpp; path = ClassixCore/Libraries/DlfcnSymbolResolver.cpp; sourceTree = SOURCE_ROOT; };
-		DC8301F1165006D00079CE2D /* DlfcnSymbolResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DlfcnSymbolResolver.h; path = ClassixCore/Libraries/DlfcnSymbolResolver.h; sourceTree = SOURCE_ROOT; };
+		DC8301F0165006D00079CE2D /* NativeSymbolResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NativeSymbolResolver.cpp; path = ClassixCore/Libraries/NativeSymbolResolver.cpp; sourceTree = SOURCE_ROOT; };
+		DC8301F1165006D00079CE2D /* NativeSymbolResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeSymbolResolver.h; path = ClassixCore/Libraries/NativeSymbolResolver.h; sourceTree = SOURCE_ROOT; };
 		DC8301F416500BB60079CE2D /* SymbolType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SymbolType.h; path = ClassixCore/Libraries/SymbolType.h; sourceTree = SOURCE_ROOT; };
 		DC8301F5165010690079CE2D /* VirtualMachine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VirtualMachine.cpp; sourceTree = "<group>"; };
 		DC8301F6165010690079CE2D /* VirtualMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VirtualMachine.h; sourceTree = "<group>"; };
@@ -391,6 +395,8 @@
 		DC86E088166C2D380027F40E /* PanicException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PanicException.cpp; sourceTree = "<group>"; };
 		DC86E089166C2D390027F40E /* PanicException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanicException.h; sourceTree = "<group>"; };
 		DC8A501A1665DB5900B72EB7 /* run.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = run.png; sourceTree = "<group>"; };
+		DC930A9D170888D100B739B1 /* NativeLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NativeLibrary.h; sourceTree = "<group>"; };
+		DC930AA01708BA4800B739B1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		DC94F106163C80E8004538C5 /* SymbolResolutionException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SymbolResolutionException.cpp; sourceTree = "<group>"; };
 		DC94F107163C80E8004538C5 /* SymbolResolutionException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolResolutionException.h; sourceTree = "<group>"; };
 		DC94F109163CC231004538C5 /* LibraryResolutionException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryResolutionException.cpp; sourceTree = "<group>"; };
@@ -464,6 +470,8 @@
 		DCF538C4167C37B9000D6E02 /* InstructionDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InstructionDecoder.h; sourceTree = "<group>"; };
 		DCFC0CFD166DA2CA0069AE5E /* CXCodeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXCodeLabel.h; sourceTree = "<group>"; };
 		DCFC0CFE166DA2CA0069AE5E /* CXCodeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXCodeLabel.m; sourceTree = "<group>"; };
+		DCFE917D1707FDE4002A4086 /* BundleLibraryResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BundleLibraryResolver.cpp; sourceTree = "<group>"; };
+		DCFE917E1707FDE4002A4086 /* BundleLibraryResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BundleLibraryResolver.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -497,6 +505,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC930AA11708BA4800B739B1 /* CoreFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -579,6 +588,7 @@
 			isa = PBXGroup;
 			children = (
 				DC264EA6165DF76A00C86BDD /* WebKit.framework */,
+				DC930AA01708BA4800B739B1 /* CoreFoundation.framework */,
 				DC4C644E165B62910097288E /* Cocoa.framework */,
 				DC4C6450165B62910097288E /* Other Frameworks */,
 			);
@@ -780,11 +790,8 @@
 		DC8301EB164FFCFB0079CE2D /* dlfcn */ = {
 			isa = PBXGroup;
 			children = (
-				DC8301F416500BB60079CE2D /* SymbolType.h */,
 				DC8301EC164FFD380079CE2D /* DlfcnLibraryResolver.cpp */,
 				DC8301ED164FFD380079CE2D /* DlfcnLibraryResolver.h */,
-				DC8301F0165006D00079CE2D /* DlfcnSymbolResolver.cpp */,
-				DC8301F1165006D00079CE2D /* DlfcnSymbolResolver.h */,
 			);
 			name = dlfcn;
 			sourceTree = "<group>";
@@ -900,11 +907,17 @@
 			path = Common;
 			sourceTree = "<group>";
 		};
-		DCB00B95163B6B76003C88CA /* Libraries */ = {
+		DCB00B95163B6B76003C88CA /* Native Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				DC8301F416500BB60079CE2D /* SymbolType.h */,
+				DC930A9D170888D100B739B1 /* NativeLibrary.h */,
+				DC8301F0165006D00079CE2D /* NativeSymbolResolver.cpp */,
+				DC8301F1165006D00079CE2D /* NativeSymbolResolver.h */,
 				DC8301EB164FFCFB0079CE2D /* dlfcn */,
+				DCFE91811707FDE9002A4086 /* Bundle */,
 			);
+			name = "Native Libraries";
 			path = Libraries;
 			sourceTree = "<group>";
 		};
@@ -939,7 +952,7 @@
 				DC84561F1634B7C6001E49E2 /* PEF */,
 				DC8456231634C00A001E49E2 /* CFM */,
 				DC82A9B91636F4E100EAEDCD /* PPCVM */,
-				DCB00B95163B6B76003C88CA /* Libraries */,
+				DCB00B95163B6B76003C88CA /* Native Libraries */,
 			);
 			path = ClassixCore;
 			sourceTree = "<group>";
@@ -972,6 +985,15 @@
 				DC7ECFD716850D830063F14E /* CXDebugUIController.mm */,
 			);
 			name = "Custom Controls";
+			sourceTree = "<group>";
+		};
+		DCFE91811707FDE9002A4086 /* Bundle */ = {
+			isa = PBXGroup;
+			children = (
+				DCFE917D1707FDE4002A4086 /* BundleLibraryResolver.cpp */,
+				DCFE917E1707FDE4002A4086 /* BundleLibraryResolver.h */,
+			);
+			name = Bundle;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1007,6 +1029,8 @@
 				DCB8737116E05A5B00D87513 /* DummyLibraryResolver.h in Headers */,
 				DCB8737516E05B0B00D87513 /* DummySymbolResolver.h in Headers */,
 				DC5656D416ED070400083F0E /* NotImplementedException.h in Headers */,
+				DCFE91801707FDE4002A4086 /* BundleLibraryResolver.h in Headers */,
+				DC930A9F170888D100B739B1 /* NativeLibrary.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1120,10 +1144,10 @@
 			projectRoot = "";
 			targets = (
 				DCC3DC2F16338A7900792F4A /* Classix */,
+				DC4C644A165B62910097288E /* Classix Debugger */,
 				DC9D8D46164F63AB00036FDD /* ClassixCore */,
 				DC787EA7164F68990010A288 /* StdCLib */,
 				DC6286D216F42B6C00265AA6 /* InterfaceLib */,
-				DC4C644A165B62910097288E /* Classix Debugger */,
 			);
 		};
 /* End PBXProject section */
@@ -1313,7 +1337,7 @@
 				DC717074164F6648008D767E /* LoadStoreInstructions.cpp in Sources */,
 				DC717075164F6648008D767E /* SystemRegisterInstructions.cpp in Sources */,
 				DC8301EF164FFD770079CE2D /* DlfcnLibraryResolver.cpp in Sources */,
-				DC8301F3165006FB0079CE2D /* DlfcnSymbolResolver.cpp in Sources */,
+				DC8301F3165006FB0079CE2D /* NativeSymbolResolver.cpp in Sources */,
 				DCE0A8A9165732CC0092CEBC /* InstructionDispatcher.cpp in Sources */,
 				DCE0A8AA165733B00092CEBC /* InstructionRange.cpp in Sources */,
 				DCE0A8AB165733B50092CEBC /* Disassembler.cpp in Sources */,
@@ -1328,6 +1352,7 @@
 				DCB8737016E05A5B00D87513 /* DummyLibraryResolver.cpp in Sources */,
 				DCB8737416E05B0B00D87513 /* DummySymbolResolver.cpp in Sources */,
 				DC5656D316ED070400083F0E /* NotImplementedException.cpp in Sources */,
+				DCFE917F1707FDE4002A4086 /* BundleLibraryResolver.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1570,6 +1595,7 @@
 				DC6286DE16F42B6D00265AA6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DC787EA9164F68990010A288 /* Build configuration list for PBXNativeTarget "StdCLib" */ = {
 			isa = XCConfigurationList;

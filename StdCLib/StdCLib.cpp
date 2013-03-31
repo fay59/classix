@@ -394,7 +394,7 @@ namespace StdCLib
 #pragma mark Lifecycle
 extern "C"
 {
-	StdCLib::Globals* LibraryInit(Common::IAllocator* allocator)
+	StdCLib::Globals* LibraryLoad(Common::IAllocator* allocator)
 	{
 		return allocator->Allocate<StdCLib::Globals>(StdCLib::GlobalsDetails(), allocator);
 	}
@@ -425,7 +425,7 @@ extern "C"
 		return SymbolNotFound;
 	}
 
-	void LibraryFinit(StdCLib::Globals* globals)
+	void LibraryUnload(StdCLib::Globals* globals)
 	{
 		for (int i = 0; i < StdCLib::NFILE; i++)
 		{
