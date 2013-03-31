@@ -22,6 +22,8 @@
 #include "DummyLibraryResolver.h"
 #include "DummySymbolResolver.h"
 
+#include <iostream>
+
 namespace CFM
 {
 	DummyLibraryResolver::DummyLibraryResolver()
@@ -31,6 +33,7 @@ namespace CFM
 	
 	SymbolResolver* DummyLibraryResolver::ResolveLibrary(const std::string &name)
 	{
+		std::cerr << "*** resolving " << name << " as a dummy library\n";
 		return resolver;
 	}
 	

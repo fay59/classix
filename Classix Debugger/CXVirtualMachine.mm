@@ -29,16 +29,19 @@
 #include "MachineState.h"
 #include "FragmentManager.h"
 #include "NativeAllocator.h"
-#include "PEFLibraryResolver.h"
 #include "Interpreter.h"
-#include "DlfcnLibraryResolver.h"
+
 #include "FancyDisassembler.h"
 #include "CXObjcDisassemblyWriter.h"
 #include "NativeCall.h"
 #include "CXReverseAllocationDetails.h"
 #include "InstructionDecoder.h"
 #include "StackPreparator.h"
+
+#include "PEFLibraryResolver.h"
 #include "DummyLibraryResolver.h"
+#include "BundleLibraryResolver.h"
+#include "DlfcnLibraryResolver.h"
 
 NSNumber* CXVirtualMachineGPRKey = @(CXRegisterGPR);
 NSNumber* CXVirtualMachineFPRKey = @(CXRegisterFPR);
@@ -63,6 +66,7 @@ struct ClassixCoreVM
 	CFM::PEFLibraryResolver pefResolver;
 	CFM::DummyLibraryResolver dummyResolver;
 	ClassixCore::DlfcnLibraryResolver dlfcnResolver;
+	ClassixCore::BundleLibraryResolver bundleResolver;
 	PPCVM::Execution::Interpreter interp;
 	Common::AutoAllocation stack;
 	
@@ -70,11 +74,13 @@ struct ClassixCoreVM
 	: pefResolver(allocator, cfm)
 	, dlfcnResolver(allocator)
 	, interp(allocator, state)
+	, bundleResolver(allocator)
 	, stack(allocator.AllocateAuto(CXReverseAllocationDetails("Stack", CXStackSize), CXStackSize))
 	{
 		dlfcnResolver.RegisterLibrary("StdCLib");
-		dlfcnResolver.RegisterLibrary("InterfaceLib");
+		bundleResolver.AllowLibrary("InterfaceLib");
 		cfm.LibraryResolvers.push_back(&pefResolver);
+		cfm.LibraryResolvers.push_back(&bundleResolver);
 		cfm.LibraryResolvers.push_back(&dlfcnResolver);
 		cfm.LibraryResolvers.push_back(&dummyResolver);
 	}

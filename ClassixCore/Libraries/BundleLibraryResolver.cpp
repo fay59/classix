@@ -64,7 +64,7 @@ namespace
 		}
 	};
 	
-	std::string CFStringToStdString(CFStringRef string, CFStringEncoding encoding = kCFStringEncodingMacRoman)
+	std::string CFStringToStdString(CFStringRef string, CFStringEncoding encoding = kCFStringEncodingMacRoman) noexcept
 	{
 		if (const char* ptr = CFStringGetCStringPtr(string, encoding))
 			return ptr;
@@ -77,13 +77,13 @@ namespace
 		throw std::logic_error("Could not convert CFStringRef to std::string");
 	}
 	
-	std::string CFURLToStdString(CFURLRef url)
+	std::string CFURLToStdString(CFURLRef url) noexcept
 	{
 		CXCFOwningRef<CFStringRef> path = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
 		return CFStringToStdString(path);
 	}
 	
-	const CFStringRef CXLibraryNameKey = CFSTR("com.felixcloutier.ClassixCore.BundleLibraryResolver.LibraryName");
+	const CFStringRef CXLibraryNameKey = CFSTR("com.felixcloutier.Classix.LibraryName");
 }
 
 namespace ClassixCore

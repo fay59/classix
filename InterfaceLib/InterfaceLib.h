@@ -19,6 +19,8 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
+#include <unistd.h>
+
 #include "IAllocator.h"
 #include "MachineState.h"
 #include "SymbolType.h"
@@ -115,10 +117,22 @@ namespace InterfaceLib
 		QDProcs procs;
 	};
 	
+	union Pipe
+	{
+		int fd[2];
+		int read;
+		int write;
+	};
+	
 	struct Globals
 	{
 		GrafPort port;
+		uint8_t padding[0x1000];
+		
 		Common::IAllocator& allocator;
+		Pipe read;
+		Pipe write;
+		pid_t head;
 		
 		Globals(Common::IAllocator& allocator);
 	};
@@ -128,10 +142,10 @@ extern "C"
 {
 using PPCVM::MachineState;
 	
-InterfaceLib::Globals* LibraryInit(Common::IAllocator* allocator);
+InterfaceLib::Globals* LibraryLoad(Common::IAllocator* allocator);
 SymbolType LibraryLookup(InterfaceLib::Globals* globals, const char* symbolName, void** symbol);
-void LibraryFinit(InterfaceLib::Globals* context);
-const char* LibrarySymbolNames[];
+void LibraryUnload(InterfaceLib::Globals* context);
+extern const char* LibrarySymbolNames[];
 
 /* AEDataModel */
 void InterfaceLib_AECoerceDesc(InterfaceLib::Globals* globals, MachineState* state);		// OSErr AECoerceDesc(const AEDesc * theAEDesc, DescType toType, AEDesc * result)

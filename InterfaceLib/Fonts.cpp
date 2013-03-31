@@ -79,7 +79,8 @@ void InterfaceLib_GetSysFont(InterfaceLib::Globals* globals, MachineState* state
 
 void InterfaceLib_InitFonts(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+#warning This function probably needs to do something
+	//throw PPCVM::NotImplementedException(__func__);
 }
 
 void InterfaceLib_IsAntiAliasedTextEnabled(InterfaceLib::Globals* globals, MachineState* state)

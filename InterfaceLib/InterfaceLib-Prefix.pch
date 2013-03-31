@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'InterfaceLib' target in the 'InterfaceLib' project
+//
+
+#ifdef __OBJC__
+	#import <Cocoa/Cocoa.h>
+#endif

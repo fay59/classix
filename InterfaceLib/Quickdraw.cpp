@@ -494,7 +494,10 @@ void InterfaceLib_InitGDevice(InterfaceLib::Globals* globals, MachineState* stat
 
 void InterfaceLib_InitGraf(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+#warning This function needs to do a lot more stuff
+	uint32_t grafPtr = globals->allocator.ToIntPtr(&globals->port);
+	Common::UInt32* saveLocation = globals->allocator.ToPointer<Common::UInt32>(state->r3);
+	*saveLocation = grafPtr;
 }
 
 void InterfaceLib_InitPort(InterfaceLib::Globals* globals, MachineState* state)

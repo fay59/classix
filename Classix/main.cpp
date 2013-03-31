@@ -38,6 +38,8 @@
 #include "PEFLibraryResolver.h"
 #include "PEFSymbolResolver.h"
 #include "DlfcnLibraryResolver.h"
+#include "DummyLibraryResolver.h"
+#include "BundleLibraryResolver.h"
 #include "VirtualMachine.h"
 #include "NativeAllocator.h"
 #include "FileMapping.h"
@@ -45,7 +47,6 @@
 #include "NativeCall.h"
 #include "FancyDisassembler.h"
 #include "OStreamDisassemblyWriter.h"
-#include "DummyLibraryResolver.h"
 
 // be super-generous: apps on Mac OS 9, by default, have a 32 KB stack
 // but we give them 1 MB since messing with ApplLimit has no effect
@@ -197,7 +198,6 @@ static int run(const std::string& path, int argc, const char* argv[], const char
 	CFM::DummyLibraryResolver dummyResolver;
 	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator);
 	dlfcnResolver.RegisterLibrary("StdCLib");
-	dlfcnResolver.RegisterLibrary("InterfaceLib");
 	
 	Classix::VirtualMachine vm(allocator);
 	vm.AddLibraryResolver(dlfcnResolver);
