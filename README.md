@@ -54,8 +54,9 @@ World" programs.
 
 Classix is implemented as a library, `ClassixCore`, that projects link against.
 This library is programmed in object-oriented C++11. Since I also have an acute
-phobia of global state, there is very little mutable global state. Up to now, it
-has served me well.
+phobia of global state, there is essentialy no mutable global state in Classix
+per se, except where system frameworks otherwise require it. Up to now, it has
+served me well.
 
 The library itself has several components:
 
@@ -81,8 +82,7 @@ allocate and deallocate memory in the address range that the PowerPC emulator
 need to be able to access, and to translate `uint32_t` virtual PowerPC addresses
 into native pointers. Right now, the only allocator is the native allocator,
 that simply uses `malloc` and `free`, and it only works on 32-bits platforms
-because of that. (The 32-bits allocator is also the sole singleton of the
-project.)
+because of that.
 
 There are a number of services that clients can use to ease memory management.
 The `IAllocator` class can return a RAII-style allocation object that frees the
