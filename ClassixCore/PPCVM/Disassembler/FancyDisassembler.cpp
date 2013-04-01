@@ -119,30 +119,33 @@ namespace PPCVM
 		{
 			const LoaderSection* loaderSection = container.LoaderSection();
 			const auto& mainLocation = loaderSection->Header->Main;
-			const InstantiableSection& mainSection = container.GetSection(mainLocation.Section);
-			// only search for a transition vector inside data segments
-			switch (mainSection.GetSectionType())
+			if (mainLocation.Section != -1)
 			{
-				case SectionType::UnpackedData:
-				case SectionType::PatternInitializedData:
-				case SectionType::Constant:
+				const InstantiableSection& mainSection = container.GetSection(mainLocation.Section);
+				// only search for a transition vector inside data segments
+				switch (mainSection.GetSectionType())
 				{
-					const uint8_t* vectorAddress = mainSection.Data + mainLocation.Offset;
-					const TransitionVector* vector = reinterpret_cast<const TransitionVector*>(vectorAddress);
-					const UInt32* realAddress = allocator.ToPointer<UInt32>(vector->EntryPoint);
-					
-					// find in which section the real address belongs
-					for (auto& pair : sections)
+					case SectionType::UnpackedData:
+					case SectionType::PatternInitializedData:
+					case SectionType::Constant:
 					{
-						if (auto range = pair.second.disasm->FindRange(realAddress))
+						const uint8_t* vectorAddress = mainSection.Data + mainLocation.Offset;
+						const TransitionVector* vector = reinterpret_cast<const TransitionVector*>(vectorAddress);
+						const UInt32* realAddress = allocator.ToPointer<UInt32>(vector->EntryPoint);
+						
+						// find in which section the real address belongs
+						for (auto& pair : sections)
 						{
-							r2Values[range] = allocator.ToPointer<uint8_t>(vector->TableOfContents);
-							break;
+							if (auto range = pair.second.disasm->FindRange(realAddress))
+							{
+								r2Values[range] = allocator.ToPointer<uint8_t>(vector->TableOfContents);
+								break;
+							}
 						}
 					}
+						
+					default: break;
 				}
-					
-				default: break;
 			}
 		}
 		
