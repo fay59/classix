@@ -38,6 +38,12 @@ static inline BOOL isFDValid(int fd)
 {
 	int writeHandle;
 	int readHandle;
+	dispatch_source_t ipcSource;
+}
+
+-(void)processIPCMessage
+{
+	
 }
 
 -(void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -51,6 +57,16 @@ static inline BOOL isFDValid(int fd)
 	
 	if (!isFDValid(readHandle) || !isFDValid(writeHandle))
 		die(@"Either the read or write pipe is invalid.");
+	
+	ipcSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, readHandle, 0, dispatch_get_main_queue());
+	dispatch_source_set_event_handler(ipcSource, ^{ [self processIPCMessage]; });
+	dispatch_resume(ipcSource);
+}
+
+-(void)dealloc
+{
+	dispatch_suspend(ipcSource);
+	dispatch_release(ipcSource);
 }
 
 @end

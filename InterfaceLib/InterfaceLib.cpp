@@ -99,6 +99,11 @@ namespace InterfaceLib
 		
 		memset(&port, 0, sizeof port);
 	}
+	
+	Globals::~Globals()
+	{
+		kill(head, SIGKILL);
+	}
 }
 
 InterfaceLib::Globals* LibraryLoad(Common::IAllocator* allocator)

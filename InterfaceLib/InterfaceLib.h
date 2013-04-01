@@ -135,6 +135,7 @@ namespace InterfaceLib
 		pid_t head;
 		
 		Globals(Common::IAllocator& allocator);
+		~Globals();
 	};
 }
 
