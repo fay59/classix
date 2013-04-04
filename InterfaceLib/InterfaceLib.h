@@ -25,6 +25,7 @@
 #include "MachineState.h"
 #include "SymbolType.h"
 #include "BigEndian.h"
+#include "ResourceManager.h"
 
 namespace InterfaceLib
 {
@@ -133,6 +134,7 @@ namespace InterfaceLib
 		uint8_t padding[0x1000];
 		
 		Common::IAllocator& allocator;
+		ResourceManager resources;
 		Pipe read;
 		Pipe write;
 		pid_t head;
@@ -144,7 +146,10 @@ namespace InterfaceLib
 
 extern "C"
 {
-using PPCVM::MachineState;
+	InterfaceLib::Globals* LibraryLoad(Common::IAllocator* allocator);
+	SymbolType LibraryLookup(InterfaceLib::Globals* globals, const char* symbolName, void** symbol);
+	void LibraryUnload(InterfaceLib::Globals* context);
+	extern const char* LibrarySymbolNames[];
 	
 	void InterfaceLib___LibraryInit(InterfaceLib::Globals* globals, PPCVM::MachineState* state);
 }

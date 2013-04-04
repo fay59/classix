@@ -20,6 +20,8 @@
 //
 
 #include "InterfaceLib.h"
+#include "NativeSymbolResolver.h"
+
 #include <CoreFoundation/CoreFoundation.h>
 #include <sys/types.h>
 #include <signal.h>
@@ -71,7 +73,7 @@ namespace
 namespace InterfaceLib
 {
 	Globals::Globals(Common::IAllocator& allocator)
-	: allocator(allocator)
+	: allocator(allocator), resources(allocator)
 	{
 		if (pipe(read.fd) == -1)
 			throw std::runtime_error(strerror(errno));
@@ -94,7 +96,14 @@ namespace InterfaceLib
 		}
 		else if (head == 0)
 		{
+			close(write.write);
+			close(read.read);
 			LaunchHead(write.read, read.write);
+		}
+		else
+		{
+			close(write.read);
+			close(read.write);
 		}
 		
 		memset(&port, 0, sizeof port);
@@ -113,6 +122,11 @@ InterfaceLib::Globals* LibraryLoad(Common::IAllocator* allocator)
 
 SymbolType LibraryLookup(InterfaceLib::Globals* globals, const char* symbolName, void** result)
 {
+	if (symbolName == ClassixCore::NativeSymbolResolver::InitSymbolName)
+	{
+		symbolName = "__LibraryInit";
+	}
+	
 	char functionName[56] = "InterfaceLib_";
 	char* end = stpncpy(functionName + 13, symbolName, 42);
 	assert(*end == '\0' && "symbol name is too long");
@@ -130,6 +144,17 @@ SymbolType LibraryLookup(InterfaceLib::Globals* globals, const char* symbolName,
 void LibraryUnload(InterfaceLib::Globals* context)
 {
 	context->allocator.Deallocate(context);
+}
+
+void InterfaceLib___LibraryInit(InterfaceLib::Globals* globals, PPCVM::MachineState* state)
+{
+	if (state->r3 > 0)
+	{
+		const Common::UInt32* argv = globals->allocator.ToPointer<Common::UInt32>(state->r4);
+		const char* programPath = globals->allocator.ToPointer<char>(argv[0]);
+		globals->resources.LoadFileResources(programPath);
+		globals->resources.dump();
+	}
 }
 
 const char* LibrarySymbolNames[] = {
