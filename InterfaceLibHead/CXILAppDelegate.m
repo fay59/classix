@@ -43,7 +43,13 @@ static inline BOOL isFDValid(int fd)
 
 -(void)processIPCMessage
 {
-	
+	uint32_t messageType;
+	size_t count = read(readHandle, &messageType, sizeof messageType);
+	if (count < sizeof messageType)
+	{
+		// broken pipe
+		[NSApp terminate:self];
+	}
 }
 
 -(void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -66,7 +72,6 @@ static inline BOOL isFDValid(int fd)
 -(void)dealloc
 {
 	dispatch_suspend(ipcSource);
-	dispatch_release(ipcSource);
 }
 
 @end
