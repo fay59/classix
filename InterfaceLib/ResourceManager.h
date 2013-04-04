@@ -24,6 +24,7 @@
 
 #include "IAllocator.h"
 
+#include <iostream>
 #include <string>
 #include <array>
 #include <cstdint>
@@ -61,6 +62,8 @@ namespace InterfaceLib
 			}
 		}
 	};
+	
+	std::ostream& operator<<(std::ostream& into, const FourCharCode& code);
 	
 	class ResourceCatalog
 	{

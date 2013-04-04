@@ -93,6 +93,17 @@ namespace
 
 namespace InterfaceLib
 {
+	std::ostream& operator<<(std::ostream& into, const FourCharCode& code)
+	{
+		into << '\'';
+		into << (char)((code.code >> 24) & 0xff);
+		into << (char)((code.code >> 16) & 0xff);
+		into << (char)((code.code >> 8) & 0xff);
+		into << (char)(code.code & 0xff);
+		into << '\'';
+		return into;
+	}
+	
 	ResourceCatalog::ResourceCatalog(Common::IAllocator& allocator, const std::string& path)
 	: allocator(allocator)
 	{
@@ -217,15 +228,13 @@ namespace InterfaceLib
 	
 	void ResourceCatalog::dump()
 	{
-		char name[5] = {0};
 		for (const auto& pair : resourcesById)
 		{
-			memcpy(name, &pair.first, sizeof pair.first);
-			printf("Key %s\n", name);
+			std::cout << "Key " << FourCharCode(pair.first) << ":\n";
 			for (const auto& innerPair : pair.second)
 			{
 				const ResourceEntry& entry = innerPair.second;
-				printf("\tID #%u:\n", entry.id);
+				std::cout << "\tID #" << entry.id << ": " << entry.name << "\n";
 			}
 		}
 	}
