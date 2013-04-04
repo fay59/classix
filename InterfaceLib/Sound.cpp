@@ -19,7 +19,7 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#include "InterfaceLib.h"
+#include "Prototypes.h"
 #include "NotImplementedException.h"
 
 void InterfaceLib_Comp3to1(InterfaceLib::Globals* globals, MachineState* state)

@@ -19,8 +19,10 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#include "InterfaceLib.h"
+#include "Prototypes.h"
 #include "NotImplementedException.h"
+
+using PPCVM::MachineState;
 
 void InterfaceLib_AEGetInteractionAllowed(InterfaceLib::Globals* globals, MachineState* state)
 {

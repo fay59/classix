@@ -19,7 +19,7 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#include "InterfaceLib.h"
+#include "Prototypes.h"
 #include "NotImplementedException.h"
 
 void InterfaceLib_SerClrBrk(InterfaceLib::Globals* globals, MachineState* state)

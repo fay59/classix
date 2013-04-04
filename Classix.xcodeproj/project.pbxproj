@@ -201,6 +201,7 @@
 		DCE0A8AF1657651D0092CEBC /* DisassembledOpcode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE0A8AC16575A160092CEBC /* DisassembledOpcode.cpp */; };
 		DCE7B22816DA78A100D69F2A /* CXEvent.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCE7B22716DA78A100D69F2A /* CXEvent.mm */; };
 		DCE9880E16604ED700C28F25 /* CXNavBar.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE9880D16604ED700C28F25 /* CXNavBar.m */; };
+		DCF3D736170BD064003B487F /* ResourceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF3D733170AA036003B487F /* ResourceManager.cpp */; };
 		DCF538C5167C37B9000D6E02 /* InstructionDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF538C3167C37B9000D6E02 /* InstructionDecoder.cpp */; };
 		DCF538C6167C37B9000D6E02 /* InstructionDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = DCF538C4167C37B9000D6E02 /* InstructionDecoder.h */; };
 		DCFC0CFF166DA2CA0069AE5E /* CXCodeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DCFC0CFE166DA2CA0069AE5E /* CXCodeLabel.m */; };
@@ -522,6 +523,9 @@
 		DCF359A516384E1400EC1A95 /* Relocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Relocation.h; sourceTree = "<group>"; };
 		DCF359A616384E1400EC1A95 /* Structures.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Structures.cpp; sourceTree = "<group>"; };
 		DCF359A716384E1400EC1A95 /* Structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Structures.h; sourceTree = "<group>"; };
+		DCF3D732170A9F2B003B487F /* Prototypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prototypes.h; sourceTree = "<group>"; };
+		DCF3D733170AA036003B487F /* ResourceManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResourceManager.cpp; sourceTree = "<group>"; };
+		DCF3D734170AA036003B487F /* ResourceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResourceManager.h; sourceTree = "<group>"; };
 		DCF538C3167C37B9000D6E02 /* InstructionDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InstructionDecoder.cpp; sourceTree = "<group>"; };
 		DCF538C4167C37B9000D6E02 /* InstructionDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InstructionDecoder.h; sourceTree = "<group>"; };
 		DCFC0CFD166DA2CA0069AE5E /* CXCodeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXCodeLabel.h; sourceTree = "<group>"; };
@@ -844,87 +848,9 @@
 			children = (
 				DC62870716F4F1ED00265AA6 /* InterfaceLib.h */,
 				DC62878516F4F2AE00265AA6 /* InterfaceLib.cpp */,
-				DC6286E116F4F1E800265AA6 /* AEDataModel.cpp */,
-				DC6286E216F4F1E800265AA6 /* AEInteraction.cpp */,
-				DC6286E316F4F1E800265AA6 /* Aliases.cpp */,
-				DC6286E416F4F1E800265AA6 /* AppleEvents.cpp */,
-				DC6286E516F4F1E800265AA6 /* AppleTalk.cpp */,
-				DC6286E616F4F1E800265AA6 /* ATA.cpp */,
-				DC6286E716F4F1E800265AA6 /* AVLTree.cpp */,
-				DC6286E816F4F1E800265AA6 /* Balloons.cpp */,
-				DC6286E916F4F1E800265AA6 /* CodeFragments.cpp */,
-				DC6286EA16F4F1E800265AA6 /* ColorPicker.cpp */,
-				DC6286EB16F4F1E800265AA6 /* CommResources.cpp */,
-				DC6286EC16F4F1E800265AA6 /* Components.cpp */,
-				DC6286ED16F4F1E800265AA6 /* Connections.cpp */,
-				DC6286EE16F4F1E800265AA6 /* Controls.cpp */,
-				DC6286EF16F4F1E900265AA6 /* CTBUtilities.cpp */,
-				DC6286F016F4F1E900265AA6 /* CursorDevices.cpp */,
-				DC6286F116F4F1E900265AA6 /* DatabaseAccess.cpp */,
-				DC6286F216F4F1E900265AA6 /* DateTimeUtils.cpp */,
-				DC6286F316F4F1E900265AA6 /* DeskBus.cpp */,
-				DC6286F416F4F1E900265AA6 /* Devices.cpp */,
-				DC6286F516F4F1EA00265AA6 /* Dialogs.cpp */,
-				DC6286F616F4F1EA00265AA6 /* Dictionary.cpp */,
-				DC6286F716F4F1EA00265AA6 /* DiskInit.cpp */,
-				DC6286F816F4F1EA00265AA6 /* Disks.cpp */,
-				DC6286F916F4F1EA00265AA6 /* Displays.cpp */,
-				DC6286FA16F4F1EA00265AA6 /* Editions.cpp */,
-				DC6286FB16F4F1EB00265AA6 /* ENET.cpp */,
-				DC6286FC16F4F1EB00265AA6 /* EPPC.cpp */,
-				DC6286FD16F4F1EB00265AA6 /* Events.cpp */,
-				DC6286FE16F4F1EB00265AA6 /* FileMapping.cpp */,
-				DC6286FF16F4F1EB00265AA6 /* Files.cpp */,
-				DC62870016F4F1EC00265AA6 /* FileTransfers.cpp */,
-				DC62870116F4F1EC00265AA6 /* FixMath.cpp */,
-				DC62870216F4F1EC00265AA6 /* Folders.cpp */,
-				DC62870316F4F1EC00265AA6 /* Fonts.cpp */,
-				DC62870416F4F1EC00265AA6 /* FSM.cpp */,
-				DC62870516F4F1ED00265AA6 /* Gestalt.cpp */,
-				DC62870616F4F1ED00265AA6 /* Icons.cpp */,
-				DC62870816F4F1ED00265AA6 /* Lists.cpp */,
-				DC62870916F4F1EE00265AA6 /* LowMem.cpp */,
-				DC62870A16F4F1EE00265AA6 /* MacErrors.cpp */,
-				DC62870B16F4F1EE00265AA6 /* MachineExceptions.cpp */,
-				DC62870C16F4F1EE00265AA6 /* MacMemory.cpp */,
-				DC62870D16F4F1EF00265AA6 /* MacTypes.cpp */,
-				DC62870E16F4F1EF00265AA6 /* MacWindows.cpp */,
-				DC62870F16F4F1EF00265AA6 /* Menus.cpp */,
-				DC62871016F4F1EF00265AA6 /* MIDI.cpp */,
-				DC62871116F4F1F000265AA6 /* MixedMode.cpp */,
-				DC62871216F4F1F000265AA6 /* Notification.cpp */,
-				DC62871316F4F1F000265AA6 /* NumberFormatting.cpp */,
-				DC62871416F4F1F100265AA6 /* OSUtils.cpp */,
-				DC62871516F4F1F100265AA6 /* Packages.cpp */,
-				DC62871616F4F1F100265AA6 /* Palettes.cpp */,
-				DC62871716F4F1F100265AA6 /* Patches.cpp */,
-				DC62871816F4F1F200265AA6 /* PictUtils.cpp */,
-				DC62871916F4F1F200265AA6 /* Power.cpp */,
-				DC62871A16F4F1F300265AA6 /* PPCToolbox.cpp */,
-				DC62871B16F4F1F300265AA6 /* Printing.cpp */,
-				DC62871C16F4F1F300265AA6 /* Processes.cpp */,
-				DC62871D16F4F1F400265AA6 /* QDOffscreen.cpp */,
-				DC62871E16F4F1F400265AA6 /* Quickdraw.cpp */,
-				DC62871F16F4F1F400265AA6 /* QuickdrawText.cpp */,
-				DC62872016F4F1F500265AA6 /* Resources.cpp */,
-				DC62872116F4F1F500265AA6 /* Retrace.cpp */,
-				DC62872216F4F1F500265AA6 /* Scrap.cpp */,
-				DC62872316F4F1F600265AA6 /* Script.cpp */,
-				DC62872416F4F1F600265AA6 /* SCSI.cpp */,
-				DC62872516F4F1F600265AA6 /* Serial.cpp */,
-				DC62872616F4F1F700265AA6 /* ShutDown.cpp */,
-				DC62872716F4F1F700265AA6 /* Slots.cpp */,
-				DC62872816F4F1F800265AA6 /* Sound.cpp */,
-				DC62872916F4F1F800265AA6 /* StandardFile.cpp */,
-				DC62872A16F4F1F900265AA6 /* Start.cpp */,
-				DC62872B16F4F1F900265AA6 /* StringCompare.cpp */,
-				DC62872C16F4F1F900265AA6 /* Terminals.cpp */,
-				DC62872D16F4F1FA00265AA6 /* TextEdit.cpp */,
-				DC62872E16F4F1FA00265AA6 /* TextServices.cpp */,
-				DC62872F16F4F1FA00265AA6 /* TextUtils.cpp */,
-				DC62873016F4F1FB00265AA6 /* Timer.cpp */,
-				DC62873116F4F1FB00265AA6 /* ToolUtils.cpp */,
-				DC62873216F4F1FB00265AA6 /* Unknown.cpp */,
+				DCF3D733170AA036003B487F /* ResourceManager.cpp */,
+				DCF3D734170AA036003B487F /* ResourceManager.h */,
+				DCF3D731170A9F09003B487F /* PPC */,
 				DC930AA91708BBDB00B739B1 /* Supporting Files */,
 			);
 			name = Bundle;
@@ -1093,6 +1019,95 @@
 				DC7ECFD716850D830063F14E /* CXDebugUIController.mm */,
 			);
 			name = "Custom Controls";
+			sourceTree = "<group>";
+		};
+		DCF3D731170A9F09003B487F /* PPC */ = {
+			isa = PBXGroup;
+			children = (
+				DCF3D732170A9F2B003B487F /* Prototypes.h */,
+				DC6286E116F4F1E800265AA6 /* AEDataModel.cpp */,
+				DC6286E216F4F1E800265AA6 /* AEInteraction.cpp */,
+				DC6286E316F4F1E800265AA6 /* Aliases.cpp */,
+				DC6286E416F4F1E800265AA6 /* AppleEvents.cpp */,
+				DC6286E516F4F1E800265AA6 /* AppleTalk.cpp */,
+				DC6286E616F4F1E800265AA6 /* ATA.cpp */,
+				DC6286E716F4F1E800265AA6 /* AVLTree.cpp */,
+				DC6286E816F4F1E800265AA6 /* Balloons.cpp */,
+				DC6286E916F4F1E800265AA6 /* CodeFragments.cpp */,
+				DC6286EA16F4F1E800265AA6 /* ColorPicker.cpp */,
+				DC6286EB16F4F1E800265AA6 /* CommResources.cpp */,
+				DC6286EC16F4F1E800265AA6 /* Components.cpp */,
+				DC6286ED16F4F1E800265AA6 /* Connections.cpp */,
+				DC6286EE16F4F1E800265AA6 /* Controls.cpp */,
+				DC6286EF16F4F1E900265AA6 /* CTBUtilities.cpp */,
+				DC6286F016F4F1E900265AA6 /* CursorDevices.cpp */,
+				DC6286F116F4F1E900265AA6 /* DatabaseAccess.cpp */,
+				DC6286F216F4F1E900265AA6 /* DateTimeUtils.cpp */,
+				DC6286F316F4F1E900265AA6 /* DeskBus.cpp */,
+				DC6286F416F4F1E900265AA6 /* Devices.cpp */,
+				DC6286F516F4F1EA00265AA6 /* Dialogs.cpp */,
+				DC6286F616F4F1EA00265AA6 /* Dictionary.cpp */,
+				DC6286F716F4F1EA00265AA6 /* DiskInit.cpp */,
+				DC6286F816F4F1EA00265AA6 /* Disks.cpp */,
+				DC6286F916F4F1EA00265AA6 /* Displays.cpp */,
+				DC6286FA16F4F1EA00265AA6 /* Editions.cpp */,
+				DC6286FB16F4F1EB00265AA6 /* ENET.cpp */,
+				DC6286FC16F4F1EB00265AA6 /* EPPC.cpp */,
+				DC6286FD16F4F1EB00265AA6 /* Events.cpp */,
+				DC6286FE16F4F1EB00265AA6 /* FileMapping.cpp */,
+				DC6286FF16F4F1EB00265AA6 /* Files.cpp */,
+				DC62870016F4F1EC00265AA6 /* FileTransfers.cpp */,
+				DC62870116F4F1EC00265AA6 /* FixMath.cpp */,
+				DC62870216F4F1EC00265AA6 /* Folders.cpp */,
+				DC62870316F4F1EC00265AA6 /* Fonts.cpp */,
+				DC62870416F4F1EC00265AA6 /* FSM.cpp */,
+				DC62870516F4F1ED00265AA6 /* Gestalt.cpp */,
+				DC62870616F4F1ED00265AA6 /* Icons.cpp */,
+				DC62870816F4F1ED00265AA6 /* Lists.cpp */,
+				DC62870916F4F1EE00265AA6 /* LowMem.cpp */,
+				DC62870A16F4F1EE00265AA6 /* MacErrors.cpp */,
+				DC62870B16F4F1EE00265AA6 /* MachineExceptions.cpp */,
+				DC62870C16F4F1EE00265AA6 /* MacMemory.cpp */,
+				DC62870D16F4F1EF00265AA6 /* MacTypes.cpp */,
+				DC62870E16F4F1EF00265AA6 /* MacWindows.cpp */,
+				DC62870F16F4F1EF00265AA6 /* Menus.cpp */,
+				DC62871016F4F1EF00265AA6 /* MIDI.cpp */,
+				DC62871116F4F1F000265AA6 /* MixedMode.cpp */,
+				DC62871216F4F1F000265AA6 /* Notification.cpp */,
+				DC62871316F4F1F000265AA6 /* NumberFormatting.cpp */,
+				DC62871416F4F1F100265AA6 /* OSUtils.cpp */,
+				DC62871516F4F1F100265AA6 /* Packages.cpp */,
+				DC62871616F4F1F100265AA6 /* Palettes.cpp */,
+				DC62871716F4F1F100265AA6 /* Patches.cpp */,
+				DC62871816F4F1F200265AA6 /* PictUtils.cpp */,
+				DC62871916F4F1F200265AA6 /* Power.cpp */,
+				DC62871A16F4F1F300265AA6 /* PPCToolbox.cpp */,
+				DC62871B16F4F1F300265AA6 /* Printing.cpp */,
+				DC62871C16F4F1F300265AA6 /* Processes.cpp */,
+				DC62871D16F4F1F400265AA6 /* QDOffscreen.cpp */,
+				DC62871E16F4F1F400265AA6 /* Quickdraw.cpp */,
+				DC62871F16F4F1F400265AA6 /* QuickdrawText.cpp */,
+				DC62872016F4F1F500265AA6 /* Resources.cpp */,
+				DC62872116F4F1F500265AA6 /* Retrace.cpp */,
+				DC62872216F4F1F500265AA6 /* Scrap.cpp */,
+				DC62872316F4F1F600265AA6 /* Script.cpp */,
+				DC62872416F4F1F600265AA6 /* SCSI.cpp */,
+				DC62872516F4F1F600265AA6 /* Serial.cpp */,
+				DC62872616F4F1F700265AA6 /* ShutDown.cpp */,
+				DC62872716F4F1F700265AA6 /* Slots.cpp */,
+				DC62872816F4F1F800265AA6 /* Sound.cpp */,
+				DC62872916F4F1F800265AA6 /* StandardFile.cpp */,
+				DC62872A16F4F1F900265AA6 /* Start.cpp */,
+				DC62872B16F4F1F900265AA6 /* StringCompare.cpp */,
+				DC62872C16F4F1F900265AA6 /* Terminals.cpp */,
+				DC62872D16F4F1FA00265AA6 /* TextEdit.cpp */,
+				DC62872E16F4F1FA00265AA6 /* TextServices.cpp */,
+				DC62872F16F4F1FA00265AA6 /* TextUtils.cpp */,
+				DC62873016F4F1FB00265AA6 /* Timer.cpp */,
+				DC62873116F4F1FB00265AA6 /* ToolUtils.cpp */,
+				DC62873216F4F1FB00265AA6 /* Unknown.cpp */,
+			);
+			name = PPC;
 			sourceTree = "<group>";
 		};
 		DCFE91811707FDE9002A4086 /* Bundle */ = {
@@ -1444,6 +1459,7 @@
 				DC930B211708C41700B739B1 /* Timer.cpp in Sources */,
 				DC930B221708C41700B739B1 /* ToolUtils.cpp in Sources */,
 				DC930B231708C41700B739B1 /* Unknown.cpp in Sources */,
+				DCF3D736170BD064003B487F /* ResourceManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1860,6 +1876,7 @@
 				DC930AB11708BBDB00B739B1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DC930ACC1708BC8E00B739B1 /* Build configuration list for PBXNativeTarget "InterfaceLibHead" */ = {
 			isa = XCConfigurationList;
@@ -1868,6 +1885,7 @@
 				DC930ACE1708BC8E00B739B1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DC9D8D48164F63AC00036FDD /* Build configuration list for PBXNativeTarget "ClassixCore" */ = {
 			isa = XCConfigurationList;
