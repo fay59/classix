@@ -37,8 +37,8 @@ namespace Common
 		{
 			char* sp;
 			uint32_t argc;
-			char* argv;
-			char* envp;
+			char** argv;
+			char** envp;
 		};
 		
 		size_t ArgumentCount() const;

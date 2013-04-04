@@ -106,7 +106,7 @@ namespace Common
 		// +-------------+
 		//        :
 		// +-------------+
-		// |    env[0]   |
+		// |    env[0]   | <-- envp
 		// +-------------+
 		// |      0      |
 		// +-------------+
@@ -114,7 +114,7 @@ namespace Common
 		// +-------------+
 		//        :
 		// +-------------+
-		// |    arg[0]   |
+		// |    arg[0]   | <-- argv
 		// +-------------+
 		// |     argc    | <-- sp
 		// +-------------+
@@ -146,7 +146,7 @@ namespace Common
 			offsetIterator++;
 		}
 		
-		result.envp = builder.sp;
+		result.envp = reinterpret_cast<char**>(builder.sp);
 		builder.Align(4);
 		builder.Write<uint32_t>(0);
 		
@@ -158,7 +158,7 @@ namespace Common
 		}
 		assert(offsetIterator == stringOffsets.rend() && "Somehow didn't write an offset to each string");
 		
-		result.argv = builder.sp;
+		result.argv = reinterpret_cast<char**>(builder.sp);
 		builder.Write<uint32_t>(argv.size());
 		
 		result.sp = builder.sp;
