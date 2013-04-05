@@ -197,10 +197,14 @@ static int run(const std::string& path, int argc, const char* argv[], const char
 	Common::NativeAllocator allocator;
 	CFM::DummyLibraryResolver dummyResolver;
 	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator);
+	ClassixCore::BundleLibraryResolver bundleResolver(allocator);
+	
 	dlfcnResolver.RegisterLibrary("StdCLib");
+	bundleResolver.AllowLibrary("InterfaceLib");
 	
 	Classix::VirtualMachine vm(allocator);
 	vm.AddLibraryResolver(dlfcnResolver);
+	vm.AddLibraryResolver(bundleResolver);
 	vm.AddLibraryResolver(dummyResolver);
 	
 	auto stub = vm.LoadMainContainer(path);
