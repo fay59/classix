@@ -1,5 +1,5 @@
 //
-// main.m
+// CXILApplication.h
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -20,10 +20,9 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "CXILApplication.h"
 
-int main(int argc, const char** argv)
-{
-	[CXILApplication sharedApplication];
-	return NSApplicationMain(argc, argv);
-}
+@interface CXILApplication : NSApplication
+
+-(void)processIPCMessage;
+
+@end

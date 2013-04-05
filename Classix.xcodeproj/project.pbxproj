@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC03F65D170E8D7800A4A3C6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC03F65C170E8D7800A4A3C6 /* main.m */; };
+		DC03F660170E8D9000A4A3C6 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = DC03F65E170E8D9000A4A3C6 /* Credits.rtf */; };
+		DC03F663170E8DA800A4A3C6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC03F661170E8DA800A4A3C6 /* InfoPlist.strings */; };
+		DC03F664170E8EC400A4A3C6 /* CXILApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = DC27B694170E8C3800A23FFD /* CXILApplication.m */; };
 		DC07B1751669CF2400A78205 /* AccessViolationException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC07B1731669CF2300A78205 /* AccessViolationException.cpp */; };
 		DC07B1761669CF2400A78205 /* AccessViolationException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC07B1741669CF2300A78205 /* AccessViolationException.h */; };
 		DC07B17A1669D1AD00A78205 /* PPCRuntimeException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC07B1781669D1AD00A78205 /* PPCRuntimeException.h */; };
@@ -21,6 +25,7 @@
 		DC1FB13916E2962C00E9C7E5 /* CompareTrace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC1FB13816E2962C00E9C7E5 /* CompareTrace.cpp */; };
 		DC264EA7165DF76A00C86BDD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC264EA6165DF76A00C86BDD /* WebKit.framework */; };
 		DC264EAC165DFFEB00C86BDD /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAA165DFFEB00C86BDD /* main.js */; };
+		DC27B698170E8D0E00A23FFD /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC27B69A170E8D0E00A23FFD /* MainMenu.xib */; };
 		DC29C3D2166AB92400B35EF7 /* AllocationDetails.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC29C3D0166AB92400B35EF7 /* AllocationDetails.cpp */; };
 		DC29C3D3166AB92400B35EF7 /* AllocationDetails.h in Headers */ = {isa = PBXBuildFile; fileRef = DC29C3D1166AB92400B35EF7 /* AllocationDetails.h */; };
 		DC30714E1668800D00475144 /* CXJSAdapter.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC30714D1668800D00475144 /* CXJSAdapter.mm */; };
@@ -90,11 +95,6 @@
 		DC930AA71708BBDB00B739B1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC930AA01708BA4800B739B1 /* CoreFoundation.framework */; };
 		DC930AAD1708BBDB00B739B1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC930AAB1708BBDB00B739B1 /* InfoPlist.strings */; };
 		DC930AB91708BC8E00B739B1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC4C644E165B62910097288E /* Cocoa.framework */; };
-		DC930ABF1708BC8E00B739B1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC930ABD1708BC8E00B739B1 /* InfoPlist.strings */; };
-		DC930AC11708BC8E00B739B1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC930AC01708BC8E00B739B1 /* main.m */; };
-		DC930AC51708BC8E00B739B1 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = DC930AC31708BC8E00B739B1 /* Credits.rtf */; };
-		DC930AC81708BC8E00B739B1 /* CXILAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DC930AC71708BC8E00B739B1 /* CXILAppDelegate.m */; };
-		DC930ACB1708BC8E00B739B1 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC930AC91708BC8E00B739B1 /* MainMenu.xib */; };
 		DC930AD11708C24800B739B1 /* InterfaceLibHead.app in Resources */ = {isa = PBXBuildFile; fileRef = DC930AB81708BC8E00B739B1 /* InterfaceLibHead.app */; };
 		DC930AD21708C41700B739B1 /* InterfaceLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC62878516F4F2AE00265AA6 /* InterfaceLib.cpp */; };
 		DC930AD31708C41700B739B1 /* AEDataModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC6286E116F4F1E800265AA6 /* AEDataModel.cpp */; };
@@ -260,6 +260,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DC03F65C170E8D7800A4A3C6 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = InterfaceLibHead/main.m; sourceTree = SOURCE_ROOT; };
+		DC03F65F170E8D9000A4A3C6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = InterfaceLibHead/en.lproj/Credits.rtf; sourceTree = SOURCE_ROOT; };
+		DC03F662170E8DA800A4A3C6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InterfaceLibHead/en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
 		DC07B1731669CF2300A78205 /* AccessViolationException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AccessViolationException.cpp; sourceTree = "<group>"; };
 		DC07B1741669CF2300A78205 /* AccessViolationException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccessViolationException.h; sourceTree = "<group>"; };
 		DC07B1781669D1AD00A78205 /* PPCRuntimeException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPCRuntimeException.h; sourceTree = "<group>"; };
@@ -281,6 +284,10 @@
 		DC264EAB165DFFEB00C86BDD /* cxdb.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = cxdb.css; sourceTree = "<group>"; };
 		DC264EAE165DFFF800C86BDD /* cxdb.xhtml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = cxdb.xhtml; sourceTree = "<group>"; };
 		DC264EB0165E012B00C86BDD /* execution-cursor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "execution-cursor.png"; sourceTree = "<group>"; };
+		DC27B692170E89F300A23FFD /* CommonDefinitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonDefinitions.h; sourceTree = "<group>"; };
+		DC27B693170E8C3800A23FFD /* CXILApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CXILApplication.h; path = InterfaceLibHead/CXILApplication.h; sourceTree = SOURCE_ROOT; };
+		DC27B694170E8C3800A23FFD /* CXILApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CXILApplication.m; path = InterfaceLibHead/CXILApplication.m; sourceTree = SOURCE_ROOT; };
+		DC27B699170E8D0E00A23FFD /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		DC29C3D0166AB92400B35EF7 /* AllocationDetails.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AllocationDetails.cpp; sourceTree = "<group>"; };
 		DC29C3D1166AB92400B35EF7 /* AllocationDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllocationDetails.h; sourceTree = "<group>"; };
 		DC30714C1668800D00475144 /* CXJSAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXJSAdapter.h; sourceTree = "<group>"; };
@@ -446,14 +453,8 @@
 		DC930AAC1708BBDB00B739B1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DC930AAE1708BBDB00B739B1 /* InterfaceLib-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "InterfaceLib-Prefix.pch"; sourceTree = "<group>"; };
 		DC930AB81708BC8E00B739B1 /* InterfaceLibHead.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InterfaceLibHead.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		DC930ABC1708BC8E00B739B1 /* InterfaceLibHead-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "InterfaceLibHead-Info.plist"; sourceTree = "<group>"; };
-		DC930ABE1708BC8E00B739B1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		DC930AC01708BC8E00B739B1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		DC930AC21708BC8E00B739B1 /* InterfaceLibHead-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "InterfaceLibHead-Prefix.pch"; sourceTree = "<group>"; };
-		DC930AC41708BC8E00B739B1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		DC930AC61708BC8E00B739B1 /* CXILAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CXILAppDelegate.h; path = ../../InterfaceLibHead/CXILAppDelegate.h; sourceTree = "<group>"; };
-		DC930AC71708BC8E00B739B1 /* CXILAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = CXILAppDelegate.m; path = ../../InterfaceLibHead/CXILAppDelegate.m; sourceTree = "<group>"; };
-		DC930ACA1708BC8E00B739B1 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		DC930ABC1708BC8E00B739B1 /* InterfaceLibHead-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = "InterfaceLibHead-Info.plist"; path = "InterfaceLibHead/InterfaceLibHead-Info.plist"; sourceTree = "<group>"; };
+		DC930AC21708BC8E00B739B1 /* InterfaceLibHead-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "InterfaceLibHead-Prefix.pch"; path = "InterfaceLibHead/InterfaceLibHead-Prefix.pch"; sourceTree = "<group>"; };
 		DC94F106163C80E8004538C5 /* SymbolResolutionException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SymbolResolutionException.cpp; sourceTree = "<group>"; };
 		DC94F107163C80E8004538C5 /* SymbolResolutionException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolResolutionException.h; sourceTree = "<group>"; };
 		DC94F109163CC231004538C5 /* LibraryResolutionException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryResolutionException.cpp; sourceTree = "<group>"; };
@@ -827,6 +828,7 @@
 		DC930AA81708BBDB00B739B1 /* InterfaceLib */ = {
 			isa = PBXGroup;
 			children = (
+				DC27B692170E89F300A23FFD /* CommonDefinitions.h */,
 				DC930AB21708BC1B00B739B1 /* Bundle */,
 				DC930AB31708BC3200B739B1 /* UI Head */,
 			);
@@ -859,22 +861,23 @@
 		DC930AB31708BC3200B739B1 /* UI Head */ = {
 			isa = PBXGroup;
 			children = (
-				DC930AC61708BC8E00B739B1 /* CXILAppDelegate.h */,
-				DC930AC71708BC8E00B739B1 /* CXILAppDelegate.m */,
-				DC930AC91708BC8E00B739B1 /* MainMenu.xib */,
+				DC27B693170E8C3800A23FFD /* CXILApplication.h */,
+				DC27B694170E8C3800A23FFD /* CXILApplication.m */,
+				DC27B69A170E8D0E00A23FFD /* MainMenu.xib */,
 				DC930ABB1708BC8E00B739B1 /* Supporting Files */,
 			);
-			path = "UI Head";
+			name = "UI Head";
+			path = ../InterfaceLibHead;
 			sourceTree = "<group>";
 		};
 		DC930ABB1708BC8E00B739B1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				DC03F65C170E8D7800A4A3C6 /* main.m */,
+				DC03F661170E8DA800A4A3C6 /* InfoPlist.strings */,
 				DC930ABC1708BC8E00B739B1 /* InterfaceLibHead-Info.plist */,
-				DC930ABD1708BC8E00B739B1 /* InfoPlist.strings */,
-				DC930AC01708BC8E00B739B1 /* main.m */,
 				DC930AC21708BC8E00B739B1 /* InterfaceLibHead-Prefix.pch */,
-				DC930AC31708BC8E00B739B1 /* Credits.rtf */,
+				DC03F65E170E8D9000A4A3C6 /* Credits.rtf */,
 			);
 			name = "Supporting Files";
 			path = ../../InterfaceLibHead;
@@ -1328,9 +1331,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC930ABF1708BC8E00B739B1 /* InfoPlist.strings in Resources */,
-				DC930AC51708BC8E00B739B1 /* Credits.rtf in Resources */,
-				DC930ACB1708BC8E00B739B1 /* MainMenu.xib in Resources */,
+				DC27B698170E8D0E00A23FFD /* MainMenu.xib in Resources */,
+				DC03F660170E8D9000A4A3C6 /* Credits.rtf in Resources */,
+				DC03F663170E8DA800A4A3C6 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1467,8 +1470,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC930AC11708BC8E00B739B1 /* main.m in Sources */,
-				DC930AC81708BC8E00B739B1 /* CXILAppDelegate.m in Sources */,
+				DC03F65D170E8D7800A4A3C6 /* main.m in Sources */,
+				DC03F664170E8EC400A4A3C6 /* CXILApplication.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1566,6 +1569,30 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		DC03F65E170E8D9000A4A3C6 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC03F65F170E8D9000A4A3C6 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		DC03F661170E8DA800A4A3C6 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC03F662170E8DA800A4A3C6 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		DC27B69A170E8D0E00A23FFD /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC27B699170E8D0E00A23FFD /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
 		DC4C6457165B62910097288E /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -1604,31 +1631,6 @@
 				DC930AAC1708BBDB00B739B1 /* en */,
 			);
 			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		DC930ABD1708BC8E00B739B1 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				DC930ABE1708BC8E00B739B1 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		DC930AC31708BC8E00B739B1 /* Credits.rtf */ = {
-			isa = PBXVariantGroup;
-			children = (
-				DC930AC41708BC8E00B739B1 /* en */,
-			);
-			name = Credits.rtf;
-			sourceTree = "<group>";
-		};
-		DC930AC91708BC8E00B739B1 /* MainMenu.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				DC930ACA1708BC8E00B739B1 /* en */,
-			);
-			name = MainMenu.xib;
-			path = ../../InterfaceLibHead;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
