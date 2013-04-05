@@ -20,7 +20,6 @@
 //
 
 #include "VirtualMachine.h"
-#include "DlfcnSymbolResolver.h"
 #include <unordered_set>
 
 namespace Classix
