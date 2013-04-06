@@ -35,4 +35,7 @@
 // discard the next EventRecord matching the EventMask; does nothing if there's no such event
 -(void)discardNextEvent;
 
+// makes a beep
+-(void)beep;
+
 @end

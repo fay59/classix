@@ -128,6 +128,19 @@ namespace InterfaceLib
 		Common::UInt16 modifiers;
 	};
 	
+	struct SysEnvRec
+	{
+		Common::SInt16 environsVersion;
+		Common::SInt16 machineType;
+		Common::SInt16 systemVersion;
+		Common::SInt16 processor;
+		uint8_t hasFPU;
+		uint8_t hasColorQD;
+		Common::SInt16 keyBoardType;
+		Common::SInt16 atDrvrVersNum;
+		Common::SInt16 sysVRefNum;
+	};
+	
 	enum class EventModifierFlags : unsigned short
 	{
 		activeFlag = 1, // set when the foreground window is being activated
@@ -175,6 +188,8 @@ namespace InterfaceLib
 		
 	enum class IPCMessage : unsigned
 	{
+		Beep,
+		
 		PeekNextEvent,
 		DequeueNextEvent,
 	};

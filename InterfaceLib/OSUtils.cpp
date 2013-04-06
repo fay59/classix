@@ -22,6 +22,8 @@
 #include "Prototypes.h"
 #include "NotImplementedException.h"
 
+using namespace InterfaceLib;
+
 void InterfaceLib_Delay(InterfaceLib::Globals* globals, MachineState* state)
 {
 	throw PPCVM::NotImplementedException(__func__);
@@ -84,7 +86,30 @@ void InterfaceLib_SetCurrentA5(InterfaceLib::Globals* globals, MachineState* sta
 
 void InterfaceLib_SysEnvirons(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	SysEnvRec& record = *globals->allocator.ToPointer<SysEnvRec>(state->r4);
+	if (state->r3 < 1)
+	{
+		state->r3 = 0xea83;
+		return;
+	}
+	
+	if (state->r3 > 2)
+	{
+		state->r3 = 0xea82;
+		return;
+	}
+	
+	// mostly based on the output I get from running this in SheepShaver, I should probably
+	// run that on hardware at some point
+	record.environsVersion = state->r3;
+	record.machineType = 0x41;
+	record.systemVersion = 0x0922; // faking mac os 9.2.2
+	record.processor = 3;
+	record.hasFPU = false; // we don't have FPU support yet
+	record.hasColorQD = true;
+	record.keyBoardType = 9;
+	record.atDrvrVersNum = 0;
+	record.sysVRefNum = 0x80c3;
 }
 
 void InterfaceLib_TickCount(InterfaceLib::Globals* globals, MachineState* state)

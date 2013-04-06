@@ -53,6 +53,7 @@ static inline BOOL isFDValid(int fd)
 #define IPC_INDEX(x) [(unsigned)IPCMessage::x]
 
 SEL ipcSelectors[] = {
+	IPC_INDEX(Beep) = @selector(beep),
 	IPC_INDEX(PeekNextEvent) = @selector(peekNextEvent),
 	IPC_INDEX(DequeueNextEvent) = @selector(discardNextEvent),
 };
@@ -262,6 +263,13 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		}
 	}
 	
+	[self sendDone];
+}
+
+-(void)beep
+{
+	[self expectDone];
+	NSBeep();
 	[self sendDone];
 }
 

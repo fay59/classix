@@ -22,6 +22,8 @@
 #include "Prototypes.h"
 #include "NotImplementedException.h"
 
+using namespace InterfaceLib;
+
 void InterfaceLib_Comp3to1(InterfaceLib::Globals* globals, MachineState* state)
 {
 	throw PPCVM::NotImplementedException(__func__);
@@ -254,6 +256,6 @@ void InterfaceLib_SPBVersion(InterfaceLib::Globals* globals, MachineState* state
 
 void InterfaceLib_SysBeep(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	globals->ipc.PerformAction<void>(IPCMessage::Beep);
 }
 
