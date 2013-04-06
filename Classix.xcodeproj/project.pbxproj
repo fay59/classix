@@ -10,7 +10,7 @@
 		DC03F65D170E8D7800A4A3C6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC03F65C170E8D7800A4A3C6 /* main.m */; };
 		DC03F660170E8D9000A4A3C6 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = DC03F65E170E8D9000A4A3C6 /* Credits.rtf */; };
 		DC03F663170E8DA800A4A3C6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC03F661170E8DA800A4A3C6 /* InfoPlist.strings */; };
-		DC03F664170E8EC400A4A3C6 /* CXILApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = DC27B694170E8C3800A23FFD /* CXILApplication.m */; };
+		DC03F664170E8EC400A4A3C6 /* CXILApplication.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC27B694170E8C3800A23FFD /* CXILApplication.mm */; };
 		DC07B1751669CF2400A78205 /* AccessViolationException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC07B1731669CF2300A78205 /* AccessViolationException.cpp */; };
 		DC07B1761669CF2400A78205 /* AccessViolationException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC07B1741669CF2300A78205 /* AccessViolationException.h */; };
 		DC07B17A1669D1AD00A78205 /* PPCRuntimeException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC07B1781669D1AD00A78205 /* PPCRuntimeException.h */; };
@@ -286,7 +286,7 @@
 		DC264EB0165E012B00C86BDD /* execution-cursor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "execution-cursor.png"; sourceTree = "<group>"; };
 		DC27B692170E89F300A23FFD /* CommonDefinitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonDefinitions.h; sourceTree = "<group>"; };
 		DC27B693170E8C3800A23FFD /* CXILApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CXILApplication.h; path = InterfaceLibHead/CXILApplication.h; sourceTree = SOURCE_ROOT; };
-		DC27B694170E8C3800A23FFD /* CXILApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CXILApplication.m; path = InterfaceLibHead/CXILApplication.m; sourceTree = SOURCE_ROOT; };
+		DC27B694170E8C3800A23FFD /* CXILApplication.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CXILApplication.mm; path = InterfaceLibHead/CXILApplication.mm; sourceTree = SOURCE_ROOT; };
 		DC27B699170E8D0E00A23FFD /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		DC29C3D0166AB92400B35EF7 /* AllocationDetails.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AllocationDetails.cpp; sourceTree = "<group>"; };
 		DC29C3D1166AB92400B35EF7 /* AllocationDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllocationDetails.h; sourceTree = "<group>"; };
@@ -862,7 +862,7 @@
 			isa = PBXGroup;
 			children = (
 				DC27B693170E8C3800A23FFD /* CXILApplication.h */,
-				DC27B694170E8C3800A23FFD /* CXILApplication.m */,
+				DC27B694170E8C3800A23FFD /* CXILApplication.mm */,
 				DC27B69A170E8D0E00A23FFD /* MainMenu.xib */,
 				DC930ABB1708BC8E00B739B1 /* Supporting Files */,
 			);
@@ -1471,7 +1471,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC03F65D170E8D7800A4A3C6 /* main.m in Sources */,
-				DC03F664170E8EC400A4A3C6 /* CXILApplication.m in Sources */,
+				DC03F664170E8EC400A4A3C6 /* CXILApplication.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

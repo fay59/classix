@@ -114,23 +114,64 @@ namespace InterfaceLib
 		QDProcs procs;
 	};
 	
-	enum class EventMask : uint16_t
+	struct EventRecord
 	{
-		mDownMask = 2,
-		mUpMask = 4,
-		keyDownMask = 8,
-		keyUpMask = 16,
-		autoKeyMask = 32,
-		updateMask = 64,
-		diskMask = 128,
-		activMask = 256,
-		networkMask = 1024,
-		driverMask = 2048,
-		app1Mask = 4096,
-		app2Mask = 8192,
-		app3Mask = 16384,
-		app4Mask = 32768,
+		Common::UInt16 what;
+		Common::UInt32 message;
+		Common::UInt32 when;
+		Point where;
+		Common::UInt16 modifiers;
+	};
+	
+	enum class EventModifierFlags : unsigned short
+	{
+		activeFlag = 1, // set when the foreground window is being activated
+		mouseButtonState = 128, // set when the mouse button is up
+		cmdKey = 256,
+		shiftKey = 512,
+		alphaLock = 1024, // set when caps lock is activated
+		optionKey = 2048,
+		controlKey = 4096,
+		rightShiftKey = 8192,
+		rightOptionKey = 16384,
+		rightControlKey = 32768
+	};
+	
+	enum class EventCode : unsigned short
+	{
+		nullEvent,
+		mouseDown,
+		mouseUp,
+		keyDown,
+		keyUp,
+		autoKey,
+		updateEvent,
+		diskEvent,
+		activateEvent,
+		osEvent = 15,
+		highLevelEvent = 23
+	};
+	
+	enum class EventMask : unsigned short
+	{
+		noEvent = 0,
+		mDownMask = 2,		// mouse down
+		mUpMask = 4,		// mouse up
+		keyDownMask = 8,	// key down
+		keyUpMask = 16,		// key up
+		autoKeyMask = 32,	// key repeat
+		updateMask = 64,	// update (?)
+		diskMask = 128,		// disk inserted
+		activMask = 256,	// app activated
+		highLevelEventMask = 0x400,
+		osMask = 0x1000,
 		everyEvent = 0xffff
+	};
+		
+	enum class IPCMessage : unsigned
+	{
+		PeekNextEvent,
+		DequeueNextEvent,
 	};
 }
 

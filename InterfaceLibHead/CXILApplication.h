@@ -24,5 +24,15 @@
 @interface CXILApplication : NSApplication
 
 -(void)processIPCMessage;
+-(void)readInto:(void*)into size:(size_t)size;
+-(void)writeFrom:(const void*)from size:(size_t)size;
+
+// IPC messages implementation
+
+// get a copy of the next EventRecord matching the EventMask without altering the queue
+-(void)peekNextEvent;
+
+// discard the next EventRecord matching the EventMask; does nothing if there's no such event
+-(void)discardNextEvent;
 
 @end
