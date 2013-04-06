@@ -144,7 +144,7 @@ void InterfaceLib_TEIdle(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_TEInit(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// nothing to do here
 }
 
 void InterfaceLib_TEInsert(InterfaceLib::Globals* globals, MachineState* state)

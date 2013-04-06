@@ -24,7 +24,7 @@
 
 void InterfaceLib_ExitToShell(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	exit(0);
 }
 
 void InterfaceLib_GetFrontProcess(InterfaceLib::Globals* globals, MachineState* state)

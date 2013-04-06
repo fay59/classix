@@ -159,7 +159,7 @@ void InterfaceLib_HiliteWindow(InterfaceLib::Globals* globals, MachineState* sta
 
 void InterfaceLib_InitWindows(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// nothing to do here
 }
 
 void InterfaceLib_InvalRect(InterfaceLib::Globals* globals, MachineState* state)

@@ -22,6 +22,8 @@
 #include "Prototypes.h"
 #include "NotImplementedException.h"
 
+using namespace InterfaceLib;
+
 void InterfaceLib_Button(InterfaceLib::Globals* globals, MachineState* state)
 {
 	throw PPCVM::NotImplementedException(__func__);
@@ -64,7 +66,10 @@ void InterfaceLib_GetMouse(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_GetNextEvent(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	EventMask mask = static_cast<EventMask>(state->r3);
+	*globals->allocator.ToPointer<EventRecord>(state->r4) = globals->ipc.PerformAction<EventRecord>(IPCMessage::PeekNextEvent, mask);
+	globals->ipc.PerformAction<void>(IPCMessage::DequeueNextEvent, mask);
+	state->r3 = true;
 }
 
 void InterfaceLib_GetOSEvent(InterfaceLib::Globals* globals, MachineState* state)

@@ -144,7 +144,7 @@ void InterfaceLib_HiliteMenu(InterfaceLib::Globals* globals, MachineState* state
 
 void InterfaceLib_InitMenus(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// nothing to do here
 }
 
 void InterfaceLib_InitProcMenu(InterfaceLib::Globals* globals, MachineState* state)

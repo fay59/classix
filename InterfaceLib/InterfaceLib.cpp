@@ -72,8 +72,7 @@ namespace
 
 namespace InterfaceLib
 {
-	Globals::Globals(Common::IAllocator& allocator)
-	: allocator(allocator), resources(allocator)
+	UIChannel::UIChannel()
 	{
 		if (pipe(read.fd) == -1)
 			throw std::runtime_error(strerror(errno));
@@ -105,13 +104,21 @@ namespace InterfaceLib
 			close(write.read);
 			close(read.write);
 		}
-		
-		memset(&port, 0, sizeof port);
 	}
 	
-	Globals::~Globals()
+	template<>
+	void UIChannel::ReturnNonVoid(const uint8_t* buffer) {}
+	
+	UIChannel::~UIChannel()
 	{
-		kill(head, SIGKILL);
+		close(write.write);
+		close(read.read);
+	}
+	
+	Globals::Globals(Common::IAllocator& allocator)
+	: allocator(allocator), resources(allocator)
+	{
+		memset(&port, 0, sizeof port);
 	}
 }
 

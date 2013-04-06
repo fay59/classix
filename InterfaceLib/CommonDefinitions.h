@@ -24,6 +24,11 @@
 
 #include "BigEndian.h"
 
+template<typename... TArgument>
+void PACK_EXPAND_identity(TArgument&&...) {}
+
+#define PACK_EXPAND(x) PACK_EXPAND_identity((x)...)
+
 namespace InterfaceLib
 {
 	typedef Common::SInt16 Bits16[16];

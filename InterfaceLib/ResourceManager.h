@@ -41,8 +41,13 @@ namespace InterfaceLib
 		uint16_t id;
 		std::string name;
 		uint8_t attributes;
-		uint8_t* begin;
-		uint8_t* end;
+		uint8_t* _begin;
+		uint8_t* _end;
+		
+		inline uint8_t* begin() { return _begin; }
+		inline uint8_t* end() { return _end; }
+		inline const uint8_t* begin() const { return _begin; }
+		inline const uint8_t* end() const { return _end; }
 	};
 	
 	struct FourCharCode

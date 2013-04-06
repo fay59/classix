@@ -19,6 +19,7 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
+#include <type_traits>
 #include <unistd.h>
 
 #include "CommonDefinitions.h"
@@ -40,19 +41,61 @@ namespace InterfaceLib
 		};
 	};
 	
-	struct Globals
+	class UIChannel
 	{
-		GrafPort port;
-		uint8_t padding[0x1000];
-		
-		Common::IAllocator& allocator;
-		ResourceManager resources;
 		Pipe read;
 		Pipe write;
 		pid_t head;
 		
+		template<typename T>
+		T ReturnNonVoid(const uint8_t* buffer)
+		{
+			return *reinterpret_cast<const T*>(buffer);
+		}
+		
+	public:
+		UIChannel();
+		
+		template<typename TReturnType, typename... TArgument>
+		TReturnType PerformAction(IPCMessage message, TArgument&&... argument)
+		{
+			static_assert(std::is_void<TReturnType>::value || std::is_trivially_copy_constructible<TReturnType>::value,
+			"Using DoMessage with a non-trivial type");
+			static_assert(!std::is_pointer<TReturnType>::value, "Using DoMessage with a pointer type");
+			
+			char doneReference[4] = {'D', 'O', 'N', 'E'};
+			
+			::write(write.write, &message, sizeof message);
+			PACK_EXPAND(::write(write.write, &argument, sizeof argument));
+			::write(write.write, doneReference, sizeof doneReference);
+			
+			uint8_t response[sizeof(TReturnType)];
+			if (!std::is_void<TReturnType>::value)
+				::read(read.read, response, sizeof response);
+			
+			char done[4];
+			::read(read.read, done, sizeof done);
+			if (memcmp(done, doneReference, sizeof doneReference) != 0)
+				throw std::logic_error("Wrong return type for action");
+			
+			return ReturnNonVoid<TReturnType>(response);
+		}
+		
+		~UIChannel();
+	};
+	
+	struct Globals
+	{
+		GrafPort port;
+		
+		uint8_t padding[0x1000];
+		uint32_t systemFatalErrorHandler;
+		
+		Common::IAllocator& allocator;
+		ResourceManager resources;
+		UIChannel ipc;
+		
 		Globals(Common::IAllocator& allocator);
-		~Globals();
 	};
 }
 

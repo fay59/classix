@@ -171,9 +171,9 @@ namespace InterfaceLib
 					allocationName << " (\"" << entry.name << "\")";
 				}
 				
-				entry.begin = allocator.Allocate(allocationName.str(), dataLength);
-				entry.end = entry.begin + dataLength;
-				std::copy(dataLocation, dataLocation + dataLength, entry.begin);
+				entry._begin = allocator.Allocate(allocationName.str(), dataLength);
+				entry._end = entry.begin() + dataLength;
+				std::copy(dataLocation, dataLocation + dataLength, entry.begin());
 				
 				idResourceMap[entry.id] = entry;
 				if (entry.name.length() > 0)

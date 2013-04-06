@@ -124,7 +124,7 @@ void InterfaceLib_HideDialogItem(InterfaceLib::Globals* globals, MachineState* s
 
 void InterfaceLib_InitDialogs(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	globals->systemFatalErrorHandler = state->r3;
 }
 
 void InterfaceLib_IsDialogEvent(InterfaceLib::Globals* globals, MachineState* state)
