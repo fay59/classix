@@ -23,6 +23,7 @@
 #define Classix_CommonDefinitions_h
 
 #include "BigEndian.h"
+#include <string>
 
 template<typename... TArgument>
 void PACK_EXPAND_identity(TArgument&&...) {}
@@ -31,7 +32,14 @@ void PACK_EXPAND_identity(TArgument&&...) {}
 
 namespace InterfaceLib
 {
+	inline std::string PascalStringToCPPString(const char* pascalString)
+	{
+		uint8_t length = *pascalString;
+		return std::string(pascalString + 1, pascalString + 1 + length);
+	}
+	
 	typedef Common::SInt16 Bits16[16];
+	typedef char ShortString[0x100];
 	
 	struct Point
 	{
@@ -192,6 +200,8 @@ namespace InterfaceLib
 		
 		PeekNextEvent,
 		DequeueNextEvent,
+		
+		CreateWindow,
 	};
 }
 

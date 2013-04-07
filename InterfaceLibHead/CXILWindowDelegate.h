@@ -1,5 +1,5 @@
 //
-// CXILApplication.h
+// CXILWindowDelegate.h
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,26 +19,11 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
-@interface CXILApplication : NSApplication
+@interface CXILWindowDelegate : NSObject
 
--(void)processIPCMessage;
--(void)readInto:(void*)into size:(size_t)size;
--(void)writeFrom:(const void*)from size:(size_t)size;
-
-// IPC messages implementation
-
-// get a copy of the next EventRecord matching the EventMask without altering the queue
--(void)peekNextEvent;
-
-// discard the next EventRecord matching the EventMask; does nothing if there's no such event
--(void)discardNextEvent;
-
-// makes a beep
--(void)beep;
-
-// creates a window
--(void)createWindow;
+-(uint32_t)createWindowWithRect:(NSRect)rect title:(NSString*)title visible:(BOOL)visible behind:(uint32_t)windowKey;
+-(void)destroyWindow:(uint32_t)windowID;
 
 @end

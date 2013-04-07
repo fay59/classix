@@ -24,6 +24,7 @@
 #include "CommonDefinitions.h"
 
 #import "CXILApplication.h"
+#import "CXILWindowDelegate.h"
 
 using namespace Common;
 using namespace InterfaceLib;
@@ -48,6 +49,8 @@ static inline BOOL isFDValid(int fd)
 	std::list<EventRecord> eventQueue;
 	uint16_t mouseButtonState;
 	EventMask currentlyWaitingOn;
+	
+	CXILWindowDelegate* windowDelegate;
 }
 
 #define IPC_INDEX(x) [(unsigned)IPCMessage::x]
@@ -88,6 +91,8 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	ipcSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, readHandle, 0, dispatch_get_main_queue());
 	dispatch_source_set_event_handler(ipcSource, ^{ [self processIPCMessage]; });
 	dispatch_resume(ipcSource);
+	
+	windowDelegate = [[CXILWindowDelegate alloc] init];
 	
 	return self;
 }
@@ -270,6 +275,30 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 {
 	[self expectDone];
 	NSBeep();
+	[self sendDone];
+}
+
+-(void)createWindow
+{
+	InterfaceLib::Rect windowRect;
+	BOOL visible;
+	ShortString title;
+	uint32_t createBehind;
+	
+	[self readInto:&windowRect size:sizeof windowRect];
+	[self readInto:&visible size:sizeof visible];
+	[self readInto:&title size:sizeof title];
+	[self readInto:&createBehind size:sizeof createBehind];
+	[self expectDone];
+	
+	NSString* nsTitle = [NSString stringWithCString:title encoding:NSMacOSRomanStringEncoding];
+	
+	CGFloat width = windowRect.right - windowRect.left;
+	CGFloat height = windowRect.top - windowRect.bottom;
+	NSRect frame = NSMakeRect(windowRect.left, windowRect.top, width, height);
+	
+	uint32_t key = [windowDelegate createWindowWithRect:frame title:nsTitle visible:visible behind:createBehind];
+	[self writeFrom:&key size:sizeof key];
 	[self sendDone];
 }
 

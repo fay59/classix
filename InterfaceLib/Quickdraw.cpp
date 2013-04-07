@@ -19,8 +19,12 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
+#include <ApplicationServices/ApplicationServices.h>
 #include "Prototypes.h"
 #include "NotImplementedException.h"
+#include "CFOwningRef.h"
+
+using namespace InterfaceLib;
 
 void InterfaceLib_AddComp(InterfaceLib::Globals* globals, MachineState* state)
 {
@@ -494,10 +498,19 @@ void InterfaceLib_InitGDevice(InterfaceLib::Globals* globals, MachineState* stat
 
 void InterfaceLib_InitGraf(InterfaceLib::Globals* globals, MachineState* state)
 {
-#warning This function needs to do a lot more stuff
+	CFOwningRef<CGDisplayModeRef> displayMode = CGDisplayCopyDisplayMode(CGMainDisplayID());
+	size_t width = CGDisplayModeGetWidth(displayMode);
+	size_t height = CGDisplayModeGetHeight(displayMode);
+	
+	globals->port.portRect.left = -width / 2;
+	globals->port.portRect.top = -height / 2;
+	globals->port.portRect.right = width / 2;
+	globals->port.portRect.bottom = height / 2;
+	
 	uint32_t grafPtr = globals->allocator.ToIntPtr(&globals->port);
 	Common::UInt32* saveLocation = globals->allocator.ToPointer<Common::UInt32>(state->r3);
 	*saveLocation = grafPtr;
+#warning This function needs to do a lot more stuff
 }
 
 void InterfaceLib_InitPort(InterfaceLib::Globals* globals, MachineState* state)

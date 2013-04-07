@@ -22,6 +22,8 @@
 #include "Prototypes.h"
 #include "NotImplementedException.h"
 
+using namespace InterfaceLib;
+
 void InterfaceLib_BeginUpdate(InterfaceLib::Globals* globals, MachineState* state)
 {
 	throw PPCVM::NotImplementedException(__func__);
@@ -174,7 +176,19 @@ void InterfaceLib_InvalRgn(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_NewCWindow(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	if (state->r3 != 0)
+		throw PPCVM::NotImplementedException("Current implementation of NewCWindow does not support windows with assigned backing storage");
+	
+	// TODO check ABI for parameters, I'm not entirely sure so many of them are passed by registers
+	ShortString title;
+	const char* pascalTitle = globals->allocator.ToPointer<const char>(state->r5);
+	
+	const Rect& rect = *globals->allocator.ToPointer<const Rect>(state->r4);
+	bool visible = state->r6 != 0;
+	uint32_t createBehind = state->r8;
+	strncpy(title, PascalStringToCPPString(pascalTitle).c_str(), sizeof title);
+	
+	state->r3 = globals->ipc.PerformAction<uint32_t>(IPCMessage::CreateWindow, rect, visible, title, createBehind);
 }
 
 void InterfaceLib_NewWindow(InterfaceLib::Globals* globals, MachineState* state)
