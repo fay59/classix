@@ -502,15 +502,14 @@ void InterfaceLib_InitGraf(InterfaceLib::Globals* globals, MachineState* state)
 	size_t width = CGDisplayModeGetWidth(displayMode);
 	size_t height = CGDisplayModeGetHeight(displayMode);
 	
-	globals->port.portRect.left = -width / 2;
-	globals->port.portRect.top = -height / 2;
-	globals->port.portRect.right = width / 2;
-	globals->port.portRect.bottom = height / 2;
+	InterfaceLib::GrafPort& port = globals->grafPorts.AllocateGrafPort(width, height, "QD Screen Port");
+	uint32_t grafPtr = globals->allocator.ToIntPtr(&port);
 	
-	uint32_t grafPtr = globals->allocator.ToIntPtr(&globals->port);
-	Common::UInt32* saveLocation = globals->allocator.ToPointer<Common::UInt32>(state->r3);
-	*saveLocation = grafPtr;
-#warning This function needs to do a lot more stuff
+	// initialize qd while we're at it
+	QDGlobals* qd = globals->allocator.ToPointer<QDGlobals>(state->r3 - sizeof(QDGlobals) + sizeof(UInt32));
+	qd->screenBits = port.portBits;
+	qd->thePort = grafPtr;
+	// TODO patterns and cursor
 }
 
 void InterfaceLib_InitPort(InterfaceLib::Globals* globals, MachineState* state)

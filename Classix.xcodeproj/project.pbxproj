@@ -22,6 +22,8 @@
 		DC0D42B3165EE4F500883586 /* CXObjcDisassemblyWriter.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC0D42B1165EE4F400883586 /* CXObjcDisassemblyWriter.mm */; };
 		DC161F021661F7A900B76B61 /* CXDBRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = DC161F011661F7A900B76B61 /* CXDBRequest.m */; };
 		DC165A0B1710FCE5001BF45B /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC165A0A1710FCE5001BF45B /* ApplicationServices.framework */; };
+		DC165A0E1711CDA0001BF45B /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC165A0C1711CD8E001BF45B /* IOSurface.framework */; };
+		DC165A0F1711CDA2001BF45B /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC165A0C1711CD8E001BF45B /* IOSurface.framework */; };
 		DC176D091662A91700C76888 /* CXGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC176D081662A91700C76888 /* CXGradientView.m */; };
 		DC1FB13916E2962C00E9C7E5 /* CompareTrace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC1FB13816E2962C00E9C7E5 /* CompareTrace.cpp */; };
 		DC264EA7165DF76A00C86BDD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC264EA6165DF76A00C86BDD /* WebKit.framework */; };
@@ -280,6 +282,7 @@
 		DC161F011661F7A900B76B61 /* CXDBRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXDBRequest.m; sourceTree = "<group>"; };
 		DC165A091710FC5F001BF45B /* CFOwningRef.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFOwningRef.h; sourceTree = "<group>"; };
 		DC165A0A1710FCE5001BF45B /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
+		DC165A0C1711CD8E001BF45B /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		DC176D071662A91700C76888 /* CXGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXGradientView.h; sourceTree = "<group>"; };
 		DC176D081662A91700C76888 /* CXGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXGradientView.m; sourceTree = "<group>"; };
 		DC1FB13816E2962C00E9C7E5 /* CompareTrace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CompareTrace.cpp; sourceTree = "<group>"; };
@@ -564,6 +567,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC165A0E1711CDA0001BF45B /* IOSurface.framework in Frameworks */,
 				DC165A0B1710FCE5001BF45B /* ApplicationServices.framework in Frameworks */,
 				DC930B241708C85200B739B1 /* libClassixCore.dylib in Frameworks */,
 				DC930AA71708BBDB00B739B1 /* CoreFoundation.framework in Frameworks */,
@@ -575,6 +579,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC930AB91708BC8E00B739B1 /* Cocoa.framework in Frameworks */,
+				DC165A0F1711CDA2001BF45B /* IOSurface.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -664,6 +669,7 @@
 		DC4C644D165B62910097288E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DC165A0C1711CD8E001BF45B /* IOSurface.framework */,
 				DC165A0A1710FCE5001BF45B /* ApplicationServices.framework */,
 				DC264EA6165DF76A00C86BDD /* WebKit.framework */,
 				DC930AA01708BA4800B739B1 /* CoreFoundation.framework */,
@@ -838,7 +844,7 @@
 			children = (
 				DC165A091710FC5F001BF45B /* CFOwningRef.h */,
 				DC27B692170E89F300A23FFD /* CommonDefinitions.h */,
-				DC930AB21708BC1B00B739B1 /* Bundle */,
+				DC930AB21708BC1B00B739B1 /* Classix Library */,
 				DC930AB31708BC3200B739B1 /* UI Head */,
 			);
 			path = InterfaceLib;
@@ -854,7 +860,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		DC930AB21708BC1B00B739B1 /* Bundle */ = {
+		DC930AB21708BC1B00B739B1 /* Classix Library */ = {
 			isa = PBXGroup;
 			children = (
 				DC62870716F4F1ED00265AA6 /* InterfaceLib.h */,
@@ -864,7 +870,7 @@
 				DCF3D731170A9F09003B487F /* PPC */,
 				DC930AA91708BBDB00B739B1 /* Supporting Files */,
 			);
-			name = Bundle;
+			name = "Classix Library";
 			sourceTree = "<group>";
 		};
 		DC930AB31708BC3200B739B1 /* UI Head */ = {

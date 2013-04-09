@@ -23,7 +23,7 @@
 
 @interface CXILWindowDelegate : NSObject
 
--(uint32_t)createWindowWithRect:(NSRect)rect title:(NSString*)title visible:(BOOL)visible behind:(uint32_t)windowKey;
+-(void)createWindow:(uint32_t)key withRect:(NSRect)rect title:(NSString*)title visible:(BOOL)visible behind:(uint32_t)windowKey;
 -(void)destroyWindow:(uint32_t)windowID;
 
 @end

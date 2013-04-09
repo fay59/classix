@@ -19,6 +19,7 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
+#include <sstream>
 #include "Prototypes.h"
 #include "NotImplementedException.h"
 
@@ -176,19 +177,38 @@ void InterfaceLib_InvalRgn(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_NewCWindow(InterfaceLib::Globals* globals, MachineState* state)
 {
-	if (state->r3 != 0)
-		throw PPCVM::NotImplementedException("Current implementation of NewCWindow does not support windows with assigned backing storage");
-	
 	// TODO check ABI for parameters, I'm not entirely sure so many of them are passed by registers
+	
+	// We use storage pointers as window indentifiers in the UI head, since they're guaranteed to be unique
+	// for ay given window.
+	uint32_t key = state->r3;
+	GrafPort* port;
+	
+	// We try to get the title first, since we can use it for the allocation name.
 	ShortString title;
 	const char* pascalTitle = globals->allocator.ToPointer<const char>(state->r5);
+	std::string cppTitle = PascalStringToCPPString(pascalTitle);
+	strncpy(title, cppTitle.c_str(), sizeof title);
 	
-	const Rect& rect = *globals->allocator.ToPointer<const Rect>(state->r4);
+	const InterfaceLib::Rect& rect = *globals->allocator.ToPointer<const InterfaceLib::Rect>(state->r4);
+	
+	if (key == 0)
+	{
+		std::stringstream ss;
+		ss << "Window: \"" << cppTitle << "\"";
+		port = &globals->grafPorts.AllocateGrafPort(rect.right - rect.left, rect.top - rect.bottom, cppTitle);
+		key = globals->allocator.ToIntPtr(port);
+	}
+	else
+	{
+		port = globals->allocator.ToPointer<GrafPort>(key);
+	}
+	
 	bool visible = state->r6 != 0;
 	uint32_t createBehind = state->r8;
-	strncpy(title, PascalStringToCPPString(pascalTitle).c_str(), sizeof title);
 	
-	state->r3 = globals->ipc.PerformAction<uint32_t>(IPCMessage::CreateWindow, rect, visible, title, createBehind);
+	globals->ipc.PerformAction<void>(IPCMessage::CreateWindow, key, rect, visible, title, createBehind);
+	state->r3 = key;
 }
 
 void InterfaceLib_NewWindow(InterfaceLib::Globals* globals, MachineState* state)

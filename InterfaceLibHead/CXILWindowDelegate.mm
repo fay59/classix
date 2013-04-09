@@ -29,7 +29,7 @@
 
 @implementation CXILWindowDelegate
 {
-	NSMutableArray* windows;
+	NSMutableDictionary* windows;
 }
 
 -(id)init
@@ -37,12 +37,12 @@
 	if (!(self = [super init]))
 		return nil;
 	
-	windows = [NSMutableArray array];
+	windows = [NSMutableDictionary dictionary];
 	
 	return self;
 }
 
--(uint32_t)createWindowWithRect:(NSRect)rect title:(NSString *)title visible:(BOOL)visible behind:(uint32_t)windowKey
+-(void)createWindow:(uint32_t)key withRect:(NSRect)rect title:(NSString *)title visible:(BOOL)visible behind:(uint32_t)windowKey
 {
 	NSUInteger windowStyle = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
 	NSRect actualRect = [NSWindow contentRectForFrameRect:rect styleMask:windowStyle];
@@ -70,36 +70,12 @@
 		}
 	}
 	
-	NSUInteger index = windows.count;
-	[windows addObject:window];
-	
-	NSAssert(index < (0x80000000 >> 2), @"Too many windows were opened"); // kind of unlikely
-	return (uint32_t)(0x80000000 | (index << 2));
+	[windows setObject:window forKey:@(key)];
 }
 
 -(void)destroyWindow:(uint32_t)windowID
 {
-	if (NSWindow* window = [self windowForID:windowID])
-	{
-		NSUInteger index = [windows indexOfObject:window];
-		[windows replaceObjectAtIndex:index withObject:NSNull.null];
-	}
-}
-
--(NSWindow*)windowForID:(uint32_t)windowID
-{
-	NSUInteger index = (windowID & ~0x80000000) >> 2;
-	if (index >= windows.count)
-	{
-		NSLog(@"*** trying to get reference to nonexistant window");
-		return nil;
-	}
-	
-	id object = [windows objectAtIndex:index];
-	if ([object isKindOfClass:[NSWindow class]])
-		return object;
-	
-	return nil;
+	[windows removeObjectForKey:@(windowID)];
 }
 
 @end

@@ -30,6 +30,8 @@ void PACK_EXPAND_identity(TArgument&&...) {}
 
 #define PACK_EXPAND(x) PACK_EXPAND_identity((x)...)
 
+// I'm sooooo looking forward to generalized attributes, so I don't have to use __attribute__((packed)).
+
 namespace InterfaceLib
 {
 	inline std::string PascalStringToCPPString(const char* pascalString)
@@ -41,13 +43,13 @@ namespace InterfaceLib
 	typedef Common::SInt16 Bits16[16];
 	typedef char ShortString[0x100];
 	
-	struct Point
+	struct __attribute__((packed)) Point
 	{
 		Common::SInt16 v;
 		Common::SInt16 h;
 	};
 	
-	struct Rect
+	struct __attribute__((packed)) Rect
 	{
 		Common::SInt16 top;
 		Common::SInt16 left;
@@ -55,26 +57,26 @@ namespace InterfaceLib
 		Common::SInt16 right;
 	};
 	
-	struct Pattern
+	struct __attribute__((packed)) Pattern
 	{
 		uint8_t pat[8];
 	};
 	
-	struct BitMap
+	struct __attribute__((packed)) BitMap
 	{
 		Common::UInt32 baseAddr;
 		Common::SInt16 rowBytes;
 		Rect bounds;
 	};
 	
-	struct Cursor
+	struct __attribute__((packed)) Cursor
 	{
 		Bits16 data;
 		Bits16 mask;
 		Point hotSpot;
 	};
 	
-	struct MacRegion
+	struct __attribute__((packed)) MacRegion
 	{
 		Common::UInt16 rgnSize;
 		Rect rgnBBox;
@@ -92,13 +94,31 @@ namespace InterfaceLib
 		Extend
 	};
 	
-	struct QDProcs
+	struct __attribute__((packed)) QDProcs
 	{
 		Common::UInt32 procs[13];
 	};
 	
-	struct GrafPort
+	struct __attribute__((packed)) QDGlobals
 	{
+		uint8_t privates[76];
+		Common::SInt32 randSeed;
+		BitMap screenBits;
+		Cursor arrow;
+		Pattern dkGray;
+		Pattern ltGray;
+		Pattern gray;
+		Pattern black;
+		Pattern white;
+		Common::UInt32 thePort;
+	};
+	
+	struct __attribute__((packed)) GrafPort
+	{
+		GrafPort() = default;
+		GrafPort(const GrafPort&) = delete;
+		GrafPort(GrafPort&&) = delete;
+		
 		Common::SInt16 device;
 		BitMap portBits;
 		Rect portRect;
@@ -124,10 +144,10 @@ namespace InterfaceLib
 		Common::UInt32 picSave; // Handle
 		Common::UInt32 rgnSave; // Handle
 		Common::UInt32 polySave; // Handle
-		QDProcs procs;
+		Common::UInt32 procs; // QDProcs*
 	};
 	
-	struct EventRecord
+	struct __attribute__((packed)) EventRecord
 	{
 		Common::UInt16 what;
 		Common::UInt32 message;
@@ -136,7 +156,7 @@ namespace InterfaceLib
 		Common::UInt16 modifiers;
 	};
 	
-	struct SysEnvRec
+	struct __attribute__((packed)) SysEnvRec
 	{
 		Common::SInt16 environsVersion;
 		Common::SInt16 machineType;

@@ -26,6 +26,8 @@
 #import "CXILApplication.h"
 #import "CXILWindowDelegate.h"
 
+#define IPC_PARAM(name, type)	type name; [self readInto:&name size:sizeof name]
+
 using namespace Common;
 using namespace InterfaceLib;
 
@@ -37,6 +39,7 @@ static inline BOOL isFDValid(int fd)
 @interface CXILApplication (GoryDetails)
 
 -(BOOL)suggestEventRecord:(const EventRecord&)record;
+-(NSRect)classicRectToXRect:(InterfaceLib::Rect)rect;
 
 @end
 
@@ -50,6 +53,7 @@ static inline BOOL isFDValid(int fd)
 	uint16_t mouseButtonState;
 	EventMask currentlyWaitingOn;
 	
+	NSRect screenBounds;
 	CXILWindowDelegate* windowDelegate;
 }
 
@@ -59,6 +63,7 @@ SEL ipcSelectors[] = {
 	IPC_INDEX(Beep) = @selector(beep),
 	IPC_INDEX(PeekNextEvent) = @selector(peekNextEvent),
 	IPC_INDEX(DequeueNextEvent) = @selector(discardNextEvent),
+	IPC_INDEX(CreateWindow) = @selector(createWindow),
 };
 
 const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
@@ -93,6 +98,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	dispatch_resume(ipcSource);
 	
 	windowDelegate = [[CXILWindowDelegate alloc] init];
+	screenBounds = NSScreen.mainScreen.frame;
 	
 	return self;
 }
@@ -235,8 +241,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 
 -(void)peekNextEvent
 {
-	uint16_t desiredEvent;
-	[self readInto:&desiredEvent size:sizeof desiredEvent];
+	IPC_PARAM(desiredEvent, uint16_t);
 	[self expectDone];
 	
 	currentlyWaitingOn = static_cast<EventMask>(desiredEvent);
@@ -255,8 +260,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 
 -(void)discardNextEvent
 {
-	uint16_t desiredEvent;
-	[self readInto:&desiredEvent size:sizeof desiredEvent];
+	IPC_PARAM(desiredEvent, uint16_t);
 	[self expectDone];
 	
 	for (auto iter = eventQueue.begin(); iter != eventQueue.end(); iter++)
@@ -280,25 +284,17 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 
 -(void)createWindow
 {
-	InterfaceLib::Rect windowRect;
-	BOOL visible;
-	ShortString title;
-	uint32_t createBehind;
-	
-	[self readInto:&windowRect size:sizeof windowRect];
-	[self readInto:&visible size:sizeof visible];
-	[self readInto:&title size:sizeof title];
-	[self readInto:&createBehind size:sizeof createBehind];
+	IPC_PARAM(key, uint32_t);
+	IPC_PARAM(windowRect, InterfaceLib::Rect);
+	IPC_PARAM(visible, BOOL);
+	IPC_PARAM(title, InterfaceLib::ShortString);
+	IPC_PARAM(createBehind, uint32_t);
 	[self expectDone];
 	
 	NSString* nsTitle = [NSString stringWithCString:title encoding:NSMacOSRomanStringEncoding];
+	NSRect frame = [self classicRectToXRect:windowRect];
 	
-	CGFloat width = windowRect.right - windowRect.left;
-	CGFloat height = windowRect.top - windowRect.bottom;
-	NSRect frame = NSMakeRect(windowRect.left, windowRect.top, width, height);
-	
-	uint32_t key = [windowDelegate createWindowWithRect:frame title:nsTitle visible:visible behind:createBehind];
-	[self writeFrom:&key size:sizeof key];
+	[windowDelegate createWindow:key withRect:frame title:nsTitle visible:visible behind:createBehind];
 	[self sendDone];
 }
 
@@ -316,6 +312,15 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		return YES;
 	}
 	return NO;
+}
+
+-(NSRect)classicRectToXRect:(InterfaceLib::Rect)rect
+{
+	CGFloat x = rect.left + screenBounds.size.width / 2;
+	CGFloat y = -rect.bottom + screenBounds.size.height / 2;
+	CGFloat width = rect.right - rect.left;
+	CGFloat height = rect.bottom - rect.top;
+	return NSMakeRect(x, y, width, height);
 }
 
 @end

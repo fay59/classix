@@ -72,6 +72,12 @@ namespace
 
 namespace InterfaceLib
 {
+	struct GrafPortData
+	{
+		InterfaceLib::GrafPort* port;
+		IOSurfaceRef surface;
+	};
+	
 	UIChannel::UIChannel()
 	{
 		if (pipe(read.fd) == -1)
@@ -115,11 +121,80 @@ namespace InterfaceLib
 		close(read.read);
 	}
 	
-	Globals::Globals(Common::IAllocator& allocator)
-	: allocator(allocator), resources(allocator)
+	GrafPortManager::GrafPortManager(Common::IAllocator& allocator)
+	: allocator(allocator)
+	{ }
+	
+	InterfaceLib::GrafPort& GrafPortManager::AllocateGrafPort(uint32_t width, uint32_t height, const std::string& allocationName)
 	{
-		memset(&port, 0, sizeof port);
+		std::stringstream ss;
+		ss << "GrafPort <" << width << "x" << height << ">";
+		if (allocationName.size() > 0)
+		{
+			ss << ": " << allocationName;
+		}
+		
+		InterfaceLib::GrafPort* port = allocator.Allocate<InterfaceLib::GrafPort>(ss.str());
+		
+		InitializeGrafPort(*port, width, height);
+		return *port;
 	}
+	
+	void GrafPortManager::InitializeGrafPort(InterfaceLib::GrafPort& port, uint32_t width, uint32_t height)
+	{
+		port.portBits.bounds.left = -width / 2;
+		port.portBits.bounds.top = -height / 2;
+		port.portBits.bounds.right = width / 2;
+		port.portBits.bounds.bottom = height / 2;
+		port.portRect = port.portBits.bounds;
+		port.procs = 0;
+		// TODO complete initialization
+		
+		uint32_t address = allocator.ToIntPtr(&port);
+		GrafPortData& portData = ports[address];
+		portData.port = &port;
+		portData.surface = nullptr; // TODO this should create a new IOSurface
+		
+		if (ports.size() == 1)
+		{
+			currentPort = &portData;
+		}
+	}
+	
+	void GrafPortManager::SetCurrentPort(InterfaceLib::GrafPort &port)
+	{
+		uint32_t address = allocator.ToIntPtr(&port);
+		auto iter = ports.find(address);
+		assert(iter != ports.end() && "Unregistered graphics port");
+		currentPort = &iter->second;
+	}
+	
+	GrafPort& GrafPortManager::GetCurrentPort()
+	{
+		assert(currentPort != nullptr && "No graf port set");
+		return *currentPort->port;
+	}
+	
+	IOSurfaceRef GrafPortManager::SurfaceOfGrafPort(InterfaceLib::GrafPort& port)
+	{
+		return nullptr;
+	}
+	
+	void GrafPortManager::DestroyGrafPort(GrafPort& port)
+	{
+		// TODO destroy IOSurface
+		uint32_t address = allocator.ToIntPtr(&port);
+		ports.erase(address);
+	}
+	
+	GrafPortManager::~GrafPortManager()
+	{
+		
+	}
+	
+	Globals::Globals(Common::IAllocator& allocator)
+	: allocator(allocator), resources(allocator), grafPorts(allocator)
+	{ }
 }
 
 InterfaceLib::Globals* LibraryLoad(Common::IAllocator* allocator)
@@ -160,7 +235,6 @@ void InterfaceLib___LibraryInit(InterfaceLib::Globals* globals, PPCVM::MachineSt
 		const Common::UInt32* argv = globals->allocator.ToPointer<Common::UInt32>(state->r4);
 		const char* programPath = globals->allocator.ToPointer<char>(argv[0]);
 		globals->resources.LoadFileResources(programPath);
-		globals->resources.dump();
 	}
 }
 

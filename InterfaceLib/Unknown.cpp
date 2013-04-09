@@ -583,10 +583,15 @@ void InterfaceLib_InsertMenuItem(InterfaceLib::Globals* globals, MachineState* s
 void InterfaceLib_InsetRect(InterfaceLib::Globals* globals, MachineState* state)
 {
 	Rect& rect = *globals->allocator.ToPointer<Rect>(state->r3);
-	rect.left = std::max(0, static_cast<int32_t>(rect.left - state->r4));
-	rect.right = std::max(0, static_cast<int32_t>(rect.right - state->r4));
-	rect.bottom = std::max(0, static_cast<int32_t>(rect.bottom - state->r5));
-	rect.top = std::max(0, static_cast<int32_t>(rect.top - state->r5));
+	rect.left = rect.left + state->r4;
+	rect.right = rect.right - state->r4;
+	rect.bottom = rect.bottom - state->r5;
+	rect.top = rect.top + state->r5;
+	
+	if (rect.right - rect.left < 1 || rect.bottom - rect.top < 1)
+	{
+		memset(&rect, 0, sizeof rect);
+	}
 }
 
 void InterfaceLib_InvertRect(InterfaceLib::Globals* globals, MachineState* state)
@@ -936,7 +941,8 @@ void InterfaceLib_setmenuitemtext(InterfaceLib::Globals* globals, MachineState* 
 
 void InterfaceLib_SetPort(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	GrafPort& port = *globals->allocator.ToPointer<GrafPort>(state->r3);
+	globals->grafPorts.SetCurrentPort(port);
 }
 
 void InterfaceLib_SetRect(InterfaceLib::Globals* globals, MachineState* state)

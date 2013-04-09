@@ -20,6 +20,7 @@
 //
 
 #include <type_traits>
+#include <unordered_map>
 #include <unistd.h>
 
 #include "CommonDefinitions.h"
@@ -29,20 +30,24 @@
 #include "BigEndian.h"
 #include "ResourceManager.h"
 
+// I don't want to #include <IOSurface/IOSurface.h> here because it brings
+// tons of ambiguous QuickDraw definitions
+typedef struct __IOSurface* IOSurfaceRef;
+
 namespace InterfaceLib
 {
-	union Pipe
-	{
-		int fd[2];
-		struct
-		{
-			int read;
-			int write;
-		};
-	};
-	
 	class UIChannel
 	{
+		union Pipe
+		{
+			int fd[2];
+			struct
+			{
+				int read;
+				int write;
+			};
+		};
+		
 		Pipe read;
 		Pipe write;
 		pid_t head;
@@ -59,9 +64,9 @@ namespace InterfaceLib
 		template<typename TReturnType, typename... TArgument>
 		TReturnType PerformAction(IPCMessage message, TArgument&&... argument)
 		{
-			static_assert(std::is_void<TReturnType>::value || std::is_trivially_copy_constructible<TReturnType>::value,
-			"Using DoMessage with a non-trivial type");
 			static_assert(!std::is_pointer<TReturnType>::value, "Using DoMessage with a pointer type");
+			static_assert(std::is_void<TReturnType>::value || std::is_trivially_copy_constructible<TReturnType>::value,
+				"Using DoMessage with a non-trivial type");
 			
 			char doneReference[4] = {'D', 'O', 'N', 'E'};
 			
@@ -84,16 +89,42 @@ namespace InterfaceLib
 		~UIChannel();
 	};
 	
+	class GrafPortData;
+	
+	class GrafPortManager
+	{
+		Common::IAllocator& allocator;
+		std::unordered_map<uint32_t, GrafPortData> ports;
+		GrafPortData* currentPort;
+		
+	public:
+		GrafPortManager(Common::IAllocator& allocator);
+		
+		InterfaceLib::GrafPort& AllocateGrafPort(uint32_t width, uint32_t height, const std::string& allocationName = "");
+		void InitializeGrafPort(InterfaceLib::GrafPort& port, uint32_t width, uint32_t height);
+		
+		void SetCurrentPort(GrafPort& port);
+		GrafPort& GetCurrentPort();
+		
+		IOSurfaceRef SurfaceOfGrafPort(InterfaceLib::GrafPort& port);
+		
+		// this does not deallocate 'port', but it gets rid of the IOSurface
+		void DestroyGrafPort(InterfaceLib::GrafPort& port);
+		
+		~GrafPortManager();
+	};
+	
 	struct Globals
 	{
-		GrafPort port;
-		
+		// the padding helps make it less harmful if a program was to overwrite stuff from the globals
 		uint8_t padding[0x1000];
-		uint32_t systemFatalErrorHandler;
 		
 		Common::IAllocator& allocator;
 		ResourceManager resources;
+		GrafPortManager grafPorts;
 		UIChannel ipc;
+		
+		uint32_t systemFatalErrorHandler;
 		
 		Globals(Common::IAllocator& allocator);
 	};
