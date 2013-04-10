@@ -203,6 +203,8 @@
 		DCE0A8AA165733B00092CEBC /* InstructionRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021D1650D1A60079CE2D /* InstructionRange.cpp */; };
 		DCE0A8AB165733B50092CEBC /* Disassembler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC83021A1650B2D70079CE2D /* Disassembler.cpp */; };
 		DCE0A8AF1657651D0092CEBC /* DisassembledOpcode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE0A8AC16575A160092CEBC /* DisassembledOpcode.cpp */; };
+		DCE5CD7B1715150500E38D56 /* GrafPortManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE5CD791715150400E38D56 /* GrafPortManager.cpp */; };
+		DCE5CD7E1715166100E38D56 /* UIChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE5CD7C1715166100E38D56 /* UIChannel.cpp */; };
 		DCE7B22816DA78A100D69F2A /* CXEvent.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCE7B22716DA78A100D69F2A /* CXEvent.mm */; };
 		DCE9880E16604ED700C28F25 /* CXNavBar.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE9880D16604ED700C28F25 /* CXNavBar.m */; };
 		DCF3D736170BD064003B487F /* ResourceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF3D733170AA036003B487F /* ResourceManager.cpp */; };
@@ -509,6 +511,10 @@
 		DCE0A8A7165732860092CEBC /* InstructionDispatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionDispatcher.cpp; path = ClassixCore/PPCVM/InstructionDispatcher.cpp; sourceTree = SOURCE_ROOT; };
 		DCE0A8AC16575A160092CEBC /* DisassembledOpcode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DisassembledOpcode.cpp; path = ClassixCore/PPCVM/Disassembler/DisassembledOpcode.cpp; sourceTree = SOURCE_ROOT; };
 		DCE0A8AD16575A160092CEBC /* DisassembledOpcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DisassembledOpcode.h; path = ClassixCore/PPCVM/Disassembler/DisassembledOpcode.h; sourceTree = SOURCE_ROOT; };
+		DCE5CD791715150400E38D56 /* GrafPortManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GrafPortManager.cpp; sourceTree = "<group>"; };
+		DCE5CD7A1715150400E38D56 /* GrafPortManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GrafPortManager.h; sourceTree = "<group>"; };
+		DCE5CD7C1715166100E38D56 /* UIChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIChannel.cpp; sourceTree = "<group>"; };
+		DCE5CD7D1715166100E38D56 /* UIChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIChannel.h; sourceTree = "<group>"; };
 		DCE7B22616DA78A100D69F2A /* CXEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXEvent.h; sourceTree = "<group>"; };
 		DCE7B22716DA78A100D69F2A /* CXEvent.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CXEvent.mm; sourceTree = "<group>"; };
 		DCE9880C16604ED700C28F25 /* CXNavBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXNavBar.h; sourceTree = "<group>"; };
@@ -865,6 +871,10 @@
 			children = (
 				DC62870716F4F1ED00265AA6 /* InterfaceLib.h */,
 				DC62878516F4F2AE00265AA6 /* InterfaceLib.cpp */,
+				DCE5CD7C1715166100E38D56 /* UIChannel.cpp */,
+				DCE5CD7D1715166100E38D56 /* UIChannel.h */,
+				DCE5CD791715150400E38D56 /* GrafPortManager.cpp */,
+				DCE5CD7A1715150400E38D56 /* GrafPortManager.h */,
 				DCF3D733170AA036003B487F /* ResourceManager.cpp */,
 				DCF3D734170AA036003B487F /* ResourceManager.h */,
 				DCF3D731170A9F09003B487F /* PPC */,
@@ -1480,6 +1490,8 @@
 				DC930B221708C41700B739B1 /* ToolUtils.cpp in Sources */,
 				DC930B231708C41700B739B1 /* Unknown.cpp in Sources */,
 				DCF3D736170BD064003B487F /* ResourceManager.cpp in Sources */,
+				DCE5CD7B1715150500E38D56 /* GrafPortManager.cpp in Sources */,
+				DCE5CD7E1715166100E38D56 /* UIChannel.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
