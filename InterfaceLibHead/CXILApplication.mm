@@ -21,6 +21,7 @@
 
 #include <list>
 #include <dispatch/dispatch.h>
+#include <mach/mach_time.h>
 #include "CommonDefinitions.h"
 
 #import "CXILApplication.h"
@@ -31,9 +32,51 @@
 using namespace Common;
 using namespace InterfaceLib;
 
-static inline BOOL isFDValid(int fd)
+static inline BOOL CXILIsFDValid(int fd)
 {
 	return fcntl(fd, F_GETFL) != -1 || errno != EBADF;
+}
+
+static uint32_t CXILEventTimeStamp()
+{
+	mach_timebase_info_data_t info;
+    mach_timebase_info(&info);
+    uint64_t absTime = mach_absolute_time();
+    absTime *= info.numer;
+    absTime /= info.denom;
+    return static_cast<uint32_t>(absTime / (1000000000. / 60.));
+}
+
+static InterfaceLib::Point CXILGlobalNSPointToPoint(NSPoint pt)
+{
+	uint32_t screenHeight = NSScreen.mainScreen.frame.size.height;
+	InterfaceLib::Point outPoint;
+	outPoint.h = pt.x;
+	outPoint.v = screenHeight / 2 - pt.y;
+	return outPoint;
+}
+
+static uint16_t CXILEventRecordModifierFlags(NSUInteger modifierFlags)
+{
+	uint16_t modifiers = 0;
+	if ((modifierFlags & NSCommandKeyMask) == NSCommandKeyMask)
+		modifiers |= static_cast<uint16_t>(EventModifierFlags::cmdKey);
+	
+	if ((modifierFlags & NSShiftKeyMask) == NSShiftKeyMask)
+		modifiers |= static_cast<uint16_t>(EventModifierFlags::shiftKey);
+	
+	if ((modifierFlags & NSAlphaShiftKeyMask) == NSAlphaShiftKeyMask)
+		modifiers |= static_cast<uint16_t>(EventModifierFlags::alphaLock);
+	
+	if ((modifierFlags & NSAlternateKeyMask) == NSAlternateKeyMask)
+		modifiers |= static_cast<uint16_t>(EventModifierFlags::optionKey);
+	
+	if ((modifierFlags & NSControlKeyMask) == NSControlKeyMask)
+		modifiers |= static_cast<uint16_t>(EventModifierFlags::controlKey);
+	
+	// TODO active state?
+	// TODO right shift, command, control?
+	return modifiers;
 }
 
 @interface CXILApplication (GoryDetails)
@@ -69,7 +112,6 @@ SEL ipcSelectors[] = {
 const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 
 #pragma mark -
-#pragma mark Overrides
 -(id)init
 {
 	if (!(self = [super init]))
@@ -86,7 +128,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	readHandle = [arguments[1] intValue];
 	writeHandle = [arguments[2] intValue];
 	
-	if (readHandle == 0 || writeHandle == 0 || !isFDValid(readHandle) || !isFDValid(writeHandle))
+	if (readHandle == 0 || writeHandle == 0 || !CXILIsFDValid(readHandle) || !CXILIsFDValid(writeHandle))
 	{
 		NSLog(@"InterfaceLibHead is not meant to be run directly. Please let InterfaceLib launch it.");
 		NSLog(@"Either the read or write pipe is invalid.");
@@ -100,24 +142,21 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	windowDelegate = [[CXILWindowDelegate alloc] init];
 	screenBounds = NSScreen.mainScreen.frame;
 	
+	NSNotificationCenter* center = NSNotificationCenter.defaultCenter;
+	[center addObserver:self selector:@selector(receiveNotification:) name:nil object:nil];
+	
 	return self;
 }
 
 -(void)sendEvent:(NSEvent *)theEvent
 {
-	NSPoint globalCoordinates = theEvent.window != nil
-		? [theEvent.window convertBaseToScreen:theEvent.locationInWindow]
-		: theEvent.locationInWindow;
-	
+	NSPoint globalCoordinates = [NSEvent mouseLocation];
 	EventRecord eventRecord = {
 		.when = Common::UInt32(theEvent.timestamp * 60), // Mac OS Classic considers there are 60 ticks per second
-		.where = {
-			.h = Common::SInt16(globalCoordinates.x),
-			.v = Common::SInt16(globalCoordinates.y)
-		},
+		.where = CXILGlobalNSPointToPoint(globalCoordinates),
 	};
 	
-	uint16_t modifiers = mouseButtonState;
+	uint16_t modifiers = mouseButtonState | CXILEventRecordModifierFlags(theEvent.modifierFlags);
 	uint32_t message = 0;
 	
 	switch (theEvent.type)
@@ -151,33 +190,45 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 			
 		default:
 			// unrecognized event, skip it
+			[super sendEvent:theEvent];
 			return;
 			
 		// TODO updateEvent, diskEvent, activateEvent, osEvent, highLevelEvent
 	}
 	
-	if ((theEvent.modifierFlags & NSCommandKeyMask) == NSCommandKeyMask)
-		modifiers |= static_cast<uint16_t>(EventModifierFlags::cmdKey);
-	
-	if ((theEvent.modifierFlags & NSShiftKeyMask) == NSShiftKeyMask)
-		modifiers |= static_cast<uint16_t>(EventModifierFlags::shiftKey);
-	
-	if ((theEvent.modifierFlags & NSAlphaShiftKeyMask) == NSAlphaShiftKeyMask)
-		modifiers |= static_cast<uint16_t>(EventModifierFlags::alphaLock);
-	
-	if ((theEvent.modifierFlags & NSAlternateKeyMask) == NSAlternateKeyMask)
-		modifiers |= static_cast<uint16_t>(EventModifierFlags::optionKey);
-	
-	if ((theEvent.modifierFlags & NSControlKeyMask) == NSControlKeyMask)
-		modifiers |= static_cast<uint16_t>(EventModifierFlags::controlKey);
-	
-	// TODO active state?
-	// TODO right shift, command, control?
-	
 	eventRecord.message = message;
 	eventRecord.modifiers = Common::UInt16(modifiers);
 	eventQueue.push_back(eventRecord);
 	[self suggestEventRecord:eventRecord];
+	
+	// let non-keyboard events get to Cocoa
+	const NSUInteger eventMask = NSKeyUpMask | NSKeyDownMask;
+	if (((1 << theEvent.type) & eventMask) == 0)
+	{
+		[super sendEvent:theEvent];
+	}
+}
+
+-(void)receiveNotification:(NSNotification *)notification
+{
+	if ([notification.name isEqualToString:NSWindowDidBecomeKeyNotification] ||
+		[notification.name isEqualToString:NSWindowDidResignKeyNotification])
+	{
+		uint16_t modifiers = mouseButtonState | CXILEventRecordModifierFlags([NSEvent modifierFlags]);
+		if ([notification.name isEqualToString:NSWindowDidBecomeKeyNotification])
+			modifiers |= static_cast<uint16_t>(EventModifierFlags::activeFlag);
+		
+		EventRecord focusRecord = {
+			.what = Common::UInt16(static_cast<uint16_t>(EventCode::activateEvent)),
+			.when = Common::UInt32(CXILEventTimeStamp()),
+			.where = CXILGlobalNSPointToPoint([NSEvent mouseLocation]),
+			.modifiers = Common::UInt16(modifiers),
+			.message = Common::UInt32([windowDelegate keyOfWindow:notification.object])
+		};
+		
+		eventQueue.push_back(focusRecord);
+		[self suggestEventRecord:focusRecord];
+	}
 }
 
 -(void)dealloc

@@ -20,6 +20,7 @@
 //
 
 #import "CXILWindowDelegate.h"
+#import "CXILApplication.h"
 
 @interface CXILWindowDelegate (Private)
 
@@ -42,22 +43,23 @@
 	return self;
 }
 
--(void)createWindow:(uint32_t)key withRect:(NSRect)rect title:(NSString *)title visible:(BOOL)visible behind:(uint32_t)windowKey
+-(void)createWindow:(uint32_t)key withRect:(NSRect)rect title:(NSString *)title visible:(BOOL)visible behind:(uint32_t)behindKey
 {
 	NSUInteger windowStyle = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
 	NSRect actualRect = [NSWindow contentRectForFrameRect:rect styleMask:windowStyle];
-	NSWindow* window = [[NSWindow alloc] initWithContentRect:actualRect styleMask:windowStyle backing:NSBackingStoreRetained defer:NO];
+	NSWindow* window = [[NSWindow alloc] initWithContentRect:actualRect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO];
 	window.title = title;
+	window.oneShot = YES;
 	
 	if (visible)
 	{
-		if (windowKey == -1)
+		if (behindKey == -1)
 		{
 			[window makeKeyAndOrderFront:self];
 		}
 		else
 		{
-			if (NSWindow* above = [self windowForID:windowKey])
+			if (NSWindow* above = [self windowForID:behindKey])
 			{
 				[window orderWindow:NSWindowBelow relativeTo:above.orderedIndex];
 				[window makeKeyWindow];
@@ -76,6 +78,11 @@
 -(void)destroyWindow:(uint32_t)windowID
 {
 	[windows removeObjectForKey:@(windowID)];
+}
+
+-(uint32_t)keyOfWindow:(NSWindow *)window
+{
+	return [[windows allKeysForObject:window][0] unsignedIntValue];
 }
 
 @end

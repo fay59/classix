@@ -23,11 +23,14 @@
 
 @interface CXILApplication : NSApplication
 
+// Reacting to stuff
+-(void)sendEvent:(NSEvent *)theEvent;
+-(void)receiveNotification:(NSNotification*)notification;
+
+// IPC messages implementation
 -(void)processIPCMessage;
 -(void)readInto:(void*)into size:(size_t)size;
 -(void)writeFrom:(const void*)from size:(size_t)size;
-
-// IPC messages implementation
 
 // get a copy of the next EventRecord matching the EventMask without altering the queue
 -(void)peekNextEvent;
