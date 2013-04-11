@@ -19,9 +19,13 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
+#include <IOSurface/IOSurface.h>
+#include <CoreGraphics/CoreGraphics.h>
+
 #include <sstream>
 #include <iomanip>
 #include "GrafPortManager.h"
+#include "CFOwningRef.h"
 
 namespace
 {
@@ -63,8 +67,8 @@ namespace
 		
 		Common::UInt32 pixMapPointer;
 		Common::UInt32 colorTablePointer;
-		PixMap pixMap;
-		ColorTable colorTable;
+		InterfaceLib::PixMap pixMap;
+		InterfaceLib::ColorTable colorTable;
 	};
 }
 
@@ -74,6 +78,56 @@ namespace InterfaceLib
 	{
 		InterfaceLib::UGrafPort* port;
 		IOSurfaceRef surface;
+		CGContextRef drawingContext;
+		
+		GrafPortData(InterfaceLib::UGrafPort* port)
+		{
+			int32_t width = port->color.portRect.right - port->color.portRect.left;
+			int32_t height = port->color.portRect.bottom - port->color.portRect.top;
+			int32_t bytesPerElement = 4;
+			int32_t bytesPerRow = bytesPerElement * width;
+			int32_t allocSize = bytesPerRow * height;
+			char pixelFormat[4] = {'A', 'R', 'G', 'B'};
+			
+			CFOwningRef<CFMutableDictionaryRef> ioSurfaceProperties = CFDictionaryCreateMutable(kCFAllocatorDefault, 9, nullptr, nullptr);
+			CFOwningRef<CFNumberRef> cfWidth = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &width);
+			CFOwningRef<CFNumberRef> cfHeight = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &height);
+			CFOwningRef<CFNumberRef> cfPixelFormat = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &pixelFormat);
+			CFOwningRef<CFNumberRef> cfBytesPerElement = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &bytesPerElement);
+			CFOwningRef<CFNumberRef> cfBytesPerRow = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &bytesPerRow);
+			CFOwningRef<CFNumberRef> cfAllocSize = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &allocSize);
+			
+			CFDictionarySetValue(ioSurfaceProperties, kIOSurfaceIsGlobal, kCFBooleanTrue);
+			CFDictionarySetValue(ioSurfaceProperties, kIOSurfaceBytesPerRow, cfBytesPerRow);
+			CFDictionarySetValue(ioSurfaceProperties, kIOSurfaceBytesPerElement, cfBytesPerElement);
+			CFDictionarySetValue(ioSurfaceProperties, kIOSurfaceWidth, cfWidth);
+			CFDictionarySetValue(ioSurfaceProperties, kIOSurfaceHeight, cfHeight);
+			CFDictionarySetValue(ioSurfaceProperties, kIOSurfacePixelFormat, cfPixelFormat);
+			CFDictionarySetValue(ioSurfaceProperties, kIOSurfaceAllocSize, cfAllocSize);
+			
+			surface = IOSurfaceCreate(ioSurfaceProperties);
+			void* baseAddress = IOSurfaceGetBaseAddress(surface);
+			CFOwningRef<CGColorSpaceRef> rgb = CGColorSpaceCreateDeviceRGB();
+			drawingContext = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, rgb, kCGImageAlphaPremultipliedLast);
+		}
+		
+		GrafPortData(GrafPortData&& that)
+		{
+			port = that.port;
+			surface = that.surface;
+			drawingContext = that.drawingContext;
+			
+			that.surface = nullptr;
+			that.drawingContext = nullptr;
+		}
+		
+		GrafPortData(const GrafPortData&) = delete;
+		
+		~GrafPortData()
+		{
+			IOSurfaceDecrementUseCount(surface);
+			CGContextRelease(drawingContext);
+		}
 	};
 	
 	GrafPortManager::GrafPortManager(Common::IAllocator& allocator)
@@ -103,7 +157,7 @@ namespace InterfaceLib
 		// TODO complete initialization
 		
 		uint32_t address = allocator.ToIntPtr(&port);
-		GrafPortData& portData = ports[address];
+		GrafPortData& portData = ports.emplace(std::make_pair(address, GrafPortData(&uPort))).first->second;
 		portData.port = &uPort;
 		portData.surface = nullptr; // TODO this should create a new IOSurface
 		
@@ -128,11 +182,12 @@ namespace InterfaceLib
 		support.pixMap.vRes = 72;
 		support.pixMap.hRes = 72;
 		CGrafPort& port = uPort.color;
+		port.portRect = bounds;
 		port.portPixMap = allocator.ToIntPtr(&support.pixMapPointer);
 		// TODO complete initialization
 		
 		uint32_t address = allocator.ToIntPtr(&port);
-		GrafPortData& portData = ports[address];
+		GrafPortData& portData = ports.emplace(std::make_pair(address, GrafPortData(&uPort))).first->second;
 		portData.port = &uPort;
 		portData.surface = nullptr; // TODO this should create a new IOSurface
 		
@@ -158,18 +213,22 @@ namespace InterfaceLib
 	
 	IOSurfaceRef GrafPortManager::SurfaceOfGrafPort(InterfaceLib::UGrafPort& port)
 	{
+		uint32_t address = allocator.ToIntPtr(&port);
+		auto iter = ports.find(address);
+		if (iter != ports.end())
+		{
+			return iter->second.surface;
+		}
+		
 		return nullptr;
 	}
 	
 	void GrafPortManager::DestroyGrafPort(UGrafPort& port)
 	{
-		// TODO destroy IOSurface
 		uint32_t address = allocator.ToIntPtr(&port);
 		ports.erase(address);
 	}
 	
 	GrafPortManager::~GrafPortManager()
-	{
-		
-	}
+	{ }
 }
