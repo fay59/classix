@@ -182,7 +182,7 @@ void InterfaceLib_NewCWindow(InterfaceLib::Globals* globals, MachineState* state
 	// We use storage pointers as window indentifiers in the UI head, since they're guaranteed to be unique
 	// for ay given window.
 	uint32_t key = state->r3;
-	GrafPort* port;
+	CGrafPort* port;
 	
 	// We try to get the title first, since we can use it for the allocation name.
 	ShortString title;
@@ -196,12 +196,12 @@ void InterfaceLib_NewCWindow(InterfaceLib::Globals* globals, MachineState* state
 	{
 		std::stringstream ss;
 		ss << "Window: \"" << cppTitle << "\"";
-		port = &globals->grafPorts.AllocateGrafPort(rect.right - rect.left, rect.top - rect.bottom, cppTitle);
+		port = &globals->grafPorts.AllocateColorGrafPort(rect, cppTitle);
 		key = globals->allocator.ToIntPtr(port);
 	}
 	else
 	{
-		port = globals->allocator.ToPointer<GrafPort>(key);
+		port = globals->allocator.ToPointer<CGrafPort>(key);
 	}
 	
 	bool visible = state->r6 != 0;

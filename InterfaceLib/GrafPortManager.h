@@ -43,16 +43,19 @@ namespace InterfaceLib
 	public:
 		GrafPortManager(Common::IAllocator& allocator);
 		
-		InterfaceLib::GrafPort& AllocateGrafPort(uint32_t width, uint32_t height, const std::string& allocationName = "");
-		void InitializeGrafPort(InterfaceLib::GrafPort& port, uint32_t width, uint32_t height);
+		InterfaceLib::GrafPort& AllocateGrayGrafPort(const InterfaceLib::Rect& bounds, const std::string& allocationName = "");
+		InterfaceLib::CGrafPort& AllocateColorGrafPort(const InterfaceLib::Rect& bounds, const std::string& allocationName = "");
+		
+		void InitializeGrayGrafPort(InterfaceLib::UGrafPort& port, const InterfaceLib::Rect& bounds);
+		void InitializeColorGrafPort(InterfaceLib::UGrafPort& port, const InterfaceLib::Rect& bounds);
 		
 		void SetCurrentPort(GrafPort& port);
-		GrafPort& GetCurrentPort();
+		UGrafPort& GetCurrentPort();
 		
-		IOSurfaceRef SurfaceOfGrafPort(InterfaceLib::GrafPort& port);
+		IOSurfaceRef SurfaceOfGrafPort(InterfaceLib::UGrafPort& port);
 		
 		// this does not deallocate 'port', but it gets rid of the IOSurface
-		void DestroyGrafPort(InterfaceLib::GrafPort& port);
+		void DestroyGrafPort(InterfaceLib::UGrafPort& port);
 		
 		~GrafPortManager();
 	};

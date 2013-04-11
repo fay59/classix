@@ -43,6 +43,63 @@ namespace InterfaceLib
 	typedef Common::SInt16 Bits16[16];
 	typedef char ShortString[0x100];
 	
+	enum class Style : uint8_t
+	{
+		Normal,
+		Bold,
+		Italic,
+		Underline,
+		Outline,
+		Shadow,
+		Condense,
+		Extend
+	};
+	
+	enum class EventModifierFlags : unsigned short
+	{
+		activeFlag = 1, // set when the foreground window is being activated
+		mouseButtonState = 128, // set when the mouse button is up
+		cmdKey = 256,
+		shiftKey = 512,
+		alphaLock = 1024, // set when caps lock is activated
+		optionKey = 2048,
+		controlKey = 4096,
+		rightShiftKey = 8192,
+		rightOptionKey = 16384,
+		rightControlKey = 32768
+	};
+		
+	enum class EventCode : unsigned short
+	{
+		nullEvent,
+		mouseDown,
+		mouseUp,
+		keyDown,
+		keyUp,
+		autoKey,
+		updateEvent,
+		diskEvent,
+		activateEvent,
+		osEvent = 15,
+		highLevelEvent = 23
+	};
+	
+	enum class EventMask : unsigned short
+	{
+		noEvent = 0,
+		mDownMask = 2,		// mouse down
+		mUpMask = 4,		// mouse up
+		keyDownMask = 8,	// key down
+		keyUpMask = 16,		// key up
+		autoKeyMask = 32,	// key repeat
+		updateMask = 64,	// update (?)
+		diskMask = 128,		// disk inserted
+		activMask = 256,	// app activated
+		highLevelEventMask = 0x400,
+		osMask = 0x1000,
+		everyEvent = 0xffff
+	};
+	
 	struct __attribute__((packed)) Point
 	{
 		Common::SInt16 v;
@@ -82,16 +139,44 @@ namespace InterfaceLib
 		Rect rgnBBox;
 	};
 	
-	enum class Style : uint8_t
+	struct __attribute__((packed)) RGBColor
 	{
-		Normal,
-		Bold,
-		Italic,
-		Underline,
-		Outline,
-		Shadow,
-		Condense,
-		Extend
+		Common::UInt16 red;
+		Common::UInt16 green;
+		Common::UInt16 blue;
+	};
+	
+	struct __attribute__((packed)) ColorSpec
+	{
+		Common::SInt16 value;
+		RGBColor rgb;
+	};
+	
+	struct __attribute__((packed)) ColorTable
+	{
+		Common::SInt32 seed; // presumably unique ID
+		Common::SInt16 flags;
+		Common::SInt16 count;
+		ColorSpec table[0];
+	};
+	
+	struct __attribute__((packed)) PixMap
+	{
+		void* baseAddr;
+		Common::SInt16 rowBytes;
+		InterfaceLib::Rect bounds;
+		Common::SInt16 pmVersion;
+		Common::SInt16 packType;
+		Common::SInt32 packSize;
+		Common::UInt32 hRes;
+		Common::UInt32 vRes;
+		Common::SInt16 pixelType;
+		Common::SInt16 pixelSize;
+		Common::SInt16 cmpCount;
+		Common::SInt16 cmpSize;
+		Common::UInt32 pixelFormat; // fourCharCode
+		Common::UInt32 pmTable; // ColorTable**
+		Common::UInt32 pmExt;
 	};
 	
 	struct __attribute__((packed)) QDProcs
@@ -120,19 +205,19 @@ namespace InterfaceLib
 		GrafPort(GrafPort&&) = delete;
 		
 		Common::SInt16 device;
-		BitMap portBits;
-		Rect portRect;
+		InterfaceLib::BitMap portBits;
+		InterfaceLib::Rect portRect;
 		Common::UInt32 visRgn; // MacRegion**
 		Common::UInt32 clipRgn; // MacRegion**
-		Pattern bkPat;
-		Pattern fillPat;
-		Point pnLoc;
-		Point pnSize;
+		InterfaceLib::Pattern bkPat;
+		InterfaceLib::Pattern fillPat;
+		InterfaceLib::Point pnLoc;
+		InterfaceLib::Point pnSize;
 		Common::SInt16 pnMode;
-		Pattern pnPat;
+		InterfaceLib::Pattern pnPat;
 		Common::SInt16 pnVis;
 		Common::SInt16 txFont;
-		Style txFace;
+		InterfaceLib::Style txFace;
 		
 		Common::SInt16 txMode;
 		Common::SInt16 txSize;
@@ -145,6 +230,62 @@ namespace InterfaceLib
 		Common::UInt32 rgnSave; // Handle
 		Common::UInt32 polySave; // Handle
 		Common::UInt32 procs; // QDProcs*
+	};
+	
+	struct __attribute__((packed)) CGrafPort
+	{
+		CGrafPort() = default;
+		CGrafPort(const CGrafPort&) = delete;
+		CGrafPort(CGrafPort&&) = delete;
+		
+		Common::SInt16 device;
+		
+		Common::UInt32 portPixMap; // PixMap**
+		Common::SInt16 portVersion;
+		Common::UInt32 grafVars;
+		Common::SInt16 chExtra;
+		Common::SInt16 pnLocHFrac;
+		
+		InterfaceLib::Rect portRect;
+		Common::UInt32 visRgn; // MacRegion**
+		Common::UInt32 clipRgn; // MacRegion**
+		Common::UInt32 bkPixPat;
+		InterfaceLib::RGBColor rgbFgColor;
+		InterfaceLib::RGBColor rgbBgColor;
+		InterfaceLib::Point pnLoc;
+		InterfaceLib::Point pnSize;
+		Common::SInt16 pnMode;
+		Common::UInt32 pnPixPat;
+		Common::UInt32 fillPixPat;
+		Common::SInt16 pnVis;
+		Common::SInt16 txFont;
+		InterfaceLib::Style style;
+		uint8_t padding;
+		Common::SInt16 txMode;
+		Common::SInt16 txSize;
+		Common::SInt32 spExtra;
+		Common::SInt32 fgColor;
+		Common::SInt32 bkColor;
+		Common::SInt16 colrBit;
+		Common::UInt32 picSave; // Handle
+		Common::UInt32 rgnSave; // Handle
+		Common::UInt32 polySave; // Handle
+		Common::UInt32 procs; // QDProcs*
+	};
+		
+	union UGrafPort
+	{
+		inline UGrafPort() {}
+		UGrafPort(const UGrafPort&) = delete;
+		UGrafPort(UGrafPort&&) = delete;
+		
+		GrafPort gray;
+		CGrafPort color;
+		
+		inline bool IsColor()
+		{
+			return (color.portVersion >> 14) != 0;
+		}
 	};
 	
 	struct __attribute__((packed)) EventRecord
@@ -167,51 +308,6 @@ namespace InterfaceLib
 		Common::SInt16 keyBoardType;
 		Common::SInt16 atDrvrVersNum;
 		Common::SInt16 sysVRefNum;
-	};
-	
-	enum class EventModifierFlags : unsigned short
-	{
-		activeFlag = 1, // set when the foreground window is being activated
-		mouseButtonState = 128, // set when the mouse button is up
-		cmdKey = 256,
-		shiftKey = 512,
-		alphaLock = 1024, // set when caps lock is activated
-		optionKey = 2048,
-		controlKey = 4096,
-		rightShiftKey = 8192,
-		rightOptionKey = 16384,
-		rightControlKey = 32768
-	};
-	
-	enum class EventCode : unsigned short
-	{
-		nullEvent,
-		mouseDown,
-		mouseUp,
-		keyDown,
-		keyUp,
-		autoKey,
-		updateEvent,
-		diskEvent,
-		activateEvent,
-		osEvent = 15,
-		highLevelEvent = 23
-	};
-	
-	enum class EventMask : unsigned short
-	{
-		noEvent = 0,
-		mDownMask = 2,		// mouse down
-		mUpMask = 4,		// mouse up
-		keyDownMask = 8,	// key down
-		keyUpMask = 16,		// key up
-		autoKeyMask = 32,	// key repeat
-		updateMask = 64,	// update (?)
-		diskMask = 128,		// disk inserted
-		activMask = 256,	// app activated
-		highLevelEventMask = 0x400,
-		osMask = 0x1000,
-		everyEvent = 0xffff
 	};
 		
 	enum class IPCMessage : unsigned
