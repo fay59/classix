@@ -941,13 +941,17 @@ void InterfaceLib_setmenuitemtext(InterfaceLib::Globals* globals, MachineState* 
 
 void InterfaceLib_SetPort(InterfaceLib::Globals* globals, MachineState* state)
 {
-	GrafPort& port = *globals->allocator.ToPointer<GrafPort>(state->r3);
+	UGrafPort& port = *globals->allocator.ToPointer<UGrafPort>(state->r3);
 	globals->grafPorts.SetCurrentPort(port);
 }
 
 void InterfaceLib_SetRect(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	InterfaceLib::Rect& rect = *globals->allocator.ToPointer<InterfaceLib::Rect>(state->r3);
+	rect.left = state->r4;
+	rect.top = state->r5;
+	rect.right = state->r6;
+	rect.bottom = state->r7;
 }
 
 void InterfaceLib_SetRectRgn(InterfaceLib::Globals* globals, MachineState* state)

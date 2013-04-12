@@ -20,11 +20,23 @@
 //
 
 #include <ApplicationServices/ApplicationServices.h>
+#include <CoreGraphics/CoreGraphics.h>
+#include <iostream>
+#include <limits>
+
 #include "Prototypes.h"
 #include "NotImplementedException.h"
 #include "CFOwningRef.h"
 
 using namespace InterfaceLib;
+
+namespace
+{
+	CGRect RectToCGRect(const InterfaceLib::Rect& rect)
+	{
+		return CGRectMake(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	}
+}
 
 void InterfaceLib_AddComp(InterfaceLib::Globals* globals, MachineState* state)
 {
@@ -534,7 +546,10 @@ void InterfaceLib_InvertArc(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_InvertColor(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	InterfaceLib::RGBColor& color = *globals->allocator.ToPointer<InterfaceLib::RGBColor>(state->r3);
+	color.red = std::numeric_limits<uint16_t>::max() - color.red;
+	color.green = std::numeric_limits<uint16_t>::max() - color.green;
+	color.blue = std::numeric_limits<uint16_t>::max() - color.blue;
 }
 
 void InterfaceLib_InvertOval(InterfaceLib::Globals* globals, MachineState* state)
@@ -764,7 +779,10 @@ void InterfaceLib_MovePortTo(InterfaceLib::Globals* globals, MachineState* state
 
 void InterfaceLib_MoveTo(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	UGrafPort& port = globals->grafPorts.GetCurrentPort();
+	port.color.pnLoc.v = state->r3;
+	port.color.pnLoc.h = state->r4;
+	CGContextMoveToPoint(globals->grafPorts.ContextOfGrafPort(port), state->r3, state->r4);
 }
 
 void InterfaceLib_NewGDevice(InterfaceLib::Globals* globals, MachineState* state)
@@ -849,7 +867,9 @@ void InterfaceLib_PaintArc(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_PaintOval(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	UGrafPort& port = globals->grafPorts.GetCurrentPort();
+	const InterfaceLib::Rect* rect = globals->allocator.ToPointer<InterfaceLib::Rect>(state->r3);
+	CGContextFillEllipseInRect(globals->grafPorts.ContextOfGrafPort(port), RectToCGRect(*rect));
 }
 
 void InterfaceLib_PaintPoly(InterfaceLib::Globals* globals, MachineState* state)
@@ -929,7 +949,8 @@ void InterfaceLib_QDError(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_Random(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// FIXME cheap implementation that doesn't use the value of randSeed
+	state->r3 = random();
 }
 
 void InterfaceLib_RealColor(InterfaceLib::Globals* globals, MachineState* state)
@@ -964,7 +985,20 @@ void InterfaceLib_RGBBackColor(InterfaceLib::Globals* globals, MachineState* sta
 
 void InterfaceLib_RGBForeColor(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	InterfaceLib::UGrafPort& port = globals->grafPorts.GetCurrentPort();
+	if (!port.IsColor())
+	{
+		std::cerr << "*** Using RGBForeColor on a non-color port" << std::endl;
+		return;
+	}
+	
+	port.color.rgbFgColor = *globals->allocator.ToPointer<InterfaceLib::RGBColor>(state->r3);
+	
+	CGFloat max = std::numeric_limits<uint16_t>::max();
+	CGFloat r = port.color.rgbFgColor.red / max;
+	CGFloat g = port.color.rgbFgColor.green / max;
+	CGFloat b = port.color.rgbFgColor.blue / max;
+	CGContextSetRGBFillColor(globals->grafPorts.ContextOfGrafPort(port), r, g, b, 1);
 }
 
 void InterfaceLib_SaveEntries(InterfaceLib::Globals* globals, MachineState* state)

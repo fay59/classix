@@ -19,8 +19,11 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
+#include <CoreGraphics/CoreGraphics.h>
 #include "Prototypes.h"
 #include "NotImplementedException.h"
+
+using namespace InterfaceLib;
 
 void InterfaceLib_Char2Pixel(InterfaceLib::Globals* globals, MachineState* state)
 {
@@ -59,7 +62,12 @@ void InterfaceLib_DrawJustified(InterfaceLib::Globals* globals, MachineState* st
 
 void InterfaceLib_DrawString(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	UGrafPort& port = globals->grafPorts.GetCurrentPort();
+	CGFloat x = port.color.pnLoc.h;
+	CGFloat y = port.color.pnLoc.v;
+	const char* pascalText = globals->allocator.ToPointer<const char>(state->r3);
+	std::string text = PascalStringToCPPString(pascalText);
+	CGContextShowTextAtPoint(globals->grafPorts.ContextOfGrafPort(port), x, y, text.c_str(), text.size());
 }
 
 void InterfaceLib_GetFontInfo(InterfaceLib::Globals* globals, MachineState* state)
@@ -154,7 +162,9 @@ void InterfaceLib_TextMode(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_TextSize(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	InterfaceLib::UGrafPort& port = globals->grafPorts.GetCurrentPort();
+	port.gray.txSize = state->r3;
+	CGContextSetFontSize(globals->grafPorts.ContextOfGrafPort(port), state->r3);
 }
 
 void InterfaceLib_TextWidth(InterfaceLib::Globals* globals, MachineState* state)

@@ -26,9 +26,10 @@
 #include "IAllocator.h"
 #include "CommonDefinitions.h"
 
-// I don't want to #include <IOSurface/IOSurface.h> here because it brings
+// I don't want to #include IOSurface or CoreGraphics here because it brings
 // tons of ambiguous QuickDraw definitions
 typedef struct __IOSurface* IOSurfaceRef;
+typedef struct CGContext* CGContextRef;
 
 namespace InterfaceLib
 {
@@ -49,9 +50,10 @@ namespace InterfaceLib
 		void InitializeGrayGrafPort(InterfaceLib::UGrafPort& port, const InterfaceLib::Rect& bounds);
 		void InitializeColorGrafPort(InterfaceLib::UGrafPort& port, const InterfaceLib::Rect& bounds);
 		
-		void SetCurrentPort(GrafPort& port);
-		UGrafPort& GetCurrentPort();
+		void SetCurrentPort(InterfaceLib::UGrafPort& port);
+		InterfaceLib::UGrafPort& GetCurrentPort();
 		
+		CGContextRef ContextOfGrafPort(InterfaceLib::UGrafPort& port);
 		IOSurfaceRef SurfaceOfGrafPort(InterfaceLib::UGrafPort& port);
 		
 		// this does not deallocate 'port', but it gets rid of the IOSurface

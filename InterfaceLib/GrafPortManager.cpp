@@ -108,7 +108,10 @@ namespace InterfaceLib
 			surface = IOSurfaceCreate(ioSurfaceProperties);
 			void* baseAddress = IOSurfaceGetBaseAddress(surface);
 			CFOwningRef<CGColorSpaceRef> rgb = CGColorSpaceCreateDeviceRGB();
+			
 			drawingContext = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, rgb, kCGImageAlphaPremultipliedLast);
+			CGAffineTransform flipYCoords = CGAffineTransformMake(1, 0, 0, -1, 0, height);
+			CGContextConcatCTM(drawingContext, flipYCoords);
 		}
 		
 		GrafPortData(GrafPortData&& that)
@@ -197,7 +200,7 @@ namespace InterfaceLib
 		}
 	}
 	
-	void GrafPortManager::SetCurrentPort(InterfaceLib::GrafPort &port)
+	void GrafPortManager::SetCurrentPort(UGrafPort &port)
 	{
 		uint32_t address = allocator.ToIntPtr(&port);
 		auto iter = ports.find(address);
@@ -209,6 +212,18 @@ namespace InterfaceLib
 	{
 		assert(currentPort != nullptr && "No graf port set");
 		return *currentPort->port;
+	}
+	
+	CGContextRef GrafPortManager::ContextOfGrafPort(InterfaceLib::UGrafPort &port)
+	{
+		uint32_t address = allocator.ToIntPtr(&port);
+		auto iter = ports.find(address);
+		if (iter != ports.end())
+		{
+			return iter->second.drawingContext;
+		}
+		
+		return nullptr;
 	}
 	
 	IOSurfaceRef GrafPortManager::SurfaceOfGrafPort(InterfaceLib::UGrafPort& port)
