@@ -28,12 +28,15 @@
 
 // I don't want to #include IOSurface or CoreGraphics here because it brings
 // tons of ambiguous QuickDraw definitions
-typedef struct __IOSurface* IOSurfaceRef;
+typedef uint32_t IOSurfaceID;
 typedef struct CGContext* CGContextRef;
 
 namespace InterfaceLib
 {
 	class GrafPortData;
+	
+	bool GrafPortIsDirty(const InterfaceLib::GrafPortData& portData);
+	const InterfaceLib::UGrafPort& GrafPortDataGetUGrafPort(const InterfaceLib::GrafPortData& portData);
 	
 	class GrafPortManager
 	{
@@ -44,19 +47,35 @@ namespace InterfaceLib
 	public:
 		GrafPortManager(Common::IAllocator& allocator);
 		
-		InterfaceLib::GrafPort& AllocateGrayGrafPort(const InterfaceLib::Rect& bounds, const std::string& allocationName = "");
-		InterfaceLib::CGrafPort& AllocateColorGrafPort(const InterfaceLib::Rect& bounds, const std::string& allocationName = "");
+		InterfaceLib::UGrafPort& AllocateGrayGrafPort(const InterfaceLib::Rect& bounds, const std::string& allocationName = "");
+		InterfaceLib::UGrafPort& AllocateColorGrafPort(const InterfaceLib::Rect& bounds, const std::string& allocationName = "");
 		
 		void InitializeGrayGrafPort(InterfaceLib::UGrafPort& port, const InterfaceLib::Rect& bounds);
 		void InitializeColorGrafPort(InterfaceLib::UGrafPort& port, const InterfaceLib::Rect& bounds);
 		
 		void SetCurrentPort(InterfaceLib::UGrafPort& port);
 		InterfaceLib::UGrafPort& GetCurrentPort();
+		void SetDirty();
 		
 		CGContextRef ContextOfGrafPort(InterfaceLib::UGrafPort& port);
-		IOSurfaceRef SurfaceOfGrafPort(InterfaceLib::UGrafPort& port);
+		IOSurfaceID SurfaceOfGrafPort(InterfaceLib::UGrafPort& port);
 		
-		// this does not deallocate 'port', but it gets rid of the IOSurface
+		template<typename TOutputIter>
+		void GetDirtyPorts(TOutputIter iter) const
+		{
+			for (const auto& pair : ports)
+			{
+				if (GrafPortIsDirty(pair.second))
+				{
+					*iter = &GrafPortDataGetUGrafPort(pair.second);
+					iter++;
+				}
+			}
+		}
+		
+		void CleanGrafPorts();
+		
+		// this does not deallocate 'port', but it gets rid of the IOSurface and the graphics context
 		void DestroyGrafPort(InterfaceLib::UGrafPort& port);
 		
 		~GrafPortManager();

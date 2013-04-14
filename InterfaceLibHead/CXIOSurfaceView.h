@@ -1,5 +1,5 @@
 //
-// CXILApplication.h
+// CXIOSurfaceView.h
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -21,30 +21,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface CXILApplication : NSApplication
+@interface CXIOSurfaceView : NSView
 
-// Reacting to stuff
--(void)sendEvent:(NSEvent *)theEvent;
--(void)receiveNotification:(NSNotification*)notification;
-
-// IPC messages implementation
--(void)processIPCMessage;
--(void)readInto:(void*)into size:(size_t)size;
--(void)writeFrom:(const void*)from size:(size_t)size;
-
-// get a copy of the next EventRecord matching the EventMask without altering the queue
--(void)peekNextEvent;
-
-// discard the next EventRecord matching the EventMask; does nothing if there's no such event
--(void)discardNextEvent;
-
-// makes a beep
--(void)beep;
-
-// creates a window
--(void)createWindow;
-
-// redraws the root view
--(void)refreshWindow;
+-(id)initWithFrame:(NSRect)frameRect surface:(IOSurfaceRef)surface;
 
 @end

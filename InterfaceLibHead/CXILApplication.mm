@@ -107,6 +107,7 @@ SEL ipcSelectors[] = {
 	IPC_INDEX(PeekNextEvent) = @selector(peekNextEvent),
 	IPC_INDEX(DequeueNextEvent) = @selector(discardNextEvent),
 	IPC_INDEX(CreateWindow) = @selector(createWindow),
+	IPC_INDEX(RefreshWindow) = @selector(refreshWindow),
 };
 
 const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
@@ -336,6 +337,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 -(void)createWindow
 {
 	IPC_PARAM(key, uint32_t);
+	IPC_PARAM(surfaceId, IOSurfaceID);
 	IPC_PARAM(windowRect, InterfaceLib::Rect);
 	IPC_PARAM(visible, BOOL);
 	IPC_PARAM(title, InterfaceLib::ShortString);
@@ -345,7 +347,19 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	NSString* nsTitle = [NSString stringWithCString:title encoding:NSMacOSRomanStringEncoding];
 	NSRect frame = [self classicRectToXRect:windowRect];
 	
-	[windowDelegate createWindow:key withRect:frame title:nsTitle visible:visible behind:createBehind];
+	IOSurfaceRef surface = IOSurfaceLookup(surfaceId);
+	[windowDelegate createWindow:key withRect:frame surface:surface title:nsTitle visible:visible behind:createBehind];
+	IOSurfaceDecrementUseCount(surface);
+	[self sendDone];
+}
+
+-(void)refreshWindow
+{
+	IPC_PARAM(key, uint32_t);
+	[self expectDone];
+	
+	[windowDelegate refreshWindow:key];
+	
 	[self sendDone];
 }
 

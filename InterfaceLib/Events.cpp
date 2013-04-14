@@ -66,6 +66,8 @@ void InterfaceLib_GetMouse(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_GetNextEvent(InterfaceLib::Globals* globals, MachineState* state)
 {
+	globals->RefreshWindows();
+	
 	EventMask mask = static_cast<EventMask>(state->r3);
 	EventRecord nextEvent = globals->ipc.PerformAction<EventRecord>(IPCMessage::PeekNextEvent, mask);
 	globals->ipc.PerformAction<void>(IPCMessage::DequeueNextEvent, mask);

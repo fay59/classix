@@ -318,6 +318,7 @@ namespace InterfaceLib
 		DequeueNextEvent,
 		
 		CreateWindow,
+		RefreshWindow,
 	};
 }
 

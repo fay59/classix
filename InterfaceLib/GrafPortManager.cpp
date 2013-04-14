@@ -79,6 +79,8 @@ namespace InterfaceLib
 		InterfaceLib::UGrafPort* port;
 		IOSurfaceRef surface;
 		CGContextRef drawingContext;
+		uint32_t dirtyChangeNumber = 0;
+		uint32_t cleanChangeNumber = 0;
 		
 		GrafPortData(InterfaceLib::UGrafPort* port)
 		{
@@ -133,22 +135,32 @@ namespace InterfaceLib
 		}
 	};
 	
+	bool GrafPortIsDirty(const InterfaceLib::GrafPortData& data)
+	{
+		return data.dirtyChangeNumber != data.cleanChangeNumber;
+	}
+	
+	const InterfaceLib::UGrafPort& GrafPortDataGetUGrafPort(const InterfaceLib::GrafPortData& portData)
+	{
+		return *portData.port;
+	}
+	
 	GrafPortManager::GrafPortManager(Common::IAllocator& allocator)
 	: allocator(allocator)
 	{ }
 	
-	InterfaceLib::GrafPort& GrafPortManager::AllocateGrayGrafPort(const InterfaceLib::Rect& bounds, const std::string& allocationName)
+	InterfaceLib::UGrafPort& GrafPortManager::AllocateGrayGrafPort(const InterfaceLib::Rect& bounds, const std::string& allocationName)
 	{
 		UGrafPort* port = AllocateGrafPort(allocator, bounds.right - bounds.left, bounds.bottom - bounds.top, allocationName);
 		InitializeGrayGrafPort(*port, bounds);
-		return port->gray;
+		return *port;
 	}
 	
-	InterfaceLib::CGrafPort& GrafPortManager::AllocateColorGrafPort(const InterfaceLib::Rect& bounds, const std::string& allocationName)
+	InterfaceLib::UGrafPort& GrafPortManager::AllocateColorGrafPort(const InterfaceLib::Rect& bounds, const std::string& allocationName)
 	{
 		UGrafPort* port = AllocateGrafPort(allocator, bounds.right - bounds.left, bounds.bottom - bounds.top, allocationName);
 		InitializeColorGrafPort(*port, bounds);
-		return port->color;
+		return *port;
 	}
 	
 	void GrafPortManager::InitializeGrayGrafPort(UGrafPort& uPort, const InterfaceLib::Rect& bounds)
@@ -214,6 +226,11 @@ namespace InterfaceLib
 		return *currentPort->port;
 	}
 	
+	void GrafPortManager::SetDirty()
+	{
+		currentPort->dirtyChangeNumber = currentPort->cleanChangeNumber + 1;
+	}
+	
 	CGContextRef GrafPortManager::ContextOfGrafPort(InterfaceLib::UGrafPort &port)
 	{
 		uint32_t address = allocator.ToIntPtr(&port);
@@ -226,16 +243,24 @@ namespace InterfaceLib
 		return nullptr;
 	}
 	
-	IOSurfaceRef GrafPortManager::SurfaceOfGrafPort(InterfaceLib::UGrafPort& port)
+	IOSurfaceID GrafPortManager::SurfaceOfGrafPort(InterfaceLib::UGrafPort& port)
 	{
 		uint32_t address = allocator.ToIntPtr(&port);
 		auto iter = ports.find(address);
 		if (iter != ports.end())
 		{
-			return iter->second.surface;
+			return IOSurfaceGetID(iter->second.surface);
 		}
 		
-		return nullptr;
+		return 0;
+	}
+	
+	void GrafPortManager::CleanGrafPorts()
+	{
+		for (auto& pair : ports)
+		{
+			pair.second.cleanChangeNumber = pair.second.dirtyChangeNumber;
+		}
 	}
 	
 	void GrafPortManager::DestroyGrafPort(UGrafPort& port)

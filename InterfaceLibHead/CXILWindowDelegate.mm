@@ -21,6 +21,7 @@
 
 #import "CXILWindowDelegate.h"
 #import "CXILApplication.h"
+#import "CXIOSurfaceView.h"
 
 @interface CXILWindowDelegate (Private)
 
@@ -43,7 +44,7 @@
 	return self;
 }
 
--(void)createWindow:(uint32_t)key withRect:(NSRect)rect title:(NSString *)title visible:(BOOL)visible behind:(uint32_t)behindKey
+-(void)createWindow:(uint32_t)key withRect:(NSRect)rect surface:(IOSurfaceRef)surface title:(NSString *)title visible:(BOOL)visible behind:(uint32_t)behindKey
 {
 	NSUInteger windowStyle = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
 	NSRect actualRect = [NSWindow contentRectForFrameRect:rect styleMask:windowStyle];
@@ -72,7 +73,19 @@
 		}
 	}
 	
+	NSView* contentView = window.contentView;
+	CXIOSurfaceView* rootView = [[CXIOSurfaceView alloc] initWithFrame:contentView.frame surface:surface];
+	window.contentView = rootView;
+	
 	[windows setObject:window forKey:@(key)];
+}
+
+-(void)refreshWindow:(uint32_t)key
+{
+	if (NSWindow* window = [windows objectForKey:@(key)])
+	{
+		[window.contentView setNeedsDisplay];
+	}
 }
 
 -(void)destroyWindow:(uint32_t)windowID

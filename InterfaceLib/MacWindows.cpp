@@ -181,8 +181,8 @@ void InterfaceLib_NewCWindow(InterfaceLib::Globals* globals, MachineState* state
 	
 	// We use storage pointers as window indentifiers in the UI head, since they're guaranteed to be unique
 	// for ay given window.
-	uint32_t key = state->r3;
-	CGrafPort* port;
+	uint32_t portAddress = state->r3;
+	UGrafPort* port;
 	
 	// We try to get the title first, since we can use it for the allocation name.
 	ShortString title;
@@ -192,23 +192,25 @@ void InterfaceLib_NewCWindow(InterfaceLib::Globals* globals, MachineState* state
 	
 	const InterfaceLib::Rect& rect = *globals->allocator.ToPointer<const InterfaceLib::Rect>(state->r4);
 	
-	if (key == 0)
+	if (portAddress == 0)
 	{
 		std::stringstream ss;
 		ss << "Window: \"" << cppTitle << "\"";
 		port = &globals->grafPorts.AllocateColorGrafPort(rect, cppTitle);
-		key = globals->allocator.ToIntPtr(port);
+		portAddress = globals->allocator.ToIntPtr(port);
 	}
 	else
 	{
-		port = globals->allocator.ToPointer<CGrafPort>(key);
+		port = globals->allocator.ToPointer<UGrafPort>(portAddress);
+		assert(port->IsColor() && "Not a Color QuickDraw port");
 	}
 	
 	bool visible = state->r6 != 0;
 	uint32_t createBehind = state->r8;
+	uint32_t surfaceId = globals->grafPorts.SurfaceOfGrafPort(*port);
 	
-	globals->ipc.PerformAction<void>(IPCMessage::CreateWindow, key, rect, visible, title, createBehind);
-	state->r3 = key;
+	globals->ipc.PerformAction<void>(IPCMessage::CreateWindow, portAddress, surfaceId, rect, visible, title, createBehind);
+	state->r3 = portAddress;
 }
 
 void InterfaceLib_NewWindow(InterfaceLib::Globals* globals, MachineState* state)

@@ -87,6 +87,7 @@
 		DC787EAE164F68E30010A288 /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC787EB2164F6A910010A288 /* StdCLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC787EB0164F6A810010A288 /* StdCLib.cpp */; };
 		DC7ECFD816850D830063F14E /* CXDebugUIController.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC7ECFD716850D830063F14E /* CXDebugUIController.mm */; };
+		DC82C3A51719A69000A11444 /* CXIOSurfaceView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC82C3A41719A69000A11444 /* CXIOSurfaceView.m */; };
 		DC8301EF164FFD770079CE2D /* DlfcnLibraryResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301EC164FFD380079CE2D /* DlfcnLibraryResolver.cpp */; };
 		DC8301F3165006FB0079CE2D /* NativeSymbolResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F0165006D00079CE2D /* NativeSymbolResolver.cpp */; };
 		DC8301F7165010690079CE2D /* VirtualMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F5165010690079CE2D /* VirtualMachine.cpp */; };
@@ -441,6 +442,8 @@
 		DC787EB3164F6F110010A288 /* StdCLibFunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StdCLibFunctions.h; sourceTree = "<group>"; };
 		DC7ECFD616850D830063F14E /* CXDebugUIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXDebugUIController.h; sourceTree = "<group>"; };
 		DC7ECFD716850D830063F14E /* CXDebugUIController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CXDebugUIController.mm; sourceTree = "<group>"; };
+		DC82C3A31719A69000A11444 /* CXIOSurfaceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXIOSurfaceView.h; sourceTree = "<group>"; };
+		DC82C3A41719A69000A11444 /* CXIOSurfaceView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXIOSurfaceView.m; sourceTree = "<group>"; };
 		DC8301EC164FFD380079CE2D /* DlfcnLibraryResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DlfcnLibraryResolver.cpp; path = ClassixCore/Libraries/DlfcnLibraryResolver.cpp; sourceTree = SOURCE_ROOT; };
 		DC8301ED164FFD380079CE2D /* DlfcnLibraryResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DlfcnLibraryResolver.h; path = ClassixCore/Libraries/DlfcnLibraryResolver.h; sourceTree = SOURCE_ROOT; };
 		DC8301F0165006D00079CE2D /* NativeSymbolResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NativeSymbolResolver.cpp; path = ClassixCore/Libraries/NativeSymbolResolver.cpp; sourceTree = SOURCE_ROOT; };
@@ -890,6 +893,8 @@
 				DC27B694170E8C3800A23FFD /* CXILApplication.mm */,
 				DC6ABE291710E0FB00A02B2D /* CXILWindowDelegate.h */,
 				DC6ABE2A1710E0FB00A02B2D /* CXILWindowDelegate.mm */,
+				DC82C3A31719A69000A11444 /* CXIOSurfaceView.h */,
+				DC82C3A41719A69000A11444 /* CXIOSurfaceView.m */,
 				DC27B69A170E8D0E00A23FFD /* MainMenu.xib */,
 				DC930ABB1708BC8E00B739B1 /* Supporting Files */,
 			);
@@ -1502,6 +1507,7 @@
 				DC03F65D170E8D7800A4A3C6 /* main.m in Sources */,
 				DC03F664170E8EC400A4A3C6 /* CXILApplication.mm in Sources */,
 				DC6ABE2B1710E0FB00A02B2D /* CXILWindowDelegate.mm in Sources */,
+				DC82C3A51719A69000A11444 /* CXIOSurfaceView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
