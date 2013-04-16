@@ -32,7 +32,7 @@ void InterfaceLib_GetDateTime(InterfaceLib::Globals* globals, MachineState* stat
 {
 	CFAbsoluteTime time = CFAbsoluteTimeGetCurrent();
 	CFAbsoluteTime since1904 = time + 3061152000;
-	*globals->allocator.ToPointer<Common::UInt32>(state->r4) = Common::UInt32(since1904);
+	*globals->allocator.ToPointer<Common::UInt32>(state->r3) = Common::UInt32(since1904);
 }
 
 void InterfaceLib_GetTime(InterfaceLib::Globals* globals, MachineState* state)

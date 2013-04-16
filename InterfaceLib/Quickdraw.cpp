@@ -500,7 +500,7 @@ void InterfaceLib_InitCPort(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_InitCursor(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// do nothing
 }
 
 void InterfaceLib_InitGDevice(InterfaceLib::Globals* globals, MachineState* state)

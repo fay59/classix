@@ -93,7 +93,6 @@ static uint16_t CXILEventRecordModifierFlags(NSUInteger modifierFlags)
 	dispatch_source_t ipcSource;
 	
 	std::list<EventRecord> eventQueue;
-	uint16_t mouseButtonState;
 	EventMask currentlyWaitingOn;
 	
 	NSRect screenBounds;
@@ -102,10 +101,11 @@ static uint16_t CXILEventRecordModifierFlags(NSUInteger modifierFlags)
 
 #define IPC_INDEX(x) [(unsigned)IPCMessage::x]
 
-SEL ipcSelectors[] = {
+static SEL ipcSelectors[] = {
 	IPC_INDEX(Beep) = @selector(beep),
 	IPC_INDEX(PeekNextEvent) = @selector(peekNextEvent),
 	IPC_INDEX(DequeueNextEvent) = @selector(discardNextEvent),
+	IPC_INDEX(IsMouseDown) = @selector(tellIsMouseDown),
 	IPC_INDEX(CreateWindow) = @selector(createWindow),
 	IPC_INDEX(RefreshWindow) = @selector(refreshWindow),
 };
@@ -156,6 +156,10 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		.when = Common::UInt32(theEvent.timestamp * 60), // Mac OS Classic considers there are 60 ticks per second
 		.where = CXILGlobalNSPointToPoint(globalCoordinates),
 	};
+	
+	uint16_t mouseButtonState = ([NSEvent pressedMouseButtons] & 1) == 1
+		? static_cast<uint16_t>(EventModifierFlags::mouseButtonState)
+		: 0;
 	
 	uint16_t modifiers = mouseButtonState | CXILEventRecordModifierFlags(theEvent.modifierFlags);
 	uint32_t message = 0;
@@ -212,6 +216,10 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 
 -(void)receiveNotification:(NSNotification *)notification
 {
+	uint16_t mouseButtonState = ([NSEvent pressedMouseButtons] & 1) == 1
+		? static_cast<uint16_t>(EventModifierFlags::mouseButtonState)
+		: 0;
+	
 	if ([notification.name isEqualToString:NSWindowDidBecomeKeyNotification] ||
 		[notification.name isEqualToString:NSWindowDidResignKeyNotification])
 	{
@@ -324,6 +332,15 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		}
 	}
 	
+	[self sendDone];
+}
+
+-(void)tellIsMouseDown
+{
+	[self expectDone];
+	// This is probably paranoid, but I'd rather use bool than BOOL here because this has to be C++-compatible.
+	bool isMouseDown = [NSEvent pressedMouseButtons] & 1;
+	[self writeFrom:&isMouseDown size:sizeof(isMouseDown)];
 	[self sendDone];
 }
 

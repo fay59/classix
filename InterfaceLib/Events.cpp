@@ -26,7 +26,8 @@ using namespace InterfaceLib;
 
 void InterfaceLib_Button(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	globals->RefreshWindows();
+	state->r3 = globals->ipc.PerformAction<bool>(IPCMessage::IsMouseDown);
 }
 
 void InterfaceLib_EventAvail(InterfaceLib::Globals* globals, MachineState* state)

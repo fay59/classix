@@ -38,6 +38,9 @@
 // discard the next EventRecord matching the EventMask; does nothing if there's no such event
 -(void)discardNextEvent;
 
+// tells if the mouse button is down
+-(void)tellIsMouseDown;
+
 // makes a beep
 -(void)beep;
 

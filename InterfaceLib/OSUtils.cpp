@@ -86,7 +86,6 @@ void InterfaceLib_SetCurrentA5(InterfaceLib::Globals* globals, MachineState* sta
 
 void InterfaceLib_SysEnvirons(InterfaceLib::Globals* globals, MachineState* state)
 {
-	SysEnvRec& record = *globals->allocator.ToPointer<SysEnvRec>(state->r4);
 	if (state->r3 < 1)
 	{
 		state->r3 = 0xea83;
@@ -101,6 +100,7 @@ void InterfaceLib_SysEnvirons(InterfaceLib::Globals* globals, MachineState* stat
 	
 	// mostly based on the output I get from running this in SheepShaver, I should probably
 	// run that on hardware at some point
+	SysEnvRec& record = *globals->allocator.ToPointer<SysEnvRec>(state->r4);
 	record.environsVersion = state->r3;
 	record.machineType = 0x41;
 	record.systemVersion = 0x0922; // faking mac os 9.2.2
@@ -110,6 +110,7 @@ void InterfaceLib_SysEnvirons(InterfaceLib::Globals* globals, MachineState* stat
 	record.keyBoardType = 9;
 	record.atDrvrVersNum = 0;
 	record.sysVRefNum = 0x80c3;
+	state->r3 = 0;
 }
 
 void InterfaceLib_TickCount(InterfaceLib::Globals* globals, MachineState* state)

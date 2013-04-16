@@ -316,6 +316,7 @@ namespace InterfaceLib
 		
 		PeekNextEvent,
 		DequeueNextEvent,
+		IsMouseDown,
 		
 		CreateWindow,
 		RefreshWindow,
