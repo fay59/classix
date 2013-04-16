@@ -49,14 +49,14 @@ namespace
 	
 	const uint32_t macUNIXTimeOffset = 2082844800u;
 	
-	inline time_t MacTimeToUNIXTime(uint32_t macDate)
+	inline time_t MacTimeToUNIXTime(Common::UInt32 macDate)
 	{
-		return BigToHost(macDate) - macUNIXTimeOffset;
+		return macDate - macUNIXTimeOffset;
 	}
 	
-	inline uint32_t UNIXTimeToMacTime(time_t unixDate)
+	inline Common::UInt32 UNIXTimeToMacTime(time_t unixDate)
 	{
-		return BigToHost(static_cast<uint32_t>(unixDate + macUNIXTimeOffset));
+		return Common::UInt32(static_cast<uint32_t>(unixDate + macUNIXTimeOffset));
 	}
 	
 	inline uint32_t MacTime()
@@ -175,7 +175,7 @@ namespace PEF
 	
 	time_t ContainerHeader::GetCreationTime() const
 	{
-		return MacTimeToUNIXTime(DateTimeStamp.Get());
+		return MacTimeToUNIXTime(DateTimeStamp);
 	}
 	
 	void ContainerHeader::SetCreationTime(time_t time)

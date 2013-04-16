@@ -31,38 +31,37 @@ namespace Common
 		struct SwappedFloat32 { uint32_t v; };
 		struct SwappedFloat64 { uint64_t v; };
 		
-		template<typename TIntType>
-		inline TIntType Identity(TIntType integer)
+		template<typename TInt>
+		struct IntSwap
 		{
-			return integer;
-		}
+			static void Swap(TInt type);
+		};
 		
 		template<typename TInt>
-		inline TInt SwapInt(TInt arg)
+		struct IntIdentity
 		{
-			static_assert(sizeof(TInt) == 2 || sizeof(TInt) == 4 || sizeof(TInt) == 8, "Unsupported type");
-			
-			switch (sizeof(TInt))
-			{
-				case 2: return OSSwapInt16(arg);
-				case 4: return OSSwapInt32(arg);
-				case 8: return OSSwapInt64(arg);
-			}
-			
-			// shut up the compiler; this can never happen
-			return 0;
-		}
+			static inline TInt Swap(TInt v) { return v; }
+		};
+		
+#define INT_SWAP_STRUCT(type, func) template<> struct IntSwap<type> { static inline type Swap(type v) { return func(v); } };
+		INT_SWAP_STRUCT(int16_t, OSSwapInt16);
+		INT_SWAP_STRUCT(uint16_t, OSSwapInt16);
+		INT_SWAP_STRUCT(int32_t, OSSwapInt32);
+		INT_SWAP_STRUCT(uint32_t, OSSwapInt32);
+		INT_SWAP_STRUCT(int64_t, OSSwapInt64);
+		INT_SWAP_STRUCT(uint64_t, OSSwapInt64);
+#undef INT_SWAP_STRUCT
 		
 #if __LITTLE_ENDIAN__
-#define	BigToHost		::Common::CF::SwapInt
-#define HostToBig		::Common::CF::SwapInt
-#define LittleToHost	::Common::CF::Identity
-#define HostToLittle	::Common::CF::Identity
+#define	BigToHost		::Common::CF::IntSwap
+#define HostToBig		::Common::CF::IntSwap
+#define LittleToHost	::Common::CF::IntIdentity
+#define HostToLittle	::Common::CF::IntIdentity
 #else
-#define BigToHost		::Common::CF::Identity
-#define HostToBig		::Common::CF::Identity
-#define LittleToHost	::Common::CF::SwapInt
-#define HostToLittle	::Common::CF::SwapInt
+#define BigToHost		::Common::CF::IntIdentity
+#define HostToBig		::Common::CF::IntIdentity
+#define LittleToHost	::Common::CF::IntSwap
+#define HostToLittle	::Common::CF::IntSwap
 #endif
 		
 		inline SwappedFloat64 ConvertDoubleHostToSwapped(double arg) {
@@ -72,7 +71,7 @@ namespace Common
 			} result;
 			result.v = arg;
 #if __LITTLE_ENDIAN__
-			result.sv.v = SwapInt(result.sv.v);
+			result.sv.v = IntSwap<uint64_t>::Swap(result.sv.v);
 #endif
 			return result.sv;
 		}
@@ -84,7 +83,7 @@ namespace Common
 			} result;
 			result.sv = arg;
 #if __LITTLE_ENDIAN__
-			result.sv.v = SwapInt(result.sv.v);
+			result.sv.v = IntSwap<uint64_t>::Swap(result.sv.v);
 #endif
 			return result.v;
 		}
@@ -96,7 +95,7 @@ namespace Common
 			} result;
 			result.v = arg;
 #if __LITTLE_ENDIAN__
-			result.sv.v = SwapInt(result.sv.v);
+			result.sv.v = IntSwap<uint32_t>::Swap(result.sv.v);
 #endif
 			return result.sv;
 		}
@@ -108,7 +107,7 @@ namespace Common
 			} result;
 			result.sv = arg;
 #if __LITTLE_ENDIAN__
-			result.sv.v = SwapInt(result.sv.v);
+			result.sv.v = IntSwap<uint32_t>::Swap(result.sv.v);
 #endif
 			return result.v;
 		}
@@ -139,12 +138,12 @@ namespace Common
 		
 		inline TNativeInt Get() const
 		{
-			return BigToHost(AsBigEndian);
+			return BigToHost<TNativeInt>::Swap(AsBigEndian);
 		}
 		
 		inline void Set(TNativeInt that)
 		{
-			AsBigEndian = HostToBig(that);
+			AsBigEndian = HostToBig<TNativeInt>::Swap(that);
 		}
 		
 		inline self& operator=(TNativeInt that)
