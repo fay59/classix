@@ -519,7 +519,7 @@ void InterfaceLib_InitGraf(InterfaceLib::Globals* globals, MachineState* state)
 	screenRect.right = width / 2;
 	screenRect.top = -height / 2;
 	screenRect.bottom = height / 2;
-	InterfaceLib::CGrafPort& port = globals->grafPorts.AllocateColorGrafPort(screenRect, "QD Screen Port");
+	InterfaceLib::UGrafPort& port = globals->grafPorts.AllocateColorGrafPort(screenRect, "QD Screen Port");
 	uint32_t grafPtr = globals->allocator.ToIntPtr(&port);
 	
 	// initialize qd while we're at it
