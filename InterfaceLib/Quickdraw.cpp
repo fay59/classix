@@ -950,7 +950,8 @@ void InterfaceLib_QDError(InterfaceLib::Globals* globals, MachineState* state)
 void InterfaceLib_Random(InterfaceLib::Globals* globals, MachineState* state)
 {
 	// FIXME cheap implementation that doesn't use the value of randSeed
-	state->r3 = random();
+	int16_t number = static_cast<int16_t>(random() & 0xffff);
+	state->r3 = number;
 }
 
 void InterfaceLib_RealColor(InterfaceLib::Globals* globals, MachineState* state)
