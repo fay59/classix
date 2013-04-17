@@ -114,8 +114,6 @@ namespace InterfaceLib
 			CFOwningRef<CGColorSpaceRef> rgb = CGColorSpaceCreateDeviceRGB();
 			
 			drawingContext = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, rgb, kCGImageAlphaPremultipliedLast);
-			CGContextSetRGBFillColor(drawingContext, 0, 0, 0, 1);
-			CGContextFillRect(drawingContext, CGRectMake(0, 0, width, height));
 			
 			// TODO disable transform matrix as it breaks text rendering (obviously)
 			/*

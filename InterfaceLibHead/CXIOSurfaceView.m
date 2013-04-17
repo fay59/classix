@@ -44,7 +44,7 @@
 	
 	void* buffer = IOSurfaceGetBaseAddress(surface);
 	CGColorSpaceRef rgb = CGColorSpaceCreateDeviceRGB();
-	surfaceContext = CGBitmapContextCreate(buffer, frame.size.width, frame.size.height, 8, frame.size.width * 4, rgb, kCGImageAlphaPremultipliedFirst);
+	surfaceContext = CGBitmapContextCreate(buffer, frame.size.width, frame.size.height, 8, frame.size.width * 4, rgb, kCGImageAlphaPremultipliedLast);
 	CGColorSpaceRelease(rgb);
 	
 	return self;
