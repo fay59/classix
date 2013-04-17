@@ -515,10 +515,10 @@ void InterfaceLib_InitGraf(InterfaceLib::Globals* globals, MachineState* state)
 	size_t height = CGDisplayModeGetHeight(displayMode);
 	
 	InterfaceLib::Rect screenRect;
-	screenRect.left = -width / 2;
-	screenRect.right = width / 2;
-	screenRect.top = -height / 2;
-	screenRect.bottom = height / 2;
+	screenRect.left = 0;
+	screenRect.right = width;
+	screenRect.top = 0;
+	screenRect.bottom = height;
 	InterfaceLib::UGrafPort& port = globals->grafPorts.AllocateColorGrafPort(screenRect, "QD Screen Port");
 	uint32_t grafPtr = globals->allocator.ToIntPtr(&port);
 	
