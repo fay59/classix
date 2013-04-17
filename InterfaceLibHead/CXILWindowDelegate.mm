@@ -84,7 +84,7 @@
 {
 	if (NSWindow* window = [windows objectForKey:@(key)])
 	{
-		[window.contentView setNeedsDisplay];
+		[window.contentView setNeedsDisplay:YES];
 	}
 }
 

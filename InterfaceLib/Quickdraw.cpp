@@ -869,7 +869,10 @@ void InterfaceLib_PaintOval(InterfaceLib::Globals* globals, MachineState* state)
 {
 	UGrafPort& port = globals->grafPorts.GetCurrentPort();
 	const InterfaceLib::Rect* rect = globals->allocator.ToPointer<InterfaceLib::Rect>(state->r3);
-	CGContextFillEllipseInRect(globals->grafPorts.ContextOfGrafPort(port), RectToCGRect(*rect));
+	CGRect cgRect = RectToCGRect(*rect);
+	
+	CGContextFillEllipseInRect(globals->grafPorts.ContextOfGrafPort(port), cgRect);
+	globals->grafPorts.SetDirty();
 }
 
 void InterfaceLib_PaintPoly(InterfaceLib::Globals* globals, MachineState* state)

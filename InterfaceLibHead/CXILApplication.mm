@@ -295,7 +295,8 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	// since no leak is possible, we shut up the compiler
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-	[self performSelector:ipcSelectors[messageType]];
+	SEL selector = ipcSelectors[messageType];
+	[self performSelector:selector];
 #pragma clang diagnostic pop
 }
 

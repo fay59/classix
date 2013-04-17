@@ -40,6 +40,7 @@ namespace InterfaceLib
 		grafPorts.GetDirtyPorts(std::inserter(ports, ports.end()));
 		for (InterfaceLib::UGrafPort* port : ports)
 		{
+			GrafPortManager::GrafPortYield yield = grafPorts.YieldGrafPort(*port);
 			ipc.PerformAction<void>(IPCMessage::RefreshWindow, allocator.ToIntPtr(port));
 		}
 		

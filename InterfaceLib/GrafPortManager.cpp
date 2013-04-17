@@ -108,12 +108,21 @@ namespace InterfaceLib
 			CFDictionarySetValue(ioSurfaceProperties, kIOSurfaceAllocSize, cfAllocSize);
 			
 			surface = IOSurfaceCreate(ioSurfaceProperties);
+			assert(surface != nullptr && "Null surface");
+			
 			void* baseAddress = IOSurfaceGetBaseAddress(surface);
 			CFOwningRef<CGColorSpaceRef> rgb = CGColorSpaceCreateDeviceRGB();
 			
 			drawingContext = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, rgb, kCGImageAlphaPremultipliedLast);
+			CGContextSetRGBFillColor(drawingContext, 0, 0, 0, 1);
+			CGContextFillRect(drawingContext, CGRectMake(0, 0, width, height));
+			
+			// TODO disable transform matrix as it breaks text rendering (obviously)
+			/*
 			CGAffineTransform flipYCoords = CGAffineTransformMake(1, 0, 0, -1, 0, height);
 			CGContextConcatCTM(drawingContext, flipYCoords);
+			 */
+			
 		}
 		
 		GrafPortData(GrafPortData&& that)
@@ -134,6 +143,23 @@ namespace InterfaceLib
 			CGContextRelease(drawingContext);
 		}
 	};
+	
+	GrafPortManager::GrafPortYield::GrafPortYield(GrafPortData* data)
+	: data(data)
+	{
+		// unlock surface (if locking is eventually deemed necessary)
+	}
+	
+	GrafPortManager::GrafPortYield::GrafPortYield(GrafPortYield&& that)
+	: data(that.data)
+	{
+		that.data = nullptr;
+	}
+	
+	GrafPortManager::GrafPortYield::~GrafPortYield()
+	{
+		// lock surface (if unlocked in constructor)
+	}
 	
 	GrafPortManager::GrafPortManager(Common::IAllocator& allocator)
 	: allocator(allocator)
@@ -194,7 +220,6 @@ namespace InterfaceLib
 		uint32_t address = allocator.ToIntPtr(&port);
 		GrafPortData& portData = *ports.emplace(std::make_pair(address, new GrafPortData(&uPort))).first->second;
 		portData.port = &uPort;
-		portData.surface = nullptr; // TODO this should create a new IOSurface
 		
 		if (ports.size() == 1)
 		{
@@ -214,6 +239,12 @@ namespace InterfaceLib
 	{
 		assert(currentPort != nullptr && "No graf port set");
 		return *currentPort->port;
+	}
+	
+	GrafPortManager::GrafPortYield GrafPortManager::YieldGrafPort(InterfaceLib::UGrafPort &port)
+	{
+		uint32_t key = allocator.ToIntPtr(&port);
+		return GrafPortYield(ports.at(key));
 	}
 	
 	void GrafPortManager::SetDirty()
