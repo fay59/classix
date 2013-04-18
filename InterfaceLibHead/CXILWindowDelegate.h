@@ -25,7 +25,7 @@
 @interface CXILWindowDelegate : NSObject
 
 -(void)createWindow:(uint32_t)key withRect:(NSRect)rect surface:(IOSurfaceRef)surface title:(NSString*)title visible:(BOOL)visible behind:(uint32_t)behindKey;
--(void)refreshWindow:(uint32_t)key;
+-(void)setDirtyRect:(CGRect)rect inWindow:(uint32_t)key;
 -(void)destroyWindow:(uint32_t)windowID;
 
 -(uint32_t)keyOfWindow:(NSWindow*)window;

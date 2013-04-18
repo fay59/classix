@@ -26,7 +26,7 @@ using namespace InterfaceLib;
 
 void InterfaceLib_Button(InterfaceLib::Globals* globals, MachineState* state)
 {
-	globals->RefreshWindows();
+	globals->ipc.PerformAction<void>(IPCMessage::RefreshWindows);
 	state->r3 = globals->ipc.PerformAction<bool>(IPCMessage::IsMouseDown);
 }
 
@@ -67,7 +67,7 @@ void InterfaceLib_GetMouse(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_GetNextEvent(InterfaceLib::Globals* globals, MachineState* state)
 {
-	globals->RefreshWindows();
+	globals->ipc.PerformAction<void>(IPCMessage::RefreshWindows);
 	
 	EventMask mask = static_cast<EventMask>(state->r3);
 	EventRecord nextEvent = globals->ipc.PerformAction<EventRecord>(IPCMessage::PeekNextEvent, mask);

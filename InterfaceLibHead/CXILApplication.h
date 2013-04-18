@@ -47,7 +47,10 @@
 // creates a window
 -(void)createWindow;
 
-// redraws the root view
--(void)refreshWindow;
+// marks a view rectangle as dirty
+-(void)setDirtyRect;
+
+// repaints views marked dirty
+-(void)refreshWindows;
 
 @end

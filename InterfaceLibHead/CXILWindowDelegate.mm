@@ -47,10 +47,11 @@
 -(void)createWindow:(uint32_t)key withRect:(NSRect)rect surface:(IOSurfaceRef)surface title:(NSString *)title visible:(BOOL)visible behind:(uint32_t)behindKey
 {
 	NSUInteger windowStyle = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
-	NSRect actualRect = [NSWindow contentRectForFrameRect:rect styleMask:windowStyle];
-	NSWindow* window = [[NSWindow alloc] initWithContentRect:actualRect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO];
+	NSWindow* window = [[NSWindow alloc] initWithContentRect:rect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO];
 	window.title = title;
 	window.oneShot = YES;
+	
+	[windows setObject:window forKey:@(key)];
 	
 	if (visible)
 	{
@@ -74,18 +75,14 @@
 	}
 	
 	NSView* contentView = window.contentView;
-	CXIOSurfaceView* rootView = [[CXIOSurfaceView alloc] initWithFrame:contentView.frame surface:surface];
+	CXIOSurfaceView* rootView = [[CXIOSurfaceView alloc] initWithFrame:contentView.frame surface:surface surfaceBounds:rect];
 	window.contentView = rootView;
-	
-	[windows setObject:window forKey:@(key)];
 }
 
--(void)refreshWindow:(uint32_t)key
+-(void)setDirtyRect:(CGRect)rect inWindow:(uint32_t)key
 {
-	if (NSWindow* window = [windows objectForKey:@(key)])
-	{
-		[window.contentView setNeedsDisplay:YES];
-	}
+	NSWindow* window = [windows objectForKey:@(key)];
+	[[window contentView] setNeedsDisplayInRect:rect];
 }
 
 -(void)destroyWindow:(uint32_t)windowID

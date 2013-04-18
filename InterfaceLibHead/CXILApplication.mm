@@ -20,6 +20,7 @@
 //
 
 #include <list>
+#include <unordered_map>
 #include <dispatch/dispatch.h>
 #include <mach/mach_time.h>
 #include "CommonDefinitions.h"
@@ -32,51 +33,65 @@
 using namespace Common;
 using namespace InterfaceLib;
 
-static inline BOOL CXILIsFDValid(int fd)
+namespace
 {
-	return fcntl(fd, F_GETFL) != -1 || errno != EBADF;
-}
-
-static uint32_t CXILEventTimeStamp()
-{
-	mach_timebase_info_data_t info;
-    mach_timebase_info(&info);
-    uint64_t absTime = mach_absolute_time();
-    absTime *= info.numer;
-    absTime /= info.denom;
-    return static_cast<uint32_t>(absTime / (1000000000. / 60.));
-}
-
-static InterfaceLib::Point CXILGlobalNSPointToPoint(NSPoint pt)
-{
-	uint32_t screenHeight = NSScreen.mainScreen.frame.size.height;
-	InterfaceLib::Point outPoint;
-	outPoint.h = pt.x;
-	outPoint.v = screenHeight / 2 - pt.y;
-	return outPoint;
-}
-
-static uint16_t CXILEventRecordModifierFlags(NSUInteger modifierFlags)
-{
-	uint16_t modifiers = 0;
-	if ((modifierFlags & NSCommandKeyMask) == NSCommandKeyMask)
-		modifiers |= static_cast<uint16_t>(EventModifierFlags::cmdKey);
+	static inline BOOL CXILIsFDValid(int fd)
+	{
+		return fcntl(fd, F_GETFL) != -1 || errno != EBADF;
+	}
 	
-	if ((modifierFlags & NSShiftKeyMask) == NSShiftKeyMask)
-		modifiers |= static_cast<uint16_t>(EventModifierFlags::shiftKey);
+	static uint32_t CXILEventTimeStamp()
+	{
+		mach_timebase_info_data_t info;
+		mach_timebase_info(&info);
+		uint64_t absTime = mach_absolute_time();
+		absTime *= info.numer;
+		absTime /= info.denom;
+		return static_cast<uint32_t>(absTime / (1000000000. / 60.));
+	}
 	
-	if ((modifierFlags & NSAlphaShiftKeyMask) == NSAlphaShiftKeyMask)
-		modifiers |= static_cast<uint16_t>(EventModifierFlags::alphaLock);
+	static InterfaceLib::Point CXILGlobalNSPointToPoint(NSPoint pt)
+	{
+		uint32_t screenHeight = NSScreen.mainScreen.frame.size.height;
+		InterfaceLib::Point outPoint;
+		outPoint.h = pt.x;
+		outPoint.v = screenHeight / 2 - pt.y;
+		return outPoint;
+	}
 	
-	if ((modifierFlags & NSAlternateKeyMask) == NSAlternateKeyMask)
-		modifiers |= static_cast<uint16_t>(EventModifierFlags::optionKey);
+	static uint16_t CXILEventRecordModifierFlags(NSUInteger modifierFlags)
+	{
+		uint16_t modifiers = 0;
+		if ((modifierFlags & NSCommandKeyMask) == NSCommandKeyMask)
+			modifiers |= static_cast<uint16_t>(EventModifierFlags::cmdKey);
+		
+		if ((modifierFlags & NSShiftKeyMask) == NSShiftKeyMask)
+			modifiers |= static_cast<uint16_t>(EventModifierFlags::shiftKey);
+		
+		if ((modifierFlags & NSAlphaShiftKeyMask) == NSAlphaShiftKeyMask)
+			modifiers |= static_cast<uint16_t>(EventModifierFlags::alphaLock);
+		
+		if ((modifierFlags & NSAlternateKeyMask) == NSAlternateKeyMask)
+			modifiers |= static_cast<uint16_t>(EventModifierFlags::optionKey);
+		
+		if ((modifierFlags & NSControlKeyMask) == NSControlKeyMask)
+			modifiers |= static_cast<uint16_t>(EventModifierFlags::controlKey);
+		
+		// TODO active state?
+		// TODO right shift, command, control?
+		return modifiers;
+	}
 	
-	if ((modifierFlags & NSControlKeyMask) == NSControlKeyMask)
-		modifiers |= static_cast<uint16_t>(EventModifierFlags::controlKey);
-	
-	// TODO active state?
-	// TODO right shift, command, control?
-	return modifiers;
+	struct CGRect32
+	{
+		float x, y;
+		float width, height;
+		
+		operator CGRect()
+		{
+			return CGRectMake(x, y, width, height);
+		}
+	};
 }
 
 @interface CXILApplication (GoryDetails)
@@ -92,6 +107,7 @@ static uint16_t CXILEventRecordModifierFlags(NSUInteger modifierFlags)
 	int readHandle;
 	dispatch_source_t ipcSource;
 	
+	std::unordered_multimap<uint32_t, CGRect> dirtyRects;
 	std::list<EventRecord> eventQueue;
 	EventMask currentlyWaitingOn;
 	
@@ -107,7 +123,8 @@ static SEL ipcSelectors[] = {
 	IPC_INDEX(DequeueNextEvent) = @selector(discardNextEvent),
 	IPC_INDEX(IsMouseDown) = @selector(tellIsMouseDown),
 	IPC_INDEX(CreateWindow) = @selector(createWindow),
-	IPC_INDEX(RefreshWindow) = @selector(refreshWindow),
+	IPC_INDEX(SetDirtyRect) = @selector(setDirtyRect),
+	IPC_INDEX(RefreshWindows) = @selector(refreshWindows),
 };
 
 const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
@@ -250,11 +267,17 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 #pragma mark RPCs
 -(void)readInto:(void *)into size:(size_t)size
 {
-	size_t count = read(readHandle, into, size);
-	if (count < size)
+	char* buffer = static_cast<char*>(into);
+	size_t totalRead = 0;
+	while (totalRead != size)
 	{
-		// broken pipe: the parent process probably quit
-		[self terminate:self];
+		size_t count = read(readHandle, buffer + totalRead, size - totalRead);
+		if (count == 0)
+		{
+			// EOF: the parent process probably quit
+			[self terminate:self];
+		}
+		totalRead += count;
 	}
 }
 
@@ -371,12 +394,25 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	[self sendDone];
 }
 
--(void)refreshWindow
+-(void)setDirtyRect
 {
 	IPC_PARAM(key, uint32_t);
+	IPC_PARAM(dirtyRect, CGRect32);
 	[self expectDone];
 	
-	[windowDelegate refreshWindow:key];
+	dirtyRects.insert(std::make_pair(key, dirtyRect));
+	
+	[self sendDone];
+}
+
+-(void)refreshWindows
+{
+	[self expectDone];
+	
+	for (const auto& pair : dirtyRects)
+		[windowDelegate setDirtyRect:pair.second inWindow:pair.first];
+	
+	dirtyRects.clear();
 	
 	[self sendDone];
 }
@@ -399,8 +435,8 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 
 -(NSRect)classicRectToXRect:(InterfaceLib::Rect)rect
 {
-	CGFloat x = rect.left + screenBounds.size.width / 2;
-	CGFloat y = -rect.bottom + screenBounds.size.height / 2;
+	CGFloat x = rect.left;
+	CGFloat y = screenBounds.size.height - rect.bottom;
 	CGFloat width = rect.right - rect.left;
 	CGFloat height = rect.bottom - rect.top;
 	return NSMakeRect(x, y, width, height);

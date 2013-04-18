@@ -23,6 +23,6 @@
 
 @interface CXIOSurfaceView : NSView
 
--(id)initWithFrame:(NSRect)frameRect surface:(IOSurfaceRef)surface;
+-(id)initWithFrame:(NSRect)frameRect surface:(IOSurfaceRef)surface surfaceBounds:(CGRect)bounds;
 
 @end

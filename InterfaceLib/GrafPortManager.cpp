@@ -113,7 +113,9 @@ namespace InterfaceLib
 			void* baseAddress = IOSurfaceGetBaseAddress(surface);
 			CFOwningRef<CGColorSpaceRef> rgb = CGColorSpaceCreateDeviceRGB();
 			
-			drawingContext = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, rgb, kCGImageAlphaPremultipliedLast);
+			drawingContext = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, rgb, kCGImageAlphaNoneSkipFirst);
+			CGContextSetRGBFillColor(drawingContext, 1, 1, 1, 1);
+			CGContextFillRect(drawingContext, CGRectMake(0, 0, width, height));
 			
 			// TODO disable transform matrix as it breaks text rendering (obviously)
 			/*
@@ -141,23 +143,6 @@ namespace InterfaceLib
 			CGContextRelease(drawingContext);
 		}
 	};
-	
-	GrafPortManager::GrafPortYield::GrafPortYield(GrafPortData* data)
-	: data(data)
-	{
-		// unlock surface (if locking is eventually deemed necessary)
-	}
-	
-	GrafPortManager::GrafPortYield::GrafPortYield(GrafPortYield&& that)
-	: data(that.data)
-	{
-		that.data = nullptr;
-	}
-	
-	GrafPortManager::GrafPortYield::~GrafPortYield()
-	{
-		// lock surface (if unlocked in constructor)
-	}
 	
 	GrafPortManager::GrafPortManager(Common::IAllocator& allocator)
 	: allocator(allocator)
@@ -239,27 +224,6 @@ namespace InterfaceLib
 		return *currentPort->port;
 	}
 	
-	GrafPortManager::GrafPortYield GrafPortManager::YieldGrafPort(InterfaceLib::UGrafPort &port)
-	{
-		uint32_t key = allocator.ToIntPtr(&port);
-		return GrafPortYield(ports.at(key));
-	}
-	
-	void GrafPortManager::SetDirty()
-	{
-		currentPort->dirtyChangeNumber = currentPort->cleanChangeNumber + 1;
-	}
-	
-	bool GrafPortIsDirty(const InterfaceLib::GrafPortData& data)
-	{
-		return data.dirtyChangeNumber != data.cleanChangeNumber;
-	}
-	
-	InterfaceLib::UGrafPort& GrafPortDataGetUGrafPort(const InterfaceLib::GrafPortData& portData)
-	{
-		return *portData.port;
-	}
-	
 	CGContextRef GrafPortManager::ContextOfGrafPort(InterfaceLib::UGrafPort &port)
 	{
 		uint32_t address = allocator.ToIntPtr(&port);
@@ -282,14 +246,6 @@ namespace InterfaceLib
 		}
 		
 		return 0;
-	}
-	
-	void GrafPortManager::CleanGrafPorts()
-	{
-		for (auto& pair : ports)
-		{
-			pair.second->cleanChangeNumber = pair.second->dirtyChangeNumber;
-		}
 	}
 	
 	void GrafPortManager::DestroyGrafPort(UGrafPort& port)

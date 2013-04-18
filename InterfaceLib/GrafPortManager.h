@@ -35,9 +35,6 @@ namespace InterfaceLib
 {
 	class GrafPortData;
 	
-	bool GrafPortIsDirty(const InterfaceLib::GrafPortData& portData);
-	InterfaceLib::UGrafPort& GrafPortDataGetUGrafPort(const InterfaceLib::GrafPortData& portData);
-	
 	class GrafPortManager
 	{
 		Common::IAllocator& allocator;
@@ -45,18 +42,6 @@ namespace InterfaceLib
 		GrafPortData* currentPort;
 		
 	public:
-		class GrafPortYield
-		{
-			friend class GrafPortManager;
-			GrafPortData* data;
-			GrafPortYield(GrafPortData* data);
-			
-		public:
-			GrafPortYield(const GrafPortYield& that) = delete;
-			GrafPortYield(GrafPortYield&& that);
-			~GrafPortYield();
-		};
-		
 		GrafPortManager(Common::IAllocator& allocator);
 		
 		InterfaceLib::UGrafPort& AllocateGrayGrafPort(const InterfaceLib::Rect& bounds, const std::string& allocationName = "");
@@ -70,23 +55,6 @@ namespace InterfaceLib
 		
 		CGContextRef ContextOfGrafPort(InterfaceLib::UGrafPort& port);
 		IOSurfaceID SurfaceOfGrafPort(InterfaceLib::UGrafPort& port);
-		GrafPortYield YieldGrafPort(InterfaceLib::UGrafPort& port);
-		
-		template<typename TOutputIter>
-		void GetDirtyPorts(TOutputIter iter) const
-		{
-			for (const auto& pair : ports)
-			{
-				if (GrafPortIsDirty(*pair.second))
-				{
-					*iter = &GrafPortDataGetUGrafPort(*pair.second);
-					iter++;
-				}
-			}
-		}
-		
-		void SetDirty();
-		void CleanGrafPorts();
 		
 		// this does not deallocate 'port', but it gets rid of the IOSurface and the graphics context
 		void DestroyGrafPort(InterfaceLib::UGrafPort& port);

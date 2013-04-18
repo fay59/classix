@@ -319,7 +319,8 @@ namespace InterfaceLib
 		IsMouseDown,
 		
 		CreateWindow,
-		RefreshWindow,
+		SetDirtyRect,
+		RefreshWindows,
 	};
 }
 

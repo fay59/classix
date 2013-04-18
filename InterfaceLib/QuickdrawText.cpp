@@ -62,13 +62,13 @@ void InterfaceLib_DrawJustified(InterfaceLib::Globals* globals, MachineState* st
 
 void InterfaceLib_DrawString(InterfaceLib::Globals* globals, MachineState* state)
 {
+	// FIXME this doesn't work for some reason
 	UGrafPort& port = globals->grafPorts.GetCurrentPort();
 	CGFloat x = port.color.pnLoc.h;
 	CGFloat y = port.color.pnLoc.v;
 	const char* pascalText = globals->allocator.ToPointer<const char>(state->r3);
 	std::string text = PascalStringToCPPString(pascalText);
 	CGContextShowTextAtPoint(globals->grafPorts.ContextOfGrafPort(port), x, y, text.c_str(), text.size());
-	globals->grafPorts.SetDirty();
 }
 
 void InterfaceLib_GetFontInfo(InterfaceLib::Globals* globals, MachineState* state)

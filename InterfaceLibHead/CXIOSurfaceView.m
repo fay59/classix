@@ -21,10 +21,23 @@
 
 #import "CXIOSurfaceView.h"
 
+static CGFloat titleBarHeight;
+
 @implementation CXIOSurfaceView
 {
 	IOSurfaceRef surface;
 	CGContextRef surfaceContext;
+	
+	// FPS counter
+	time_t start;
+	int frameCounter;
+}
+
++(void)initialize
+{
+	CGRect contentRect = CGRectMake(0, 0, 10, 10);
+	CGRect frameRect = [NSWindow frameRectForContentRect:contentRect styleMask:NSTitledWindowMask];
+	titleBarHeight = frameRect.size.height - contentRect.size.height;
 }
 
 -(id)initWithFrame:(NSRect)frameRect
@@ -32,7 +45,7 @@
 	return nil;
 }
 
--(id)initWithFrame:(NSRect)frame surface:(IOSurfaceRef)aSurface
+-(id)initWithFrame:(NSRect)frame surface:(IOSurfaceRef)aSurface surfaceBounds:(CGRect)bounds
 {
 	if (!(self = [super initWithFrame:frame]))
 	{
@@ -44,18 +57,40 @@
 	
 	void* buffer = IOSurfaceGetBaseAddress(surface);
 	CGColorSpaceRef rgb = CGColorSpaceCreateDeviceRGB();
-	surfaceContext = CGBitmapContextCreate(buffer, frame.size.width, frame.size.height, 8, frame.size.width * 4, rgb, kCGImageAlphaPremultipliedLast);
+	surfaceContext = CGBitmapContextCreate(buffer, bounds.size.width, bounds.size.height, 8, bounds.size.width * 4, rgb, kCGImageAlphaNoneSkipFirst);
 	CGColorSpaceRelease(rgb);
 	
 	return self;
 }
 
+-(BOOL)wantsDefaultClipping { return NO; }
+
 -(void)drawRect:(NSRect)dirtyRect
 {
+	time_t now = time(NULL);
+	if (start == 0)
+		start = now;
+	
+	if (start != now)
+	{
+		NSLog(@"%i fps", frameCounter);
+		frameCounter = 0;
+		start = now;
+	}
+	frameCounter++;
+	
 	CGImageRef image = CGBitmapContextCreateImage(surfaceContext);
-	CGContextRef currentContext = NSGraphicsContext.currentContext.graphicsPort;
-	CGContextDrawImage(currentContext, self.bounds, image);
+	// wtf??
+	// In the "CGImage coordinate system", pixel (0,0) is the top left pixel
+	// while in CGContextRefs (0,0) is the bottom left pixel
+	CGRect imageDirtyRegion = dirtyRect;
+	imageDirtyRegion.origin.y = CGImageGetHeight(image) - imageDirtyRegion.origin.y - imageDirtyRegion.size.height;
+	CGImageRef smaller = CGImageCreateWithImageInRect(image, imageDirtyRegion);
 	CGImageRelease(image);
+	
+	CGContextRef currentContext = NSGraphicsContext.currentContext.graphicsPort;
+	CGContextDrawImage(currentContext, dirtyRect, smaller);
+	CGImageRelease(smaller);
 }
 
 -(void)dealloc

@@ -33,19 +33,6 @@ namespace InterfaceLib
 	Globals::Globals(Common::IAllocator& allocator)
 	: allocator(allocator), resources(allocator), grafPorts(allocator)
 	{ }
-	
-	void Globals::RefreshWindows()
-	{
-		std::vector<InterfaceLib::UGrafPort*> ports;
-		grafPorts.GetDirtyPorts(std::inserter(ports, ports.end()));
-		for (InterfaceLib::UGrafPort* port : ports)
-		{
-			GrafPortManager::GrafPortYield yield = grafPorts.YieldGrafPort(*port);
-			ipc.PerformAction<void>(IPCMessage::RefreshWindow, allocator.ToIntPtr(port));
-		}
-		
-		grafPorts.CleanGrafPorts();
-	}
 }
 
 InterfaceLib::Globals* LibraryLoad(Common::IAllocator* allocator)

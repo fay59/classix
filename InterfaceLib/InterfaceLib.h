@@ -46,8 +46,6 @@ namespace InterfaceLib
 		uint32_t systemFatalErrorHandler;
 		
 		Globals(Common::IAllocator& allocator);
-		
-		void RefreshWindows();
 	};
 }
 
