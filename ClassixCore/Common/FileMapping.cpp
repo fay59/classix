@@ -36,6 +36,9 @@ namespace Common
 		if (fd == -1)
 			throw std::logic_error(strerror(errno));
 		
+		if (fcntl(fd, F_SETFD, FD_CLOEXEC) != 0)
+			throw std::logic_error(strerror(errno));
+		
 		fileSize = lseek(fd, 0, SEEK_END);
 		address = mmap(nullptr, static_cast<size_t>(fileSize), PROT_READ, MAP_PRIVATE, fd, 0);
 		close(fd);

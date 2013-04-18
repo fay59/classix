@@ -34,6 +34,7 @@ namespace
 		FileDescriptor(const std::string& file)
 		{
 			fd = open(file.c_str(), O_RDONLY);
+			fcntl(fd, F_SETFD, FD_CLOEXEC);
 		}
 		
 		~FileDescriptor()
