@@ -32,9 +32,15 @@ using namespace InterfaceLib;
 
 namespace
 {
-	CGRect RectToCGRect(const InterfaceLib::Rect& rect)
+	CGRect RectToCGRect(const InterfaceLib::Rect& rect, CGContextRef context)
 	{
-		return CGRectMake(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+		CGFloat height = rect.bottom - rect.top;
+		return CGRectMake(rect.left, CGBitmapContextGetHeight(context) - rect.top - height, rect.right - rect.left, height);
+	}
+	
+	CGPoint PointToCGPoint(const InterfaceLib::Point& point, CGContextRef context)
+	{
+		return CGPointMake(point.h, CGBitmapContextGetHeight(context) - point.v);
 	}
 }
 
@@ -780,9 +786,11 @@ void InterfaceLib_MovePortTo(InterfaceLib::Globals* globals, MachineState* state
 void InterfaceLib_MoveTo(InterfaceLib::Globals* globals, MachineState* state)
 {
 	UGrafPort& port = globals->grafPorts.GetCurrentPort();
-	port.color.pnLoc.v = state->r3;
-	port.color.pnLoc.h = state->r4;
-	CGContextMoveToPoint(globals->grafPorts.ContextOfGrafPort(port), state->r3, state->r4);
+	port.color.pnLoc.h = state->r3;
+	port.color.pnLoc.v = state->r4;
+	
+	CGPoint point = PointToCGPoint(port.color.pnLoc, globals->grafPorts.ContextOfGrafPort(port));
+	CGContextMoveToPoint(globals->grafPorts.ContextOfGrafPort(port), point.x, point.y);
 }
 
 void InterfaceLib_NewGDevice(InterfaceLib::Globals* globals, MachineState* state)
@@ -868,10 +876,11 @@ void InterfaceLib_PaintArc(InterfaceLib::Globals* globals, MachineState* state)
 void InterfaceLib_PaintOval(InterfaceLib::Globals* globals, MachineState* state)
 {
 	UGrafPort& port = globals->grafPorts.GetCurrentPort();
+	CGContextRef ctx = globals->grafPorts.ContextOfGrafPort(port);
 	const InterfaceLib::Rect* rect = globals->allocator.ToPointer<InterfaceLib::Rect>(state->r3);
-	CGRect cgRect = RectToCGRect(*rect);
+	CGRect cgRect = RectToCGRect(*rect, ctx);
 	
-	CGContextFillEllipseInRect(globals->grafPorts.ContextOfGrafPort(port), cgRect);
+	CGContextFillEllipseInRect(ctx, cgRect);
 	
 	uint32_t key = globals->allocator.ToIntPtr(&port);
 	globals->ipc.PerformAction<void>(IPCMessage::SetDirtyRect, key, cgRect);

@@ -114,15 +114,13 @@ namespace InterfaceLib
 			CFOwningRef<CGColorSpaceRef> rgb = CGColorSpaceCreateDeviceRGB();
 			
 			drawingContext = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, rgb, kCGImageAlphaNoneSkipFirst);
+			
+			// white background
 			CGContextSetRGBFillColor(drawingContext, 1, 1, 1, 1);
 			CGContextFillRect(drawingContext, CGRectMake(0, 0, width, height));
 			
-			// TODO disable transform matrix as it breaks text rendering (obviously)
-			/*
-			CGAffineTransform flipYCoords = CGAffineTransformMake(1, 0, 0, -1, 0, height);
-			CGContextConcatCTM(drawingContext, flipYCoords);
-			 */
-			
+			// text attributes
+			CGContextSelectFont(drawingContext, "Geneva", 12, kCGEncodingMacRoman);
 		}
 		
 		GrafPortData(GrafPortData&& that)

@@ -62,13 +62,19 @@ void InterfaceLib_DrawJustified(InterfaceLib::Globals* globals, MachineState* st
 
 void InterfaceLib_DrawString(InterfaceLib::Globals* globals, MachineState* state)
 {
-	// FIXME this doesn't work for some reason
 	UGrafPort& port = globals->grafPorts.GetCurrentPort();
-	CGFloat x = port.color.pnLoc.h;
-	CGFloat y = port.color.pnLoc.v;
+	CGContextRef ctx = globals->grafPorts.ContextOfGrafPort(port);
 	const char* pascalText = globals->allocator.ToPointer<const char>(state->r3);
 	std::string text = PascalStringToCPPString(pascalText);
-	CGContextShowTextAtPoint(globals->grafPorts.ContextOfGrafPort(port), x, y, text.c_str(), text.size());
+	
+	CGPoint point = CGContextGetPathCurrentPoint(ctx);
+	CGContextSetTextPosition(ctx, point.x, point.y);
+	CGContextShowText(ctx, text.c_str(), text.length());
+	CGPoint endPoint = CGContextGetTextPosition(ctx);
+	
+	uint32_t key = globals->allocator.ToIntPtr(&port);
+	CGRect dirtyRect = CGRectMake(point.x, point.y, endPoint.x - point.x, port.color.txSize);
+	globals->ipc.PerformAction<void>(IPCMessage::SetDirtyRect, key, dirtyRect);
 }
 
 void InterfaceLib_GetFontInfo(InterfaceLib::Globals* globals, MachineState* state)
@@ -164,7 +170,7 @@ void InterfaceLib_TextMode(InterfaceLib::Globals* globals, MachineState* state)
 void InterfaceLib_TextSize(InterfaceLib::Globals* globals, MachineState* state)
 {
 	InterfaceLib::UGrafPort& port = globals->grafPorts.GetCurrentPort();
-	port.gray.txSize = state->r3;
+	port.color.txSize = state->r3;
 	CGContextSetFontSize(globals->grafPorts.ContextOfGrafPort(port), state->r3);
 }
 
