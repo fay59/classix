@@ -173,7 +173,7 @@ void InterfaceLib_StillDown(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_SystemClick(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// purposefully does nothing on OS X
 }
 
 void InterfaceLib_SystemEvent(InterfaceLib::Globals* globals, MachineState* state)

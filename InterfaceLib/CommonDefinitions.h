@@ -347,6 +347,8 @@ namespace InterfaceLib
 		FindWindowByCoordinates,
 		SetDirtyRect,
 		RefreshWindows,
+		
+		MenuSelect,
 	};
 }
 

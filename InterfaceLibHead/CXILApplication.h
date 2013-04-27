@@ -54,4 +54,7 @@
 // repaints views marked dirty
 -(void)refreshWindows;
 
+// open menus, return when an option has been selected (or menus have been closed)
+-(void)menuSelect;
+
 @end

@@ -24,6 +24,8 @@
 // This may be kind of a misnomer. It's the delegate class that handles window stuff in lieu of CXILApplication.
 @interface CXILWindowDelegate : NSObject
 
+-(id)initWithMenuGate:(NSWindow*)window;
+
 -(void)createWindow:(uint32_t)key withRect:(NSRect)rect surface:(IOSurfaceRef)surface title:(NSString*)title visible:(BOOL)visible behind:(uint32_t)behindKey;
 -(void)setDirtyRect:(CGRect)rect inWindow:(uint32_t)key;
 -(void)destroyWindow:(uint32_t)windowID;

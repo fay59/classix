@@ -33,14 +33,16 @@
 @implementation CXILWindowDelegate
 {
 	NSMutableDictionary* windows;
+	NSWindow* menuGate;
 }
 
--(id)init
+-(id)initWithMenuGate:(NSWindow *)window
 {
 	if (!(self = [super init]))
 		return nil;
 	
 	windows = [NSMutableDictionary dictionary];
+	menuGate = window;
 	
 	return self;
 }
@@ -99,6 +101,13 @@
 -(uint32_t)findWindowUnderPoint:(NSPoint)point area:(int16_t *)partCode
 {
 	NSUInteger windowNumber = [NSWindow windowNumberAtPoint:point belowWindowWithWindowNumber:0];
+	
+	if (windowNumber == menuGate.windowNumber)
+	{
+		*partCode = static_cast<int16_t>(InterfaceLib::WindowPartCode::inMenuBar);
+		return 0;
+	}
+	
 	for (NSWindow* window in windows.allValues)
 	{
 		if (window.windowNumber == windowNumber)
@@ -110,6 +119,7 @@
 		}
 	}
 	
+	*partCode = -1;
 	return 0;
 }
 

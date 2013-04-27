@@ -19,11 +19,14 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#include <list>
-#include <unordered_map>
+#include <ApplicationServices/ApplicationServices.h>
 #include <dispatch/dispatch.h>
 #include <mach/mach_time.h>
+
+#include <list>
+#include <unordered_map>
 #include "CommonDefinitions.h"
+#include "CFOwningRef.h"
 
 #import "CXILApplication.h"
 #import "CXILWindowDelegate.h"
@@ -32,6 +35,10 @@
 
 using namespace Common;
 using namespace InterfaceLib;
+
+NSString* NSMenuWillSendActionNotification = @"NSMenuWillSendActionNotification";
+NSString* NSMenuDidCompleteInteractionNotification = @"NSMenuDidCompleteInteractionNotification";
+NSString* NSMenuWillSendActionNotification_MenuItem = @"MenuItem";
 
 namespace
 {
@@ -156,6 +163,7 @@ namespace
 	NSTimer* waitLimit;
 	
 	NSRect screenBounds;
+	NSWindow* menuGate;
 	CXILWindowDelegate* windowDelegate;
 }
 
@@ -169,6 +177,7 @@ static SEL ipcSelectors[] = {
 	IPC_INDEX(CreateWindow) = @selector(createWindow),
 	IPC_INDEX(SetDirtyRect) = @selector(setDirtyRect),
 	IPC_INDEX(RefreshWindows) = @selector(refreshWindows),
+	IPC_INDEX(MenuSelect) = @selector(menuSelect),
 };
 
 const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
@@ -203,13 +212,29 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	
 	channel = new BackendChannel(readHandle, writeHandle);
 	
-	windowDelegate = [[CXILWindowDelegate alloc] init];
 	screenBounds = NSScreen.mainScreen.frame;
 	
 	NSNotificationCenter* center = NSNotificationCenter.defaultCenter;
 	[center addObserver:self selector:@selector(receiveNotification:) name:nil object:nil];
 	
+	CGFloat menubarThickness = NSStatusBar.systemStatusBar.thickness;
+	NSRect menuGateRect = NSMakeRect(0, screenBounds.size.height - menubarThickness, screenBounds.size.width, menubarThickness);
+	menuGate = [[NSPanel alloc] initWithContentRect:menuGateRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
+	menuGate.level = NSStatusWindowLevel;
+	menuGate.oneShot = YES;
+	menuGate.canHide = NO;
+	menuGate.ignoresMouseEvents = NO;
+	menuGate.alphaValue = 0;
+	
+	windowDelegate = [[CXILWindowDelegate alloc] initWithMenuGate:menuGate];
+	
 	return self;
+}
+
+-(void)finishLaunching
+{
+	[super finishLaunching];
+	[menuGate makeKeyAndOrderFront:self];
 }
 
 -(void)sendEvent:(NSEvent *)theEvent
@@ -301,6 +326,20 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		eventQueue.push_back(focusRecord);
 		[self suggestEventRecord:focusRecord];
 	}
+	else if ([notification.name isEqualToString:NSMenuWillSendActionNotification])
+	{
+		NSMenuItem* item = [notification.userInfo objectForKey:NSMenuWillSendActionNotification_MenuItem];
+		[self pickMenuItem:item];
+	}
+	else if ([notification.name isEqualToString:NSMenuDidCompleteInteractionNotification])
+	{
+		[self pickMenuItem:nil];
+	}
+}
+
+-(void)orderFrontStandardAboutPanel:(id)sender
+{
+	// not implemented
 }
 
 -(void)dealloc
@@ -462,6 +501,20 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	[self sendDone];
 }
 
+-(void)menuSelect
+{
+	IPC_PARAM(point, InterfaceLib::Point);
+	[self expectDone];
+	
+	menuGate.ignoresMouseEvents = YES;
+	NSPoint nsPoint = [self classicPointToXPoint:point];
+	
+	CFOwningRef<CGEventRef> clickEvent = CGEventCreateMouseEvent(nullptr, kCGEventLeftMouseDown, nsPoint, kCGMouseButtonLeft);
+	CGEventPost(kCGHIDEventTap, clickEvent);
+	
+	// don't reply yet: wait until menu interaction finishes
+}
+
 #pragma mark -
 #pragma mark Gory details
 
@@ -506,6 +559,19 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	memset(&noEvent, 0, sizeof noEvent);
 	channel->Write(noEvent);
 	[self sendDone];
+}
+
+-(void)pickMenuItem:(NSMenuItem*)item
+{
+	if (menuGate.ignoresMouseEvents)
+	{
+		// if representedObject is the application, it's a Classix menu item; otherwise, we don't really care
+		uint32_t tag = item.representedObject == self ? static_cast<uint32_t>(item.tag) : 0;
+		channel->Write(tag);
+		[self sendDone];
+		
+		menuGate.ignoresMouseEvents = NO;
+	}
 }
 
 @end

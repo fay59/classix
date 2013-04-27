@@ -22,6 +22,8 @@
 #include "Prototypes.h"
 #include "NotImplementedException.h"
 
+using namespace InterfaceLib;
+
 void InterfaceLib_AppendResMenu(InterfaceLib::Globals* globals, MachineState* state)
 {
 	throw PPCVM::NotImplementedException(__func__);
@@ -189,7 +191,8 @@ void InterfaceLib_MenuKey(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_MenuSelect(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	Point& pt = *globals->allocator.ToPointer<Point>(state->r3);
+	state->r3 = globals->ipc.PerformAction<uint32_t>(IPCMessage::MenuSelect, pt);
 }
 
 void InterfaceLib_NewMenu(InterfaceLib::Globals* globals, MachineState* state)
