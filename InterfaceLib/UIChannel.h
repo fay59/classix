@@ -24,6 +24,7 @@
 
 #include <cstdint>
 #include <type_traits>
+#include <tuple>
 #include <unistd.h>
 #include "CommonDefinitions.h"
 
@@ -41,15 +42,60 @@ namespace InterfaceLib
 			};
 		};
 		
-		Pipe read;
-		Pipe write;
-		pid_t head;
+		// reading to tuples
+		// thanks Daniel Frey -- http://stackoverflow.com/q/16248828/variadic-read-tuples
+		// the Indices::Next definition is pretty clever.
+		template<typename TTupleType>
+		struct TupleReader
+		{
+			int fd;
+			TTupleType storage;
+			
+			template<size_t... IndexList>
+			struct Indices
+			{
+				typedef Indices<IndexList..., sizeof...(IndexList)> Next;
+			};
+			
+			template<size_t N>
+			struct MakeIndices
+			{
+				typedef typename Indices<N - 1>::Next Type;
+			};
+			
+			template<size_t... Ns>
+			inline void ReadImpl(const Indices<Ns...>&)
+			{
+				PACK_EXPAND(::read(fd, &std::get<Ns>(storage), sizeof(typename std::tuple_element<Ns, TTupleType>::type)));
+			}
+			
+			TupleReader(int fd) : fd(fd)
+			{ }
+			
+			inline void Read()
+			{
+				ReadImpl(typename MakeIndices<std::tuple_size<TTupleType>::value>::Type());
+			}
+		};
+		
+		// utilities
+		template<typename T>
+		char WriteToPipe(const T& argument)
+		{
+			::write(write.write, &argument, sizeof argument);
+			return 0;
+		}
 		
 		template<typename T>
 		T ReturnNonVoid(const uint8_t* buffer)
 		{
 			return *reinterpret_cast<const T*>(buffer);
 		}
+		
+		// fields
+		Pipe read;
+		Pipe write;
+		pid_t head;
 		
 	public:
 		UIChannel();
@@ -64,7 +110,7 @@ namespace InterfaceLib
 			char doneReference[4] = {'D', 'O', 'N', 'E'};
 			
 			::write(write.write, &message, sizeof message);
-			PACK_EXPAND(::write(write.write, &argument, sizeof argument));
+			PACK_EXPAND(WriteToPipe(argument));
 			::write(write.write, doneReference, sizeof doneReference);
 			
 			uint8_t response[sizeof(TReturnType)];
@@ -77,6 +123,26 @@ namespace InterfaceLib
 				throw std::logic_error("Wrong return type for action");
 			
 			return ReturnNonVoid<TReturnType>(response);
+		}
+		
+		template<typename TTupleType, typename... TArgument>
+		TTupleType PerformComplexAction(IPCMessage message, TArgument&&... argument)
+		{
+			char doneReference[4] = {'D', 'O', 'N', 'E'};
+			
+			::write(write.write, &message, sizeof message);
+			PACK_EXPAND(WriteToPipe(argument));
+			::write(write.write, doneReference, sizeof doneReference);
+			
+			TupleReader<TTupleType> reader(read.read);
+			reader.Read();
+			
+			char done[4];
+			::read(read.read, done, sizeof done);
+			if (memcmp(done, doneReference, sizeof doneReference) != 0)
+				throw std::logic_error("Wrong return type for action");
+			
+			return reader.storage;
 		}
 		
 		~UIChannel();

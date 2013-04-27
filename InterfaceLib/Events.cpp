@@ -70,11 +70,20 @@ void InterfaceLib_GetNextEvent(InterfaceLib::Globals* globals, MachineState* sta
 	globals->ipc.PerformAction<void>(IPCMessage::RefreshWindows);
 	
 	EventMask mask = static_cast<EventMask>(state->r3);
-	EventRecord nextEvent = globals->ipc.PerformAction<EventRecord>(IPCMessage::PeekNextEvent, mask);
+	uint32_t timeout = 0xffffffff;
+	
+	MacRegion empty;
+	empty.rgnSize = 10;
+	empty.rgnBBox.top = 0;
+	empty.rgnBBox.left = 0;
+	empty.rgnBBox.right = 0;
+	empty.rgnBBox.bottom = 0;
+	
+	EventRecord nextEvent = globals->ipc.PerformAction<EventRecord>(IPCMessage::PeekNextEvent, mask, timeout, empty);
 	globals->ipc.PerformAction<void>(IPCMessage::DequeueNextEvent, mask);
 	
 	*globals->allocator.ToPointer<EventRecord>(state->r4) = nextEvent;
-	state->r3 = true;
+	state->r3 = nextEvent.what != 0;
 }
 
 void InterfaceLib_GetOSEvent(InterfaceLib::Globals* globals, MachineState* state)
@@ -174,7 +183,7 @@ void InterfaceLib_SystemEvent(InterfaceLib::Globals* globals, MachineState* stat
 
 void InterfaceLib_SystemTask(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	globals->ipc.PerformAction<void>(IPCMessage::RefreshWindows);
 }
 
 void InterfaceLib_WaitMouseUp(InterfaceLib::Globals* globals, MachineState* state)
@@ -184,6 +193,17 @@ void InterfaceLib_WaitMouseUp(InterfaceLib::Globals* globals, MachineState* stat
 
 void InterfaceLib_WaitNextEvent(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	globals->ipc.PerformAction<void>(IPCMessage::RefreshWindows);
+	
+	EventMask mask = static_cast<EventMask>(state->r3);
+	uint32_t ticksTimeout = state->r5; // tick = 1/60s
+	Common::UInt32* regionHandle = globals->allocator.ToPointer<Common::UInt32>(state->r6);
+	MacRegion* region = globals->allocator.ToPointer<MacRegion>(*regionHandle);
+	
+	EventRecord nextEvent = globals->ipc.PerformAction<EventRecord>(IPCMessage::PeekNextEvent, mask, ticksTimeout, *region);
+	globals->ipc.PerformAction<void>(IPCMessage::DequeueNextEvent, mask);
+	*globals->allocator.ToPointer<EventRecord>(state->r4) = nextEvent;
+	
+	state->r3 = nextEvent.what != 0;
 }
 

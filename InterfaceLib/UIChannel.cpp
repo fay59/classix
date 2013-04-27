@@ -102,6 +102,16 @@ namespace InterfaceLib
 	template<>
 	void UIChannel::ReturnNonVoid(const uint8_t* buffer) {}
 	
+	template<>
+	char UIChannel::WriteToPipe(const MacRegion& region)
+	{
+		WriteToPipe(region.rgnSize);
+		WriteToPipe(region.rgnBBox);
+		const char* bytes = reinterpret_cast<const char*>(&region) + sizeof region;
+		::write(write.write, bytes, region.rgnSize - 10);
+		return 0;
+	}
+	
 	UIChannel::~UIChannel()
 	{
 		close(write.write);

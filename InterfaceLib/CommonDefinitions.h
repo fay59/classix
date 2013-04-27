@@ -55,7 +55,7 @@ namespace InterfaceLib
 		Extend
 	};
 	
-	enum class EventModifierFlags : unsigned short
+	enum class EventModifierFlags : uint16_t
 	{
 		activeFlag = 1, // set when the foreground window is being activated
 		mouseButtonState = 128, // set when the mouse button is up
@@ -69,7 +69,7 @@ namespace InterfaceLib
 		rightControlKey = 32768
 	};
 		
-	enum class EventCode : unsigned short
+	enum class EventCode : uint16_t
 	{
 		nullEvent,
 		mouseDown,
@@ -84,7 +84,7 @@ namespace InterfaceLib
 		highLevelEvent = 23
 	};
 	
-	enum class EventMask : unsigned short
+	enum class EventMask : uint16_t
 	{
 		noEvent = 0,
 		mDownMask = 2,		// mouse down
@@ -98,6 +98,21 @@ namespace InterfaceLib
 		highLevelEventMask = 0x400,
 		osMask = 0x1000,
 		everyEvent = 0xffff
+	};
+	
+	enum class WindowPartCode : int16_t
+	{
+		inDesk = 0,
+		inMenuBar = 1,
+		inSysWindow = 2,
+		inContent = 3,
+		inDrag = 4,
+		inGrow = 5,
+		inGoAway = 6,
+		inZoomIn = 7,
+		inZoomOut = 8,
+		inCollapseBox = 11,
+		inProxyIcon = 12
 	};
 	
 	struct __attribute__((packed)) Point
@@ -137,6 +152,16 @@ namespace InterfaceLib
 	{
 		Common::UInt16 rgnSize;
 		Rect rgnBBox;
+	};
+		
+	struct __attribute__((packed)) MacRegionMax
+	{
+		Common::UInt16 rgnSize;
+		InterfaceLib::Rect rgnBBox;
+		uint8_t rgnData[0x8000 - 10];
+		
+		MacRegionMax() = default;
+		MacRegionMax(const MacRegion& region);
 	};
 	
 	struct __attribute__((packed)) RGBColor
@@ -319,6 +344,7 @@ namespace InterfaceLib
 		IsMouseDown,
 		
 		CreateWindow,
+		FindWindowByCoordinates,
 		SetDirtyRect,
 		RefreshWindows,
 	};

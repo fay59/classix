@@ -28,7 +28,7 @@
 #import "CXILApplication.h"
 #import "CXILWindowDelegate.h"
 
-#define IPC_PARAM(name, type)	type name; [self readInto:&name size:sizeof name]
+#define IPC_PARAM(name, type)	type name; do { if (!channel->Read(name)) [self terminate:self]; } while (false)
 
 using namespace Common;
 using namespace InterfaceLib;
@@ -92,24 +92,68 @@ namespace
 			return CGRectMake(x, y, width, height);
 		}
 	};
+	
+	bool ReadExact(int fd, void* into, size_t size)
+	{
+		size_t dataRead = 0;
+		while (dataRead < size)
+		{
+			ssize_t count = ::read(fd, into, size - dataRead);
+			if (count < 1)
+				return false;
+			dataRead += count;
+		}
+		return true;
+	}
+	
+	class BackendChannel
+	{
+		int read, write;
+		
+	public:
+		BackendChannel(int read, int write) : read(read), write(write) {}
+		
+		template<typename T>
+		bool Read(T& into)
+		{
+			return ReadExact(read, &into, sizeof into);
+		}
+		
+		template<typename T>
+		bool Write(const T& from)
+		{
+			::write(write, &from, sizeof from);
+			return true;
+		}
+	};
+	
+	template<>
+	bool BackendChannel::Read(MacRegionMax& region)
+	{
+		if (!Read(region.rgnSize))
+			return false;
+		
+		if (!Read(region.rgnBBox))
+			return false;
+		
+		size_t rest = region.rgnSize - 10;
+		if (!ReadExact(read, &region.rgnData, rest))
+			return false;
+		
+		memset(&region.rgnData[rest], 0, sizeof region.rgnData - rest);
+		return true;
+	}
 }
-
-@interface CXILApplication (GoryDetails)
-
--(BOOL)suggestEventRecord:(const EventRecord&)record;
--(NSRect)classicRectToXRect:(InterfaceLib::Rect)rect;
-
-@end
 
 @implementation CXILApplication
 {
-	int writeHandle;
-	int readHandle;
+	BackendChannel* channel;
 	dispatch_source_t ipcSource;
 	
 	std::unordered_multimap<uint32_t, CGRect> dirtyRects;
 	std::list<EventRecord> eventQueue;
 	EventMask currentlyWaitingOn;
+	NSTimer* waitLimit;
 	
 	NSRect screenBounds;
 	CXILWindowDelegate* windowDelegate;
@@ -143,8 +187,8 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		return nil;
 	}
 	
-	readHandle = [arguments[1] intValue];
-	writeHandle = [arguments[2] intValue];
+	int readHandle = [arguments[1] intValue];
+	int writeHandle = [arguments[2] intValue];
 	
 	if (readHandle == 0 || writeHandle == 0 || !CXILIsFDValid(readHandle) || !CXILIsFDValid(writeHandle))
 	{
@@ -156,6 +200,8 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	ipcSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, readHandle, 0, dispatch_get_main_queue());
 	dispatch_source_set_event_handler(ipcSource, ^{ [self processIPCMessage]; });
 	dispatch_resume(ipcSource);
+	
+	channel = new BackendChannel(readHandle, writeHandle);
 	
 	windowDelegate = [[CXILWindowDelegate alloc] init];
 	screenBounds = NSScreen.mainScreen.frame;
@@ -265,41 +311,19 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 
 #pragma mark -
 #pragma mark RPCs
--(void)readInto:(void *)into size:(size_t)size
-{
-	char* buffer = static_cast<char*>(into);
-	size_t totalRead = 0;
-	while (totalRead != size)
-	{
-		size_t count = read(readHandle, buffer + totalRead, size - totalRead);
-		if (count == 0)
-		{
-			// EOF: the parent process probably quit
-			[self terminate:self];
-		}
-		totalRead += count;
-	}
-}
-
--(void)writeFrom:(const void *)from size:(size_t)size
-{
-	size_t count = write(writeHandle, from, size);
-	if (count < size)
-	{
-		// broken pipe: the parent process probably quit
-		[self terminate:self];
-	}
-}
 
 -(void)sendDone
 {
-	[self writeFrom:"DONE" size:4];
+	char done[] = {'D', 'O', 'N', 'E'};
+	channel->Write(done);
 }
 
 -(void)expectDone
 {
 	char done[4];
-	[self readInto:done size:sizeof done];
+	if (!channel->Read(done))
+		[self terminate:self];
+	
 	if (memcmp(done, "DONE", sizeof done) != 0)
 	{
 		NSLog(@"*** Expected a DONE, got %.4s", done);
@@ -310,7 +334,8 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 -(void)processIPCMessage
 {
 	unsigned messageType;
-	[self readInto:&messageType size:sizeof messageType];
+	if (!channel->Read(messageType))
+		[self terminate:self];
 	
 	NSAssert(messageType < ipcSelectorCount, @"Message type %u is undefined", messageType);
 	
@@ -326,7 +351,11 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 -(void)peekNextEvent
 {
 	IPC_PARAM(desiredEvent, uint16_t);
+	IPC_PARAM(ticksTimeout, uint32_t);
+	IPC_PARAM(mouseMoveRegion, MacRegionMax);
 	[self expectDone];
+	
+	// TODO enable mouse move events inside mouseMoveRegion
 	
 	currentlyWaitingOn = static_cast<EventMask>(desiredEvent);
 	
@@ -340,6 +369,8 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	}
 	
 	// otherwise, wait for one such event
+	NSTimeInterval timeout = ticksTimeout / 60.;
+	waitLimit = [NSTimer scheduledTimerWithTimeInterval:timeout target:self selector:@selector(stopWaitingOnEvent) userInfo:nil repeats:NO];
 }
 
 -(void)discardNextEvent
@@ -364,7 +395,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	[self expectDone];
 	// This is probably paranoid, but I'd rather use bool than BOOL here because this has to be C++-compatible.
 	bool isMouseDown = [NSEvent pressedMouseButtons] & 1;
-	[self writeFrom:&isMouseDown size:sizeof(isMouseDown)];
+	channel->Write(isMouseDown);
 	[self sendDone];
 }
 
@@ -391,6 +422,20 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	IOSurfaceRef surface = IOSurfaceLookup(surfaceId);
 	[windowDelegate createWindow:key withRect:frame surface:surface title:nsTitle visible:visible behind:createBehind];
 	IOSurfaceDecrementUseCount(surface);
+	[self sendDone];
+}
+
+-(void)findWindow
+{
+	IPC_PARAM(point, InterfaceLib::Point);
+	[self expectDone];
+	
+	InterfaceLib::WindowPartCode code;
+	NSPoint nsPoint = [self classicPointToXPoint:point];
+	uint32_t key = [windowDelegate findWindowUnderPoint:nsPoint area:reinterpret_cast<int16_t*>(&code)];
+	
+	channel->Write(key);
+	channel->Write(code);
 	[self sendDone];
 }
 
@@ -425,9 +470,12 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	uint16_t eventCodeMask = 1 << record.what;
 	if ((eventCodeMask & static_cast<uint16_t>(currentlyWaitingOn)) != 0)
 	{
-		[self writeFrom:&record size:sizeof record];
+		channel->Write(record);
 		[self sendDone];
+		
 		currentlyWaitingOn = EventMask::noEvent;
+		[waitLimit invalidate];
+		waitLimit = nil;
 		return YES;
 	}
 	return NO;
@@ -440,6 +488,24 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	CGFloat width = rect.right - rect.left;
 	CGFloat height = rect.bottom - rect.top;
 	return NSMakeRect(x, y, width, height);
+}
+
+-(NSPoint)classicPointToXPoint:(InterfaceLib::Point)point
+{
+	CGFloat x = point.h;
+	CGFloat y = screenBounds.size.height - point.v;
+	return NSMakePoint(x, y);
+}
+
+-(void)stopWaitingOnEvent
+{
+	currentlyWaitingOn = EventMask::noEvent;
+	waitLimit = nil;
+	
+	EventRecord noEvent;
+	memset(&noEvent, 0, sizeof noEvent);
+	channel->Write(noEvent);
+	[self sendDone];
 }
 
 @end

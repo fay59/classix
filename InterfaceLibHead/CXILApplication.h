@@ -29,8 +29,6 @@
 
 // IPC messages implementation
 -(void)processIPCMessage;
--(void)readInto:(void*)into size:(size_t)size;
--(void)writeFrom:(const void*)from size:(size_t)size;
 
 // get a copy of the next EventRecord matching the EventMask without altering the queue
 -(void)peekNextEvent;
@@ -46,6 +44,9 @@
 
 // creates a window
 -(void)createWindow;
+
+// returns the first window in which the coordinate exists
+-(void)findWindow;
 
 // marks a view rectangle as dirty
 -(void)setDirtyRect;

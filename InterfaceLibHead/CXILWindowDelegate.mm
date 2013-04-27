@@ -22,6 +22,7 @@
 #import "CXILWindowDelegate.h"
 #import "CXILApplication.h"
 #import "CXIOSurfaceView.h"
+#include "CommonDefinitions.h"
 
 @interface CXILWindowDelegate (Private)
 
@@ -93,6 +94,23 @@
 -(uint32_t)keyOfWindow:(NSWindow *)window
 {
 	return [[windows allKeysForObject:window][0] unsignedIntValue];
+}
+
+-(uint32_t)findWindowUnderPoint:(NSPoint)point area:(int16_t *)partCode
+{
+	NSUInteger windowNumber = [NSWindow windowNumberAtPoint:point belowWindowWithWindowNumber:0];
+	for (NSWindow* window in windows.allValues)
+	{
+		if (window.windowNumber == windowNumber)
+		{
+			*partCode = NSPointInRect(point, [window.contentView frame])
+				? static_cast<int16_t>(InterfaceLib::WindowPartCode::inContent)
+				: static_cast<int16_t>(InterfaceLib::WindowPartCode::inDrag);
+			return [self keyOfWindow:window];
+		}
+	}
+	
+	return 0;
 }
 
 @end

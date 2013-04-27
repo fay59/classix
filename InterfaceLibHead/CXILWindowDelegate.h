@@ -29,5 +29,6 @@
 -(void)destroyWindow:(uint32_t)windowID;
 
 -(uint32_t)keyOfWindow:(NSWindow*)window;
+-(uint32_t)findWindowUnderPoint:(NSPoint)point area:(int16_t*)partCode;
 
 @end
