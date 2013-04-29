@@ -48,6 +48,7 @@
 		DC5ED1BD167CFF8100C249B7 /* CXStackTrace.m in Sources */ = {isa = PBXBuildFile; fileRef = DC5ED1BC167CFF8100C249B7 /* CXStackTrace.m */; };
 		DC5EE2EB16CE068200B2629F /* StackPreparator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC5EE2E916CE068200B2629F /* StackPreparator.cpp */; };
 		DC5EE2EC16CE068200B2629F /* StackPreparator.h in Headers */ = {isa = PBXBuildFile; fileRef = DC5EE2EA16CE068200B2629F /* StackPreparator.h */; };
+		DC699511172D981600E3F8DD /* ResourceTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC699510172D981600E3F8DD /* ResourceTypes.cpp */; };
 		DC6ABE2B1710E0FB00A02B2D /* CXILWindowDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC6ABE2A1710E0FB00A02B2D /* CXILWindowDelegate.mm */; };
 		DC6FEAC91661508400DD415C /* export.png in Resources */ = {isa = PBXBuildFile; fileRef = DCE988131660B3D900C28F25 /* export.png */; };
 		DC6FEACA1661508400DD415C /* label.png in Resources */ = {isa = PBXBuildFile; fileRef = DCE988101660A9B400C28F25 /* label.png */; };
@@ -419,6 +420,8 @@
 		DC62878516F4F2AE00265AA6 /* InterfaceLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InterfaceLib.cpp; sourceTree = "<group>"; };
 		DC6847C91638C258003E906D /* PEFRelocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PEFRelocator.cpp; sourceTree = "<group>"; };
 		DC6847CA1638C258003E906D /* PEFRelocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEFRelocator.h; sourceTree = "<group>"; };
+		DC69950F172D978100E3F8DD /* ResourceTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResourceTypes.h; sourceTree = "<group>"; };
+		DC699510172D981600E3F8DD /* ResourceTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResourceTypes.cpp; sourceTree = "<group>"; };
 		DC6ABE291710E0FB00A02B2D /* CXILWindowDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXILWindowDelegate.h; sourceTree = "<group>"; };
 		DC6ABE2A1710E0FB00A02B2D /* CXILWindowDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CXILWindowDelegate.mm; sourceTree = "<group>"; };
 		DC7273F816471CD800DA17E5 /* FloatingPointInstructions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FloatingPointInstructions.cpp; sourceTree = "<group>"; };
@@ -880,6 +883,8 @@
 				DCE5CD7A1715150400E38D56 /* GrafPortManager.h */,
 				DCF3D733170AA036003B487F /* ResourceManager.cpp */,
 				DCF3D734170AA036003B487F /* ResourceManager.h */,
+				DC69950F172D978100E3F8DD /* ResourceTypes.h */,
+				DC699510172D981600E3F8DD /* ResourceTypes.cpp */,
 				DCF3D731170A9F09003B487F /* PPC */,
 				DC930AA91708BBDB00B739B1 /* Supporting Files */,
 			);
@@ -1497,6 +1502,7 @@
 				DCF3D736170BD064003B487F /* ResourceManager.cpp in Sources */,
 				DCE5CD7B1715150500E38D56 /* GrafPortManager.cpp in Sources */,
 				DCE5CD7E1715166100E38D56 /* UIChannel.cpp in Sources */,
+				DC699511172D981600E3F8DD /* ResourceTypes.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

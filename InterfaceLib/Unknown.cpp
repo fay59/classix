@@ -342,7 +342,18 @@ void InterfaceLib_dragwindow(InterfaceLib::Globals* globals, MachineState* state
 
 void InterfaceLib_DrawMenuBar(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	globals->ipc.PerformAction<void>(IPCMessage::ClearMenus);
+	for (const Resources::MENU* menu : globals->menus)
+	{
+		uint16_t menuId = menu->menuId;
+		globals->ipc.PerformAction<void>(IPCMessage::InsertMenu, menuId, menu->GetTitle());
+		for (const auto* menuItem = menu->GetFirstItem(); menuItem != nullptr; menuItem = menuItem->GetNextItem())
+		{
+			std::string title = menuItem->GetTitle();
+			char keyEquivalent = menuItem->GetKeyEquivalent();
+			globals->ipc.PerformAction<void>(IPCMessage::InsertMenuItem, menuId, title, keyEquivalent);
+		}
+	}
 }
 
 void InterfaceLib_drawstring(InterfaceLib::Globals* globals, MachineState* state)
@@ -506,7 +517,8 @@ void InterfaceLib_getindstring(InterfaceLib::Globals* globals, MachineState* sta
 
 void InterfaceLib_GetMenu(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	ResourceEntry* entry = globals->resources.GetRawResource("MENU", state->r3);
+	state->r3 = entry->handle();
 }
 
 void InterfaceLib_getmenuitemtext(InterfaceLib::Globals* globals, MachineState* state)
@@ -576,7 +588,10 @@ void InterfaceLib_IncrementAtomic8(InterfaceLib::Globals* globals, MachineState*
 
 void InterfaceLib_InsertMenu(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	uint32_t handle = state->r3;
+	const Resources::MENU* pointer = globals->allocator.ToPointer<Resources::MENU>(handle);
+	auto insertAt = std::find(globals->menus.begin(), globals->menus.end(), pointer);
+	globals->menus.insert(insertAt, pointer);
 }
 
 void InterfaceLib_insertmenuitem(InterfaceLib::Globals* globals, MachineState* state)

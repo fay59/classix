@@ -26,7 +26,7 @@ using namespace InterfaceLib;
 
 void InterfaceLib_AppendResMenu(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// TODO something
 }
 
 void InterfaceLib_CalcMenuSize(InterfaceLib::Globals* globals, MachineState* state)

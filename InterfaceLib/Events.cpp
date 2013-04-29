@@ -195,10 +195,20 @@ void InterfaceLib_WaitNextEvent(InterfaceLib::Globals* globals, MachineState* st
 {
 	globals->ipc.PerformAction<void>(IPCMessage::RefreshWindows);
 	
+	MacRegion emptyRegion;
+	emptyRegion.rgnSize = 10;
+	
 	EventMask mask = static_cast<EventMask>(state->r3);
 	uint32_t ticksTimeout = state->r5; // tick = 1/60s
-	Common::UInt32* regionHandle = globals->allocator.ToPointer<Common::UInt32>(state->r6);
-	MacRegion* region = globals->allocator.ToPointer<MacRegion>(*regionHandle);
+	MacRegion* region;
+	if (Common::UInt32* regionHandle = globals->allocator.ToPointer<Common::UInt32>(state->r6, true))
+	{
+		region = globals->allocator.ToPointer<MacRegion>(*regionHandle);
+	}
+	else
+	{
+		region = &emptyRegion;
+	}
 	
 	EventRecord nextEvent = globals->ipc.PerformAction<EventRecord>(IPCMessage::PeekNextEvent, mask, ticksTimeout, *region);
 	globals->ipc.PerformAction<void>(IPCMessage::DequeueNextEvent, mask);
@@ -206,4 +216,3 @@ void InterfaceLib_WaitNextEvent(InterfaceLib::Globals* globals, MachineState* st
 	
 	state->r3 = nextEvent.what != 0;
 }
-

@@ -30,6 +30,7 @@
 #include <cstdint>
 #include <deque>
 #include <unordered_map>
+#include "BigEndian.h"
 
 // Information gathered from Inside Macintosh vol. 1 pages 128-130.
 // It's funny, that book is older than me.
@@ -44,8 +45,10 @@ namespace InterfaceLib
 		uint8_t* _begin;
 		uint8_t* _end;
 		
-		inline uint8_t* begin() { return _begin; }
+		inline Common::UInt32& handle() { return *reinterpret_cast<Common::UInt32*>(_begin); }
+		inline uint8_t* begin() { return _begin + sizeof(uint32_t); }
 		inline uint8_t* end() { return _end; }
+		inline Common::UInt32 handle() const { return *reinterpret_cast<const Common::UInt32*>(_begin); }
 		inline const uint8_t* begin() const { return _begin; }
 		inline const uint8_t* end() const { return _end; }
 	};
@@ -59,7 +62,7 @@ namespace InterfaceLib
 		
 		inline FourCharCode(const char (&array)[5]) : code(0)
 		{
-			assert(array[4] == '0' && "Expected a four-char code");
+			assert(array[4] == 0 && "Expected a four-char code");
 			for (size_t i = 0; i < 4; i++)
 			{
 				code <<= 8;
@@ -86,8 +89,8 @@ namespace InterfaceLib
 		ResourceCatalog(const ResourceCatalog&) = delete;
 		ResourceCatalog(ResourceCatalog&& that);
 		
-		ResourceEntry* GetResource(const FourCharCode& type, uint16_t identifier);
-		ResourceEntry* GetResource(const FourCharCode& type, const std::string& identifier);
+		ResourceEntry* GetRawResource(const FourCharCode& type, uint16_t identifier);
+		ResourceEntry* GetRawResource(const FourCharCode& type, const std::string& identifier);
 		
 		void dump();
 		
@@ -104,8 +107,20 @@ namespace InterfaceLib
 		
 		void LoadFileResources(const std::string& filePath);
 		
-		ResourceEntry* GetResource(const FourCharCode& type, uint16_t identifier);
-		ResourceEntry* GetResource(const FourCharCode& type, const std::string& identifier);
+		ResourceEntry* GetRawResource(const FourCharCode& type, uint16_t identifier);
+		ResourceEntry* GetRawResource(const FourCharCode& type, const std::string& identifier);
+		
+		template<typename TResourceType>
+		TResourceType* GetResource(uint16_t identifier)
+		{
+			return reinterpret_cast<TResourceType*>(GetRawResource(TResourceType::key, identifier)->begin());
+		}
+		
+		template<typename TResourceType>
+		TResourceType* GetResource(const std::string& identifier)
+		{
+			return reinterpret_cast<TResourceType*>(GetRawResource(TResourceType::key, identifier)->begin());
+		}
 		
 		inline void dump() { for (auto& catalog : catalogs) catalog.dump(); }
 	};

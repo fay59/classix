@@ -171,9 +171,12 @@ namespace InterfaceLib
 					allocationName << " (\"" << entry.name << "\")";
 				}
 				
+				// allocate room for the handle as well
+				dataLength += 4;
 				entry._begin = allocator.Allocate(allocationName.str(), dataLength);
 				entry._end = entry.begin() + dataLength;
 				std::copy(dataLocation, dataLocation + dataLength, entry.begin());
+				entry.handle() = allocator.ToIntPtr(entry.begin());
 				
 				idResourceMap[entry.id] = entry;
 				if (entry.name.length() > 0)
@@ -198,7 +201,7 @@ namespace InterfaceLib
 		that.applicationData = nullptr;
 	}
 	
-	ResourceEntry* ResourceCatalog::GetResource(const FourCharCode& type, uint16_t identifier)
+	ResourceEntry* ResourceCatalog::GetRawResource(const FourCharCode& type, uint16_t identifier)
 	{
 		auto topLevelIter = resourcesById.find(type.code);
 		if (topLevelIter != resourcesById.end())
@@ -212,7 +215,7 @@ namespace InterfaceLib
 		return nullptr;
 	}
 		
-	ResourceEntry* ResourceCatalog::GetResource(const FourCharCode& type, const std::string& identifier)
+	ResourceEntry* ResourceCatalog::GetRawResource(const FourCharCode& type, const std::string& identifier)
 	{
 		auto topLevelIter = resourcesByName.find(type.code);
 		if (topLevelIter != resourcesByName.end())
@@ -255,21 +258,21 @@ namespace InterfaceLib
 		catalogs.emplace_back(std::move(catalog));
 	}
 	
-	ResourceEntry* ResourceManager::GetResource(const FourCharCode& type, uint16_t identifier)
+	ResourceEntry* ResourceManager::GetRawResource(const FourCharCode& type, uint16_t identifier)
 	{
 		for (ResourceCatalog& catalog : catalogs)
 		{
-			if (ResourceEntry* entry = catalog.GetResource(type, identifier))
+			if (ResourceEntry* entry = catalog.GetRawResource(type, identifier))
 				return entry;
 		}
 		return nullptr;
 	}
 	
-	ResourceEntry* ResourceManager::GetResource(const FourCharCode& type, const std::string& identifier)
+	ResourceEntry* ResourceManager::GetRawResource(const FourCharCode& type, const std::string& identifier)
 	{
 		for (ResourceCatalog& catalog : catalogs)
 		{
-			if (ResourceEntry* entry = catalog.GetResource(type, identifier))
+			if (ResourceEntry* entry = catalog.GetRawResource(type, identifier))
 				return entry;
 		}
 		return nullptr;

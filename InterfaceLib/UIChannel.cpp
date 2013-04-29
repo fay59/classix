@@ -21,6 +21,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <sstream>
+#include <unistd.h>
 
 #include "UIChannel.h"
 
@@ -109,6 +110,15 @@ namespace InterfaceLib
 		WriteToPipe(region.rgnBBox);
 		const char* bytes = reinterpret_cast<const char*>(&region) + sizeof region;
 		::write(write.write, bytes, region.rgnSize - 10);
+		return 0;
+	}
+	
+	template<>
+	char UIChannel::WriteToPipe(const std::string& string)
+	{
+		uint32_t length = static_cast<uint32_t>(string.length());
+		WriteToPipe(length);
+		::write(write.write, string.data(), length);
 		return 0;
 	}
 	

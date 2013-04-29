@@ -150,6 +150,21 @@ namespace
 		memset(&region.rgnData[rest], 0, sizeof region.rgnData - rest);
 		return true;
 	}
+	
+	template<>
+	bool BackendChannel::Read(std::string& into)
+	{
+		uint32_t length;
+		if (!Read(length))
+			return false;
+		
+		std::unique_ptr<char> buffer(new char[length]);
+		if (!ReadExact(read, buffer.get(), length))
+			return false;
+		
+		into = std::string(buffer.get(), length);
+		return true;
+	}
 }
 
 @implementation CXILApplication
@@ -164,6 +179,7 @@ namespace
 	
 	NSRect screenBounds;
 	NSWindow* menuGate;
+	NSMenu* baseMenu;
 	CXILWindowDelegate* windowDelegate;
 }
 
@@ -175,8 +191,12 @@ static SEL ipcSelectors[] = {
 	IPC_INDEX(DequeueNextEvent) = @selector(discardNextEvent),
 	IPC_INDEX(IsMouseDown) = @selector(tellIsMouseDown),
 	IPC_INDEX(CreateWindow) = @selector(createWindow),
+	IPC_INDEX(FindWindowByCoordinates) = @selector(findWindow),
 	IPC_INDEX(SetDirtyRect) = @selector(setDirtyRect),
 	IPC_INDEX(RefreshWindows) = @selector(refreshWindows),
+	IPC_INDEX(ClearMenus) = @selector(clearMenus),
+	IPC_INDEX(InsertMenu) = @selector(insertMenu),
+	IPC_INDEX(InsertMenuItem) = @selector(insertMenuItem),
 	IPC_INDEX(MenuSelect) = @selector(menuSelect),
 };
 
@@ -234,7 +254,8 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 -(void)finishLaunching
 {
 	[super finishLaunching];
-	[menuGate makeKeyAndOrderFront:self];
+	baseMenu = [self.mainMenu copy];
+	//[menuGate makeKeyAndOrderFront:self];
 }
 
 -(void)sendEvent:(NSEvent *)theEvent
@@ -383,6 +404,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 	SEL selector = ipcSelectors[messageType];
+	NSAssert(selector != nullptr, @"Message type %u has no implementation", messageType);
 	[self performSelector:selector];
 #pragma clang diagnostic pop
 }
@@ -451,11 +473,11 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	IPC_PARAM(surfaceId, IOSurfaceID);
 	IPC_PARAM(windowRect, InterfaceLib::Rect);
 	IPC_PARAM(visible, BOOL);
-	IPC_PARAM(title, InterfaceLib::ShortString);
+	IPC_PARAM(title, std::string);
 	IPC_PARAM(createBehind, uint32_t);
 	[self expectDone];
 	
-	NSString* nsTitle = [NSString stringWithCString:title encoding:NSMacOSRomanStringEncoding];
+	NSString* nsTitle = [NSString stringWithCString:title.c_str() encoding:NSMacOSRomanStringEncoding];
 	NSRect frame = [self classicRectToXRect:windowRect];
 	
 	IOSurfaceRef surface = IOSurfaceLookup(surfaceId);
@@ -497,6 +519,75 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		[windowDelegate setDirtyRect:pair.second inWindow:pair.first];
 	
 	dirtyRects.clear();
+	
+	[self sendDone];
+}
+
+-(void)clearMenus
+{
+	[self expectDone];
+	self.mainMenu = [baseMenu copy];
+	[self sendDone];
+}
+
+-(void)insertMenu
+{
+	IPC_PARAM(menuId, uint16_t);
+	IPC_PARAM(title, std::string);
+	[self expectDone];
+	
+	if (title == "\x14") // '' in Mac OS Roman
+	{
+		NSMenuItem* classixMenu = [self.mainMenu itemAtIndex:0];
+		classixMenu.tag = menuId;
+	}
+	else
+	{
+		NSString* nsTitle = [[NSString alloc] initWithCString:title.c_str() encoding:NSMacOSRomanStringEncoding];
+		NSMenu* menu = [[NSMenu alloc] initWithTitle:nsTitle];
+		NSMenuItem* wrappingItem = [[NSMenuItem alloc] initWithTitle:nsTitle action:nullptr keyEquivalent:@""];
+		wrappingItem.submenu = menu;
+		wrappingItem.tag = menuId;
+		[self.mainMenu addItem:wrappingItem];
+	}
+	
+	[self sendDone];
+}
+
+-(void)insertMenuItem
+{
+	IPC_PARAM(menuId, uint16_t);
+	IPC_PARAM(title, std::string);
+	IPC_PARAM(keyEquivalent, char);
+	[self expectDone];
+	
+	NSMenuItem* item;
+	if (title == "-")
+	{
+		item = [NSMenuItem separatorItem];
+	}
+	else
+	{
+		char keyEquivalentString[2] = {keyEquivalent, 0};
+		NSString* nsKeyEquivalent = [NSString stringWithCString:keyEquivalentString encoding:NSMacOSRomanStringEncoding];
+		NSString* nsTitle = [NSString stringWithCString:title.c_str() encoding:NSMacOSRomanStringEncoding];
+		item = [[NSMenuItem alloc] initWithTitle:nsTitle action:nullptr keyEquivalent:nsKeyEquivalent.lowercaseString];
+	}
+	
+	NSMenuItem* parentItem = [self.mainMenu itemWithTag:menuId];
+	NSMenu* parent = parentItem.submenu;
+	if ([self.mainMenu indexOfItem:parentItem] == 0)
+	{
+		// if it's the Apple menu, insert before the first element of the application menu instead of at the end of
+		// the menu
+		NSMenuItem* insertBefore = [parent itemWithTag:-1];
+		NSUInteger index = [parent indexOfItem:insertBefore];
+		[parent insertItem:item atIndex:index];
+	}
+	else
+	{
+		[parent addItem:item];
+	}
 	
 	[self sendDone];
 }

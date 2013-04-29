@@ -41,7 +41,6 @@ namespace InterfaceLib
 	}
 	
 	typedef Common::SInt16 Bits16[16];
-	typedef char ShortString[0x100];
 	
 	enum class Style : uint8_t
 	{
@@ -348,6 +347,9 @@ namespace InterfaceLib
 		SetDirtyRect,
 		RefreshWindows,
 		
+		ClearMenus,
+		InsertMenu,
+		InsertMenuItem,
 		MenuSelect,
 	};
 }

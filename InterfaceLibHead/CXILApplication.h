@@ -54,6 +54,15 @@
 // repaints views marked dirty
 -(void)refreshWindows;
 
+// removes menus from the menu bar, leaving only the standard Classix one
+-(void)clearMenus;
+
+// adds a menu to the menu bar
+-(void)insertMenu;
+
+// adds a menu item to a menu
+-(void)insertMenuItem;
+
 // open menus, return when an option has been selected (or menus have been closed)
 -(void)menuSelect;
 

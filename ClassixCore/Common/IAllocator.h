@@ -138,19 +138,25 @@ namespace Common
 		}
 		
 		template<typename T>
-		T* ToPointer(uint32_t value) const
+		T* ToPointer(uint32_t value, bool allowNullptr = false) const
 		{
 #ifdef DEBUG
-			AccessViolationException::Check(*this, value, sizeof(T));
+			if (!allowNullptr || value != 0)
+			{
+				AccessViolationException::Check(*this, value, sizeof(T));
+			}
 #endif
 			return reinterpret_cast<T*>(IntPtrToPointer(value));
 		}
 		
 		template<typename T>
-		T* ToArray(uint32_t value, size_t count) const
+		T* ToArray(uint32_t value, size_t count, bool allowNullptr = false) const
 		{
 #ifdef DEBUG
-			AccessViolationException::Check(*this, value, sizeof(T) * count);
+			if (!allowNullptr || value != 0)
+			{
+				AccessViolationException::Check(*this, value, sizeof(T) * count);
+			}
 #endif
 			return reinterpret_cast<T*>(IntPtrToPointer(value));
 		}

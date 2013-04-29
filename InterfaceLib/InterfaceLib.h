@@ -30,6 +30,7 @@
 #include "ResourceManager.h"
 #include "GrafPortManager.h"
 #include "UIChannel.h"
+#include "ResourceTypes.h"
 
 namespace InterfaceLib
 {
@@ -41,6 +42,7 @@ namespace InterfaceLib
 		Common::IAllocator& allocator;
 		ResourceManager resources;
 		GrafPortManager grafPorts;
+		std::vector<const Resources::MENU*> menus;
 		UIChannel ipc;
 		
 		uint32_t systemFatalErrorHandler;

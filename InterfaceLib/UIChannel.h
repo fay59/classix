@@ -24,6 +24,7 @@
 
 #include <cstdint>
 #include <type_traits>
+#include <vector>
 #include <tuple>
 #include <unistd.h>
 #include "CommonDefinitions.h"
@@ -79,11 +80,21 @@ namespace InterfaceLib
 		};
 		
 		// utilities
+		// WriteToPipe needs to return a value to be usable in a variadic template expansion context
 		template<typename T>
 		char WriteToPipe(const T& argument)
 		{
 			::write(write.write, &argument, sizeof argument);
 			return 0;
+		}
+		
+		template<typename T>
+		char WriteToPipe(const std::vector<T>& argument)
+		{
+			uint32_t count = static_cast<uint32_t>(argument.size());
+			::write(write.write, &count, sizeof count);
+			for (const T& item : argument)
+				WriteToPipe(item);
 		}
 		
 		template<typename T>
@@ -104,8 +115,6 @@ namespace InterfaceLib
 		TReturnType PerformAction(IPCMessage message, TArgument&&... argument)
 		{
 			static_assert(!std::is_pointer<TReturnType>::value, "Using DoMessage with a pointer type");
-			static_assert(std::is_void<TReturnType>::value || std::is_trivially_copy_constructible<TReturnType>::value,
-						  "Using DoMessage with a non-trivial type");
 			
 			char doneReference[4] = {'D', 'O', 'N', 'E'};
 			

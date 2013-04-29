@@ -21,9 +21,11 @@
 
 #include <sstream>
 #include "Prototypes.h"
+#include "ResourceTypes.h"
 #include "NotImplementedException.h"
 
 using namespace InterfaceLib;
+using namespace InterfaceLib::Resources;
 
 void InterfaceLib_BeginUpdate(InterfaceLib::Globals* globals, MachineState* state)
 {
@@ -112,7 +114,33 @@ void InterfaceLib_GetGrayRgn(InterfaceLib::Globals* globals, MachineState* state
 
 void InterfaceLib_GetNewCWindow(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	uint32_t resourceId = state->r3;
+	WIND* window = globals->resources.GetResource<WIND>(resourceId);
+	
+	uint32_t portAddress = state->r4;
+	UGrafPort* port;
+	std::string title = window->title;
+	const InterfaceLib::Rect& rect = window->windowRect;
+	
+	if (portAddress == 0)
+	{
+		std::stringstream ss;
+		ss << "Window: \"" << title << "\"";
+		port = &globals->grafPorts.AllocateColorGrafPort(rect, title);
+		portAddress = globals->allocator.ToIntPtr(port);
+	}
+	else
+	{
+		port = globals->allocator.ToPointer<UGrafPort>(portAddress);
+		assert(port->IsColor() && "Not a Color QuickDraw port");
+	}
+	
+	bool visible = window->visible;
+	uint32_t createBehind = state->r5;
+	uint32_t surfaceId = globals->grafPorts.SurfaceOfGrafPort(*port);
+	
+	globals->ipc.PerformAction<void>(IPCMessage::CreateWindow, portAddress, surfaceId, rect, visible, title, createBehind);
+	state->r3 = portAddress;
 }
 
 void InterfaceLib_GetNewWindow(InterfaceLib::Globals* globals, MachineState* state)
@@ -185,10 +213,8 @@ void InterfaceLib_NewCWindow(InterfaceLib::Globals* globals, MachineState* state
 	UGrafPort* port;
 	
 	// We try to get the title first, since we can use it for the allocation name.
-	ShortString title;
 	const char* pascalTitle = globals->allocator.ToPointer<const char>(state->r5);
 	std::string cppTitle = PascalStringToCPPString(pascalTitle);
-	strncpy(title, cppTitle.c_str(), sizeof title);
 	
 	const InterfaceLib::Rect& rect = *globals->allocator.ToPointer<const InterfaceLib::Rect>(state->r4);
 	
@@ -209,7 +235,7 @@ void InterfaceLib_NewCWindow(InterfaceLib::Globals* globals, MachineState* state
 	uint32_t createBehind = state->r8;
 	uint32_t surfaceId = globals->grafPorts.SurfaceOfGrafPort(*port);
 	
-	globals->ipc.PerformAction<void>(IPCMessage::CreateWindow, portAddress, surfaceId, rect, visible, title, createBehind);
+	globals->ipc.PerformAction<void>(IPCMessage::CreateWindow, portAddress, surfaceId, rect, visible, cppTitle, createBehind);
 	state->r3 = portAddress;
 }
 
