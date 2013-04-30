@@ -57,15 +57,6 @@ namespace
 		return static_cast<uint32_t>(absTime / (1000000000. / 60.));
 	}
 	
-	static InterfaceLib::Point CXILGlobalNSPointToPoint(NSPoint pt)
-	{
-		uint32_t screenHeight = NSScreen.mainScreen.frame.size.height;
-		InterfaceLib::Point outPoint;
-		outPoint.h = pt.x;
-		outPoint.v = screenHeight / 2 - pt.y;
-		return outPoint;
-	}
-	
 	static uint16_t CXILEventRecordModifierFlags(NSUInteger modifierFlags)
 	{
 		uint16_t modifiers = 0;
@@ -255,7 +246,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 {
 	[super finishLaunching];
 	baseMenu = [self.mainMenu copy];
-	//[menuGate makeKeyAndOrderFront:self];
+	[menuGate makeKeyAndOrderFront:self];
 }
 
 -(void)sendEvent:(NSEvent *)theEvent
@@ -263,7 +254,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	NSPoint globalCoordinates = [NSEvent mouseLocation];
 	EventRecord eventRecord = {
 		.when = Common::UInt32(theEvent.timestamp * 60), // Mac OS Classic considers there are 60 ticks per second
-		.where = CXILGlobalNSPointToPoint(globalCoordinates),
+		.where = [self xPointToClassicPoint:globalCoordinates],
 	};
 	
 	uint16_t mouseButtonState = ([NSEvent pressedMouseButtons] & 1) == 1
@@ -339,7 +330,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		EventRecord focusRecord = {
 			.what = Common::UInt16(static_cast<uint16_t>(EventCode::activateEvent)),
 			.when = Common::UInt32(CXILEventTimeStamp()),
-			.where = CXILGlobalNSPointToPoint([NSEvent mouseLocation]),
+			.where = [self xPointToClassicPoint:[NSEvent mouseLocation]],
 			.modifiers = Common::UInt16(modifiers),
 			.message = Common::UInt32([windowDelegate keyOfWindow:notification.object])
 		};
@@ -495,8 +486,8 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	NSPoint nsPoint = [self classicPointToXPoint:point];
 	uint32_t key = [windowDelegate findWindowUnderPoint:nsPoint area:reinterpret_cast<int16_t*>(&code)];
 	
-	channel->Write(key);
 	channel->Write(code);
+	channel->Write(key);
 	[self sendDone];
 }
 
@@ -600,6 +591,8 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	IPC_PARAM(point, InterfaceLib::Point);
 	[self expectDone];
 	
+	NSLog(@"MenuSelect called");
+	
 	menuGate.ignoresMouseEvents = YES;
 	NSPoint nsPoint = [self classicPointToXPoint:point];
 	
@@ -642,6 +635,14 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	CGFloat x = point.h;
 	CGFloat y = screenBounds.size.height - point.v;
 	return NSMakePoint(x, y);
+}
+
+-(InterfaceLib::Point)xPointToClassicPoint:(NSPoint)pt
+{
+	InterfaceLib::Point outPoint;
+	outPoint.h = pt.x;
+	outPoint.v = screenBounds.size.height - pt.y;
+	return outPoint;
 }
 
 -(void)stopWaitingOnEvent

@@ -100,19 +100,21 @@
 
 -(uint32_t)findWindowUnderPoint:(NSPoint)point area:(int16_t *)partCode
 {
-	NSUInteger windowNumber = [NSWindow windowNumberAtPoint:point belowWindowWithWindowNumber:0];
-	
-	if (windowNumber == menuGate.windowNumber)
+	if (point.y >= menuGate.frame.origin.y)
 	{
 		*partCode = static_cast<int16_t>(InterfaceLib::WindowPartCode::inMenuBar);
 		return 0;
 	}
 	
+	NSUInteger windowNumber = [NSWindow windowNumberAtPoint:point belowWindowWithWindowNumber:0];
+	
 	for (NSWindow* window in windows.allValues)
 	{
 		if (window.windowNumber == windowNumber)
 		{
-			*partCode = NSPointInRect(point, [window.contentView frame])
+			NSRect viewFrame = [window.contentView frame];
+			viewFrame.origin = window.frame.origin;
+			*partCode = NSPointInRect(point, viewFrame)
 				? static_cast<int16_t>(InterfaceLib::WindowPartCode::inContent)
 				: static_cast<int16_t>(InterfaceLib::WindowPartCode::inDrag);
 			return [self keyOfWindow:window];

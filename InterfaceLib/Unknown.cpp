@@ -431,6 +431,8 @@ void InterfaceLib_findwindow(InterfaceLib::Globals* globals, MachineState* state
 
 void InterfaceLib_FindWindow(InterfaceLib::Globals* globals, MachineState* state)
 {
+	typedef std::tuple<WindowPartCode, uint32_t> FindWindowType;
+	
 	Common::UInt32 bigEndianPoint = Common::UInt32(state->r3);
 	const InterfaceLib::Point& point = *reinterpret_cast<InterfaceLib::Point*>(&bigEndianPoint);
 	
@@ -438,7 +440,7 @@ void InterfaceLib_FindWindow(InterfaceLib::Globals* globals, MachineState* state
 	Common::UInt32* windowPointer = globals->allocator.ToPointer<Common::UInt32>(state->r4);
 	
 	std::tie(windowPart, *windowPointer) =
-		globals->ipc.PerformComplexAction<std::tuple<WindowPartCode, uint32_t>>(IPCMessage::FindWindowByCoordinates, point);
+		globals->ipc.PerformComplexAction<FindWindowType>(IPCMessage::FindWindowByCoordinates, point);
 	
 	state->r3 = static_cast<uint32_t>(windowPart);
 }

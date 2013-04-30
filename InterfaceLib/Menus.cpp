@@ -191,7 +191,7 @@ void InterfaceLib_MenuKey(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_MenuSelect(InterfaceLib::Globals* globals, MachineState* state)
 {
-	Point& pt = *globals->allocator.ToPointer<Point>(state->r3);
+	Point& pt = *reinterpret_cast<Point*>(&state->r3);
 	state->r3 = globals->ipc.PerformAction<uint32_t>(IPCMessage::MenuSelect, pt);
 }
 
