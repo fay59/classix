@@ -186,7 +186,7 @@ namespace InterfaceLib
 		if (const Common::AllocationDetails* details = allocator.GetDetails(&uPort))
 		{
 			ss << " for \"" << details->GetAllocationName() << "\" (0x";
-			ss << std::hex << std::setw(8) << allocator.ToIntPtr(&uPort) << ")";
+			ss << std::hex << std::setw(8) << std::setfill('0') << allocator.ToIntPtr(&uPort) << ")";
 		}
 		
 		ColorGrafPortEverythingElse& support = ColorGrafPortEverythingElse::Allocate(allocator, 0, ss.str());
@@ -249,6 +249,12 @@ namespace InterfaceLib
 	void GrafPortManager::DestroyGrafPort(UGrafPort& port)
 	{
 		uint32_t address = allocator.ToIntPtr(&port);
+		if (port.IsColor())
+		{
+			ColorGrafPortEverythingElse* support = allocator.ToPointer<ColorGrafPortEverythingElse>(port.color.portPixMap);
+			allocator.Deallocate(support);
+		}
+		
 		ports.erase(address);
 	}
 	

@@ -60,7 +60,9 @@ void InterfaceLib_ClipAbove(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_DisposeWindow(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	UGrafPort& port = *globals->allocator.ToPointer<UGrafPort>(state->r3);
+	globals->grafPorts.DestroyGrafPort(port);
+	globals->allocator.Deallocate(&port);
 }
 
 void InterfaceLib_DragGrayRgn(InterfaceLib::Globals* globals, MachineState* state)
