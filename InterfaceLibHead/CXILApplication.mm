@@ -545,6 +545,8 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	{
 		NSString* nsTitle = [[NSString alloc] initWithCString:title.c_str() encoding:NSMacOSRomanStringEncoding];
 		NSMenu* menu = [[NSMenu alloc] initWithTitle:nsTitle];
+		menu.autoenablesItems = NO;
+		
 		NSMenuItem* wrappingItem = [[NSMenuItem alloc] initWithTitle:nsTitle action:nullptr keyEquivalent:@""];
 		wrappingItem.submenu = menu;
 		wrappingItem.tag = menuId;
@@ -559,6 +561,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	IPC_PARAM(menuId, uint16_t);
 	IPC_PARAM(title, std::string);
 	IPC_PARAM(keyEquivalent, char);
+	IPC_PARAM(enabled, bool);
 	[self expectDone];
 	
 	NSMenuItem* item;

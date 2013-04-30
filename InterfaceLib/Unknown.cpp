@@ -347,11 +347,14 @@ void InterfaceLib_DrawMenuBar(InterfaceLib::Globals* globals, MachineState* stat
 	{
 		uint16_t menuId = menu->menuId;
 		globals->ipc.PerformAction<void>(IPCMessage::InsertMenu, menuId, menu->GetTitle());
+		size_t i = 1;
 		for (const auto* menuItem = menu->GetFirstItem(); menuItem != nullptr; menuItem = menuItem->GetNextItem())
 		{
 			std::string title = menuItem->GetTitle();
 			char keyEquivalent = menuItem->GetKeyEquivalent();
-			globals->ipc.PerformAction<void>(IPCMessage::InsertMenuItem, menuId, title, keyEquivalent);
+			bool enabled = (menu->enableFlags & (1 << i)) != 0;
+			globals->ipc.PerformAction<void>(IPCMessage::InsertMenuItem, menuId, title, keyEquivalent, enabled);
+			i++;
 		}
 	}
 }
