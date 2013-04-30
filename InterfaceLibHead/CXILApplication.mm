@@ -591,10 +591,9 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	IPC_PARAM(point, InterfaceLib::Point);
 	[self expectDone];
 	
-	NSLog(@"MenuSelect called");
-	
 	menuGate.ignoresMouseEvents = YES;
-	NSPoint nsPoint = [self classicPointToXPoint:point];
+	// CGEvents are strange and (0,0) is the top left corner
+	NSPoint nsPoint = NSMakePoint(point.h, point.v);
 	
 	CFOwningRef<CGEventRef> clickEvent = CGEventCreateMouseEvent(nullptr, kCGEventLeftMouseDown, nsPoint, kCGMouseButtonLeft);
 	CGEventPost(kCGHIDEventTap, clickEvent);

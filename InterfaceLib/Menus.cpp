@@ -141,7 +141,7 @@ void InterfaceLib_GetNewMBar(InterfaceLib::Globals* globals, MachineState* state
 
 void InterfaceLib_HiliteMenu(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// pass on this one
 }
 
 void InterfaceLib_InitMenus(InterfaceLib::Globals* globals, MachineState* state)
@@ -191,7 +191,9 @@ void InterfaceLib_MenuKey(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_MenuSelect(InterfaceLib::Globals* globals, MachineState* state)
 {
-	Point& pt = *reinterpret_cast<Point*>(&state->r3);
+	Point pt;
+	pt.h = state->r3 & 0xffff;
+	pt.v = state->r3 >> 16;
 	state->r3 = globals->ipc.PerformAction<uint32_t>(IPCMessage::MenuSelect, pt);
 }
 
