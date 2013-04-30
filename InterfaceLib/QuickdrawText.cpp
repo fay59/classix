@@ -21,6 +21,7 @@
 
 #include <CoreGraphics/CoreGraphics.h>
 #include "Prototypes.h"
+#include "InterfaceLib.h"
 #include "NotImplementedException.h"
 
 using namespace InterfaceLib;

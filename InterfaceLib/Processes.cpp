@@ -20,6 +20,7 @@
 //
 
 #include "Prototypes.h"
+#include "InterfaceLib.h"
 #include "NotImplementedException.h"
 
 void InterfaceLib_ExitToShell(InterfaceLib::Globals* globals, MachineState* state)

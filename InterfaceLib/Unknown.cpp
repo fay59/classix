@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include "Prototypes.h"
+#include "InterfaceLib.h"
 #include "NotImplementedException.h"
 
 using namespace InterfaceLib;

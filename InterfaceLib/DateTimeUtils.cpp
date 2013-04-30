@@ -21,6 +21,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include "Prototypes.h"
+#include "InterfaceLib.h"
 #include "NotImplementedException.h"
 
 void InterfaceLib_DateToSeconds(InterfaceLib::Globals* globals, MachineState* state)

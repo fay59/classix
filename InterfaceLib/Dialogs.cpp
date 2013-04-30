@@ -20,6 +20,7 @@
 //
 
 #include "Prototypes.h"
+#include "InterfaceLib.h"
 #include "NotImplementedException.h"
 
 void InterfaceLib_Alert(InterfaceLib::Globals* globals, MachineState* state)

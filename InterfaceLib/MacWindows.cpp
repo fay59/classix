@@ -21,6 +21,7 @@
 
 #include <sstream>
 #include "Prototypes.h"
+#include "InterfaceLib.h"
 #include "ResourceTypes.h"
 #include "NotImplementedException.h"
 

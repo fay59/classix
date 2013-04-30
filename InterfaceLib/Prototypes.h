@@ -23,7 +23,8 @@
 #define Classix_Prototypes_h
 
 #include "MachineState.h"
-#include "InterfaceLib.h"
+
+namespace InterfaceLib { struct Globals; }
 
 extern "C"
 {
