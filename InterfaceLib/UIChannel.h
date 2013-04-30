@@ -43,6 +43,18 @@ namespace InterfaceLib
 			};
 		};
 		
+		template<size_t... IndexList>
+		struct Indices
+		{
+			typedef Indices<IndexList..., sizeof...(IndexList)> Next;
+		};
+		
+		template<size_t N>
+		struct MakeIndices
+		{
+			typedef typename MakeIndices<N - 1>::Type::Next Type;
+		};
+		
 		// reading to tuples
 		// thanks Daniel Frey -- http://stackoverflow.com/q/16248828/variadic-read-tuples
 		// the Indices::Next definition is pretty clever.
@@ -52,22 +64,16 @@ namespace InterfaceLib
 			int fd;
 			TTupleType storage;
 			
-			template<size_t... IndexList>
-			struct Indices
+			template<typename TElement>
+			inline size_t ReadOne(size_t index, TElement& into)
 			{
-				typedef Indices<IndexList..., sizeof...(IndexList)> Next;
-			};
-			
-			template<size_t N>
-			struct MakeIndices
-			{
-				typedef typename Indices<N - 1>::Next Type;
-			};
+				return ::read(fd, &into, sizeof into);
+			}
 			
 			template<size_t... Ns>
 			inline void ReadImpl(const Indices<Ns...>&)
 			{
-				PACK_EXPAND(::read(fd, &std::get<Ns>(storage), sizeof(typename std::tuple_element<Ns, TTupleType>::type)));
+				PACK_EXPAND(ReadOne(Ns, std::get<Ns>(storage)));
 			}
 			
 			TupleReader(int fd) : fd(fd)
@@ -82,19 +88,19 @@ namespace InterfaceLib
 		// utilities
 		// WriteToPipe needs to return a value to be usable in a variadic template expansion context
 		template<typename T>
-		char WriteToPipe(const T& argument)
+		size_t WriteToPipe(const T& argument)
 		{
-			::write(write.write, &argument, sizeof argument);
-			return 0;
+			return ::write(write.write, &argument, sizeof argument);
 		}
 		
 		template<typename T>
-		char WriteToPipe(const std::vector<T>& argument)
+		size_t WriteToPipe(const std::vector<T>& argument)
 		{
 			uint32_t count = static_cast<uint32_t>(argument.size());
-			::write(write.write, &count, sizeof count);
+			size_t total = ::write(write.write, &count, sizeof count);
 			for (const T& item : argument)
-				WriteToPipe(item);
+				total += WriteToPipe(item);
+			return total;
 		}
 		
 		template<typename T>
@@ -155,6 +161,12 @@ namespace InterfaceLib
 		}
 		
 		~UIChannel();
+	};
+	
+	template<>
+	struct UIChannel::MakeIndices<0>
+	{
+		typedef typename UIChannel::Indices<> Type;
 	};
 }
 

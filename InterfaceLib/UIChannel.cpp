@@ -104,22 +104,22 @@ namespace InterfaceLib
 	void UIChannel::ReturnNonVoid(const uint8_t* buffer) {}
 	
 	template<>
-	char UIChannel::WriteToPipe(const MacRegion& region)
+	size_t UIChannel::WriteToPipe(const MacRegion& region)
 	{
-		WriteToPipe(region.rgnSize);
-		WriteToPipe(region.rgnBBox);
+		size_t total = WriteToPipe(region.rgnSize);
+		total += WriteToPipe(region.rgnBBox);
 		const char* bytes = reinterpret_cast<const char*>(&region) + sizeof region;
-		::write(write.write, bytes, region.rgnSize - 10);
-		return 0;
+		total += ::write(write.write, bytes, region.rgnSize - 10);
+		return total;
 	}
 	
 	template<>
-	char UIChannel::WriteToPipe(const std::string& string)
+	size_t UIChannel::WriteToPipe(const std::string& string)
 	{
 		uint32_t length = static_cast<uint32_t>(string.length());
-		WriteToPipe(length);
-		::write(write.write, string.data(), length);
-		return 0;
+		size_t total = WriteToPipe(length);
+		total += ::write(write.write, string.data(), length);
+		return total;
 	}
 	
 	UIChannel::~UIChannel()
