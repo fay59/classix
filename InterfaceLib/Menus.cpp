@@ -191,10 +191,15 @@ void InterfaceLib_MenuKey(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_MenuSelect(InterfaceLib::Globals* globals, MachineState* state)
 {
+	typedef std::tuple<uint16_t, uint16_t> MenuSelectResult;
 	Point pt;
 	pt.h = state->r3 & 0xffff;
 	pt.v = state->r3 >> 16;
-	state->r3 = globals->ipc.PerformAction<uint32_t>(IPCMessage::MenuSelect, pt);
+	
+	uint16_t menu;
+	uint16_t item;
+	std::tie(menu, item) = globals->ipc.PerformComplexAction<MenuSelectResult>(IPCMessage::MenuSelect, pt);
+	state->r3 = (menu << 16) | (item + 1); // menus are 1-based in Classic
 }
 
 void InterfaceLib_NewMenu(InterfaceLib::Globals* globals, MachineState* state)

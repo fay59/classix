@@ -338,11 +338,6 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		eventQueue.push_back(focusRecord);
 		[self suggestEventRecord:focusRecord];
 	}
-	else if ([notification.name isEqualToString:NSMenuWillSendActionNotification])
-	{
-		NSMenuItem* item = [notification.userInfo objectForKey:NSMenuWillSendActionNotification_MenuItem];
-		[self pickMenuItem:item];
-	}
 	else if ([notification.name isEqualToString:NSMenuDidCompleteInteractionNotification])
 	{
 		[self pickMenuItem:nil];
@@ -565,7 +560,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		char keyEquivalentString[2] = {keyEquivalent, 0};
 		NSString* nsKeyEquivalent = [NSString stringWithCString:keyEquivalentString encoding:NSMacOSRomanStringEncoding];
 		NSString* nsTitle = [NSString stringWithCString:title.c_str() encoding:NSMacOSRomanStringEncoding];
-		item = [[NSMenuItem alloc] initWithTitle:nsTitle action:nullptr keyEquivalent:nsKeyEquivalent.lowercaseString];
+		item = [[NSMenuItem alloc] initWithTitle:nsTitle action:@selector(pickMenuItem:) keyEquivalent:nsKeyEquivalent.lowercaseString];
 	}
 	
 	NSMenuItem* parentItem = [self.mainMenu itemWithTag:menuId];
@@ -655,13 +650,15 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	[self sendDone];
 }
 
--(void)pickMenuItem:(NSMenuItem*)item
+-(void)pickMenuItem:(NSMenuItem*)sender
 {
 	if (menuGate.ignoresMouseEvents)
 	{
-		// if representedObject is the application, it's a Classix menu item; otherwise, we don't really care
-		uint32_t tag = item.representedObject == self ? static_cast<uint32_t>(item.tag) : 0;
-		channel->Write(tag);
+		NSMenuItem* parent = sender.parentItem;
+		uint16_t menuIndex = static_cast<uint16_t>(parent.tag);
+		uint16_t itemIndex = static_cast<uint16_t>([parent.submenu indexOfItem:sender]);
+		channel->Write(menuIndex);
+		channel->Write(itemIndex);
 		[self sendDone];
 		
 		menuGate.ignoresMouseEvents = NO;
