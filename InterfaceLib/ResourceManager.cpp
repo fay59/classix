@@ -172,11 +172,10 @@ namespace InterfaceLib
 				}
 				
 				// allocate room for the handle as well
-				dataLength += 4;
-				entry._begin = allocator.Allocate(allocationName.str(), dataLength);
+				entry._begin = allocator.Allocate(allocationName.str(), dataLength + 4);
 				entry._end = entry.begin() + dataLength;
-				std::copy(dataLocation, dataLocation + dataLength, entry.begin());
 				entry.handle() = allocator.ToIntPtr(entry.begin());
+				std::copy(dataLocation, dataLocation + dataLength, entry.begin());
 				
 				idResourceMap[entry.id] = entry;
 				if (entry.name.length() > 0)
