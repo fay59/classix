@@ -182,6 +182,7 @@ static SEL ipcSelectors[] = {
 	IPC_INDEX(DequeueNextEvent) = @selector(discardNextEvent),
 	IPC_INDEX(IsMouseDown) = @selector(tellIsMouseDown),
 	IPC_INDEX(CreateWindow) = @selector(createWindow),
+	IPC_INDEX(FindFrontWindow) = @selector(findFrontWindow),
 	IPC_INDEX(FindWindowByCoordinates) = @selector(findWindow),
 	IPC_INDEX(SetDirtyRect) = @selector(setDirtyRect),
 	IPC_INDEX(RefreshWindows) = @selector(refreshWindows),
@@ -469,6 +470,16 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	IOSurfaceRef surface = IOSurfaceLookup(surfaceId);
 	[windowDelegate createWindow:key withRect:frame surface:surface title:nsTitle visible:visible behind:createBehind];
 	IOSurfaceDecrementUseCount(surface);
+	[self sendDone];
+}
+
+-(void)findFrontWindow
+{
+	[self expectDone];
+	
+	NSWindow* frontWindow = [self mainWindow];
+	uint32_t key = [windowDelegate keyOfWindow:frontWindow];
+	channel->Write(key);
 	[self sendDone];
 }
 

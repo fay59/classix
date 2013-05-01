@@ -343,6 +343,7 @@ namespace InterfaceLib
 		IsMouseDown,
 		
 		CreateWindow,
+		FindFrontWindow,
 		FindWindowByCoordinates,
 		SetDirtyRect,
 		RefreshWindows,
