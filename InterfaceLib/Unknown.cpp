@@ -524,7 +524,7 @@ void InterfaceLib_getindstring(InterfaceLib::Globals* globals, MachineState* sta
 void InterfaceLib_GetMenu(InterfaceLib::Globals* globals, MachineState* state)
 {
 	ResourceEntry* entry = globals->resources.GetRawResource("MENU", state->r3);
-	state->r3 = entry->handle();
+	state->r3 = globals->allocator.ToIntPtr(&entry->handle());
 }
 
 void InterfaceLib_getmenuitemtext(InterfaceLib::Globals* globals, MachineState* state)
@@ -594,8 +594,8 @@ void InterfaceLib_IncrementAtomic8(InterfaceLib::Globals* globals, MachineState*
 
 void InterfaceLib_InsertMenu(InterfaceLib::Globals* globals, MachineState* state)
 {
-	uint32_t handle = state->r3;
-	const Resources::MENU* pointer = globals->allocator.ToPointer<Resources::MENU>(handle);
+	uint32_t pointerAddress = *globals->allocator.ToPointer<Common::UInt32>(state->r3);
+	const Resources::MENU* pointer = globals->allocator.ToPointer<Resources::MENU>(pointerAddress);
 	auto insertAt = std::find(globals->menus.begin(), globals->menus.end(), pointer);
 	globals->menus.insert(insertAt, pointer);
 }
