@@ -62,6 +62,9 @@
 // adds a menu to the menu bar
 -(void)insertMenu;
 
+// checks a menu item
+-(void)checkMenuItem;
+
 // adds a menu item to a menu
 -(void)insertMenuItem;
 

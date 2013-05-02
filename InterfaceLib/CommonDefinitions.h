@@ -362,6 +362,7 @@ namespace InterfaceLib
 		InsertMenuItem,
 		MenuSelect,
 		MenuKey,
+		CheckItem,
 	};
 }
 

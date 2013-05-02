@@ -37,7 +37,13 @@ void InterfaceLib_CalcMenuSize(InterfaceLib::Globals* globals, MachineState* sta
 
 void InterfaceLib_CheckItem(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	uint32_t pointerAddress = *globals->allocator.ToPointer<Common::UInt32>(state->r3);
+	const Resources::MENU* menu = globals->allocator.ToPointer<Resources::MENU>(pointerAddress);
+	
+	uint16_t menuIndex = menu->menuId;
+	uint16_t itemIndex = state->r4 - 1; // Classic menus are 1-based
+	bool check = state->r5;
+	globals->ipc.PerformAction<void>(IPCMessage::CheckItem, menuIndex, itemIndex, check);
 }
 
 void InterfaceLib_ClearMenuBar(InterfaceLib::Globals* globals, MachineState* state)

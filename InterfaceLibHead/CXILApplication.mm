@@ -222,6 +222,7 @@ static SEL ipcSelectors[] = {
 	IPC_INDEX(ClearMenus) = @selector(clearMenus),
 	IPC_INDEX(InsertMenu) = @selector(insertMenu),
 	IPC_INDEX(InsertMenuItem) = @selector(insertMenuItem),
+	IPC_INDEX(CheckItem) = @selector(checkMenuItem),
 	IPC_INDEX(MenuSelect) = @selector(menuSelect),
 	IPC_INDEX(MenuKey) = @selector(menuKey),
 };
@@ -684,6 +685,19 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	[self sendDone];
 }
 
+-(void)checkMenuItem
+{
+	IPC_PARAM(menuIndex, uint16_t);
+	IPC_PARAM(itemIndex, uint16_t);
+	IPC_PARAM(checked, bool);
+	[self expectDone];
+	
+	NSMenu* menu = [self.mainMenu itemWithTag:menuIndex].submenu;
+	NSMenuItem* item = [menu itemAtIndex:itemIndex];
+	item.state = checked ? NSOnState : NSOffState;
+	[self sendDone];
+}
+
 -(void)menuSelect
 {
 	IPC_PARAM(point, InterfaceLib::Point);
@@ -784,7 +798,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	
 	if (menuGate.ignoresMouseEvents)
 	{
-		menuGate.ignoresMouseEvents = NO;
+		//menuGate.ignoresMouseEvents = NO;
 	}
 }
 
