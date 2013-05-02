@@ -116,6 +116,14 @@ namespace InterfaceLib
 	
 	struct __attribute__((packed)) Point
 	{
+		inline static Point FromWord(uint32_t word)
+		{
+			Point result;
+			result.h = word & 0xffff;
+			result.v = word >> 16;
+			return result;
+		}
+		
 		Common::SInt16 v;
 		Common::SInt16 h;
 	};
@@ -347,6 +355,7 @@ namespace InterfaceLib
 		FindWindowByCoordinates,
 		SetDirtyRect,
 		RefreshWindows,
+		DragWindow,
 		
 		ClearMenus,
 		InsertMenu,

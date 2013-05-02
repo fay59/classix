@@ -24,6 +24,12 @@
 #import "CXIOSurfaceView.h"
 #include "CommonDefinitions.h"
 
+@interface CXILDragWindowEventHandler : NSObject <CXILEventHandler>
+
+-(id)initWithWindow:(NSWindow*)window mouseLocation:(NSPoint)location dragBounds:(NSRect)dragBounds;
+
+@end
+
 @interface CXILWindowDelegate (Private)
 
 -(NSWindow*)windowForID:(uint32_t)windowID;
@@ -49,10 +55,11 @@
 
 -(void)createWindow:(uint32_t)key withRect:(NSRect)rect surface:(IOSurfaceRef)surface title:(NSString *)title visible:(BOOL)visible behind:(uint32_t)behindKey
 {
-	NSUInteger windowStyle = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
+	NSUInteger windowStyle = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask;
 	NSWindow* window = [[NSWindow alloc] initWithContentRect:rect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO];
 	window.title = title;
 	window.oneShot = YES;
+	window.movable = NO;
 	
 	[windows setObject:window forKey:@(key)];
 	
@@ -84,13 +91,36 @@
 
 -(void)setDirtyRect:(CGRect)rect inWindow:(uint32_t)key
 {
-	NSWindow* window = [windows objectForKey:@(key)];
+	NSWindow* window = windows[@(key)];
 	[[window contentView] setNeedsDisplayInRect:rect];
 }
 
 -(void)destroyWindow:(uint32_t)windowID
 {
 	[windows removeObjectForKey:@(windowID)];
+}
+
+-(id<CXILEventHandler>)startDragWindow:(uint32_t)windowKey mouseLocation:(NSPoint)location dragBounds:(NSRect)bounds
+{
+	NSWindow* window = windows[@(windowKey)];
+	return [[CXILDragWindowEventHandler alloc] initWithWindow:window mouseLocation:location dragBounds:bounds];
+}
+
+-(uint32_t)keyOfFrontWindow
+{
+	uint32_t windowKey = 0;
+	NSInteger bestLevel = NSIntegerMin;
+	for (NSNumber* key : windows)
+	{
+		NSWindow* window = windows[key];
+		NSInteger level = window.level;
+		if (level > bestLevel)
+		{
+			[key getValue:&windowKey];
+			bestLevel = level;
+		}
+	}
+	return windowKey;
 }
 
 -(uint32_t)keyOfWindow:(NSWindow *)window
@@ -123,6 +153,73 @@
 	
 	*partCode = -1;
 	return 0;
+}
+
+@end
+
+@implementation CXILDragWindowEventHandler
+{
+	NSWindow* draggedWindow;
+	NSRect dragBounds;
+	NSPoint cursorDelta;
+	NSMutableArray* removalActions;
+}
+
+-(id)initWithWindow:(NSWindow *)window mouseLocation:(NSPoint)location dragBounds:(NSRect)bounds
+{
+	if (!(self = [super init]))
+		return nil;
+	
+	draggedWindow = window;
+	dragBounds = bounds;
+	
+	NSPoint windowOrigin = window.frame.origin;
+	cursorDelta = NSMakePoint(location.x - windowOrigin.x, location.y - windowOrigin.y);
+	
+	removalActions = [NSMutableArray array];
+	
+	return self;
+}
+
+-(CXILEventHandlerActionResult)handleEvent:(NSEvent *)event
+{
+	if (event.type == NSLeftMouseDragged)
+	{
+		NSPoint location = NSEvent.mouseLocation;
+		NSSize windowSize = draggedWindow.frame.size;
+		NSRect newWindowRect = NSMakeRect(location.x - cursorDelta.x, location.y - cursorDelta.y, windowSize.width, windowSize.height);
+		
+		if (NSMinX(newWindowRect) < NSMinX(dragBounds))
+			newWindowRect.origin.x = NSMinX(dragBounds);
+		if (NSMinY(newWindowRect) < NSMinY(dragBounds))
+			newWindowRect.origin.y = NSMinY(dragBounds);
+		
+		if (NSMaxX(newWindowRect) > NSMaxX(dragBounds))
+			newWindowRect.origin.x = NSMaxX(dragBounds) - newWindowRect.size.width;
+		if (NSMaxY(newWindowRect) > NSMaxY(dragBounds))
+			newWindowRect.origin.y = NSMaxY(dragBounds) - newWindowRect.size.height;
+		
+		[draggedWindow setFrame:newWindowRect display:NO];
+	}
+	else if (event.type == NSLeftMouseUp)
+	{
+		for (CXILEventHandlerRemovedAction action : removalActions)
+			action(self);
+		
+		return kCXILEventHandlerRemoveHandler;
+	}
+	
+	return kCXILEventHandlerNormalResolution;
+}
+
+-(CXILEventHandlerActionResult)handleNotification:(NSNotification *)notification
+{
+	return kCXILEventHandlerNormalResolution;
+}
+
+-(void)registerRemovalAction:(CXILEventHandlerRemovedAction)action
+{
+	[removalActions addObject:action];
 }
 
 @end

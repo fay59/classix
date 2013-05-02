@@ -77,7 +77,11 @@ void InterfaceLib_DragTheRgn(InterfaceLib::Globals* globals, MachineState* state
 
 void InterfaceLib_DragWindow(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	uint32_t windowKey = state->r3;
+	// we don't need the point in state->r4
+	Rect& dragBounds = *globals->allocator.ToPointer<Rect>(state->r5);
+	
+	globals->ipc.PerformAction<void>(IPCMessage::DragWindow, windowKey, dragBounds);
 }
 
 void InterfaceLib_DrawGrowIcon(InterfaceLib::Globals* globals, MachineState* state)

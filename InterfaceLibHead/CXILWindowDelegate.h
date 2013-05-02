@@ -20,6 +20,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "CXILEventHandler.h"
 
 // This may be kind of a misnomer. It's the delegate class that handles window stuff in lieu of CXILApplication.
 @interface CXILWindowDelegate : NSObject
@@ -30,6 +31,9 @@
 -(void)setDirtyRect:(CGRect)rect inWindow:(uint32_t)key;
 -(void)destroyWindow:(uint32_t)windowID;
 
+-(id<CXILEventHandler>)startDragWindow:(uint32_t)windowKey mouseLocation:(NSPoint)location dragBounds:(NSRect)bounds;
+
+-(uint32_t)keyOfFrontWindow;
 -(uint32_t)keyOfWindow:(NSWindow*)window;
 -(uint32_t)findWindowUnderPoint:(NSPoint)point area:(int16_t*)partCode;
 

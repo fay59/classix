@@ -268,6 +268,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DC026F361731DF8900D452BD /* CXILEventHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXILEventHandler.h; sourceTree = "<group>"; };
 		DC03F65C170E8D7800A4A3C6 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = InterfaceLibHead/main.m; sourceTree = SOURCE_ROOT; };
 		DC03F65F170E8D9000A4A3C6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = InterfaceLibHead/en.lproj/Credits.rtf; sourceTree = SOURCE_ROOT; };
 		DC03F662170E8DA800A4A3C6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InterfaceLibHead/en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
@@ -900,6 +901,7 @@
 				DC6ABE2A1710E0FB00A02B2D /* CXILWindowDelegate.mm */,
 				DC82C3A31719A69000A11444 /* CXIOSurfaceView.h */,
 				DC82C3A41719A69000A11444 /* CXIOSurfaceView.m */,
+				DC026F361731DF8900D452BD /* CXILEventHandler.h */,
 				DC27B69A170E8D0E00A23FFD /* MainMenu.xib */,
 				DC930ABB1708BC8E00B739B1 /* Supporting Files */,
 			);

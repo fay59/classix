@@ -20,12 +20,14 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "CXILEventHandler.h"
 
-@interface CXILApplication : NSApplication
+@interface CXILApplication : NSApplication <CXILEventHandler>
 
 // Reacting to stuff
 -(void)sendEvent:(NSEvent *)theEvent;
--(void)receiveNotification:(NSNotification*)notification;
+-(CXILEventHandlerActionResult)handleEvent:(NSEvent *)event;
+-(CXILEventHandlerActionResult)handleNotification:(NSNotification *)notification;
 
 // IPC messages implementation
 -(void)processIPCMessage;

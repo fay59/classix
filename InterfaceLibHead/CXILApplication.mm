@@ -24,6 +24,7 @@
 #include <mach/mach_time.h>
 
 #include <list>
+#include <stack>
 #include <unordered_map>
 #include "CommonDefinitions.h"
 #include "CFOwningRef.h"
@@ -40,14 +41,16 @@ NSString* NSMenuWillSendActionNotification = @"NSMenuWillSendActionNotification"
 NSString* NSMenuDidCompleteInteractionNotification = @"NSMenuDidCompleteInteractionNotification";
 NSString* NSMenuWillSendActionNotification_MenuItem = @"MenuItem";
 
+#pragma mark -
+#pragma mark C++ Utilities
 namespace
 {
-	static inline BOOL CXILIsFDValid(int fd)
+	inline BOOL CXILIsFDValid(int fd)
 	{
 		return fcntl(fd, F_GETFL) != -1 || errno != EBADF;
 	}
 	
-	static uint32_t CXILEventTimeStamp()
+	uint32_t CXILEventTimeStamp()
 	{
 		mach_timebase_info_data_t info;
 		mach_timebase_info(&info);
@@ -57,7 +60,7 @@ namespace
 		return static_cast<uint32_t>(absTime / (1000000000. / 60.));
 	}
 	
-	static uint16_t CXILEventRecordModifierFlags(NSUInteger modifierFlags)
+	uint16_t CXILEventRecordModifierFlags(NSUInteger modifierFlags)
 	{
 		uint16_t modifiers = 0;
 		if ((modifierFlags & NSCommandKeyMask) == NSCommandKeyMask)
@@ -78,6 +81,22 @@ namespace
 		// TODO active state?
 		// TODO right shift, command, control?
 		return modifiers;
+	}
+	
+	void PerformSelectorUnsafe(id object, SEL selector)
+	{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+		[object performSelector:selector];
+#pragma clang diagnostic pop
+	}
+	
+	void PerformSelectorUnsafe(id object, SEL selector, id argument)
+	{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+		[object performSelector:selector withObject:argument];
+#pragma clang diagnostic pop
 	}
 	
 	struct CGRect32
@@ -158,6 +177,8 @@ namespace
 	}
 }
 
+#pragma mark -
+#pragma mark Objective-C
 @implementation CXILApplication
 {
 	BackendChannel* channel;
@@ -172,6 +193,12 @@ namespace
 	NSWindow* menuGate;
 	NSMenu* baseMenu;
 	CXILWindowDelegate* windowDelegate;
+	
+	NSMutableArray* eventHandlers;
+	
+	NSRect dragBounds;
+	NSPoint cornerCursorDistance;
+	NSWindow* draggedWindow;
 }
 
 #define IPC_INDEX(x) [(unsigned)IPCMessage::x]
@@ -186,6 +213,7 @@ static SEL ipcSelectors[] = {
 	IPC_INDEX(FindWindowByCoordinates) = @selector(findWindow),
 	IPC_INDEX(SetDirtyRect) = @selector(setDirtyRect),
 	IPC_INDEX(RefreshWindows) = @selector(refreshWindows),
+	IPC_INDEX(DragWindow) = @selector(dragWindow),
 	IPC_INDEX(ClearMenus) = @selector(clearMenus),
 	IPC_INDEX(InsertMenu) = @selector(insertMenu),
 	IPC_INDEX(InsertMenuItem) = @selector(insertMenuItem),
@@ -194,7 +222,6 @@ static SEL ipcSelectors[] = {
 
 const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 
-#pragma mark -
 -(id)init
 {
 	if (!(self = [super init]))
@@ -240,6 +267,9 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	
 	windowDelegate = [[CXILWindowDelegate alloc] initWithMenuGate:menuGate];
 	
+	// reference cycle, but that's not really a problem because NSApplication is global and everlasting anyways
+	eventHandlers = [NSMutableArray arrayWithObject:self];
+	
 	return self;
 }
 
@@ -251,6 +281,55 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 }
 
 -(void)sendEvent:(NSEvent *)theEvent
+{
+	NSUInteger index = eventHandlers.count;
+	CXILEventHandlerActionResult handlingResult = kCXILEventHandlerNormalResolution;
+	do
+	{
+		index--;
+		id<CXILEventHandler> handler = eventHandlers[index];
+		handlingResult = [handler handleEvent:theEvent];
+		if (handlingResult & kCXILEventHandlerRemoveHandler)
+			[eventHandlers removeObjectAtIndex:index];
+	}
+	while ((handlingResult & kCXILEventHandlerDidNotHandleEvent) && index > 0);
+	
+	NSAssert(!(handlingResult & kCXILEventHandlerDidNotHandleEvent), @"Event %@ was not handled", theEvent);
+}
+
+-(void)receiveNotification:(NSNotification *)notification
+{
+	NSUInteger index = eventHandlers.count;
+	CXILEventHandlerActionResult handlingResult = kCXILEventHandlerNormalResolution;
+	do
+	{
+		index--;
+		id<CXILEventHandler> handler = eventHandlers[index];
+		handlingResult = [handler handleNotification:notification];
+		if (handlingResult & kCXILEventHandlerRemoveHandler)
+			[eventHandlers removeObjectAtIndex:index];
+	}
+	while ((handlingResult & kCXILEventHandlerDidNotHandleEvent) && index > 0);
+	
+	NSAssert(!(handlingResult & kCXILEventHandlerDidNotHandleEvent), @"Notification %@ was not handled", notification);
+}
+
+-(void)orderFrontStandardAboutPanel:(id)sender
+{
+	// not implemented
+}
+
+-(void)dealloc
+{
+	if (ipcSource != nullptr)
+		dispatch_suspend(ipcSource);
+}
+
+#pragma mark -
+#pragma mark Event Handling
+-(void)ignore:(id)object {}
+
+-(CXILEventHandlerActionResult)handleEvent:(NSEvent *)theEvent
 {
 	NSPoint globalCoordinates = [NSEvent mouseLocation];
 	EventRecord eventRecord = {
@@ -285,7 +364,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 			message = ((theEvent.keyCode & 0xff) << 8);
 			message |= [theEvent.characters cStringUsingEncoding:NSMacOSRomanStringEncoding][0];
 			eventRecord.what =
-				Common::UInt16(static_cast<uint16_t>(theEvent.isARepeat ? EventCode::autoKey : EventCode::keyDown));
+			Common::UInt16(static_cast<uint16_t>(theEvent.isARepeat ? EventCode::autoKey : EventCode::keyDown));
 			break;
 			
 		case NSKeyUp:
@@ -297,9 +376,9 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		default:
 			// unrecognized event, skip it
 			[super sendEvent:theEvent];
-			return;
+			return kCXILEventHandlerNormalResolution;
 			
-		// TODO updateEvent, diskEvent, activateEvent, osEvent, highLevelEvent
+			// TODO updateEvent, diskEvent, activateEvent, osEvent, highLevelEvent
 	}
 	
 	eventRecord.message = message;
@@ -313,9 +392,11 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	{
 		[super sendEvent:theEvent];
 	}
+	
+	return kCXILEventHandlerNormalResolution;
 }
 
--(void)receiveNotification:(NSNotification *)notification
+-(CXILEventHandlerActionResult)handleNotification:(NSNotification *)notification
 {
 	uint16_t mouseButtonState = ([NSEvent pressedMouseButtons] & 1) == 1
 		? static_cast<uint16_t>(EventModifierFlags::mouseButtonState)
@@ -343,17 +424,12 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	{
 		[self pickMenuItem:nil];
 	}
+	return kCXILEventHandlerNormalResolution;
 }
 
--(void)orderFrontStandardAboutPanel:(id)sender
+-(void)registerRemovalAction:(CXILEventHandlerRemovedAction)action
 {
-	// not implemented
-}
-
--(void)dealloc
-{
-	if (ipcSource != nullptr)
-		dispatch_suspend(ipcSource);
+	[NSException raise:@"NotImplementedException" format:@"CXILApplication doesn't support removal actions"];
 }
 
 #pragma mark -
@@ -385,15 +461,12 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		[self terminate:self];
 	
 	NSAssert(messageType < ipcSelectorCount, @"Message type %u is undefined", messageType);
+	SEL selector = ipcSelectors[messageType];
+	NSAssert(selector != nullptr, @"Message type %u has no implementation", messageType);
 	
 	// this operation is safe, because the selector accepts no argument and returns no object
 	// since no leak is possible, we shut up the compiler
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-	SEL selector = ipcSelectors[messageType];
-	NSAssert(selector != nullptr, @"Message type %u has no implementation", messageType);
-	[self performSelector:selector];
-#pragma clang diagnostic pop
+	PerformSelectorUnsafe(self, selector);
 }
 
 -(void)peekNextEvent
@@ -477,8 +550,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 {
 	[self expectDone];
 	
-	NSWindow* frontWindow = [self mainWindow];
-	uint32_t key = [windowDelegate keyOfWindow:frontWindow];
+	uint32_t key = [windowDelegate keyOfFrontWindow];
 	channel->Write(key);
 	[self sendDone];
 }
@@ -518,6 +590,20 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	dirtyRects.clear();
 	
 	[self sendDone];
+}
+
+-(void)dragWindow
+{
+	IPC_PARAM(windowKey, uint32_t);
+	IPC_PARAM(classicDragBounds, InterfaceLib::Rect);
+	[self expectDone];
+	
+	dragBounds = [self classicRectToXRect:classicDragBounds];
+	
+	id handler = [windowDelegate startDragWindow:windowKey mouseLocation:NSEvent.mouseLocation dragBounds:dragBounds];
+	[handler registerRemovalAction:^(id handler) { [self sendDone]; }];
+	
+	[eventHandlers addObject:handler];
 }
 
 -(void)clearMenus
