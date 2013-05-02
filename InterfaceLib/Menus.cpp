@@ -187,7 +187,13 @@ void InterfaceLib_MenuChoice(InterfaceLib::Globals* globals, MachineState* state
 
 void InterfaceLib_MenuKey(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	typedef std::tuple<uint16_t, uint16_t> MenuSelectResult;
+	char character = static_cast<char>(state->r3);
+	
+	uint16_t menu;
+	uint16_t item;
+	std::tie(menu, item) = globals->ipc.PerformComplexAction<MenuSelectResult>(IPCMessage::MenuKey, character);
+	state->r3 = (menu << 16) | (item + 1); // menus are 1-based in Classic
 }
 
 void InterfaceLib_MenuSelect(InterfaceLib::Globals* globals, MachineState* state)

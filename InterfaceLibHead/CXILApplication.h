@@ -68,4 +68,7 @@
 // open menus, return when an option has been selected (or menus have been closed)
 -(void)menuSelect;
 
+// finds a menu by its key equivalent
+-(void)menuKey;
+
 @end

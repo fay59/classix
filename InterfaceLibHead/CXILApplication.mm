@@ -50,14 +50,19 @@ namespace
 		return fcntl(fd, F_GETFL) != -1 || errno != EBADF;
 	}
 	
-	uint32_t CXILEventTimeStamp()
+	NSTimeInterval CXILTimeStamp()
 	{
 		mach_timebase_info_data_t info;
 		mach_timebase_info(&info);
 		uint64_t absTime = mach_absolute_time();
 		absTime *= info.numer;
 		absTime /= info.denom;
-		return static_cast<uint32_t>(absTime / (1000000000. / 60.));
+		return absTime / 1000000000.;
+	}
+	
+	uint32_t CXILClassicTimeStamp()
+	{
+		return static_cast<uint32_t>(CXILTimeStamp() / 60);
 	}
 	
 	uint16_t CXILEventRecordModifierFlags(NSUInteger modifierFlags)
@@ -218,6 +223,7 @@ static SEL ipcSelectors[] = {
 	IPC_INDEX(InsertMenu) = @selector(insertMenu),
 	IPC_INDEX(InsertMenuItem) = @selector(insertMenuItem),
 	IPC_INDEX(MenuSelect) = @selector(menuSelect),
+	IPC_INDEX(MenuKey) = @selector(menuKey),
 };
 
 const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
@@ -411,7 +417,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		
 		EventRecord focusRecord = {
 			.what = Common::UInt16(static_cast<uint16_t>(EventCode::activateEvent)),
-			.when = Common::UInt32(CXILEventTimeStamp()),
+			.when = Common::UInt32(CXILClassicTimeStamp()),
 			.where = [self xPointToClassicPoint:[NSEvent mouseLocation]],
 			.modifiers = Common::UInt16(modifiers),
 			.message = Common::UInt32([windowDelegate keyOfWindow:notification.object])
@@ -693,6 +699,26 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	// don't reply yet: wait until menu interaction finishes
 }
 
+-(void)menuKey
+{
+	IPC_PARAM(charCode, char);
+	[self expectDone];
+	
+	char charString[] = {charCode, 0};
+	
+	NSPoint location = NSEvent.mouseLocation;
+	NSTimeInterval now = CXILTimeStamp();
+	NSInteger frontWindow = [self mainWindow].windowNumber;
+	NSString* characters = [NSString stringWithCString:charString encoding:NSMacOSRomanStringEncoding];
+	unsigned short keyCode = 0; // bleh, TODO: find the key code by the char
+	
+	// ouch
+	NSEvent* keyEvent = [NSEvent keyEventWithType:NSKeyDown location:location modifierFlags:NSCommandKeyMask timestamp:now windowNumber:frontWindow context:nullptr characters:characters charactersIgnoringModifiers:characters isARepeat:NO keyCode:keyCode];
+	[self.mainMenu performKeyEquivalent:keyEvent];
+	
+	[self sendDone];
+}
+
 #pragma mark -
 #pragma mark Gory details
 
@@ -749,15 +775,15 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 
 -(void)pickMenuItem:(NSMenuItem*)sender
 {
+	NSMenuItem* parent = sender.parentItem;
+	uint16_t menuIndex = static_cast<uint16_t>(parent.tag);
+	uint16_t itemIndex = static_cast<uint16_t>([parent.submenu indexOfItem:sender]);
+	channel->Write(menuIndex);
+	channel->Write(itemIndex);
+	[self sendDone];
+	
 	if (menuGate.ignoresMouseEvents)
 	{
-		NSMenuItem* parent = sender.parentItem;
-		uint16_t menuIndex = static_cast<uint16_t>(parent.tag);
-		uint16_t itemIndex = static_cast<uint16_t>([parent.submenu indexOfItem:sender]);
-		channel->Write(menuIndex);
-		channel->Write(itemIndex);
-		[self sendDone];
-		
 		menuGate.ignoresMouseEvents = NO;
 	}
 }
