@@ -60,7 +60,9 @@ void InterfaceLib_ClipAbove(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_DisposeWindow(InterfaceLib::Globals* globals, MachineState* state)
 {
-	UGrafPort& port = *globals->allocator.ToPointer<UGrafPort>(state->r3);
+	uint32_t windowKey = state->r3;
+	globals->ipc.PerformAction<void>(IPCMessage::CloseWindow, windowKey);
+	UGrafPort& port = *globals->allocator.ToPointer<UGrafPort>(windowKey);
 	globals->grafPorts.DestroyGrafPort(port);
 	globals->allocator.Deallocate(&port);
 }

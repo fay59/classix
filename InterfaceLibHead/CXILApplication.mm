@@ -214,11 +214,12 @@ static SEL ipcSelectors[] = {
 	IPC_INDEX(DequeueNextEvent) = @selector(discardNextEvent),
 	IPC_INDEX(IsMouseDown) = @selector(tellIsMouseDown),
 	IPC_INDEX(CreateWindow) = @selector(createWindow),
+	IPC_INDEX(CloseWindow) = @selector(closeWindow),
+	IPC_INDEX(DragWindow) = @selector(dragWindow),
 	IPC_INDEX(FindFrontWindow) = @selector(findFrontWindow),
 	IPC_INDEX(FindWindowByCoordinates) = @selector(findWindow),
 	IPC_INDEX(SetDirtyRect) = @selector(setDirtyRect),
 	IPC_INDEX(RefreshWindows) = @selector(refreshWindows),
-	IPC_INDEX(DragWindow) = @selector(dragWindow),
 	IPC_INDEX(ClearMenus) = @selector(clearMenus),
 	IPC_INDEX(InsertMenu) = @selector(insertMenu),
 	IPC_INDEX(InsertMenuItem) = @selector(insertMenuItem),
@@ -596,6 +597,15 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	
 	dirtyRects.clear();
 	
+	[self sendDone];
+}
+
+-(void)closeWindow
+{
+	IPC_PARAM(key, uint32_t);
+	[self expectDone];
+	
+	[windowDelegate destroyWindow:key];
 	[self sendDone];
 }
 

@@ -351,11 +351,13 @@ namespace InterfaceLib
 		IsMouseDown,
 		
 		CreateWindow,
+		DragWindow,
+		CloseWindow,
+		
 		FindFrontWindow,
 		FindWindowByCoordinates,
 		SetDirtyRect,
 		RefreshWindows,
-		DragWindow,
 		
 		ClearMenus,
 		InsertMenu,

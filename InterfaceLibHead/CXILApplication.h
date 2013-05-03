@@ -47,6 +47,9 @@
 // creates a window
 -(void)createWindow;
 
+// closes and destroys a window
+-(void)closeWindow;
+
 // returns the first window in which the coordinate exists
 -(void)findWindow;
 
