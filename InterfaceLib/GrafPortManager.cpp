@@ -46,6 +46,11 @@ namespace
 	// we allocate at once all the memory that we need for all the parts of a CGrafPort
 	struct ColorGrafPortEverythingElse
 	{
+		Common::UInt32 pixMapPointer;
+		Common::UInt32 colorTablePointer;
+		InterfaceLib::PixMap pixMap;
+		InterfaceLib::ColorTable colorTable;
+		
 		ColorGrafPortEverythingElse(Common::IAllocator& allocator, uint16_t colorTableSize)
 		{
 			memset(this, 0, sizeof *this);
@@ -64,11 +69,6 @@ namespace
 		
 		ColorGrafPortEverythingElse(const ColorGrafPortEverythingElse&) = delete;
 		ColorGrafPortEverythingElse(ColorGrafPortEverythingElse&&) = delete;
-		
-		Common::UInt32 pixMapPointer;
-		Common::UInt32 colorTablePointer;
-		InterfaceLib::PixMap pixMap;
-		InterfaceLib::ColorTable colorTable;
 	};
 }
 
@@ -170,7 +170,7 @@ namespace InterfaceLib
 		// TODO complete initialization
 		
 		uint32_t address = allocator.ToIntPtr(&port);
-		GrafPortData& portData = *ports.emplace(std::make_pair(address, new GrafPortData(&uPort))).first->second;
+		GrafPortData& portData = ports.emplace(std::make_pair(address, GrafPortData(&uPort))).first->second;
 		portData.port = &uPort;
 		portData.surface = nullptr; // TODO this should create a new IOSurface
 		
@@ -200,7 +200,7 @@ namespace InterfaceLib
 		// TODO complete initialization
 		
 		uint32_t address = allocator.ToIntPtr(&port);
-		GrafPortData& portData = *ports.emplace(std::make_pair(address, new GrafPortData(&uPort))).first->second;
+		GrafPortData& portData = ports.emplace(std::make_pair(address, GrafPortData(&uPort))).first->second;
 		portData.port = &uPort;
 		
 		if (ports.size() == 1)
@@ -214,7 +214,7 @@ namespace InterfaceLib
 		uint32_t address = allocator.ToIntPtr(&port);
 		auto iter = ports.find(address);
 		assert(iter != ports.end() && "Unregistered graphics port");
-		currentPort = iter->second;
+		currentPort = &iter->second;
 	}
 	
 	UGrafPort& GrafPortManager::GetCurrentPort()
@@ -229,7 +229,8 @@ namespace InterfaceLib
 		auto iter = ports.find(address);
 		if (iter != ports.end())
 		{
-			return iter->second->drawingContext;
+			GrafPortData& data = iter->second;
+			return data.drawingContext;
 		}
 		
 		return nullptr;
@@ -241,7 +242,7 @@ namespace InterfaceLib
 		auto iter = ports.find(address);
 		if (iter != ports.end())
 		{
-			return IOSurfaceGetID(iter->second->surface);
+			return IOSurfaceGetID(iter->second.surface);
 		}
 		
 		return 0;
@@ -260,8 +261,5 @@ namespace InterfaceLib
 	}
 	
 	GrafPortManager::~GrafPortManager()
-	{
-		for (auto& pair : ports)
-			delete pair.second;
-	}
+	{ }
 }

@@ -38,7 +38,7 @@ namespace InterfaceLib
 	class GrafPortManager
 	{
 		Common::IAllocator& allocator;
-		std::unordered_map<uint32_t, GrafPortData*> ports;
+		std::unordered_map<uint32_t, GrafPortData> ports;
 		GrafPortData* currentPort;
 		
 	public:
