@@ -52,6 +52,35 @@ namespace Resources
 		Unconstructible operator=(const Unconstructible&) = delete;
 	};
 	
+	struct __attribute__((packed)) cfrg : Unconstructible
+	{
+		static const FourCharCode key;
+		
+		struct Member : Unconstructible
+		{
+			Common::UInt32 archType;
+			Common::SInt32 updateLevel;
+			Common::UInt32 currentVersion;
+			Common::UInt32 oldDefVersion;
+			Common::UInt32 appStackSize;
+			Common::UInt16 appSubFolderID;
+			uint8_t usage;
+			uint8_t where;
+			Common::UInt32 offset;
+			Common::UInt32 length;
+			Common::UInt32 reserved;
+			Common::UInt32 memberSize;
+			uint8_t titleLength;
+			
+			std::string GetTitle() const;
+		};
+		
+		Common::SInt32 fields[7];
+		Common::SInt32 memberCount;
+		
+		const Member* GetFirstMember() const;
+	};
+	
 	struct __attribute__((packed)) WIND : Unconstructible
 	{
 		static const FourCharCode key;
@@ -68,9 +97,8 @@ namespace Resources
 	{
 		static const FourCharCode key;
 		
-		class Item : Unconstructible
+		struct Item : Unconstructible
 		{
-		public:
 			std::string GetTitle() const;
 			uint8_t GetIconNumber() const;
 			uint8_t GetKeyEquivalent() const;

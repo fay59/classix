@@ -23,6 +23,7 @@
 
 namespace InterfaceLib
 {
+	const FourCharCode Resources::cfrg::key = "cfrg";
 	const FourCharCode Resources::WIND::key = "WIND";
 	const FourCharCode Resources::MENU::key = "MENU";
 	
@@ -31,6 +32,22 @@ namespace InterfaceLib
 		const uint8_t* stringBase = &titleLength;
 		const char* itemBase = reinterpret_cast<const char*>(stringBase + 1 + *stringBase);
 		return *itemBase == 0 ? nullptr : reinterpret_cast<const Item*>(itemBase);
+	}
+	
+	const Resources::cfrg::Member* Resources::cfrg::GetFirstMember() const
+	{
+		const uint8_t* dataBase = reinterpret_cast<const uint8_t*>(this);
+		dataBase += sizeof *this;
+		return reinterpret_cast<const Resources::cfrg::Member*>(dataBase);
+	}
+	
+	std::string Resources::cfrg::Member::GetTitle() const
+	{
+		const uint8_t* stringBase = &titleLength;
+		uint8_t length = *stringBase;
+		stringBase++;
+		const char* body = reinterpret_cast<const char*>(stringBase + 1);
+		return std::string(body, length);
 	}
 	
 	std::string Resources::MENU::GetTitle() const

@@ -113,13 +113,17 @@ namespace InterfaceLib
 		template<typename TResourceType>
 		TResourceType* GetResource(uint16_t identifier)
 		{
-			return reinterpret_cast<TResourceType*>(GetRawResource(TResourceType::key, identifier)->begin());
+			if (ResourceEntry* resource = GetRawResource(TResourceType::key, identifier))
+				return reinterpret_cast<TResourceType*>(resource->begin());
+			return nullptr;
 		}
 		
 		template<typename TResourceType>
 		TResourceType* GetResource(const std::string& identifier)
 		{
-			return reinterpret_cast<TResourceType*>(GetRawResource(TResourceType::key, identifier)->begin());
+			if (ResourceEntry* resource = GetRawResource(TResourceType::key, identifier))
+				return reinterpret_cast<TResourceType*>(resource->begin());
+			return nullptr;
 		}
 		
 		inline void dump() { for (auto& catalog : catalogs) catalog.dump(); }
