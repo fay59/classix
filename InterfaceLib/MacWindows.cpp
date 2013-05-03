@@ -30,7 +30,7 @@ using namespace InterfaceLib::Resources;
 
 void InterfaceLib_BeginUpdate(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// don't need to implement it
 }
 
 void InterfaceLib_BringToFront(InterfaceLib::Globals* globals, MachineState* state)
@@ -98,7 +98,7 @@ void InterfaceLib_DrawNew(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_EndUpdate(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// don't need to implement it
 }
 
 void InterfaceLib_FrontWindow(InterfaceLib::Globals* globals, MachineState* state)
