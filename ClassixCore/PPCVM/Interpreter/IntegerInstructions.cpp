@@ -1,6 +1,24 @@
+// Copyright (C) 2003 Dolphin Project.
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, version 2.0.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License 2.0 for more details.
+
+// A copy of the GPL 2.0 should have been included with the program.
+// If not, see http://www.gnu.org/licenses/
+
+// Official SVN repository and contact information can be found at
+// http://code.google.com/p/dolphin-emu/
+
 //
 // IntegerInstructions.cpp
-// Classix
+// Fork of Interpreter_Integer.cpp, from Dolphin Project.
+// Largely modified to fit the needs of Classix.
 //
 // Copyright (C) 2012 Félix Cloutier
 //
@@ -35,7 +53,7 @@ namespace
 		// c: lt
 		// d: gt
 		
-		uint32_t result;
+		uint8_t result;
 		if (value == 0)
 			result = 0b0010;
 		else if ((value & 0x80000000) == 0x80000000)
@@ -203,7 +221,7 @@ namespace PPCVM
 		{
 			int32_t a = (int32_t)state.gpr[inst.RA];
 			int32_t b = (int32_t)state.gpr[inst.RB];
-			int fTemp = 0x8;
+			uint8_t fTemp = 0x8;
 			if (a > b)  fTemp = 0x4;
 			else if (a == b) fTemp = 0x2;
 			if (state.xer_so) Panic("cmp getting overflow flag"); // fTemp |= 0x1
@@ -219,7 +237,7 @@ namespace PPCVM
 		{
 			uint32_t a = state.gpr[inst.RA];
 			uint32_t b = state.gpr[inst.RB];
-			uint32_t fTemp = 0x8; // a < b
+			uint8_t fTemp = 0x8; // a < b
 
 				//	if (a < b)  fTemp = 0x8;else
 			if (a > b)  fTemp = 0x4;
@@ -232,7 +250,7 @@ namespace PPCVM
 		{
 			uint32_t a = state.gpr[inst.RA];
 			uint32_t b = inst.UIMM;
-			int f;
+			uint8_t f;
 			if (a < b)      f = 0x8;
 			else if (a > b) f = 0x4;
 			else            f = 0x2; //equals

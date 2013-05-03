@@ -77,7 +77,7 @@ namespace PPCVM
 				const Common::UInt32* sectionBase = section.Begin;
 				writer.EnterLabel(section, allocator.ToIntPtr(sectionBase));
 				
-				for (int i = 0; i < section.Opcodes.size(); i++)
+				for (size_t i = 0; i < section.Opcodes.size(); i++)
 				{
 					uint32_t opcodeAddress = allocator.ToIntPtr(sectionBase + i);
 					MetadataMap::iterator iter = metadata.find(opcodeAddress);

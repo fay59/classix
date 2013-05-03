@@ -123,7 +123,7 @@ void InterfaceLib_GetGrayRgn(InterfaceLib::Globals* globals, MachineState* state
 
 void InterfaceLib_GetNewCWindow(InterfaceLib::Globals* globals, MachineState* state)
 {
-	uint32_t resourceId = state->r3;
+	uint16_t resourceId = static_cast<uint16_t>(state->r3);
 	WIND* window = globals->resources.GetResource<WIND>(resourceId);
 	
 	uint32_t portAddress = state->r4;

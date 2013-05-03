@@ -57,7 +57,9 @@ static CGFloat titleBarHeight;
 	
 	void* buffer = IOSurfaceGetBaseAddress(surface);
 	CGColorSpaceRef rgb = CGColorSpaceCreateDeviceRGB();
-	surfaceContext = CGBitmapContextCreate(buffer, bounds.size.width, bounds.size.height, 8, bounds.size.width * 4, rgb, kCGImageAlphaNoneSkipFirst);
+	size_t width = (size_t)bounds.size.width;
+	size_t height = (size_t)bounds.size.height;
+	surfaceContext = CGBitmapContextCreate(buffer, width, height, 8, width * 4, rgb, kCGImageAlphaNoneSkipFirst);
 	CGColorSpaceRelease(rgb);
 	
 	return self;

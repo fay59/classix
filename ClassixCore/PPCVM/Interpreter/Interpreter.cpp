@@ -225,8 +225,9 @@ namespace PPCVM
 			{
 				if (inst.LK)
 					state.lr = address + 4;
-					
-				uint32_t target = SignExt16(inst.BD << 2);
+				
+				int16_t bd = static_cast<int16_t>(inst.BD << 2);
+				uint32_t target = SignExt16(bd);
 				if (!inst.AA)
 					target += address;
 				branchAddress = allocator.ToPointer<const void>(target);

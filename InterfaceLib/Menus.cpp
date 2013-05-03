@@ -41,7 +41,7 @@ void InterfaceLib_CheckItem(InterfaceLib::Globals* globals, MachineState* state)
 	const Resources::MENU* menu = globals->allocator.ToPointer<Resources::MENU>(pointerAddress);
 	
 	uint16_t menuIndex = menu->menuId;
-	uint16_t itemIndex = state->r4 - 1; // Classic menus are 1-based
+	uint16_t itemIndex = static_cast<uint16_t>(state->r4 - 1); // Classic menus are 1-based
 	bool check = state->r5;
 	globals->ipc.PerformAction<void>(IPCMessage::CheckItem, menuIndex, itemIndex, check);
 }

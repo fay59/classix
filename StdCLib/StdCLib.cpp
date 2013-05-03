@@ -317,7 +317,7 @@ namespace StdCLib
 				}
 			}
 			
-			assert(!"this should never happen");
+			assert(false && "this should never happen");
 			return "<not found>";
 		}
 		

@@ -150,7 +150,7 @@ namespace PPCVM
 				case OpcodeArgumentFormat::CR:
 				{
 					char cr[] = "cr8";
-					cr[2] = '0' + Value;
+					cr[2] = static_cast<char>('0' + Value);
 					return cr;
 				}
 					
@@ -175,7 +175,7 @@ namespace PPCVM
 					
 				default:
 				{
-					assert(!"format type is not handled");
+					assert(false && "format type is not handled");
 					return "<invalid>";
 				}
 			}

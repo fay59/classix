@@ -102,7 +102,7 @@ void InterfaceLib_SysEnvirons(InterfaceLib::Globals* globals, MachineState* stat
 	// mostly based on the output I get from running this in SheepShaver, I should probably
 	// run that on hardware at some point
 	SysEnvRec& record = *globals->allocator.ToPointer<SysEnvRec>(state->r4);
-	record.environsVersion = state->r3;
+	record.environsVersion = static_cast<int16_t>(state->r3);
 	record.machineType = 0x41;
 	record.systemVersion = 0x0922; // faking mac os 9.2.2
 	record.processor = 3;

@@ -30,8 +30,8 @@ namespace InterfaceLib
 		
 	public:
 		CFOwningRef(TCFType cfObject, bool retain = false)
+		: cfObject(cfObject)
 		{
-			this->cfObject = cfObject;
 			if (retain)
 				CFRetain(cfObject);
 		}

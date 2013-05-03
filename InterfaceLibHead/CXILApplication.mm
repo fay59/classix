@@ -341,7 +341,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 {
 	NSPoint globalCoordinates = [NSEvent mouseLocation];
 	EventRecord eventRecord = {
-		.when = Common::UInt32(theEvent.timestamp * 60), // Mac OS Classic considers there are 60 ticks per second
+		.when = Common::UInt32(static_cast<uint32_t>(theEvent.timestamp * 60)), // Mac OS Classic considers there are 60 ticks per second
 		.where = [self xPointToClassicPoint:globalCoordinates],
 	};
 	
@@ -618,7 +618,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	dragBounds = [self classicRectToXRect:classicDragBounds];
 	
 	id handler = [windowDelegate startDragWindow:windowKey mouseLocation:NSEvent.mouseLocation dragBounds:dragBounds];
-	[handler registerRemovalAction:^(id handler) { [self sendDone]; }];
+	[handler registerRemovalAction:^(id) { [self sendDone]; }];
 	
 	[eventHandlers addObject:handler];
 }
@@ -748,8 +748,8 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 
 -(BOOL)suggestEventRecord:(const EventRecord &)record
 {
-	uint16_t eventCodeMask = 1 << record.what;
-	if ((eventCodeMask & static_cast<uint16_t>(currentlyWaitingOn)) != 0)
+	int eventCodeMask = 1 << record.what;
+	if ((eventCodeMask & static_cast<int>(currentlyWaitingOn)) != 0)
 	{
 		channel->Write(record);
 		[self sendDone];
@@ -781,8 +781,8 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 -(InterfaceLib::Point)xPointToClassicPoint:(NSPoint)pt
 {
 	InterfaceLib::Point outPoint;
-	outPoint.h = pt.x;
-	outPoint.v = screenBounds.size.height - pt.y;
+	outPoint.h = static_cast<int16_t>(pt.x);
+	outPoint.v = static_cast<int16_t>(screenBounds.size.height - pt.y);
 	return outPoint;
 }
 

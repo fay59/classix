@@ -523,7 +523,8 @@ void InterfaceLib_getindstring(InterfaceLib::Globals* globals, MachineState* sta
 
 void InterfaceLib_GetMenu(InterfaceLib::Globals* globals, MachineState* state)
 {
-	ResourceEntry* entry = globals->resources.GetRawResource("MENU", state->r3);
+	uint16_t key = static_cast<uint16_t>(state->r3);
+	ResourceEntry* entry = globals->resources.GetRawResource("MENU", key);
 	state->r3 = globals->allocator.ToIntPtr(&entry->handle());
 }
 
@@ -613,10 +614,10 @@ void InterfaceLib_InsertMenuItem(InterfaceLib::Globals* globals, MachineState* s
 void InterfaceLib_InsetRect(InterfaceLib::Globals* globals, MachineState* state)
 {
 	Rect& rect = *globals->allocator.ToPointer<Rect>(state->r3);
-	rect.left = rect.left + state->r4;
-	rect.right = rect.right - state->r4;
-	rect.bottom = rect.bottom - state->r5;
-	rect.top = rect.top + state->r5;
+	rect.left = static_cast<int16_t>(rect.left + state->r4);
+	rect.right = static_cast<int16_t>(rect.right - state->r4);
+	rect.bottom = static_cast<int16_t>(rect.bottom - state->r5);
+	rect.top = static_cast<int16_t>(rect.top + state->r5);
 	
 	if (rect.right - rect.left < 1 || rect.bottom - rect.top < 1)
 	{
@@ -978,10 +979,10 @@ void InterfaceLib_SetPort(InterfaceLib::Globals* globals, MachineState* state)
 void InterfaceLib_SetRect(InterfaceLib::Globals* globals, MachineState* state)
 {
 	InterfaceLib::Rect& rect = *globals->allocator.ToPointer<InterfaceLib::Rect>(state->r3);
-	rect.left = state->r4;
-	rect.top = state->r5;
-	rect.right = state->r6;
-	rect.bottom = state->r7;
+	rect.left = static_cast<int16_t>(state->r4);
+	rect.top = static_cast<int16_t>(state->r5);
+	rect.right = static_cast<int16_t>(state->r6);
+	rect.bottom = static_cast<int16_t>(state->r7);
 }
 
 void InterfaceLib_SetRectRgn(InterfaceLib::Globals* globals, MachineState* state)

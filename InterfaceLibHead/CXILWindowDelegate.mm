@@ -65,7 +65,7 @@
 	
 	if (visible)
 	{
-		if (behindKey == -1)
+		if (behindKey == 0xffffffff)
 		{
 			[window makeKeyAndOrderFront:self];
 		}
@@ -136,7 +136,7 @@
 		return 0;
 	}
 	
-	NSUInteger windowNumber = [NSWindow windowNumberAtPoint:point belowWindowWithWindowNumber:0];
+	NSInteger windowNumber = [NSWindow windowNumberAtPoint:point belowWindowWithWindowNumber:0];
 	
 	for (NSWindow* window in windows.allValues)
 	{

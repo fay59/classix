@@ -104,7 +104,7 @@ namespace PEF
 	
 	TypeTag::TypeTag(const char* ascii)
 	{
-		for (int i = 0; i < sizeof this->ascii; i++)
+		for (size_t i = 0; i < sizeof this->ascii; i++)
 			this->ascii[i] = ascii[i];
 	}
 	

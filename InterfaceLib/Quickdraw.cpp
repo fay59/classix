@@ -518,8 +518,8 @@ void InterfaceLib_InitGDevice(InterfaceLib::Globals* globals, MachineState* stat
 void InterfaceLib_InitGraf(InterfaceLib::Globals* globals, MachineState* state)
 {
 	CFOwningRef<CGDisplayModeRef> displayMode = CGDisplayCopyDisplayMode(CGMainDisplayID());
-	size_t width = CGDisplayModeGetWidth(displayMode);
-	size_t height = CGDisplayModeGetHeight(displayMode);
+	int16_t width = static_cast<int16_t>(CGDisplayModeGetWidth(displayMode));
+	int16_t height = static_cast<int16_t>(CGDisplayModeGetHeight(displayMode));
 	
 	InterfaceLib::Rect screenRect;
 	screenRect.left = 0;
@@ -787,8 +787,8 @@ void InterfaceLib_MovePortTo(InterfaceLib::Globals* globals, MachineState* state
 void InterfaceLib_MoveTo(InterfaceLib::Globals* globals, MachineState* state)
 {
 	UGrafPort& port = globals->grafPorts.GetCurrentPort();
-	port.color.pnLoc.h = state->r3;
-	port.color.pnLoc.v = state->r4;
+	port.color.pnLoc.h = static_cast<int16_t>(state->r3);
+	port.color.pnLoc.v = static_cast<int16_t>(state->r4);
 	
 	CGPoint point = PointToCGPoint(port.color.pnLoc, globals->grafPorts.ContextOfGrafPort(port));
 	CGContextMoveToPoint(globals->grafPorts.ContextOfGrafPort(port), point.x, point.y);

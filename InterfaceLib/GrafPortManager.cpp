@@ -83,6 +83,7 @@ namespace InterfaceLib
 		uint32_t cleanChangeNumber = 0;
 		
 		GrafPortData(InterfaceLib::UGrafPort* port)
+		: port(port)
 		{
 			int32_t width = port->color.portRect.right - port->color.portRect.left;
 			int32_t height = port->color.portRect.bottom - port->color.portRect.top;

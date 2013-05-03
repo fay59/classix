@@ -1,6 +1,24 @@
+// Copyright (C) 2003 Dolphin Project.
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, version 2.0.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License 2.0 for more details.
+
+// A copy of the GPL 2.0 should have been included with the program.
+// If not, see http://www.gnu.org/licenses/
+
+// Official SVN repository and contact information can be found at
+// http://code.google.com/p/dolphin-emu/
+
 //
 // SystemRegisterInstructions.cpp
-// Classix
+// Fork of Interpreter_SystemRegisters.cpp, from Dolphin Project.
+// Largely modified to fit the needs of Classix.
 //
 // Copyright (C) 2012 Félix Cloutier
 //
@@ -43,7 +61,7 @@ namespace
 			state.cr[bitIndex] &= ~bitValue;
 	}
 	
-	inline int GetCRField(MachineState& state, int field)
+	inline uint8_t GetCRField(MachineState& state, int field)
 	{
 		return state.cr[field];
 	}
@@ -105,7 +123,7 @@ namespace PPCVM
 
 		void Interpreter::mcrf(Instruction inst)
 		{
-			int cr_f = GetCRField(state, inst.CRFS);
+			uint8_t cr_f = GetCRField(state, inst.CRFS);
 			SetCRField(state, inst.CRFD, cr_f);
 		}
 
@@ -132,7 +150,7 @@ namespace PPCVM
 		
 		void Interpreter::mfspr(Instruction inst)
 		{
-			uint8_t spr = (inst.RB << 5) | inst.RA;
+			uint8_t spr = static_cast<uint8_t>((inst.RB << 5) | inst.RA);
 			switch (spr)
 			{
 				case 1: // xer
@@ -148,7 +166,7 @@ namespace PPCVM
 					break;
 					
 				default:
-					assert(!"Getting value of unknown system register");
+					assert(false && "Getting value of unknown system register");
 					break;
 			}
 		}
@@ -199,7 +217,7 @@ namespace PPCVM
 		
 		void Interpreter::mtspr(Instruction inst)
 		{
-			uint8_t spr = (inst.RB << 5) | inst.RA;
+			uint8_t spr = static_cast<uint8_t>((inst.RB << 5) | inst.RA);
 			switch (spr)
 			{
 				case 1: // xer
@@ -215,7 +233,7 @@ namespace PPCVM
 					break;
 					
 				default:
-					assert(!"Getting value of unknown system register");
+					assert(false && "Getting value of unknown system register");
 					break;
 			}
 		}

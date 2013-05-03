@@ -171,7 +171,7 @@ void InterfaceLib_TextMode(InterfaceLib::Globals* globals, MachineState* state)
 void InterfaceLib_TextSize(InterfaceLib::Globals* globals, MachineState* state)
 {
 	InterfaceLib::UGrafPort& port = globals->grafPorts.GetCurrentPort();
-	port.color.txSize = state->r3;
+	port.color.txSize = static_cast<int16_t>(state->r3);
 	CGContextSetFontSize(globals->grafPorts.ContextOfGrafPort(port), state->r3);
 }
 

@@ -36,7 +36,7 @@ namespace InterfaceLib
 {
 	inline std::string PascalStringToCPPString(const char* pascalString)
 	{
-		uint8_t length = *pascalString;
+		uint8_t length = static_cast<uint8_t>(*pascalString);
 		return std::string(pascalString + 1, pascalString + 1 + length);
 	}
 	

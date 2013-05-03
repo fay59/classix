@@ -1,6 +1,24 @@
+// Copyright (C) 2003 Dolphin Project.
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, version 2.0.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License 2.0 for more details.
+
+// A copy of the GPL 2.0 should have been included with the program.
+// If not, see http://www.gnu.org/licenses/
+
+// Official SVN repository and contact information can be found at
+// http://code.google.com/p/dolphin-emu/
+
 //
 // LoadStoreInstructions.cpp
-// Classix
+// Fork of Interpreter_LoadStore.cpp, from Dolphin Project.
+// Largely modified to fit the needs of Classix.
 //
 // Copyright (C) 2012 Félix Cloutier
 //
@@ -132,7 +150,7 @@ namespace PPCVM
 		void Interpreter::lfdx(Instruction inst)
 		{
 			Real64* address = GetEffectivePointerX<Real64>(allocator, state, inst);
-			state.gpr[inst.FD] = *address;
+			state.fpr[inst.FD] = *address;
 		}
 		
 		void Interpreter::lfs(Instruction inst)
@@ -157,7 +175,7 @@ namespace PPCVM
 		void Interpreter::lfsx(Instruction inst)
 		{
 			Real32* address = GetEffectivePointerX<Real32>(allocator, state, inst);
-			state.gpr[inst.FD] = *address;
+			state.fpr[inst.FD] = *address;
 		}
 		
 		void Interpreter::lha(Instruction inst)

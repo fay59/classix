@@ -397,7 +397,7 @@ namespace PPCVM
 		IMPL(mfspr)
 		{
 			OpcodeArgument d = g(i.RD);
-			uint8_t spr = (i.RB << 5) | i.RA;
+			uint8_t spr = static_cast<uint8_t>((i.RB << 5) | i.RA);
 			switch (spr)
 			{
 				case 1: Emit(i, "mfxer", d); return;
@@ -410,7 +410,7 @@ namespace PPCVM
 		IMPL(mftb)
 		{
 			OpcodeArgument d = g(i.RD);
-			uint8_t tbl = (i.RB << 5) | i.RA;
+			uint8_t tbl = static_cast<uint8_t>((i.RB << 5) | i.RA);
 			if (tbl == 268)
 				Emit(i, "mftb", d);
 			else if (tbl == 269)
@@ -428,7 +428,7 @@ namespace PPCVM
 		IMPL(mtspr)
 		{
 			OpcodeArgument d = g(i.RD);
-			uint8_t spr = (i.RB << 5) | i.RA;
+			uint8_t spr = static_cast<uint8_t>((i.RB << 5) | i.RA);
 			switch (spr)
 			{
 				case 1: Emit(i, "mtxer", d); return;
@@ -447,7 +447,7 @@ namespace PPCVM
 		IMPL(bcctrx)
 		{
 			std::string opcode = opLK("b" + branchName(i.BO, i.BI) + "ctr", i.LK);
-			int crN = i.BI >> 2;
+			uint8_t crN = i.BI >> 2;
 			if (crN == 0)
 				Emit(i, opcode);
 			else
@@ -457,7 +457,7 @@ namespace PPCVM
 		IMPL(bclrx)
 		{
 			std::string opcode = opLK("b" + branchName(i.BO, i.BI) + "lr", i.LK);
-			int crN = i.BI >> 2;
+			uint8_t crN = i.BI >> 2;
 			if (crN == 0)
 				Emit(i, opcode);
 			else
@@ -472,7 +472,7 @@ namespace PPCVM
 			if (i.LK) opcode += 'l';
 			if (i.AA) opcode += 'a';
 			
-			int crN = i.BI >> 2;
+			uint8_t crN = i.BI >> 2;
 			if (crN == 0)
 				Emit(i, opcode, target);
 			else
