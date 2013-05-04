@@ -116,6 +116,10 @@ namespace InterfaceLib
 			
 			drawingContext = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, rgb, kCGImageAlphaNoneSkipFirst);
 			
+			// no antialiasing
+			CGContextSetShouldAntialias(drawingContext, false);
+			CGContextSetShouldSmoothFonts(drawingContext, false);
+			
 			// white background
 			CGContextSetRGBFillColor(drawingContext, 1, 1, 1, 1);
 			CGContextFillRect(drawingContext, CGRectMake(0, 0, width, height));

@@ -551,6 +551,22 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	IOSurfaceRef surface = IOSurfaceLookup(surfaceId);
 	[windowDelegate createWindow:key withRect:frame surface:surface title:nsTitle visible:visible behind:createBehind];
 	IOSurfaceDecrementUseCount(surface);
+	
+	// enqueue an update event for the new window
+	uint16_t mouseButtonState = ([NSEvent pressedMouseButtons] & 1) == 1
+		? static_cast<uint16_t>(EventModifierFlags::mouseButtonState)
+		: 0;
+	uint16_t modifiers = mouseButtonState | CXILEventRecordModifierFlags([NSEvent modifierFlags]);
+	
+	EventRecord record = {
+		.what = Common::UInt16(static_cast<uint16_t>(EventCode::updateEvent)),
+		.when = Common::UInt32(CXILClassicTimeStamp()),
+		.where = [self xPointToClassicPoint:[NSEvent mouseLocation]],
+		.modifiers = Common::UInt16(modifiers),
+		.message = Common::UInt32(key)
+	};
+	eventQueue.push_back(record);
+	
 	[self sendDone];
 }
 
