@@ -257,6 +257,6 @@ void InterfaceLib_SPBVersion(InterfaceLib::Globals* globals, MachineState* state
 
 void InterfaceLib_SysBeep(InterfaceLib::Globals* globals, MachineState* state)
 {
-	globals->ipc.PerformAction<void>(IPCMessage::Beep);
+	globals->ipc().PerformAction<void>(IPCMessage::Beep);
 }
 

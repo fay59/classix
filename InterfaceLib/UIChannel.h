@@ -115,7 +115,7 @@ namespace InterfaceLib
 		pid_t head;
 		
 	public:
-		UIChannel();
+		UIChannel(const std::string& dockName);
 		
 		template<typename TReturnType, typename... TArgument>
 		TReturnType PerformAction(IPCMessage message, TArgument&&... argument)

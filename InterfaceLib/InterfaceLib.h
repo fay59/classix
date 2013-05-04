@@ -43,11 +43,15 @@ namespace InterfaceLib
 		ResourceManager resources;
 		GrafPortManager grafPorts;
 		std::vector<const Resources::MENU*> menus;
-		UIChannel ipc;
+		UIChannel* uiChannel;
 		
 		uint32_t systemFatalErrorHandler;
 		
 		Globals(Common::IAllocator& allocator);
+		
+		inline UIChannel& ipc() { return *uiChannel; }
+		
+		~Globals();
 	};
 }
 

@@ -61,7 +61,7 @@ void InterfaceLib_ClipAbove(InterfaceLib::Globals* globals, MachineState* state)
 void InterfaceLib_DisposeWindow(InterfaceLib::Globals* globals, MachineState* state)
 {
 	uint32_t windowKey = state->r3;
-	globals->ipc.PerformAction<void>(IPCMessage::CloseWindow, windowKey);
+	globals->ipc().PerformAction<void>(IPCMessage::CloseWindow, windowKey);
 	UGrafPort& port = *globals->allocator.ToPointer<UGrafPort>(windowKey);
 	globals->grafPorts.DestroyGrafPort(port);
 	globals->allocator.Deallocate(&port);
@@ -83,7 +83,7 @@ void InterfaceLib_DragWindow(InterfaceLib::Globals* globals, MachineState* state
 	// we don't need the point in state->r4
 	Rect& dragBounds = *globals->allocator.ToPointer<Rect>(state->r5);
 	
-	globals->ipc.PerformAction<void>(IPCMessage::DragWindow, windowKey, dragBounds);
+	globals->ipc().PerformAction<void>(IPCMessage::DragWindow, windowKey, dragBounds);
 }
 
 void InterfaceLib_DrawGrowIcon(InterfaceLib::Globals* globals, MachineState* state)
@@ -103,7 +103,7 @@ void InterfaceLib_EndUpdate(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_FrontWindow(InterfaceLib::Globals* globals, MachineState* state)
 {
-	state->r3 = globals->ipc.PerformAction<uint32_t>(IPCMessage::FindFrontWindow);
+	state->r3 = globals->ipc().PerformAction<uint32_t>(IPCMessage::FindFrontWindow);
 }
 
 void InterfaceLib_GetAuxWin(InterfaceLib::Globals* globals, MachineState* state)
@@ -148,7 +148,7 @@ void InterfaceLib_GetNewCWindow(InterfaceLib::Globals* globals, MachineState* st
 	uint32_t createBehind = state->r5;
 	uint32_t surfaceId = globals->grafPorts.SurfaceOfGrafPort(*port);
 	
-	globals->ipc.PerformAction<void>(IPCMessage::CreateWindow, portAddress, surfaceId, rect, visible, title, createBehind);
+	globals->ipc().PerformAction<void>(IPCMessage::CreateWindow, portAddress, surfaceId, rect, visible, title, createBehind);
 	state->r3 = portAddress;
 }
 
@@ -244,7 +244,7 @@ void InterfaceLib_NewCWindow(InterfaceLib::Globals* globals, MachineState* state
 	uint32_t createBehind = state->r8;
 	uint32_t surfaceId = globals->grafPorts.SurfaceOfGrafPort(*port);
 	
-	globals->ipc.PerformAction<void>(IPCMessage::CreateWindow, portAddress, surfaceId, rect, visible, cppTitle, createBehind);
+	globals->ipc().PerformAction<void>(IPCMessage::CreateWindow, portAddress, surfaceId, rect, visible, cppTitle, createBehind);
 	state->r3 = portAddress;
 }
 

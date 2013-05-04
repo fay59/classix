@@ -25,10 +25,18 @@
 
 using namespace InterfaceLib;
 
+namespace
+{
+	void RefreshWindows(InterfaceLib::Globals* globals)
+	{
+		
+	}
+}
+
 void InterfaceLib_Button(InterfaceLib::Globals* globals, MachineState* state)
 {
-	globals->ipc.PerformAction<void>(IPCMessage::RefreshWindows);
-	state->r3 = globals->ipc.PerformAction<bool>(IPCMessage::IsMouseDown);
+	globals->ipc().PerformAction<void>(IPCMessage::RefreshWindows);
+	state->r3 = globals->ipc().PerformAction<bool>(IPCMessage::IsMouseDown);
 }
 
 void InterfaceLib_EventAvail(InterfaceLib::Globals* globals, MachineState* state)
@@ -68,7 +76,7 @@ void InterfaceLib_GetMouse(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_GetNextEvent(InterfaceLib::Globals* globals, MachineState* state)
 {
-	globals->ipc.PerformAction<void>(IPCMessage::RefreshWindows);
+	globals->ipc().PerformAction<void>(IPCMessage::RefreshWindows);
 	
 	EventMask mask = static_cast<EventMask>(state->r3);
 	uint32_t timeout = 0xffffffff;
@@ -80,8 +88,8 @@ void InterfaceLib_GetNextEvent(InterfaceLib::Globals* globals, MachineState* sta
 	empty.rgnBBox.right = 0;
 	empty.rgnBBox.bottom = 0;
 	
-	EventRecord nextEvent = globals->ipc.PerformAction<EventRecord>(IPCMessage::PeekNextEvent, mask, timeout, empty);
-	globals->ipc.PerformAction<void>(IPCMessage::DequeueNextEvent, mask);
+	EventRecord nextEvent = globals->ipc().PerformAction<EventRecord>(IPCMessage::PeekNextEvent, mask, timeout, empty);
+	globals->ipc().PerformAction<void>(IPCMessage::DequeueNextEvent, mask);
 	
 	*globals->allocator.ToPointer<EventRecord>(state->r4) = nextEvent;
 	state->r3 = nextEvent.what != 0;
@@ -184,7 +192,7 @@ void InterfaceLib_SystemEvent(InterfaceLib::Globals* globals, MachineState* stat
 
 void InterfaceLib_SystemTask(InterfaceLib::Globals* globals, MachineState* state)
 {
-	globals->ipc.PerformAction<void>(IPCMessage::RefreshWindows);
+	globals->ipc().PerformAction<void>(IPCMessage::RefreshWindows);
 }
 
 void InterfaceLib_WaitMouseUp(InterfaceLib::Globals* globals, MachineState* state)
@@ -194,7 +202,7 @@ void InterfaceLib_WaitMouseUp(InterfaceLib::Globals* globals, MachineState* stat
 
 void InterfaceLib_WaitNextEvent(InterfaceLib::Globals* globals, MachineState* state)
 {
-	globals->ipc.PerformAction<void>(IPCMessage::RefreshWindows);
+	globals->ipc().PerformAction<void>(IPCMessage::RefreshWindows);
 	
 	MacRegion emptyRegion;
 	emptyRegion.rgnSize = 10;
@@ -211,8 +219,8 @@ void InterfaceLib_WaitNextEvent(InterfaceLib::Globals* globals, MachineState* st
 		region = &emptyRegion;
 	}
 	
-	EventRecord nextEvent = globals->ipc.PerformAction<EventRecord>(IPCMessage::PeekNextEvent, mask, ticksTimeout, *region);
-	globals->ipc.PerformAction<void>(IPCMessage::DequeueNextEvent, mask);
+	EventRecord nextEvent = globals->ipc().PerformAction<EventRecord>(IPCMessage::PeekNextEvent, mask, ticksTimeout, *region);
+	globals->ipc().PerformAction<void>(IPCMessage::DequeueNextEvent, mask);
 	*globals->allocator.ToPointer<EventRecord>(state->r4) = nextEvent;
 	
 	state->r3 = nextEvent.what != 0;

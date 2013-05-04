@@ -48,7 +48,7 @@ namespace
 		return result;
 	}
 	
-	void LaunchHead(int readPipe, int writePipe) noexcept
+	void LaunchHead(const std::string& dockName, int readPipe, int writePipe) noexcept
 	{
 		CFBundleRef bundle = CFBundleGetBundleWithIdentifier(CFSTR("com.felixcloutier.InterfaceLib"));
 		CFURLRef url = CFBundleCopyResourceURL(bundle, CFSTR("InterfaceLibHead"), CFSTR("app"), nullptr);
@@ -66,7 +66,7 @@ namespace
 
 namespace InterfaceLib
 {
-	UIChannel::UIChannel()
+	UIChannel::UIChannel(const std::string& dockName)
 	{
 		if (pipe(read.fd) == -1)
 			throw std::runtime_error(strerror(errno));
@@ -91,7 +91,7 @@ namespace InterfaceLib
 		{
 			close(write.write);
 			close(read.read);
-			LaunchHead(write.read, read.write);
+			LaunchHead(dockName, write.read, read.write);
 		}
 		else
 		{

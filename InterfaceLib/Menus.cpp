@@ -43,7 +43,7 @@ void InterfaceLib_CheckItem(InterfaceLib::Globals* globals, MachineState* state)
 	uint16_t menuIndex = menu->menuId;
 	uint16_t itemIndex = static_cast<uint16_t>(state->r4 - 1); // Classic menus are 1-based
 	bool check = state->r5;
-	globals->ipc.PerformAction<void>(IPCMessage::CheckItem, menuIndex, itemIndex, check);
+	globals->ipc().PerformAction<void>(IPCMessage::CheckItem, menuIndex, itemIndex, check);
 }
 
 void InterfaceLib_ClearMenuBar(InterfaceLib::Globals* globals, MachineState* state)
@@ -198,7 +198,7 @@ void InterfaceLib_MenuKey(InterfaceLib::Globals* globals, MachineState* state)
 	
 	uint16_t menu;
 	uint16_t item;
-	std::tie(menu, item) = globals->ipc.PerformComplexAction<MenuSelectResult>(IPCMessage::MenuKey, character);
+	std::tie(menu, item) = globals->ipc().PerformComplexAction<MenuSelectResult>(IPCMessage::MenuKey, character);
 	state->r3 = (menu << 16) | (item + 1); // menus are 1-based in Classic
 }
 
@@ -209,7 +209,7 @@ void InterfaceLib_MenuSelect(InterfaceLib::Globals* globals, MachineState* state
 	
 	uint16_t menu;
 	uint16_t item;
-	std::tie(menu, item) = globals->ipc.PerformComplexAction<MenuSelectResult>(IPCMessage::MenuSelect, pt);
+	std::tie(menu, item) = globals->ipc().PerformComplexAction<MenuSelectResult>(IPCMessage::MenuSelect, pt);
 	state->r3 = (menu << 16) | (item + 1); // menus are 1-based in Classic
 }
 

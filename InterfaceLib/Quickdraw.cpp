@@ -884,7 +884,7 @@ void InterfaceLib_PaintOval(InterfaceLib::Globals* globals, MachineState* state)
 	CGContextFillEllipseInRect(ctx, cgRect);
 	
 	uint32_t key = globals->allocator.ToIntPtr(&port);
-	globals->ipc.PerformAction<void>(IPCMessage::SetDirtyRect, key, cgRect);
+	globals->ipc().PerformAction<void>(IPCMessage::SetDirtyRect, key, cgRect);
 }
 
 void InterfaceLib_PaintPoly(InterfaceLib::Globals* globals, MachineState* state)

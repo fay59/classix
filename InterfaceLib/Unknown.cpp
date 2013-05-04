@@ -343,18 +343,18 @@ void InterfaceLib_dragwindow(InterfaceLib::Globals* globals, MachineState* state
 
 void InterfaceLib_DrawMenuBar(InterfaceLib::Globals* globals, MachineState* state)
 {
-	globals->ipc.PerformAction<void>(IPCMessage::ClearMenus);
+	globals->ipc().PerformAction<void>(IPCMessage::ClearMenus);
 	for (const Resources::MENU* menu : globals->menus)
 	{
 		uint16_t menuId = menu->menuId;
-		globals->ipc.PerformAction<void>(IPCMessage::InsertMenu, menuId, menu->GetTitle());
+		globals->ipc().PerformAction<void>(IPCMessage::InsertMenu, menuId, menu->GetTitle());
 		size_t i = 1;
 		for (const auto* menuItem = menu->GetFirstItem(); menuItem != nullptr; menuItem = menuItem->GetNextItem())
 		{
 			std::string title = menuItem->GetTitle();
 			char keyEquivalent = menuItem->GetKeyEquivalent();
 			bool enabled = (menu->enableFlags & (1 << i)) != 0;
-			globals->ipc.PerformAction<void>(IPCMessage::InsertMenuItem, menuId, title, keyEquivalent, enabled);
+			globals->ipc().PerformAction<void>(IPCMessage::InsertMenuItem, menuId, title, keyEquivalent, enabled);
 			i++;
 		}
 	}
@@ -441,7 +441,7 @@ void InterfaceLib_FindWindow(InterfaceLib::Globals* globals, MachineState* state
 	Common::UInt32* windowPointer = globals->allocator.ToPointer<Common::UInt32>(state->r4);
 	
 	std::tie(windowPart, *windowPointer) =
-		globals->ipc.PerformComplexAction<FindWindowType>(IPCMessage::FindWindowByCoordinates, point);
+		globals->ipc().PerformComplexAction<FindWindowType>(IPCMessage::FindWindowByCoordinates, point);
 	
 	state->r3 = static_cast<uint32_t>(windowPart);
 }

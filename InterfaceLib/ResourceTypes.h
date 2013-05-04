@@ -81,6 +81,21 @@ namespace Resources
 		const Member* GetFirstMember() const;
 	};
 	
+	struct __attribute__((packed)) BNDL : Unconstructible
+	{
+		static const FourCharCode key;
+		
+		struct __attribute__((packed)) IconArray
+		{
+			Common::UInt32 type;
+			Common::UInt16 iconCount;
+		};
+		
+		Common::UInt32 appSignature;
+		Common::UInt16 version;
+		Common::UInt16 arraySize;
+	};
+	
 	struct __attribute__((packed)) WIND : Unconstructible
 	{
 		static const FourCharCode key;

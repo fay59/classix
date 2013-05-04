@@ -75,7 +75,7 @@ void InterfaceLib_DrawString(InterfaceLib::Globals* globals, MachineState* state
 	
 	uint32_t key = globals->allocator.ToIntPtr(&port);
 	CGRect dirtyRect = CGRectMake(point.x, point.y, endPoint.x - point.x, port.color.txSize);
-	globals->ipc.PerformAction<void>(IPCMessage::SetDirtyRect, key, dirtyRect);
+	globals->ipc().PerformAction<void>(IPCMessage::SetDirtyRect, key, dirtyRect);
 }
 
 void InterfaceLib_GetFontInfo(InterfaceLib::Globals* globals, MachineState* state)

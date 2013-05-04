@@ -33,6 +33,11 @@ namespace InterfaceLib
 	Globals::Globals(Common::IAllocator& allocator)
 	: allocator(allocator), resources(allocator), grafPorts(allocator)
 	{ }
+	
+	Globals::~Globals()
+	{
+		delete uiChannel;
+	}
 }
 
 InterfaceLib::Globals* LibraryLoad(Common::IAllocator* allocator)
@@ -71,8 +76,10 @@ void InterfaceLib___LibraryInit(InterfaceLib::Globals* globals, PPCVM::MachineSt
 	if (state->r3 > 0)
 	{
 		const Common::UInt32* argv = globals->allocator.ToPointer<Common::UInt32>(state->r4);
-		const char* programPath = globals->allocator.ToPointer<char>(argv[0]);
+		std::string programPath = globals->allocator.ToPointer<char>(argv[0]);
+		std::string programName = programPath.substr(programPath.find_last_of('/') + 1);
 		globals->resources.LoadFileResources(programPath);
+		globals->uiChannel = new InterfaceLib::UIChannel(programName);
 	}
 }
 
