@@ -28,6 +28,31 @@
 #include <stdexcept>
 #include <iterator>
 
+namespace
+{
+#define IPC_NAME(x) [static_cast<size_t>(InterfaceLib::IPCMessage::x)] = #x
+	std::string ipcMessageNames[] = {
+		IPC_NAME(Beep),
+		IPC_NAME(PeekNextEvent),
+		IPC_NAME(DequeueNextEvent),
+		IPC_NAME(IsMouseDown),
+		IPC_NAME(RequestUpdate),
+		IPC_NAME(CreateWindow),
+		IPC_NAME(DragWindow),
+		IPC_NAME(CloseWindow),
+		IPC_NAME(FindFrontWindow),
+		IPC_NAME(FindWindowByCoordinates),
+		IPC_NAME(SetDirtyRect),
+		IPC_NAME(RefreshWindows),
+		IPC_NAME(ClearMenus),
+		IPC_NAME(InsertMenu),
+		IPC_NAME(InsertMenuItem),
+		IPC_NAME(MenuSelect),
+		IPC_NAME(MenuKey),
+		IPC_NAME(CheckItem),
+	};
+}
+
 namespace InterfaceLib
 {
 	Globals::Globals(Common::IAllocator& allocator)
@@ -37,6 +62,11 @@ namespace InterfaceLib
 	Globals::~Globals()
 	{
 		delete uiChannel;
+	}
+	
+	const std::string& IPCMessageName(IPCMessage message)
+	{
+		return ipcMessageNames[static_cast<size_t>(message)];
 	}
 }
 

@@ -347,7 +347,15 @@ void InterfaceLib_FrameArc(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_FrameOval(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	UGrafPort& port = globals->grafPorts.GetCurrentPort();
+	CGContextRef ctx = globals->grafPorts.ContextOfGrafPort(port);
+	const InterfaceLib::Rect* rect = globals->allocator.ToPointer<InterfaceLib::Rect>(state->r3);
+	CGRect cgRect = RectToCGRect(*rect, ctx);
+	
+	CGContextStrokeEllipseInRect(ctx, cgRect);
+	
+	uint32_t key = globals->allocator.ToIntPtr(&port);
+	globals->ipc().PerformAction<void>(IPCMessage::SetDirtyRect, key, cgRect);
 }
 
 void InterfaceLib_FramePoly(InterfaceLib::Globals* globals, MachineState* state)
@@ -526,7 +534,7 @@ void InterfaceLib_InitGraf(InterfaceLib::Globals* globals, MachineState* state)
 	screenRect.right = width;
 	screenRect.top = 0;
 	screenRect.bottom = height;
-	InterfaceLib::UGrafPort& port = globals->grafPorts.AllocateColorGrafPort(screenRect, "QD Screen Port");
+	InterfaceLib::UGrafPort& port = globals->grafPorts.AllocateColorGrafPort(screenRect, nullptr, "QD Screen Port");
 	uint32_t grafPtr = globals->allocator.ToIntPtr(&port);
 	
 	// initialize qd while we're at it
@@ -1014,7 +1022,10 @@ void InterfaceLib_RGBForeColor(InterfaceLib::Globals* globals, MachineState* sta
 	CGFloat r = port.color.rgbFgColor.red / max;
 	CGFloat g = port.color.rgbFgColor.green / max;
 	CGFloat b = port.color.rgbFgColor.blue / max;
-	CGContextSetRGBFillColor(globals->grafPorts.ContextOfGrafPort(port), r, g, b, 1);
+	
+	CGContextRef ctx = globals->grafPorts.ContextOfGrafPort(port);
+	CGContextSetRGBFillColor(ctx, r, g, b, 1);
+	CGContextSetRGBStrokeColor(ctx, r, g, b, 1);
 }
 
 void InterfaceLib_SaveEntries(InterfaceLib::Globals* globals, MachineState* state)

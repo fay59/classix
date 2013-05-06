@@ -19,8 +19,10 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
+#include <sstream>
 #include "Prototypes.h"
 #include "NotImplementedException.h"
+#include "InterfaceLib.h"
 
 void InterfaceLib_ApplicationZone(InterfaceLib::Globals* globals, MachineState* state)
 {
@@ -29,7 +31,10 @@ void InterfaceLib_ApplicationZone(InterfaceLib::Globals* globals, MachineState* 
 
 void InterfaceLib_BlockMove(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	const uint8_t* source = globals->allocator.ToPointer<uint8_t>(state->r3);
+	uint8_t* destination = globals->allocator.ToPointer<uint8_t>(state->r4);
+	size_t size = state->r5;
+	memmove(destination, source, size);
 }
 
 void InterfaceLib_BlockMoveData(InterfaceLib::Globals* globals, MachineState* state)
@@ -84,7 +89,9 @@ void InterfaceLib_DeferUserFn(InterfaceLib::Globals* globals, MachineState* stat
 
 void InterfaceLib_DisposeHandle(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	uint8_t* pointer = globals->allocator.ToPointer<uint8_t>(state->r3);
+	pointer -= 4;
+	globals->allocator.Deallocate(pointer);
 }
 
 void InterfaceLib_DisposePtr(InterfaceLib::Globals* globals, MachineState* state)
@@ -314,7 +321,13 @@ void InterfaceLib_NewEmptyHandleSys(InterfaceLib::Globals* globals, MachineState
 
 void InterfaceLib_NewHandle(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	size_t size = state->r3 + sizeof(uint32_t);
+	std::stringstream handleName;
+	handleName << "InterfaceLib Handle [" << state->r3 << " + 4]";
+	uint8_t* bytes = globals->allocator.Allocate(handleName.str(), size);
+	Common::UInt32& pointer = *reinterpret_cast<Common::UInt32*>(bytes);
+	pointer = globals->allocator.ToIntPtr(bytes) + 4;
+	state->r3 = globals->allocator.ToIntPtr(&pointer);
 }
 
 void InterfaceLib_NewHandleClear(InterfaceLib::Globals* globals, MachineState* state)

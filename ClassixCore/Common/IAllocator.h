@@ -29,6 +29,7 @@
 #include <utility>
 #include "AllocationDetails.h"
 #include "AccessViolationException.h"
+#include "BigEndian.h"
 
 namespace Common
 {

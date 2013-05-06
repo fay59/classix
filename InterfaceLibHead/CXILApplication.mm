@@ -206,7 +206,7 @@ namespace
 	NSWindow* draggedWindow;
 }
 
-#define IPC_INDEX(x) [(unsigned)IPCMessage::x]
+#define IPC_INDEX(x) [(size_t)IPCMessage::x]
 
 static SEL ipcSelectors[] = {
 	IPC_INDEX(Beep) = @selector(beep),
@@ -215,6 +215,7 @@ static SEL ipcSelectors[] = {
 	IPC_INDEX(IsMouseDown) = @selector(tellIsMouseDown),
 	IPC_INDEX(CreateWindow) = @selector(createWindow),
 	IPC_INDEX(CloseWindow) = @selector(closeWindow),
+	IPC_INDEX(RequestUpdate) = @selector(requestUpdate),
 	IPC_INDEX(DragWindow) = @selector(dragWindow),
 	IPC_INDEX(FindFrontWindow) = @selector(findFrontWindow),
 	IPC_INDEX(FindWindowByCoordinates) = @selector(findWindow),
@@ -443,8 +444,9 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 #pragma mark -
 #pragma mark RPCs
 
--(void)sendDone
+-(void)sendDone:(SEL)cmd
 {
+	//printf("- Answering with %s\n", sel_getName(cmd));
 	char done[] = {'D', 'O', 'N', 'E'};
 	channel->Write(done);
 }
@@ -474,6 +476,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	
 	// this operation is safe, because the selector accepts no argument and returns no object
 	// since no leak is possible, we shut up the compiler
+	//printf("+ Asked for %s\n", sel_getName(selector));
 	PerformSelectorUnsafe(self, selector);
 }
 
@@ -516,7 +519,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		}
 	}
 	
-	[self sendDone];
+	[self sendDone:_cmd];
 }
 
 -(void)tellIsMouseDown
@@ -525,14 +528,14 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	// This is probably paranoid, but I'd rather use bool than BOOL here because this has to be C++-compatible.
 	bool isMouseDown = [NSEvent pressedMouseButtons] & 1;
 	channel->Write(isMouseDown);
-	[self sendDone];
+	[self sendDone:_cmd];
 }
 
 -(void)beep
 {
 	[self expectDone];
 	NSBeep();
-	[self sendDone];
+	[self sendDone:_cmd];
 }
 
 -(void)createWindow
@@ -552,22 +555,17 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	[windowDelegate createWindow:key withRect:frame surface:surface title:nsTitle visible:visible behind:createBehind];
 	IOSurfaceDecrementUseCount(surface);
 	
-	// enqueue an update event for the new window
-	uint16_t mouseButtonState = ([NSEvent pressedMouseButtons] & 1) == 1
-		? static_cast<uint16_t>(EventModifierFlags::mouseButtonState)
-		: 0;
-	uint16_t modifiers = mouseButtonState | CXILEventRecordModifierFlags([NSEvent modifierFlags]);
+	[self enqueueUpdateEvent:key];
 	
-	EventRecord record = {
-		.what = Common::UInt16(static_cast<uint16_t>(EventCode::updateEvent)),
-		.when = Common::UInt32(CXILClassicTimeStamp()),
-		.where = [self xPointToClassicPoint:[NSEvent mouseLocation]],
-		.modifiers = Common::UInt16(modifiers),
-		.message = Common::UInt32(key)
-	};
-	eventQueue.push_back(record);
-	
-	[self sendDone];
+	[self sendDone:_cmd];
+}
+
+-(void)requestUpdate
+{
+	IPC_PARAM(key, uint32_t);
+	[self expectDone];
+	[self enqueueUpdateEvent:key];
+	[self sendDone:_cmd];
 }
 
 -(void)findFrontWindow
@@ -576,7 +574,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	
 	uint32_t key = [windowDelegate keyOfFrontWindow];
 	channel->Write(key);
-	[self sendDone];
+	[self sendDone:_cmd];
 }
 
 -(void)findWindow
@@ -590,7 +588,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	
 	channel->Write(code);
 	channel->Write(key);
-	[self sendDone];
+	[self sendDone:_cmd];
 }
 
 -(void)setDirtyRect
@@ -601,7 +599,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	
 	dirtyRects.insert(std::make_pair(key, dirtyRect));
 	
-	[self sendDone];
+	[self sendDone:_cmd];
 }
 
 -(void)refreshWindows
@@ -613,7 +611,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	
 	dirtyRects.clear();
 	
-	[self sendDone];
+	[self sendDone:_cmd];
 }
 
 -(void)closeWindow
@@ -622,7 +620,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	[self expectDone];
 	
 	[windowDelegate destroyWindow:key];
-	[self sendDone];
+	[self sendDone:_cmd];
 }
 
 -(void)dragWindow
@@ -634,7 +632,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	dragBounds = [self classicRectToXRect:classicDragBounds];
 	
 	id handler = [windowDelegate startDragWindow:windowKey mouseLocation:NSEvent.mouseLocation dragBounds:dragBounds];
-	[handler registerRemovalAction:^(id) { [self sendDone]; }];
+	[handler registerRemovalAction:^(id) { [self sendDone:_cmd]; }];
 	
 	[eventHandlers addObject:handler];
 }
@@ -643,7 +641,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 {
 	[self expectDone];
 	self.mainMenu = [baseMenu copy];
-	[self sendDone];
+	[self sendDone:_cmd];
 }
 
 -(void)insertMenu
@@ -669,7 +667,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		[self.mainMenu addItem:wrappingItem];
 	}
 	
-	[self sendDone];
+	[self sendDone:_cmd];
 }
 
 -(void)insertMenuItem
@@ -708,7 +706,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		[parent addItem:item];
 	}
 	
-	[self sendDone];
+	[self sendDone:_cmd];
 }
 
 -(void)checkMenuItem
@@ -721,7 +719,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	NSMenu* menu = [self.mainMenu itemWithTag:menuIndex].submenu;
 	NSMenuItem* item = [menu itemAtIndex:itemIndex];
 	item.state = checked ? NSOnState : NSOffState;
-	[self sendDone];
+	[self sendDone:_cmd];
 }
 
 -(void)menuSelect
@@ -752,11 +750,13 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	NSString* characters = [NSString stringWithCString:charString encoding:NSMacOSRomanStringEncoding];
 	unsigned short keyCode = 0; // bleh, TODO: find the key code by the char
 	
+	menuGate.ignoresMouseEvents = YES;
+	
 	// ouch
 	NSEvent* keyEvent = [NSEvent keyEventWithType:NSKeyDown location:location modifierFlags:NSCommandKeyMask timestamp:now windowNumber:frontWindow context:nullptr characters:characters charactersIgnoringModifiers:characters isARepeat:NO keyCode:keyCode];
 	[self.mainMenu performKeyEquivalent:keyEvent];
 	
-	[self sendDone];
+	[self sendDone:_cmd];
 }
 
 #pragma mark -
@@ -768,7 +768,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	if ((eventCodeMask & static_cast<int>(currentlyWaitingOn)) != 0)
 	{
 		channel->Write(record);
-		[self sendDone];
+		[self sendDone:_cmd];
 		
 		currentlyWaitingOn = EventMask::noEvent;
 		[waitLimit invalidate];
@@ -810,22 +810,40 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	EventRecord noEvent;
 	memset(&noEvent, 0, sizeof noEvent);
 	channel->Write(noEvent);
-	[self sendDone];
+	[self sendDone:_cmd];
 }
 
 -(void)pickMenuItem:(NSMenuItem*)sender
 {
-	NSMenuItem* parent = sender.parentItem;
-	uint16_t menuIndex = static_cast<uint16_t>(parent.tag);
-	uint16_t itemIndex = static_cast<uint16_t>([parent.submenu indexOfItem:sender]);
-	channel->Write(menuIndex);
-	channel->Write(itemIndex);
-	[self sendDone];
-	
 	if (menuGate.ignoresMouseEvents)
 	{
-		//menuGate.ignoresMouseEvents = NO;
+		NSMenuItem* parent = sender.parentItem;
+		uint16_t menuIndex = static_cast<uint16_t>(parent.tag);
+		uint16_t itemIndex = static_cast<uint16_t>([parent.submenu indexOfItem:sender]);
+		channel->Write(menuIndex);
+		channel->Write(itemIndex);
+		[self sendDone:_cmd];
+	
+		menuGate.ignoresMouseEvents = NO;
 	}
+}
+
+-(void)enqueueUpdateEvent:(uint32_t)windowKey
+{
+	// enqueue an update event for the new window
+	uint16_t mouseButtonState = ([NSEvent pressedMouseButtons] & 1) == 1
+		? static_cast<uint16_t>(EventModifierFlags::mouseButtonState)
+		: 0;
+	uint16_t modifiers = mouseButtonState | CXILEventRecordModifierFlags([NSEvent modifierFlags]);
+	
+	EventRecord record = {
+		.what = Common::UInt16(static_cast<uint16_t>(EventCode::updateEvent)),
+		.when = Common::UInt32(CXILClassicTimeStamp()),
+		.where = [self xPointToClassicPoint:[NSEvent mouseLocation]],
+		.modifiers = Common::UInt16(modifiers),
+		.message = Common::UInt32(windowKey)
+	};
+	eventQueue.push_back(record);
 }
 
 @end

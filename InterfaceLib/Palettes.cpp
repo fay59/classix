@@ -19,8 +19,10 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
+#include <CoreGraphics/CoreGraphics.h>
 #include "Prototypes.h"
 #include "NotImplementedException.h"
+#include "InterfaceLib.h"
 
 void InterfaceLib_ActivatePalette(InterfaceLib::Globals* globals, MachineState* state)
 {
@@ -74,7 +76,17 @@ void InterfaceLib_GetNewPalette(InterfaceLib::Globals* globals, MachineState* st
 
 void InterfaceLib_GetPalette(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	uint32_t requestedPalette = state->r3;
+	if (requestedPalette == 0xffffffff)
+	{
+		state->r3 = globals->allocator.ToIntPtr(&globals->grafPorts.GetDefaultPalette());
+	}
+	else
+	{
+		InterfaceLib::UGrafPort& port = *globals->allocator.ToPointer<InterfaceLib::UGrafPort>(requestedPalette);
+		InterfaceLib::Palette* palette = globals->grafPorts.PaletteOfGrafPort(port);
+		state->r3 = globals->allocator.ToIntPtr(palette);
+	}
 }
 
 void InterfaceLib_GetPaletteUpdates(InterfaceLib::Globals* globals, MachineState* state)
@@ -104,7 +116,18 @@ void InterfaceLib_NSetPalette(InterfaceLib::Globals* globals, MachineState* stat
 
 void InterfaceLib_Palette2CTab(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	const InterfaceLib::Palette* palette = globals->allocator.ToPointer<InterfaceLib::Palette>(state->r3);
+	const Common::UInt32& cTabPtr = *globals->allocator.ToPointer<Common::UInt32>(state->r4);
+	InterfaceLib::ColorTable* cTab = globals->allocator.ToPointer<InterfaceLib::ColorTable>(cTabPtr);
+	cTab->count = palette->pmEntries;
+	
+	for (int16_t i = 0; i < palette->pmEntries; i++)
+	{
+		const InterfaceLib::ColorInfo& input = palette->pmInfo[i];
+		InterfaceLib::ColorSpec& output = cTab->table[i];
+		output.value = i;
+		output.rgb = input.ciRGB;
+	}
 }
 
 void InterfaceLib_PmBackColor(InterfaceLib::Globals* globals, MachineState* state)
@@ -114,7 +137,33 @@ void InterfaceLib_PmBackColor(InterfaceLib::Globals* globals, MachineState* stat
 
 void InterfaceLib_PmForeColor(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// TODO support for 8-bit pixel depth
+	InterfaceLib::UGrafPort& port = globals->grafPorts.GetCurrentPort();
+	if (InterfaceLib::ColorTable* table = globals->grafPorts.ColorTableOfGrafPort(port))
+	{
+		int16_t colorIndex = static_cast<int16_t>(state->r3);
+		if (colorIndex >= table->count)
+		{
+			std::cerr << "*** invalid color index for " << __func__ << std::endl;
+			return;
+		}
+		
+		port.color.rgbFgColor = table->table[colorIndex].rgb;
+	
+		CGFloat max = std::numeric_limits<uint16_t>::max();
+		CGFloat r = port.color.rgbFgColor.red / max;
+		CGFloat g = port.color.rgbFgColor.green / max;
+		CGFloat b = port.color.rgbFgColor.blue / max;
+		
+		CGContextRef ctx = globals->grafPorts.ContextOfGrafPort(port);
+		CGContextSetRGBFillColor(ctx, r, g, b, 1);
+		CGContextSetRGBStrokeColor(ctx, r, g, b, 1);
+	}
+	else
+	{
+		std::cerr << "*** Using " << __func__ << " on a non-color port" << std::endl;
+		return;
+	}
 }
 
 void InterfaceLib_PMgrVersion(InterfaceLib::Globals* globals, MachineState* state)

@@ -50,6 +50,9 @@
 // closes and destroys a window
 -(void)closeWindow;
 
+// puts an update event on the queue
+-(void)requestUpdate;
+
 // returns the first window in which the coordinate exists
 -(void)findWindow;
 

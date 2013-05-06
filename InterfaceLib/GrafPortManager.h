@@ -40,19 +40,24 @@ namespace InterfaceLib
 		Common::IAllocator& allocator;
 		std::unordered_map<uint32_t, GrafPortData> ports;
 		GrafPortData* currentPort;
+		Palette* defaultPalette;
 		
 	public:
 		GrafPortManager(Common::IAllocator& allocator);
 		
+		InterfaceLib::Palette& GetDefaultPalette();
+		
 		InterfaceLib::UGrafPort& AllocateGrayGrafPort(const InterfaceLib::Rect& bounds, const std::string& allocationName = "");
-		InterfaceLib::UGrafPort& AllocateColorGrafPort(const InterfaceLib::Rect& bounds, const std::string& allocationName = "");
+		InterfaceLib::UGrafPort& AllocateColorGrafPort(const InterfaceLib::Rect& bounds, const InterfaceLib::Palette* palette = nullptr, const std::string& allocationName = "");
 		
 		void InitializeGrayGrafPort(InterfaceLib::UGrafPort& port, const InterfaceLib::Rect& bounds);
-		void InitializeColorGrafPort(InterfaceLib::UGrafPort& port, const InterfaceLib::Rect& bounds);
+		void InitializeColorGrafPort(InterfaceLib::UGrafPort& port, const InterfaceLib::Rect& bounds, const InterfaceLib::Palette* palette = nullptr);
 		
 		void SetCurrentPort(InterfaceLib::UGrafPort& port);
 		InterfaceLib::UGrafPort& GetCurrentPort();
 		
+		InterfaceLib::Palette* PaletteOfGrafPort(InterfaceLib::UGrafPort& port);
+		InterfaceLib::ColorTable* ColorTableOfGrafPort(InterfaceLib::UGrafPort& port);
 		CGContextRef ContextOfGrafPort(InterfaceLib::UGrafPort& port);
 		IOSurfaceID SurfaceOfGrafPort(InterfaceLib::UGrafPort& port);
 		

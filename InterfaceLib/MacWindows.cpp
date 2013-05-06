@@ -131,11 +131,17 @@ void InterfaceLib_GetNewCWindow(InterfaceLib::Globals* globals, MachineState* st
 	std::string title = window->title;
 	const InterfaceLib::Rect& rect = window->windowRect;
 	
+	Palette* palette = nullptr;
+	if (ResourceEntry* entry = globals->resources.GetRawResource("pltt", resourceId))
+	{
+		palette = reinterpret_cast<Palette*>(entry->begin());
+	}
+	
 	if (portAddress == 0)
 	{
 		std::stringstream ss;
 		ss << "Window: \"" << title << "\"";
-		port = &globals->grafPorts.AllocateColorGrafPort(rect, title);
+		port = &globals->grafPorts.AllocateColorGrafPort(rect, palette, title);
 		portAddress = globals->allocator.ToIntPtr(port);
 	}
 	else
@@ -231,7 +237,7 @@ void InterfaceLib_NewCWindow(InterfaceLib::Globals* globals, MachineState* state
 	{
 		std::stringstream ss;
 		ss << "Window: \"" << cppTitle << "\"";
-		port = &globals->grafPorts.AllocateColorGrafPort(rect, cppTitle);
+		port = &globals->grafPorts.AllocateColorGrafPort(rect, nullptr, cppTitle);
 		portAddress = globals->allocator.ToIntPtr(port);
 	}
 	else

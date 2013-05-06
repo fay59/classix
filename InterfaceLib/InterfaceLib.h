@@ -53,6 +53,8 @@ namespace InterfaceLib
 		
 		~Globals();
 	};
+	
+	const std::string& IPCMessageName(IPCMessage message);
 }
 
 extern "C"

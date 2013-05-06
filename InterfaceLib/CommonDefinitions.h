@@ -186,10 +186,25 @@ namespace InterfaceLib
 	
 	struct __attribute__((packed)) ColorTable
 	{
-		Common::SInt32 seed; // presumably unique ID
+		Common::SInt32 seed;
 		Common::SInt16 flags;
 		Common::SInt16 count;
 		ColorSpec table[0];
+	};
+	
+	struct __attribute__((packed)) ColorInfo
+	{
+		RGBColor ciRGB;
+		Common::SInt16 ciUsage;
+		Common::SInt16 ciTolerance;
+		Common::SInt16 ciDataFields[3];
+	};
+	
+	struct __attribute__((packed)) Palette
+	{
+		Common::SInt16 pmEntries;
+		Common::SInt16 pmDataFields[7];
+		ColorInfo pmInfo[0];
 	};
 	
 	struct __attribute__((packed)) PixMap
@@ -349,6 +364,7 @@ namespace InterfaceLib
 		PeekNextEvent,
 		DequeueNextEvent,
 		IsMouseDown,
+		RequestUpdate,
 		
 		CreateWindow,
 		DragWindow,

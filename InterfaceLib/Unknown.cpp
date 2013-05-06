@@ -1,5 +1,5 @@
 //
-// unkno.cpp
+// Unknown.cpp
 // Classix
 //
 // Copyright (C) 2013 Félix Cloutier
@@ -88,7 +88,33 @@ void InterfaceLib_addresource(InterfaceLib::Globals* globals, MachineState* stat
 
 void InterfaceLib_AnimatePalette(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	uint32_t portAddress = state->r3;
+	uint32_t colorTablePointer = *globals->allocator.ToPointer<Common::UInt32>(state->r4);
+	
+	InterfaceLib::ColorTable& newTable = *globals->allocator.ToPointer<ColorTable>(colorTablePointer);
+	InterfaceLib::UGrafPort& port = *globals->allocator.ToPointer<UGrafPort>(portAddress);
+	int16_t sourceIndex = static_cast<int16_t>(state->r5);
+	int16_t destinationIndex = static_cast<int16_t>(state->r6);
+	int16_t length = static_cast<int16_t>(state->r7);
+	
+	if (InterfaceLib::ColorTable* table = globals->grafPorts.ColorTableOfGrafPort(port))
+	if (InterfaceLib::Palette* palette = globals->grafPorts.PaletteOfGrafPort(port))
+	{
+		const int16_t limit = std::min<int16_t>({
+			length,
+			newTable.count - sourceIndex,
+			table->count - destinationIndex,
+			palette->pmEntries - destinationIndex});
+		
+		for (int16_t i = 0; i < limit; i++)
+		{
+			const RGBColor& color = newTable.table[sourceIndex + i].rgb;
+			table->table[destinationIndex + i].rgb = color;
+			palette->pmInfo[destinationIndex + i].ciRGB = color;
+		}
+	}
+	
+	globals->ipc().PerformAction<void>(IPCMessage::RequestUpdate, portAddress);
 }
 
 void InterfaceLib_appendmenu(InterfaceLib::Globals* globals, MachineState* state)
@@ -613,7 +639,7 @@ void InterfaceLib_InsertMenuItem(InterfaceLib::Globals* globals, MachineState* s
 
 void InterfaceLib_InsetRect(InterfaceLib::Globals* globals, MachineState* state)
 {
-	Rect& rect = *globals->allocator.ToPointer<Rect>(state->r3);
+	InterfaceLib::Rect& rect = *globals->allocator.ToPointer<InterfaceLib::Rect>(state->r3);
 	rect.left = static_cast<int16_t>(rect.left + state->r4);
 	rect.right = static_cast<int16_t>(rect.right - state->r4);
 	rect.bottom = static_cast<int16_t>(rect.bottom - state->r5);
