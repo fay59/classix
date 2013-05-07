@@ -144,7 +144,7 @@ void InterfaceLib_PmForeColor(InterfaceLib::Globals* globals, MachineState* stat
 		int16_t colorIndex = static_cast<int16_t>(state->r3);
 		if (colorIndex >= table->count)
 		{
-			std::cerr << "*** invalid color index for " << __func__ << std::endl;
+			std::cerr << "*** invalid color index " << colorIndex << " for " << __func__ << std::endl;
 			return;
 		}
 		

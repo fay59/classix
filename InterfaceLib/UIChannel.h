@@ -43,6 +43,9 @@ namespace InterfaceLib
 			};
 		};
 		
+		// reading to tuples
+		// thanks Daniel Frey -- http://stackoverflow.com/q/16248828/variadic-read-tuples
+		// the Indices::Next definition is pretty clever.
 		template<size_t... IndexList>
 		struct Indices
 		{
@@ -55,9 +58,6 @@ namespace InterfaceLib
 			typedef typename MakeIndices<N - 1>::Type::Next Type;
 		};
 		
-		// reading to tuples
-		// thanks Daniel Frey -- http://stackoverflow.com/q/16248828/variadic-read-tuples
-		// the Indices::Next definition is pretty clever.
 		template<typename TTupleType>
 		struct TupleReader
 		{
@@ -97,7 +97,7 @@ namespace InterfaceLib
 		size_t WriteToPipe(const std::vector<T>& argument)
 		{
 			uint32_t count = static_cast<uint32_t>(argument.size());
-			size_t total = ::write(write.write, &count, sizeof count);
+			size_t total = WriteToPipe(count);
 			for (const T& item : argument)
 				total += WriteToPipe(item);
 			return total;

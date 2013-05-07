@@ -22,6 +22,7 @@
 #include <IOSurface/IOSurface.h>
 #include <CoreGraphics/CoreGraphics.h>
 
+#include <iostream>
 #include <sstream>
 #include <iomanip>
 #include "GrafPortManager.h"
@@ -210,7 +211,7 @@ namespace InterfaceLib
 			
 			drawingContext = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, rgb, kCGImageAlphaNoneSkipFirst);
 			
-#ifndef ENABLE_ANTIALIASING
+#if !defined(ENABLE_ANTIALIASING) || ENABLE_ANTIALIASING == 0
 			// no antialiasing
 			CGContextSetShouldAntialias(drawingContext, false);
 			CGContextSetShouldSmoothFonts(drawingContext, false);
@@ -388,6 +389,40 @@ namespace InterfaceLib
 		}
 		
 		return 0;
+	}
+	
+	void GrafPortManager::BeginUpdate(InterfaceLib::UGrafPort &port)
+	{
+		uint32_t key = allocator.ToIntPtr(&port);
+		updatedRegions[key] = CGRectNull;
+	}
+	
+	bool GrafPortManager::UpdateRegion(InterfaceLib::UGrafPort &port, CGRect region)
+	{
+		uint32_t key = allocator.ToIntPtr(&port);
+		auto iter = updatedRegions.find(key);
+		if (iter == updatedRegions.end())
+		{
+			return false;
+		}
+		else
+		{
+			iter->second = CGRectUnion(iter->second, region);
+			return true;
+		}
+	}
+	
+	CGRect GrafPortManager::EndUpdate(InterfaceLib::UGrafPort &port)
+	{
+		uint32_t key = allocator.ToIntPtr(&port);
+		auto iter = updatedRegions.find(key);
+		if (iter == updatedRegions.end())
+		{
+			std::string details = allocator.GetDetails(key)->GetAllocationDetails(0);
+			std::cerr << "Unbalanced " << __func__ << " call on [" << details << "]" << std::endl;
+			return CGRectNull;
+		}
+		return iter->second;
 	}
 	
 	void GrafPortManager::DestroyGrafPort(UGrafPort& port)

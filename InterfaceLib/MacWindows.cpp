@@ -19,6 +19,7 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
+#include <CoreGraphics/CoreGraphics.h>
 #include <sstream>
 #include "Prototypes.h"
 #include "InterfaceLib.h"
@@ -30,7 +31,8 @@ using namespace InterfaceLib::Resources;
 
 void InterfaceLib_BeginUpdate(InterfaceLib::Globals* globals, MachineState* state)
 {
-	// don't need to implement it
+	UGrafPort& port = *globals->allocator.ToPointer<UGrafPort>(state->r3);
+	globals->grafPorts.BeginUpdate(port);
 }
 
 void InterfaceLib_BringToFront(InterfaceLib::Globals* globals, MachineState* state)
@@ -81,7 +83,7 @@ void InterfaceLib_DragWindow(InterfaceLib::Globals* globals, MachineState* state
 {
 	uint32_t windowKey = state->r3;
 	// we don't need the point in state->r4
-	Rect& dragBounds = *globals->allocator.ToPointer<Rect>(state->r5);
+	InterfaceLib::Rect& dragBounds = *globals->allocator.ToPointer<InterfaceLib::Rect>(state->r5);
 	
 	globals->ipc().PerformAction<void>(IPCMessage::DragWindow, windowKey, dragBounds);
 }
@@ -98,7 +100,10 @@ void InterfaceLib_DrawNew(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_EndUpdate(InterfaceLib::Globals* globals, MachineState* state)
 {
-	// don't need to implement it
+	uint32_t key = state->r3;
+	UGrafPort& port = *globals->allocator.ToPointer<UGrafPort>(key);
+	CGRect dirtyRect = globals->grafPorts.EndUpdate(port);
+	globals->ipc().PerformAction<void>(IPCMessage::SetDirtyRect, key, dirtyRect);
 }
 
 void InterfaceLib_FrontWindow(InterfaceLib::Globals* globals, MachineState* state)

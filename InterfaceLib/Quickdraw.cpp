@@ -355,7 +355,10 @@ void InterfaceLib_FrameOval(InterfaceLib::Globals* globals, MachineState* state)
 	CGContextStrokeEllipseInRect(ctx, cgRect);
 	
 	uint32_t key = globals->allocator.ToIntPtr(&port);
-	globals->ipc().PerformAction<void>(IPCMessage::SetDirtyRect, key, cgRect);
+	if (globals->grafPorts.UpdateRegion(port, cgRect) == false)
+	{
+		globals->ipc().PerformAction<void>(IPCMessage::SetDirtyRect, key, cgRect);
+	}
 }
 
 void InterfaceLib_FramePoly(InterfaceLib::Globals* globals, MachineState* state)
@@ -892,7 +895,10 @@ void InterfaceLib_PaintOval(InterfaceLib::Globals* globals, MachineState* state)
 	CGContextFillEllipseInRect(ctx, cgRect);
 	
 	uint32_t key = globals->allocator.ToIntPtr(&port);
-	globals->ipc().PerformAction<void>(IPCMessage::SetDirtyRect, key, cgRect);
+	if (globals->grafPorts.UpdateRegion(port, cgRect) == false)
+	{
+		globals->ipc().PerformAction<void>(IPCMessage::SetDirtyRect, key, cgRect);
+	}
 }
 
 void InterfaceLib_PaintPoly(InterfaceLib::Globals* globals, MachineState* state)

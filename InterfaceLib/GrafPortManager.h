@@ -30,6 +30,7 @@
 // tons of ambiguous QuickDraw definitions
 typedef uint32_t IOSurfaceID;
 typedef struct CGContext* CGContextRef;
+typedef struct CGRect CGRect;
 
 namespace InterfaceLib
 {
@@ -39,6 +40,7 @@ namespace InterfaceLib
 	{
 		Common::IAllocator& allocator;
 		std::unordered_map<uint32_t, GrafPortData> ports;
+		std::unordered_map<uint32_t, CGRect> updatedRegions;
 		GrafPortData* currentPort;
 		Palette* defaultPalette;
 		
@@ -60,6 +62,10 @@ namespace InterfaceLib
 		InterfaceLib::ColorTable* ColorTableOfGrafPort(InterfaceLib::UGrafPort& port);
 		CGContextRef ContextOfGrafPort(InterfaceLib::UGrafPort& port);
 		IOSurfaceID SurfaceOfGrafPort(InterfaceLib::UGrafPort& port);
+		
+		void BeginUpdate(InterfaceLib::UGrafPort& port);
+		bool UpdateRegion(InterfaceLib::UGrafPort& port, CGRect region);
+		CGRect EndUpdate(InterfaceLib::UGrafPort& port);
 		
 		// this does not deallocate 'port', but it gets rid of the IOSurface and the graphics context
 		void DestroyGrafPort(InterfaceLib::UGrafPort& port);
