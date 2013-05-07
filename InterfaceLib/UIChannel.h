@@ -168,6 +168,12 @@ namespace InterfaceLib
 	{
 		typedef typename UIChannel::Indices<> Type;
 	};
+	
+	template<>
+	size_t UIChannel::WriteToPipe(const std::string& argument);
+	
+	template<>
+	size_t UIChannel::WriteToPipe(const InterfaceLib::MacRegion& argument);
 }
 
 #endif /* defined(__Classix__UIChannel__) */

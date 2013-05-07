@@ -474,9 +474,16 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	SEL selector = ipcSelectors[messageType];
 	NSAssert(selector != nullptr, @"Message type %u has no implementation", messageType);
 	
+	// There's a presumed bug with Clang++ ( http://llvm.org/bugs/show_bug.cgi?id=15922 ) where selectors
+	// obtained from a C++ global initializer can apparently become invalid in Release config. Normally, there's just
+	// one selector for one method name, but it seems that some selectors aren't unified correclty
+	if (![self respondsToSelector:selector])
+	{
+		selector = sel_getUid(sel_getName(selector));
+	}
+	
 	// this operation is safe, because the selector accepts no argument and returns no object
 	// since no leak is possible, we shut up the compiler
-	//printf("+ Asked for %s\n", sel_getName(selector));
 	PerformSelectorUnsafe(self, selector);
 }
 

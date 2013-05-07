@@ -116,7 +116,7 @@
 		NSInteger level = window.level;
 		if (level > bestLevel)
 		{
-			[key getValue:&windowKey];
+			CFNumberGetValue((CFNumberRef)key, kCFNumberSInt32Type, &windowKey);
 			bestLevel = level;
 		}
 	}
