@@ -28,6 +28,7 @@
 -(id)initWithMenuGate:(NSWindow*)window;
 
 -(void)createWindow:(uint32_t)key withRect:(NSRect)rect surface:(IOSurfaceRef)surface title:(NSString*)title visible:(BOOL)visible behind:(uint32_t)behindKey;
+-(void)createDialog:(uint32_t)key withRect:(NSRect)rect title:(NSString*)title visible:(BOOL)visible;
 -(void)setDirtyRect:(CGRect)rect inWindow:(uint32_t)key;
 -(void)destroyWindow:(uint32_t)windowID;
 

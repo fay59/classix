@@ -367,6 +367,8 @@ namespace InterfaceLib
 		RequestUpdate,
 		
 		CreateWindow,
+		CreateDialog,
+		
 		DragWindow,
 		CloseWindow,
 		

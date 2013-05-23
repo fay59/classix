@@ -26,6 +26,7 @@ namespace InterfaceLib
 	const FourCharCode Resources::cfrg::key = "cfrg";
 	const FourCharCode Resources::WIND::key = "WIND";
 	const FourCharCode Resources::MENU::key = "MENU";
+	const FourCharCode Resources::DLOG::key = "DLOG";
 	
 	const Resources::MENU::Item* Resources::MENU::GetFirstItem() const
 	{
@@ -43,19 +44,14 @@ namespace InterfaceLib
 	
 	std::string Resources::cfrg::Member::GetTitle() const
 	{
-		const uint8_t* stringBase = &titleLength;
-		uint8_t length = *stringBase;
-		stringBase++;
-		const char* body = reinterpret_cast<const char*>(stringBase + 1);
-		return std::string(body, length);
+		const Str255* string = reinterpret_cast<const Str255*>(&titleLength);
+		return *string;
 	}
 	
 	std::string Resources::MENU::GetTitle() const
 	{
-		const uint8_t* stringBase = &titleLength;
-		uint8_t length = *stringBase;
-		const char* body = reinterpret_cast<const char*>(stringBase + 1);
-		return std::string(body, length);
+		const Str255* string = reinterpret_cast<const Str255*>(&titleLength);
+		return *string;
 	}
 	
 	std::string Resources::MENU::Item::GetTitle() const
@@ -98,5 +94,11 @@ namespace InterfaceLib
 		const Str255* string = reinterpret_cast<const Str255*>(base);
 		const uint8_t* nextBase = base + 1 + string->length + 4;
 		return *nextBase == 0 ? nullptr : reinterpret_cast<const Item*>(nextBase);
+	}
+	
+	std::string Resources::DLOG::GetTitle() const
+	{
+		const Str255* string = reinterpret_cast<const Str255*>(&titleLength);
+		return *string;
 	}
 }

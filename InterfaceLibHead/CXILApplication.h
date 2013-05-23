@@ -47,6 +47,9 @@
 // creates a window
 -(void)createWindow;
 
+// creates a dialog
+-(void)createDialog;
+
 // closes and destroys a window
 -(void)closeWindow;
 

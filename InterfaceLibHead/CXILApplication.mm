@@ -214,6 +214,7 @@ static SEL ipcSelectors[] = {
 	IPC_INDEX(DequeueNextEvent) = @selector(discardNextEvent),
 	IPC_INDEX(IsMouseDown) = @selector(tellIsMouseDown),
 	IPC_INDEX(CreateWindow) = @selector(createWindow),
+	IPC_INDEX(CreateDialog) = @selector(createDialog),
 	IPC_INDEX(CloseWindow) = @selector(closeWindow),
 	IPC_INDEX(RequestUpdate) = @selector(requestUpdate),
 	IPC_INDEX(DragWindow) = @selector(dragWindow),
@@ -563,6 +564,20 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	IOSurfaceDecrementUseCount(surface);
 	
 	[self enqueueUpdateEvent:key];
+	
+	[self sendDone:_cmd];
+}
+
+-(void)createDialog
+{
+	IPC_PARAM(key, uint32_t);
+	IPC_PARAM(windowRect, InterfaceLib::Rect);
+	IPC_PARAM(visible, bool);
+	IPC_PARAM(title, std::string);
+	[self expectDone];
+	
+	NSString* nsTitle = [NSString stringWithCString:title.c_str() encoding:NSMacOSRomanStringEncoding];
+	NSRect frame = [self classicRectToXRect:windowRect];
 	
 	[self sendDone:_cmd];
 }

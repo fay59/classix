@@ -55,7 +55,7 @@
 
 -(void)createWindow:(uint32_t)key withRect:(NSRect)rect surface:(IOSurfaceRef)surface title:(NSString *)title visible:(BOOL)visible behind:(uint32_t)behindKey
 {
-	NSUInteger windowStyle = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask;
+	NSUInteger windowStyle = NSTitledWindowMask | NSMiniaturizableWindowMask;
 	NSWindow* window = [[NSWindow alloc] initWithContentRect:rect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO];
 	window.title = title;
 	window.oneShot = YES;
@@ -87,6 +87,22 @@
 	NSView* contentView = window.contentView;
 	CXIOSurfaceView* rootView = [[CXIOSurfaceView alloc] initWithFrame:contentView.frame surface:surface surfaceBounds:rect];
 	window.contentView = rootView;
+}
+
+-(void)createDialog:(uint32_t)key withRect:(NSRect)rect title:(NSString *)title visible:(BOOL)visible
+{
+	NSUInteger windowStyle = NSTitledWindowMask | NSMiniaturizableWindowMask;
+	NSWindow* window = [[NSWindow alloc] initWithContentRect:rect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO];
+	window.title = title;
+	window.oneShot = YES;
+	window.movable = NO;
+	
+	[windows setObject:window forKey:@(key)];
+	
+	if (visible)
+	{
+		[window makeKeyAndOrderFront:self];
+	}
 }
 
 -(void)setDirtyRect:(CGRect)rect inWindow:(uint32_t)key

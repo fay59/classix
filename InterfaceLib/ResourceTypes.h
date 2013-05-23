@@ -134,6 +134,23 @@ namespace Resources
 		std::string GetTitle() const;
 		const Item* GetFirstItem() const;
 	};
+	
+	struct __attribute__((packed)) DLOG : Unconstructible
+	{
+		static const FourCharCode key;
+		
+		InterfaceLib::Rect rect;
+		Common::SInt16 procID;
+		uint8_t visibility;
+		uint8_t _padding1;
+		uint8_t goesAway;
+		uint8_t _padding2;
+		Common::UInt32 refCon;
+		Common::SInt16 dialogId;
+		uint8_t titleLength;
+		
+		std::string GetTitle() const;
+	};
 }
 }
 

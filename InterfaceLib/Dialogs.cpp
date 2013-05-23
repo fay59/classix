@@ -19,9 +19,14 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
+#include <sstream>
 #include "Prototypes.h"
-#include "InterfaceLib.h"
 #include "NotImplementedException.h"
+#include "InterfaceLib.h"
+#include "ResourceTypes.h"
+
+using namespace InterfaceLib;
+using namespace InterfaceLib::Resources;
 
 void InterfaceLib_Alert(InterfaceLib::Globals* globals, MachineState* state)
 {
@@ -111,6 +116,35 @@ void InterfaceLib_GetDialogItemText(InterfaceLib::Globals* globals, MachineState
 void InterfaceLib_GetNewDialog(InterfaceLib::Globals* globals, MachineState* state)
 {
 	throw PPCVM::NotImplementedException(__func__);
+	
+	// tentative implementation: I don't feel like going through dialogs right now but I don't feel like removing
+	// this, either
+	/*
+	uint16_t resourceId = static_cast<uint16_t>(state->r3);
+	if (DLOG* dialog = globals->resources.GetResource<DLOG>(resourceId))
+	{
+		uint32_t portAddress = state->r4;
+		
+		std::string title = dialog->GetTitle();
+		Rect rect = dialog->rect;
+		
+		UGrafPort* port;
+		if (portAddress == 0)
+		{
+			std::stringstream ss;
+			ss << "Dialog: \"" << title << "\"";
+			port = &globals->grafPorts.AllocateColorGrafPort(rect, nullptr, title);
+			portAddress = globals->allocator.ToIntPtr(port);
+		}
+		else
+		{
+			port = globals->allocator.ToPointer<UGrafPort>(portAddress);
+		}
+		
+		bool visible = dialog->visibility == 1;
+		globals->ipc().PerformAction<void>(IPCMessage::CreateDialog, portAddress, rect, visible, title);
+	}
+	 */
 }
 
 void InterfaceLib_GetStdFilterProc(InterfaceLib::Globals* globals, MachineState* state)
