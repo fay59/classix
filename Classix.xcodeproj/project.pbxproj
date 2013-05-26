@@ -33,6 +33,7 @@
 		DC29C3D3166AB92400B35EF7 /* AllocationDetails.h in Headers */ = {isa = PBXBuildFile; fileRef = DC29C3D1166AB92400B35EF7 /* AllocationDetails.h */; };
 		DC30714E1668800D00475144 /* CXJSAdapter.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC30714D1668800D00475144 /* CXJSAdapter.mm */; };
 		DC307156166884DE00475144 /* breakpoint-end.png in Resources */ = {isa = PBXBuildFile; fileRef = DC307155166884DE00475144 /* breakpoint-end.png */; };
+		DC33EC9E174E96C300F66877 /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC4C644F165B62910097288E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC4C644E165B62910097288E /* Cocoa.framework */; };
 		DC4C6459165B62910097288E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6457165B62910097288E /* InfoPlist.strings */; };
 		DC4C645B165B62910097288E /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC4C645A165B62910097288E /* main.mm */; };
@@ -41,6 +42,10 @@
 		DC4C6465165B62910097288E /* CXDebugUI.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6463165B62910097288E /* CXDebugUI.xib */; };
 		DC4C6468165B62920097288E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6466165B62920097288E /* MainMenu.xib */; };
 		DC4C646D165B62B80097288E /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
+		DC539D00174DC17E00BA5946 /* MathLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC539CFE174DC17E00BA5946 /* MathLib.cpp */; };
+		DC539D01174DC17E00BA5946 /* MathLib.h in Headers */ = {isa = PBXBuildFile; fileRef = DC539CFF174DC17E00BA5946 /* MathLib.h */; };
+		DC539D04174DC21D00BA5946 /* MathLibFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC539D02174DC21D00BA5946 /* MathLibFunctions.cpp */; };
+		DC539D05174DC21D00BA5946 /* MathLibFunctions.h in Headers */ = {isa = PBXBuildFile; fileRef = DC539D03174DC21D00BA5946 /* MathLibFunctions.h */; };
 		DC5656D316ED070400083F0E /* NotImplementedException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC5656D116ED070300083F0E /* NotImplementedException.cpp */; };
 		DC5656D416ED070400083F0E /* NotImplementedException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC5656D216ED070300083F0E /* NotImplementedException.h */; };
 		DC5CF824166153D200577272 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = DC5CF823166153D200577272 /* arrow.png */; };
@@ -218,6 +223,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		DC33EC9C174E964200F66877 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC3DC2716338A7900792F4A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DC539CF8174DC0E400BA5946;
+			remoteInfo = MathLib;
+		};
 		DC930ACF1708C24300B739B1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DCC3DC2716338A7900792F4A /* Project object */;
@@ -327,6 +339,11 @@
 		DC4C6461165B62910097288E /* CXDocument.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CXDocument.mm; sourceTree = "<group>"; };
 		DC4C6464165B62910097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/CXDebugUI.xib; sourceTree = "<group>"; };
 		DC4C6467165B62920097288E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		DC539CF9174DC0E400BA5946 /* libMathLib.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMathLib.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC539CFE174DC17E00BA5946 /* MathLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathLib.cpp; sourceTree = "<group>"; };
+		DC539CFF174DC17E00BA5946 /* MathLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathLib.h; sourceTree = "<group>"; };
+		DC539D02174DC21D00BA5946 /* MathLibFunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathLibFunctions.cpp; sourceTree = "<group>"; };
+		DC539D03174DC21D00BA5946 /* MathLibFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathLibFunctions.h; sourceTree = "<group>"; };
 		DC5656D116ED070300083F0E /* NotImplementedException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NotImplementedException.cpp; sourceTree = "<group>"; };
 		DC5656D216ED070300083F0E /* NotImplementedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotImplementedException.h; sourceTree = "<group>"; };
 		DC5CF823166153D200577272 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
@@ -568,6 +585,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DC539CF6174DC0E400BA5946 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC33EC9E174E96C300F66877 /* libClassixCore.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DC787EA5164F68990010A288 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -740,6 +765,17 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		DC539CFD174DC13200BA5946 /* MathLib */ = {
+			isa = PBXGroup;
+			children = (
+				DC539CFF174DC17E00BA5946 /* MathLib.h */,
+				DC539CFE174DC17E00BA5946 /* MathLib.cpp */,
+				DC539D03174DC21D00BA5946 /* MathLibFunctions.h */,
+				DC539D02174DC21D00BA5946 /* MathLibFunctions.cpp */,
+			);
+			path = MathLib;
+			sourceTree = "<group>";
+		};
 		DC7273E316471CB300DA17E5 /* Interpreter */ = {
 			isa = PBXGroup;
 			children = (
@@ -762,6 +798,7 @@
 			children = (
 				DC787EAD164F68BB0010A288 /* StdCLib */,
 				DC930AA81708BBDB00B739B1 /* InterfaceLib */,
+				DC539CFD174DC13200BA5946 /* MathLib */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1017,6 +1054,7 @@
 				DC4C644B165B62910097288E /* Classix Debugger.app */,
 				DC930AA61708BBDB00B739B1 /* InterfaceLib.ixLibrary */,
 				DC930AB81708BC8E00B739B1 /* InterfaceLibHead.app */,
+				DC539CF9174DC0E400BA5946 /* libMathLib.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1164,6 +1202,15 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		DC539CF7174DC0E400BA5946 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC539D01174DC17E00BA5946 /* MathLib.h in Headers */,
+				DC539D05174DC21D00BA5946 /* MathLibFunctions.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DC787EA6164F68990010A288 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1212,6 +1259,23 @@
 			productName = "Classix Debugger";
 			productReference = DC4C644B165B62910097288E /* Classix Debugger.app */;
 			productType = "com.apple.product-type.application";
+		};
+		DC539CF8174DC0E400BA5946 /* MathLib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC539CFC174DC0E400BA5946 /* Build configuration list for PBXNativeTarget "MathLib" */;
+			buildPhases = (
+				DC539CF5174DC0E400BA5946 /* Sources */,
+				DC539CF6174DC0E400BA5946 /* Frameworks */,
+				DC539CF7174DC0E400BA5946 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MathLib;
+			productName = MathLib;
+			productReference = DC539CF9174DC0E400BA5946 /* libMathLib.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
 		};
 		DC787EA7164F68990010A288 /* StdCLib */ = {
 			isa = PBXNativeTarget;
@@ -1293,6 +1357,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				DC33EC9D174E964200F66877 /* PBXTargetDependency */,
 				DC930B281708C86600B739B1 /* PBXTargetDependency */,
 				DC930B261708C86200B739B1 /* PBXTargetDependency */,
 			);
@@ -1328,6 +1393,7 @@
 				DC787EA7164F68990010A288 /* StdCLib */,
 				DC930AA51708BBDB00B739B1 /* InterfaceLib */,
 				DC930AB71708BC8E00B739B1 /* InterfaceLibHead */,
+				DC539CF8174DC0E400BA5946 /* MathLib */,
 			);
 		};
 /* End PBXProject section */
@@ -1403,6 +1469,15 @@
 				DC7ECFD816850D830063F14E /* CXDebugUIController.mm in Sources */,
 				DCB4970916D0883800F38D0A /* CXHexFormatter.m in Sources */,
 				DCE7B22816DA78A100D69F2A /* CXEvent.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC539CF5174DC0E400BA5946 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC539D00174DC17E00BA5946 /* MathLib.cpp in Sources */,
+				DC539D04174DC21D00BA5946 /* MathLibFunctions.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1585,6 +1660,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		DC33EC9D174E964200F66877 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DC539CF8174DC0E400BA5946 /* MathLib */;
+			targetProxy = DC33EC9C174E964200F66877 /* PBXContainerItemProxy */;
+		};
 		DC930AD01708C24300B739B1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DC930AB71708BC8E00B739B1 /* InterfaceLibHead */;
@@ -1705,6 +1785,34 @@
 				INFOPLIST_FILE = "Classix Debugger/Classix Debugger-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		DC539CFA174DC0E400BA5946 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		DC539CFB174DC0E400BA5946 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
@@ -1916,6 +2024,15 @@
 			buildConfigurations = (
 				DC4C6469165B62920097288E /* Debug */,
 				DC4C646A165B62920097288E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DC539CFC174DC0E400BA5946 /* Build configuration list for PBXNativeTarget "MathLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC539CFA174DC0E400BA5946 /* Debug */,
+				DC539CFB174DC0E400BA5946 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
