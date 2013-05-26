@@ -201,6 +201,7 @@ static int run(const std::string& path, int argc, const char* argv[], const char
 	ClassixCore::BundleLibraryResolver bundleResolver(allocator);
 	
 	dlfcnResolver.RegisterLibrary("StdCLib");
+	dlfcnResolver.RegisterLibrary("MathLib");
 	bundleResolver.AllowLibrary("InterfaceLib");
 	
 	Classix::VirtualMachine vm(allocator);

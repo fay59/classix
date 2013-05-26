@@ -578,6 +578,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	
 	NSString* nsTitle = [NSString stringWithCString:title.c_str() encoding:NSMacOSRomanStringEncoding];
 	NSRect frame = [self classicRectToXRect:windowRect];
+	// TODO complete function
 	
 	[self sendDone:_cmd];
 }
