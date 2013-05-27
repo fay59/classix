@@ -36,7 +36,7 @@ namespace CFM
 		Container& container;
 		InstantiableSection& fixupSection;
 		const LoaderSection& loaderSection;
-		Common::UInt32* data;
+		uint8_t* data;
 		
 		uint32_t relocAddress;
 		uint32_t importIndex;
@@ -45,10 +45,13 @@ namespace CFM
 		
 		inline void Add(uint32_t value)
 		{
-			uint32_t nativeEndian = data[relocAddress];
+			Common::UInt32 initialValue;
+			memcpy(&initialValue, &data[relocAddress], sizeof initialValue);
+			uint32_t nativeEndian = initialValue;
 			nativeEndian += value;
-			data[relocAddress].Set(nativeEndian);
-			relocAddress++;
+			initialValue = nativeEndian;
+			memcpy(&data[relocAddress], &initialValue, sizeof initialValue);
+			relocAddress += 4;
 		}
 		
 		inline void Loop(Relocation::iterator begin, Relocation::iterator end, int times)

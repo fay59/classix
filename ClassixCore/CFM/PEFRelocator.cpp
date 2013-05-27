@@ -35,7 +35,7 @@ namespace CFM
 	PEFRelocator::PEFRelocator(FragmentManager& cfm, Container& container, InstantiableSection& section)
 	: cfm(cfm), fixupSection(section), container(container), loaderSection(*container.LoaderSection())
 	{
-		data = reinterpret_cast<Common::UInt32*>(section.Data);
+		data = section.Data;
 		relocAddress = 0;
 		importIndex = 0;
 		sectionC = SectionAddress(container, 0);
@@ -49,14 +49,16 @@ namespace CFM
 		if (symbol.Universe == SymbolUniverse::LostInTimeAndSpace)
 			throw std::logic_error("cannot perform fixup: symbol not found");
 		
-		Common::UInt32& relocValue = data[relocAddress];
+		Common::UInt32 relocValue;
+		memcpy(&relocValue, &data[relocAddress], sizeof relocValue);
 		uint32_t nativeEndian = relocValue;
 		if (nativeEndian != 0 && symbol.Universe != SymbolUniverse::PowerPC && symbolHeader.Class == SymbolClasses::CodeSymbol)
 			throw std::logic_error("cannot fixup a non-PPC function whose offset is not 0");
 		
 		nativeEndian += symbol.Address;
-		relocValue.Set(nativeEndian);
-		relocAddress++;
+		relocValue = nativeEndian;
+		memcpy(&data[relocAddress], &relocValue, sizeof relocValue);
+		relocAddress += 4;
 	}
 	
 	void PEFRelocator::RelocByIndex(int subOpcode, int index)
@@ -91,7 +93,7 @@ namespace CFM
 		int skipCount = (value >> 6) & 0xff;
 		int relocCount = value & 0x3f;
 		
-		relocAddress += skipCount;
+		relocAddress += skipCount * 4;
 		for (int i = 0; i < relocCount; i++)
 			Add(sectionD);
 	}
@@ -117,7 +119,7 @@ namespace CFM
 				{
 					Add(sectionC);
 					Add(sectionD);
-					relocAddress++;
+					relocAddress += 4;
 				}
 				break;
 				
@@ -133,7 +135,7 @@ namespace CFM
 				for (int i = 0; i < runLength; i++)
 				{
 					Add(sectionD);
-					relocAddress++;
+					relocAddress += 4;
 				}
 				break;
 				
@@ -157,8 +159,7 @@ namespace CFM
 	void PEFRelocator::RelocIncrementPosition(uint32_t value)
 	{
 		uint32_t increment = (value & 0xfff) + 1;
-		assert((increment & 3) == 0 && "incrementing to unaligned memory address");
-		relocAddress += increment / 4;
+		relocAddress += increment;
 	}
 	
 	void PEFRelocator::RelocSmallRepeat(uint32_t value, Relocation::iterator current)
