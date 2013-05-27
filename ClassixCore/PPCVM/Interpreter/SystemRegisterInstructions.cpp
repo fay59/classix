@@ -158,6 +158,14 @@ namespace PPCVM
 					state.gpr[inst.RD] = state.xer;
 					break;
 					
+				case 4: // rtcu
+					state.gpr[inst.RD] = state.GetRTCU();
+					break;
+					
+				case 5: // rtcl
+					state.gpr[inst.RD] = state.GetRTCL();
+					break;
+					
 				case 8: // lr
 					state.gpr[inst.RD] = state.lr;
 					break;

@@ -99,6 +99,9 @@ namespace PPCVM
 		
 		uint32_t GetCR() const;
 		void SetCR(uint32_t cr);
+		
+		uint32_t GetRTCU() const;
+		uint32_t GetRTCL() const;
 	};
 }
 

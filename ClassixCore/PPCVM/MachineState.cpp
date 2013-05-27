@@ -21,6 +21,28 @@
 
 #include "MachineState.h"
 #include <cstring>
+#include <mach/mach_time.h>
+
+namespace
+{
+	inline mach_timebase_info_data_t GetTimebaseInfo()
+	{
+		mach_timebase_info_data_t data;
+		mach_timebase_info(&data);
+		return data;
+	}
+	
+	mach_timebase_info_data_t timebaseInfo = GetTimebaseInfo();
+	
+	uint64_t GetElapsedNanos()
+	{
+		uint64_t now = mach_absolute_time();
+		// hopefully this won't overflow
+		return now * timebaseInfo.numer / timebaseInfo.denom;
+	}
+	
+	const int kNanosInSeconds = 1000000000;
+}
 
 namespace PPCVM
 {
@@ -42,5 +64,15 @@ namespace PPCVM
 			crValue |= cr[i] << (28 - i * 4);
 		
 		return crValue;
+	}
+	
+	uint32_t MachineState::GetRTCU() const
+	{
+		return static_cast<uint32_t>(GetElapsedNanos() / kNanosInSeconds);
+	}
+	
+	uint32_t MachineState::GetRTCL() const
+	{
+		return GetElapsedNanos() % kNanosInSeconds;
 	}
 }

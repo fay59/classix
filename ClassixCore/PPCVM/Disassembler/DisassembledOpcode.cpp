@@ -27,6 +27,8 @@ namespace
 {
 	const char* sprList[1024] = {
 		[1] = "xer",
+		[4] = "rtcu",
+		[5] = "rtcl",
 		[8] = "lr",
 		[9] = "ctr",
 		[18] = "dsisr",

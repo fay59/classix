@@ -401,6 +401,8 @@ namespace PPCVM
 			switch (spr)
 			{
 				case 1: Emit(i, "mfxer", d); return;
+				case 4: Emit(i, "mfrtcu", d); return;
+				case 5: Emit(i, "mfrtcl", d); return;
 				case 8: Emit(i, "mflr", d); return;
 				case 9: Emit(i, "mfctr", d); return;
 			}
