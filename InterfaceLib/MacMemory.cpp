@@ -39,7 +39,14 @@ void InterfaceLib_BlockMove(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_BlockMoveData(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	void* src = globals->allocator.ToPointer<void>(state->r3);
+	void* dst = globals->allocator.ToPointer<void>(state->r4);
+	uint32_t size = state->r5;
+	
+	// I'm not sure memmove is needed, maybe memcpy would do it, but I can't find
+	// documentation for BlockMoveData. If BlockMoveData has undefined behavior
+	// if src and dst overlap, then we should use memcpy.
+	memmove(dst, src, size);
 }
 
 void InterfaceLib_CompactMem(InterfaceLib::Globals* globals, MachineState* state)
@@ -347,7 +354,8 @@ void InterfaceLib_NewHandleSysClear(InterfaceLib::Globals* globals, MachineState
 
 void InterfaceLib_NewPtr(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	void* ptr = globals->allocator.Allocate("Program Allocation", state->r3);
+	state->r3 = globals->allocator.ToIntPtr(ptr);
 }
 
 void InterfaceLib_NewPtrClear(InterfaceLib::Globals* globals, MachineState* state)
