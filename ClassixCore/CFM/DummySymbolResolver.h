@@ -23,12 +23,18 @@
 #define __Classix__DummySymbolResolver__
 
 #include "SymbolResolver.h"
+#include <stdint.h>
 
 namespace CFM
 {
 	class DummySymbolResolver : public SymbolResolver
 	{
+		uint32_t resolveTo;
+		std::string fakePath;
+		
 	public:
+		DummySymbolResolver(uint32_t resolveTo, const std::string& fakePath);
+		
 		virtual const std::string* FilePath() const override;
 		virtual std::vector<std::string> SymbolList() const override;
 		

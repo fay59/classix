@@ -24,6 +24,7 @@
 
 #include "IAllocator.h"
 #include <map>
+#include <deque>
 
 namespace Common
 {
@@ -44,6 +45,9 @@ namespace Common
 		};
 		
 		std::map<uint32_t, AllocatedRange> ranges;
+		std::deque<unsigned char*> invalidPages;
+		unsigned char* invalidPageBegin;
+		unsigned char* invalidPageEnd;
 		
 		const AllocatedRange* GetAllocationRange(uint32_t address) const;
 		
@@ -54,6 +58,7 @@ namespace Common
 	public:
 		NativeAllocator();
 		
+		virtual uint32_t CreateInvalidAddress(const AllocationDetails& reason) override;
 		virtual uint8_t* Allocate(const AllocationDetails& details, size_t size) override;
 		virtual void Deallocate(void* address) override;
 		virtual const AllocationDetails* GetDetails(uint32_t address) const override;

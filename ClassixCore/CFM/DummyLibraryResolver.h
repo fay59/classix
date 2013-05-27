@@ -22,7 +22,9 @@
 #ifndef __Classix__DummyLibraryResolver__
 #define __Classix__DummyLibraryResolver__
 
+#include <map>
 #include "LibraryResolver.h"
+#include "IAllocator.h"
 
 namespace CFM
 {
@@ -30,10 +32,13 @@ namespace CFM
 	
 	class DummyLibraryResolver : public LibraryResolver
 	{
-		DummySymbolResolver* resolver;
+		std::map<uint32_t, DummySymbolResolver> resolvers;
+		Common::IAllocator& allocator;
 		
 	public:
-		DummyLibraryResolver();
+		DummyLibraryResolver(Common::IAllocator& allocator);
+		
+		const DummySymbolResolver* ResolverForAddress(uint32_t address) const;
 		
 		virtual SymbolResolver* ResolveLibrary(const std::string& name) override;
 		virtual ~DummyLibraryResolver() override;

@@ -24,6 +24,10 @@
 
 namespace CFM
 {
+	DummySymbolResolver::DummySymbolResolver(uint32_t resolveTo, const std::string& fakePath)
+	: resolveTo(resolveTo), fakePath(fakePath)
+	{ }
+	
 	std::vector<ResolvedSymbol> DummySymbolResolver::GetEntryPoints()
 	{
 		return std::vector<ResolvedSymbol>();
@@ -31,7 +35,7 @@ namespace CFM
 	
 	const std::string* DummySymbolResolver::FilePath() const
 	{
-		return nullptr;
+		return &fakePath;
 	}
 	
 	std::vector<std::string> DummySymbolResolver::SymbolList() const
@@ -41,7 +45,7 @@ namespace CFM
 	
 	ResolvedSymbol DummySymbolResolver::ResolveSymbol(const std::string &name)
 	{
-		return ResolvedSymbol(SymbolUniverse::Intel, name, 0);
+		return ResolvedSymbol(SymbolUniverse::Intel, name, resolveTo);
 	}
 	
 	DummySymbolResolver::~DummySymbolResolver()

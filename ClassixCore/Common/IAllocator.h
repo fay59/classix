@@ -85,6 +85,8 @@ namespace Common
 			ScribbleStackPattern = 0xcd
 		};
 		
+		virtual uint32_t CreateInvalidAddress(const AllocationDetails& details) = 0;
+		
 		uint8_t* Allocate(const std::string& zoneName, size_t size);
 		AutoAllocation AllocateAuto(const std::string& zoneName, size_t size);
 		AutoAllocation AllocateAuto(const AllocationDetails& details, size_t size);
@@ -97,6 +99,11 @@ namespace Common
 		inline uint32_t GetAllocationOffset(const void* address) const
 		{
 			return GetAllocationOffset(ToIntPtr(address));
+		}
+		
+		inline uint32_t CreateInvalidAddress(const std::string& name)
+		{
+			return CreateInvalidAddress(AllocationDetails(name, 1));
 		}
 		
 		inline bool IsAllocated(uint32_t address) const

@@ -165,7 +165,7 @@ static int disassemble(const std::string& path)
 	Common::NativeAllocator allocator;
 	CFM::FragmentManager fragmentManager;
 	CFM::PEFLibraryResolver pefResolver(allocator, fragmentManager);
-	CFM::DummyLibraryResolver resolver;
+	CFM::DummyLibraryResolver resolver(allocator);
 	
 	fragmentManager.LibraryResolvers.push_back(&pefResolver);
 	fragmentManager.LibraryResolvers.push_back(&resolver);
@@ -196,7 +196,7 @@ static int disassemble(const std::string& path)
 static int run(const std::string& path, int argc, const char* argv[], const char* envp[])
 {
 	Common::NativeAllocator allocator;
-	CFM::DummyLibraryResolver dummyResolver;
+	CFM::DummyLibraryResolver dummyResolver(allocator);
 	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator);
 	ClassixCore::BundleLibraryResolver bundleResolver(allocator);
 	

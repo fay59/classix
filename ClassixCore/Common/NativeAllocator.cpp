@@ -25,6 +25,8 @@
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
+#include <unistd.h>
+#include <sys/mman.h>
 
 namespace
 {
@@ -34,6 +36,8 @@ namespace
 		into << std::setw(8) << std::setfill('0') << std::hex << address;
 		return into;
 	}
+	
+	const int pageSize = getpagesize();
 }
 
 namespace Common
@@ -60,6 +64,7 @@ namespace Common
 	}
 	
 	NativeAllocator::NativeAllocator()
+	: invalidPageBegin(nullptr), invalidPageEnd(nullptr)
 	{
 		if (sizeof(void*) != sizeof(uint32_t))
 			throw std::runtime_error("Cannot use the native allocator in a 64-bits environment");
@@ -73,6 +78,24 @@ namespace Common
 	uint32_t NativeAllocator::PointerToIntPtr(const void *address) const
 	{
 		return reinterpret_cast<uint32_t>(address);
+	}
+	
+	uint32_t NativeAllocator::CreateInvalidAddress(const AllocationDetails& reason)
+	{
+		if (invalidPageBegin == invalidPageEnd)
+		{
+			invalidPageBegin = (unsigned char*)mmap(nullptr, pageSize, PROT_NONE, MAP_ANON | MAP_PRIVATE, 0, 0);
+			assert(invalidPageBegin != MAP_FAILED && "Couldn't map invalid page");
+			
+			invalidPageEnd = invalidPageBegin + pageSize;
+			invalidPages.push_back(invalidPageBegin);
+		}
+		
+		uint8_t* address = invalidPageBegin;
+		invalidPageBegin++;
+		
+		ranges.emplace(std::make_pair(ToIntPtr(address), AllocatedRange(address, invalidPageBegin, reason)));
+		return PointerToIntPtr(address);
 	}
 	
 	uint8_t* NativeAllocator::Allocate(const AllocationDetails& reason, size_t size)
@@ -161,5 +184,8 @@ namespace Common
 	}
 	
 	NativeAllocator::~NativeAllocator()
-	{ }
+	{
+		for (unsigned char* page : invalidPages)
+			munmap(page, pageSize);
+	}
 }
