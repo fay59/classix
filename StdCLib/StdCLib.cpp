@@ -406,7 +406,11 @@ extern "C"
 		
 		char functionName[36] = "StdCLib_";
 		char* end = stpncpy(functionName + 8, name, 27);
-		assert(*end == '\0' && "symbol name is too long");
+		if (*end != 0)
+		{
+			*result = nullptr;
+			return SymbolNotFound;
+		}
 		
 		if (void* symbol = dlsym(RTLD_SELF, functionName))
 		{

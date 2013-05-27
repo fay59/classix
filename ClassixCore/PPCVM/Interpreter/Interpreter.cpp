@@ -97,7 +97,10 @@ namespace PPCVM
 		
 		const void* Interpreter::ExecuteNative(const NativeCall* function)
 		{
-			assert(function->Tag == NativeTag && "Call doesn't have native tag");
+			if (function->Tag != NativeTag)
+			{
+				Panic("Call doesn't have a native tag");
+			}
 			
 #ifdef DEBUG_DISASSEMBLE
 			if (getenv("DEBUG_DISASSEMBLE"))

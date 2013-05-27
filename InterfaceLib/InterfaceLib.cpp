@@ -84,7 +84,11 @@ SymbolType LibraryLookup(InterfaceLib::Globals* globals, const char* symbolName,
 	
 	char functionName[56] = "InterfaceLib_";
 	char* end = stpncpy(functionName + 13, symbolName, 42);
-	assert(*end == '\0' && "symbol name is too long");
+	if (*end != 0)
+	{
+		*result = nullptr;
+		return SymbolNotFound;
+	}
 	
 	if (void* symbol = dlsym(RTLD_SELF, functionName))
 	{

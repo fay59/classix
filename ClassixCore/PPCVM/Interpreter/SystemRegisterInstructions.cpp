@@ -20,7 +20,7 @@
 // Fork of Interpreter_SystemRegisters.cpp, from Dolphin Project.
 // Largely modified to fit the needs of Classix.
 //
-// Copyright (C) 2012 Félix Cloutier
+// Copyright (C) 2012-2013 Félix Cloutier
 //
 // This file is part of Classix.
 //
@@ -38,6 +38,7 @@
 //
 
 #include <cassert>
+#include <sstream>
 #include "Interpreter.h"
 
 namespace
@@ -166,8 +167,11 @@ namespace PPCVM
 					break;
 					
 				default:
-					assert(false && "Getting value of unknown system register");
-					break;
+				{
+					std::stringstream message;
+					message << "Unknown SPR " << spr << " used with " << __func__;
+					Panic(message.str());
+				}
 			}
 		}
 		
@@ -233,8 +237,11 @@ namespace PPCVM
 					break;
 					
 				default:
-					assert(false && "Getting value of unknown system register");
-					break;
+				{
+					std::stringstream message;
+					message << "Unknown SPR " << spr << " used with " << __func__;
+					Panic(message.str());
+				}
 			}
 		}
 	}
