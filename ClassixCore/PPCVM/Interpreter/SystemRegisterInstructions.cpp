@@ -169,7 +169,7 @@ namespace PPCVM
 				default:
 				{
 					std::stringstream message;
-					message << "Unknown SPR " << spr << " used with " << __func__;
+					message << "Unknown SPR #" << (unsigned)spr << " used with " << __func__;
 					Panic(message.str());
 				}
 			}
@@ -239,7 +239,7 @@ namespace PPCVM
 				default:
 				{
 					std::stringstream message;
-					message << "Unknown SPR " << spr << " used with " << __func__;
+					message << "Unknown SPR #" << (unsigned)spr << " used with " << __func__;
 					Panic(message.str());
 				}
 			}
