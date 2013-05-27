@@ -204,12 +204,26 @@ static int run(const std::string& path, int argc, const char* argv[], const char
 	dlfcnResolver.RegisterLibrary("MathLib");
 	bundleResolver.AllowLibrary("InterfaceLib");
 	
+	char* directory = strdup(path.c_str());
+	char* executableName = directory;
+	for (char* iter = directory; *iter != 0; iter++)
+	{
+		if (*iter == '/')
+			executableName = iter;
+	}
+	*executableName = 0;
+	executableName++;
+	
+	chdir(directory);
+	std::string executable = executableName;
+	free(directory);
+	
 	Classix::VirtualMachine vm(allocator);
 	vm.AddLibraryResolver(dlfcnResolver);
 	vm.AddLibraryResolver(bundleResolver);
 	vm.AddLibraryResolver(dummyResolver);
 	
-	auto stub = vm.LoadMainContainer(path);
+	auto stub = vm.LoadMainContainer(executable);
 	return stub(argc, argv, envp);
 }
 
