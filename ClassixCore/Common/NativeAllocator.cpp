@@ -92,7 +92,7 @@ namespace Common
 		}
 		
 		uint8_t* address = invalidPageBegin;
-		invalidPageBegin++;
+		invalidPageBegin += 4;
 		
 		ranges.emplace(std::make_pair(ToIntPtr(address), AllocatedRange(address, invalidPageBegin, reason)));
 		return PointerToIntPtr(address);

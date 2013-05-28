@@ -80,7 +80,7 @@ namespace PPCVM
 	namespace Execution
 	{
 		Interpreter::Interpreter(Common::IAllocator& allocator, MachineState& state)
-		: state(state), allocator(allocator), endAddress(allocator.CreateInvalidAddress("Interpreter End Address"))
+		: state(state), allocator(allocator), endAddress(allocator.AllocateAuto("Interpreter End Address", 4))
 		{ }
 
 		void Interpreter::Panic(const std::string& error)
@@ -190,8 +190,8 @@ namespace PPCVM
 
 		void Interpreter::Execute(const void* address)
 		{
-			state.lr = endAddress;
-			while (allocator.ToIntPtr(address) != endAddress)
+			state.lr = endAddress.GetVirtualAddress();
+			while (address != *endAddress)
 			{
 				address = ExecuteUntilBranch(address);
 			}

@@ -277,7 +277,7 @@ namespace PPCVM
 		
 		void Interpreter::lswx(Instruction inst)
 		{
-			// according to the guys behind the Dolphin InterpreterBase, this could be
+			// according to the guys behind the Dolphin InterpreterBase, this could be
 			// incorrect
 			uint8_t* address = GetEffectivePointerX<uint8_t>(allocator, state, inst);
 			uint32_t n = state.xer & 0x7f;
