@@ -356,6 +356,40 @@ namespace InterfaceLib
 		Common::SInt16 atDrvrVersNum;
 		Common::SInt16 sysVRefNum;
 	};
+	
+	struct __attribute__((packed)) RoutineRecord
+	{
+		enum
+		{
+			kM68kISA = 0,
+			kPowerPCISA = 1
+		};
+		
+		Common::UInt32 procInfo;
+		uint8_t reserved1;
+		uint8_t ISA;
+		Common::UInt32 routineFlags;
+		Common::UInt32 procDescriptor;
+		Common::UInt32 reserved2;
+		Common::UInt32 selector;
+	};
+	
+	struct __attribute__((packed)) RoutineDescriptor
+	{
+		enum
+		{
+			kMixedModeMagic = 0xaafe
+		};
+		
+		Common::UInt16 goMixedModeTrap;
+		int8_t version;
+		uint8_t routineDescriptorFlags;
+		Common::UInt32 reserved1;
+		uint8_t reserved2;
+		uint8_t selectorInfo;
+		Common::UInt16 routineCount;
+		RoutineRecord routineRecords[0];
+	};
 		
 	enum class IPCMessage : unsigned
 	{

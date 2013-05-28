@@ -838,7 +838,23 @@ void InterfaceLib_newmenu(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_NewRoutineDescriptor(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	RoutineDescriptor* descriptor = globals->allocator.AllocateVariableSize<RoutineDescriptor, RoutineRecord>("Routine Descriptor", 1);
+	descriptor->goMixedModeTrap = RoutineDescriptor::kMixedModeMagic;
+	descriptor->version = 7; // latest version per MixedMode.h
+	descriptor->routineDescriptorFlags = 0;
+	descriptor->reserved1 = 0;
+	descriptor->reserved2 = 0;
+	descriptor->selectorInfo = 0;
+	descriptor->routineCount = 0; // it's actually count-1
+	descriptor->routineRecords[0].procInfo = state->r4;
+	descriptor->routineRecords[0].reserved1 = 0;
+	descriptor->routineRecords[0].ISA = static_cast<uint8_t>(state->r5);
+	descriptor->routineRecords[0].routineFlags = 4; // kUseNativeISA
+	descriptor->routineRecords[0].procDescriptor = state->r3;
+	descriptor->routineRecords[0].reserved2 = 0;
+	descriptor->routineRecords[0].selector = 0;
+	
+	state->r3 = globals->allocator.ToIntPtr(descriptor);
 }
 
 void InterfaceLib_newstring(InterfaceLib::Globals* globals, MachineState* state)

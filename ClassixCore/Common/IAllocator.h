@@ -125,17 +125,31 @@ namespace Common
 			return pointer;
 		}
 		
-		template<typename T, typename ...TParams>
+		template<typename T, typename... TParams>
 		T* Allocate(const std::string& zoneName, TParams&&... params)
 		{
 			return Allocate<T>(AllocationDetails(zoneName, sizeof(T)), std::forward<TParams>(params)...);
 		}
 		
-		template<typename T, typename ...TParams>
+		template<typename T, typename... TParams>
 		T* Allocate(const AllocationDetails& details, TParams&&... params)
 		{
 			T* object = reinterpret_cast<T*>(Allocate(details, sizeof(T)));
 			return new (object) T(std::forward<TParams>(params)...);
+		}
+		
+		template<typename TStruct, typename TTerminatingArrayType, typename... TParams>
+		TStruct* AllocateVariableSize(const std::string& details, size_t count, TParams&&... params)
+		{
+			size_t totalSize = sizeof(TStruct) + sizeof(TTerminatingArrayType) * count;
+			return AllocateVariableSize<TStruct, TTerminatingArrayType>(AllocationDetails(details, totalSize), count, std::forward<TParams>(params)...);
+		}
+		
+		template<typename TStruct, typename TTerminatingArrayType, typename... TParams>
+		TStruct* AllocateVariableSize(const AllocationDetails& details, size_t count, TParams&&... params)
+		{
+			TStruct* object = reinterpret_cast<TStruct*>(Allocate(details, sizeof(TStruct) + sizeof(TTerminatingArrayType) * count));
+			return new (object) TStruct(std::forward<TParams>(params)...);
 		}
 		
 		template<typename T>

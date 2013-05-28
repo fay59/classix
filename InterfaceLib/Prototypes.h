@@ -2934,7 +2934,7 @@ extern "C"
 	void InterfaceLib_newcwindow(InterfaceLib::Globals* globals, MachineState* state);
 	void InterfaceLib_newdialog(InterfaceLib::Globals* globals, MachineState* state);
 	void InterfaceLib_newmenu(InterfaceLib::Globals* globals, MachineState* state);
-	void InterfaceLib_NewRoutineDescriptor(InterfaceLib::Globals* globals, MachineState* state);
+	void InterfaceLib_NewRoutineDescriptor(InterfaceLib::Globals* globals, MachineState* state);	// long NewRoutineDescriptor(ProcPtr theProc, ProcInfoType theProcInfo, ISAType theISA)
 	void InterfaceLib_newstring(InterfaceLib::Globals* globals, MachineState* state);
 	void InterfaceLib_newwindow(InterfaceLib::Globals* globals, MachineState* state);
 	void InterfaceLib_NQDMisc(InterfaceLib::Globals* globals, MachineState* state);
