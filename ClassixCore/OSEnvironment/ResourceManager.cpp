@@ -27,6 +27,7 @@
 #include "ResourceManager.h"
 #include "BigEndian.h"
 #include "FileMapping.h"
+#include "Managers.h"
 
 using namespace Common;
 
@@ -91,19 +92,8 @@ namespace
 	};
 }
 
-namespace InterfaceLib
+namespace OSEnvironment
 {
-	std::ostream& operator<<(std::ostream& into, const FourCharCode& code)
-	{
-		into << '\'';
-		into << (char)((code.code >> 24) & 0xff);
-		into << (char)((code.code >> 16) & 0xff);
-		into << (char)((code.code >> 8) & 0xff);
-		into << (char)(code.code & 0xff);
-		into << '\'';
-		return into;
-	}
-	
 	ResourceCatalog::ResourceCatalog(Common::IAllocator& allocator, const std::string& path)
 	: allocator(allocator)
 	{

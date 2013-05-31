@@ -127,8 +127,8 @@ namespace ClassixCore
 		CFRelease(bundle);
 	}
 	
-	BundleLibraryResolver::BundleLibraryResolver(Common::IAllocator& allocator, const std::string& directoryPath)
-	: allocator(allocator)
+	BundleLibraryResolver::BundleLibraryResolver(Common::IAllocator& allocator, OSEnvironment::Managers& managers, const std::string& directoryPath)
+	: allocator(allocator), managers(managers)
 	{
 		const UInt8* buffer = reinterpret_cast<const UInt8*>(directoryPath.c_str());
 		CXCFOwningRef<CFURLRef> directoryUrl = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, buffer, directoryPath.length(), true);
@@ -144,7 +144,7 @@ namespace ClassixCore
 	}
 	
 	BundleLibraryResolver::BundleLibraryResolver(const BundleLibraryResolver& that)
-	: allocator(that.allocator), allowedBundles(that.allowedBundles)
+	: allocator(that.allocator), managers(that.managers), allowedBundles(that.allowedBundles)
 	{
 		allBundles.reserve(that.allBundles.size());
 		for (auto& pair : that.allBundles)
@@ -155,7 +155,7 @@ namespace ClassixCore
 	}
 	
 	BundleLibraryResolver::BundleLibraryResolver(BundleLibraryResolver&& that)
-	: allocator(that.allocator)
+	: allocator(that.allocator), managers(that.managers)
 	{
 		allBundles.swap(that.allBundles);
 		allowedBundles.swap(that.allowedBundles);
@@ -174,7 +174,7 @@ namespace ClassixCore
 			if (iter != allBundles.end())
 			{
 				loadedLibraries.emplace_back(iter->second);
-				resolvers.emplace_back(allocator, loadedLibraries.back());
+				resolvers.emplace_back(allocator, managers, loadedLibraries.back());
 				return &resolvers.back();
 			}
 		}

@@ -22,20 +22,21 @@
 #ifndef __Classix__ResourceManager__
 #define __Classix__ResourceManager__
 
-#include "IAllocator.h"
-
 #include <iostream>
 #include <string>
 #include <array>
 #include <cstdint>
 #include <deque>
 #include <unordered_map>
+
+#include "IAllocator.h"
 #include "BigEndian.h"
+#include "FourCharCode.h"
 
 // Information gathered from Inside Macintosh vol. 1 pages 128-130.
 // It's funny, that book is older than me.
 
-namespace InterfaceLib
+namespace OSEnvironment
 {
 	struct ResourceEntry
 	{
@@ -53,26 +54,6 @@ namespace InterfaceLib
 		inline const uint8_t* end() const { return _end; }
 	};
 	
-	struct FourCharCode
-	{
-		uint32_t code;
-		
-		inline FourCharCode(uint32_t code) : code(code)
-		{}
-		
-		inline FourCharCode(const char (&array)[5]) : code(0)
-		{
-			assert(array[4] == 0 && "Expected a four-char code");
-			for (size_t i = 0; i < 4; i++)
-			{
-				code <<= 8;
-				code |= array[i];
-			}
-		}
-	};
-	
-	std::ostream& operator<<(std::ostream& into, const FourCharCode& code);
-	
 	class ResourceCatalog
 	{
 		friend class ResourceManager;
@@ -89,8 +70,8 @@ namespace InterfaceLib
 		ResourceCatalog(const ResourceCatalog&) = delete;
 		ResourceCatalog(ResourceCatalog&& that);
 		
-		ResourceEntry* GetRawResource(const FourCharCode& type, uint16_t identifier);
-		ResourceEntry* GetRawResource(const FourCharCode& type, const std::string& identifier);
+		ResourceEntry* GetRawResource(const Common::FourCharCode& type, uint16_t identifier);
+		ResourceEntry* GetRawResource(const Common::FourCharCode& type, const std::string& identifier);
 		
 		void dump();
 		
@@ -107,8 +88,8 @@ namespace InterfaceLib
 		
 		void LoadFileResources(const std::string& filePath);
 		
-		ResourceEntry* GetRawResource(const FourCharCode& type, uint16_t identifier);
-		ResourceEntry* GetRawResource(const FourCharCode& type, const std::string& identifier);
+		ResourceEntry* GetRawResource(const Common::FourCharCode& type, uint16_t identifier);
+		ResourceEntry* GetRawResource(const Common::FourCharCode& type, const std::string& identifier);
 		
 		template<typename TResourceType>
 		TResourceType* GetResource(uint16_t identifier)

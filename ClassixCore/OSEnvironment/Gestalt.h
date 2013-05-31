@@ -1,5 +1,5 @@
 //
-// MathLib.h
+// Gestalt.h
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,30 +19,40 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __Classix__MathLib__
-#define __Classix__MathLib__
+#ifndef __Classix__Gestalt__
+#define __Classix__Gestalt__
 
-#include "IAllocator.h"
-#include "MachineState.h"
-#include "SymbolType.h"
+#include <unordered_map>
+#include <memory>
+#include <cstdint>
 
-namespace MathLib
-{
-	struct Globals;
-}
-	
 namespace OSEnvironment
 {
-	class Managers;
-}
-
-extern "C"
-{
-	MathLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers);
-	SymbolType LibraryLookup(MathLib::Globals* globals, const char* symbolName, void** symbol);
-	void LibraryUnload(MathLib::Globals* globals);
+	class GestaltCallback
+	{
+	public:
+		virtual int32_t operator()() = 0;
+		virtual ~GestaltCallback() = 0;
+	};
 	
-	extern const char* LibrarySymbolNames[];
+	class Gestalt
+	{
+		std::unordered_map<uint32_t, int32_t> fixedValues;
+		std::unordered_map<uint32_t, GestaltCallback*> callbackValues;
+		
+	public:
+		template<typename TType, typename... TParams>
+		void SetCallback(uint32_t key, TParams&&... args)
+		{
+			fixedValues.erase(key);
+			callbackValues[key] = new TType(args...);
+		}
+		
+		void SetValue(uint32_t key, int32_t value);
+		bool GetValue(uint32_t key, int32_t& value);
+		
+		~Gestalt();
+	};
 }
 
-#endif /* defined(__Classix__MathLib__) */
+#endif /* defined(__Classix__Gestalt__) */

@@ -1,5 +1,5 @@
 //
-// MathLib.h
+// Managers.h
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,30 +19,29 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __Classix__MathLib__
-#define __Classix__MathLib__
+#ifndef __Classix__Managers__
+#define __Classix__Managers__
 
 #include "IAllocator.h"
-#include "MachineState.h"
-#include "SymbolType.h"
+#include "Gestalt.h"
+#include "ResourceManager.h"
 
-namespace MathLib
-{
-	struct Globals;
-}
-	
 namespace OSEnvironment
 {
-	class Managers;
+	class Managers
+	{
+		Common::IAllocator& allocator;
+		Gestalt gestalt;
+		ResourceManager resourceManager;
+		
+	public:
+		Managers(Common::IAllocator& allocator);
+		
+		Gestalt& Gestalt();
+		ResourceManager& ResourceManager();
+		
+		inline virtual ~Managers() {}
+	};
 }
 
-extern "C"
-{
-	MathLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers);
-	SymbolType LibraryLookup(MathLib::Globals* globals, const char* symbolName, void** symbol);
-	void LibraryUnload(MathLib::Globals* globals);
-	
-	extern const char* LibrarySymbolNames[];
-}
-
-#endif /* defined(__Classix__MathLib__) */
+#endif /* defined(__Classix__Managers__) */

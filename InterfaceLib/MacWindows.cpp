@@ -26,6 +26,7 @@
 #include "ResourceTypes.h"
 #include "NotImplementedException.h"
 
+using namespace OSEnvironment;
 using namespace InterfaceLib;
 using namespace InterfaceLib::Resources;
 
@@ -129,7 +130,7 @@ void InterfaceLib_GetGrayRgn(InterfaceLib::Globals* globals, MachineState* state
 void InterfaceLib_GetNewCWindow(InterfaceLib::Globals* globals, MachineState* state)
 {
 	uint16_t resourceId = static_cast<uint16_t>(state->r3);
-	WIND* window = globals->resources.GetResource<WIND>(resourceId);
+	WIND* window = globals->resources().GetResource<WIND>(resourceId);
 	
 	uint32_t portAddress = state->r4;
 	UGrafPort* port;
@@ -137,7 +138,7 @@ void InterfaceLib_GetNewCWindow(InterfaceLib::Globals* globals, MachineState* st
 	const InterfaceLib::Rect& rect = window->windowRect;
 	
 	Palette* palette = nullptr;
-	if (ResourceEntry* entry = globals->resources.GetRawResource("pltt", resourceId))
+	if (ResourceEntry* entry = globals->resources().GetRawResource("pltt", resourceId))
 	{
 		palette = reinterpret_cast<Palette*>(entry->begin());
 	}

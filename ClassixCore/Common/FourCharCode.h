@@ -1,8 +1,8 @@
 //
-// MathLib.h
+// FourCharCode.h
 // Classix
 //
-// Copyright (C) 2012 Félix Cloutier
+// Copyright (C) 2013 Félix Cloutier
 //
 // This file is part of Classix.
 //
@@ -19,30 +19,34 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __Classix__MathLib__
-#define __Classix__MathLib__
+#ifndef __Classix__FourCharCode__
+#define __Classix__FourCharCode__
 
-#include "IAllocator.h"
-#include "MachineState.h"
-#include "SymbolType.h"
+#include <iostream>
+#include <cassert>
+#include <cstdint>
 
-namespace MathLib
+namespace Common
 {
-	struct Globals;
-}
+	struct FourCharCode
+	{
+		uint32_t code;
+		
+		inline FourCharCode(uint32_t code) : code(code)
+		{}
+		
+		inline FourCharCode(const char (&array)[5]) : code(0)
+		{
+			assert(array[4] == 0 && "Expected a four-char code");
+			for (size_t i = 0; i < 4; i++)
+			{
+				code <<= 8;
+				code |= array[i];
+			}
+		}
+	};
 	
-namespace OSEnvironment
-{
-	class Managers;
+	std::ostream& operator<<(std::ostream& into, const FourCharCode& code);
 }
 
-extern "C"
-{
-	MathLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers);
-	SymbolType LibraryLookup(MathLib::Globals* globals, const char* symbolName, void** symbol);
-	void LibraryUnload(MathLib::Globals* globals);
-	
-	extern const char* LibrarySymbolNames[];
-}
-
-#endif /* defined(__Classix__MathLib__) */
+#endif /* defined(__Classix__FourCharCode__) */

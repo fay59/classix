@@ -31,6 +31,7 @@
 #include "GrafPortManager.h"
 #include "UIChannel.h"
 #include "ResourceTypes.h"
+#include "Managers.h"
 
 namespace InterfaceLib
 {
@@ -40,16 +41,18 @@ namespace InterfaceLib
 		uint8_t padding[0x1000];
 		
 		Common::IAllocator& allocator;
-		ResourceManager resources;
+		OSEnvironment::Managers& managers;
 		GrafPortManager grafPorts;
 		std::vector<const Resources::MENU*> menus;
 		UIChannel* uiChannel;
 		
 		uint32_t systemFatalErrorHandler;
 		
-		Globals(Common::IAllocator& allocator);
+		Globals(Common::IAllocator& allocator, OSEnvironment::Managers& managers);
 		
 		inline UIChannel& ipc() { return *uiChannel; }
+		inline OSEnvironment::ResourceManager& resources() { return managers.ResourceManager(); }
+		inline OSEnvironment::Gestalt& gestalt() { return managers.Gestalt(); }
 		
 		~Globals();
 	};
@@ -59,7 +62,7 @@ namespace InterfaceLib
 
 extern "C"
 {
-	InterfaceLib::Globals* LibraryLoad(Common::IAllocator* allocator);
+	InterfaceLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers);
 	SymbolType LibraryLookup(InterfaceLib::Globals* globals, const char* symbolName, void** symbol);
 	void LibraryUnload(InterfaceLib::Globals* context);
 	extern const char* LibrarySymbolNames[];

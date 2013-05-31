@@ -23,14 +23,15 @@
 
 namespace ClassixCore
 {
-	NativeSymbolResolver::NativeSymbolResolver(Common::IAllocator& allocator, const NativeLibrary& library)
+	NativeSymbolResolver::NativeSymbolResolver(Common::IAllocator& allocator, OSEnvironment::Managers& managers, const NativeLibrary& library)
 	: library(library)
 	, allocator(allocator)
+	, managers(managers)
 	, stlAllocator(allocator)
 	, transitions(stlAllocator)
 	, nativeCalls(stlAllocator)
 	{
-		globals = library.OnLoad(&allocator);
+		globals = library.OnLoad(&allocator, &managers);
 	}
 	
 	std::vector<ResolvedSymbol> NativeSymbolResolver::GetEntryPoints()

@@ -21,6 +21,8 @@
 
 #include "ResourceTypes.h"
 
+using namespace Common;
+
 namespace InterfaceLib
 {
 	const FourCharCode Resources::cfrg::key = "cfrg";

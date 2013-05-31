@@ -26,14 +26,19 @@
 #include "MachineState.h"
 #include "SymbolType.h"
 
+namespace StdCLib
+{
+	struct Globals;
+}
+
+namespace OSEnvironment
+{
+	class Managers;
+}
+
 extern "C"
 {
-	namespace StdCLib
-	{
-		struct Globals;
-	}
-
-	StdCLib::Globals* LibraryLoad(Common::IAllocator* allocator);
+	StdCLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers);
 	SymbolType LibraryLookup(StdCLib::Globals* globals, const char* symbolName, void** symbol);
 	void LibraryUnload(StdCLib::Globals* context);
 	

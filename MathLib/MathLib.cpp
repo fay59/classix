@@ -51,7 +51,7 @@ const std::string envName = "_FE_DFL_ENV";
 
 extern "C"
 {
-	Globals* LibraryLoad(Common::IAllocator* allocator)
+	Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers)
 	{
 		return allocator->Allocate<Globals>("MathLib Globals", *allocator);
 	}

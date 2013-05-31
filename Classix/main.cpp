@@ -196,9 +196,10 @@ static int disassemble(const std::string& path)
 static int run(const std::string& path, int argc, const char* argv[], const char* envp[])
 {
 	Common::NativeAllocator allocator;
+	OSEnvironment::Managers managers(allocator);
 	CFM::DummyLibraryResolver dummyResolver(allocator);
-	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator);
-	ClassixCore::BundleLibraryResolver bundleResolver(allocator);
+	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator, managers);
+	ClassixCore::BundleLibraryResolver bundleResolver(allocator, managers);
 	
 	dlfcnResolver.RegisterLibrary("StdCLib");
 	dlfcnResolver.RegisterLibrary("MathLib");
@@ -230,9 +231,10 @@ static int run(const std::string& path, int argc, const char* argv[], const char
 static int inflateAndDump(const std::string& path, const std::string& targetDir)
 {
 	Common::NativeAllocator allocator;
+	OSEnvironment::Managers managers(allocator);
 	CFM::FragmentManager fragmentManager;
 	CFM::PEFLibraryResolver pefResolver(allocator, fragmentManager);
-	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator);
+	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator, managers);
 	
 	dlfcnResolver.RegisterLibrary("StdCLib");
 	

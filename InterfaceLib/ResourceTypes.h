@@ -54,7 +54,7 @@ namespace Resources
 	
 	struct __attribute__((packed)) cfrg : Unconstructible
 	{
-		static const FourCharCode key;
+		static const Common::FourCharCode key;
 		
 		struct Member : Unconstructible
 		{
@@ -83,7 +83,7 @@ namespace Resources
 	
 	struct __attribute__((packed)) BNDL : Unconstructible
 	{
-		static const FourCharCode key;
+		static const Common::FourCharCode key;
 		
 		struct __attribute__((packed)) IconArray
 		{
@@ -98,7 +98,7 @@ namespace Resources
 	
 	struct __attribute__((packed)) WIND : Unconstructible
 	{
-		static const FourCharCode key;
+		static const Common::FourCharCode key;
 		
 		Rect windowRect;
 		Common::UInt16 procID;
@@ -110,7 +110,7 @@ namespace Resources
 	
 	struct __attribute__((packed)) MENU : Unconstructible
 	{
-		static const FourCharCode key;
+		static const Common::FourCharCode key;
 		
 		struct Item : Unconstructible
 		{
@@ -137,7 +137,7 @@ namespace Resources
 	
 	struct __attribute__((packed)) DLOG : Unconstructible
 	{
-		static const FourCharCode key;
+		static const Common::FourCharCode key;
 		
 		InterfaceLib::Rect rect;
 		Common::SInt16 procID;

@@ -24,6 +24,7 @@
 #include "InterfaceLib.h"
 #include "NotImplementedException.h"
 
+using namespace OSEnvironment;
 using namespace InterfaceLib;
 
 void InterfaceLib_AbsoluteDeltaToDuration(InterfaceLib::Globals* globals, MachineState* state)
@@ -550,7 +551,7 @@ void InterfaceLib_getindstring(InterfaceLib::Globals* globals, MachineState* sta
 void InterfaceLib_GetMenu(InterfaceLib::Globals* globals, MachineState* state)
 {
 	uint16_t key = static_cast<uint16_t>(state->r3);
-	ResourceEntry* entry = globals->resources.GetRawResource("MENU", key);
+	ResourceEntry* entry = globals->resources().GetRawResource("MENU", key);
 	state->r3 = globals->allocator.ToIntPtr(&entry->handle());
 }
 

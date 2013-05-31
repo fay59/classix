@@ -33,13 +33,12 @@
 #include "Structures.h"
 #include "SymbolResolver.h"
 #include "NativeCall.h"
+#include "Managers.h"
 
 namespace ClassixCore
 {
 	using namespace CFM;
 	using namespace PPCVM::Execution;
-	
-	class DlfcnLibrary;
 	
 	class NativeSymbolResolver : public SymbolResolver
 	{
@@ -48,6 +47,7 @@ namespace ClassixCore
 		
 		// symbol cache
 		Common::IAllocator& allocator;
+		OSEnvironment::Managers& managers;
 		Common::STAllocator<uint8_t> stlAllocator;
 		std::list<PEF::TransitionVector, Common::STAllocator<PEF::TransitionVector>> transitions;
 		std::deque<NativeCall, Common::STAllocator<NativeCall>> nativeCalls;
@@ -57,7 +57,7 @@ namespace ClassixCore
 		PEF::TransitionVector& MakeTransitionVector(const std::string& symbolName, void* address);
 		
 	public:
-		NativeSymbolResolver(Common::IAllocator& allocator, const NativeLibrary& library);
+		NativeSymbolResolver(Common::IAllocator& allocator, OSEnvironment::Managers& managers, const NativeLibrary& library);
 		
 		void* GetGlobals();
 		const void* GetGlobals() const;

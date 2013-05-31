@@ -55,8 +55,8 @@ namespace
 
 namespace InterfaceLib
 {
-	Globals::Globals(Common::IAllocator& allocator)
-	: allocator(allocator), resources(allocator), grafPorts(allocator)
+	Globals::Globals(Common::IAllocator& allocator, OSEnvironment::Managers& managers)
+	: allocator(allocator), managers(managers), grafPorts(allocator)
 	{ }
 	
 	Globals::~Globals()
@@ -70,9 +70,9 @@ namespace InterfaceLib
 	}
 }
 
-InterfaceLib::Globals* LibraryLoad(Common::IAllocator* allocator)
+InterfaceLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers)
 {
-	return allocator->Allocate<InterfaceLib::Globals>("InterfaceLib globals", *allocator);
+	return allocator->Allocate<InterfaceLib::Globals>("InterfaceLib globals", *allocator, *managers);
 }
 
 SymbolType LibraryLookup(InterfaceLib::Globals* globals, const char* symbolName, void** result)
@@ -112,7 +112,7 @@ void InterfaceLib___LibraryInit(InterfaceLib::Globals* globals, PPCVM::MachineSt
 		const Common::UInt32* argv = globals->allocator.ToPointer<Common::UInt32>(state->r4);
 		std::string programPath = globals->allocator.ToPointer<char>(argv[0]);
 		std::string programName = programPath.substr(programPath.find_last_of('/') + 1);
-		globals->resources.LoadFileResources(programPath);
+		globals->resources().LoadFileResources(programPath);
 		globals->uiChannel = new InterfaceLib::UIChannel(programName);
 	}
 }

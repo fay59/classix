@@ -71,8 +71,8 @@ namespace ClassixCore
 		dlclose(dlHandle);
 	}
 	
-	DlfcnLibraryResolver::DlfcnLibraryResolver(Common::IAllocator& allocator)
-	: allocator(allocator)
+	DlfcnLibraryResolver::DlfcnLibraryResolver(Common::IAllocator& allocator, OSEnvironment::Managers& managers)
+	: allocator(allocator), managers(managers)
 	{ }
 	
 	void DlfcnLibraryResolver::RegisterLibrary(const std::string& cfmName)
@@ -96,7 +96,7 @@ namespace ClassixCore
 		if (iter == libraries.end())
 			return nullptr;
 		
-		resolvers.emplace_back(allocator, iter->second);
+		resolvers.emplace_back(allocator, managers, iter->second);
 		return &resolvers.back();
 	}
 	

@@ -25,13 +25,14 @@
 #include "IAllocator.h"
 #include "SymbolType.h"
 #include "MachineState.h"
+#include "Managers.h"
 
 namespace ClassixCore
 {
 	class NativeLibrary
 	{
 	public:
-		typedef void* (*OnLoadFunction)(Common::IAllocator*);
+		typedef void* (*OnLoadFunction)(Common::IAllocator*, OSEnvironment::Managers* managers);
 		typedef SymbolType (*LookupFunction)(void*, const char*, void**);
 		typedef void (*OnUnloadFunction)(void*);
 		
