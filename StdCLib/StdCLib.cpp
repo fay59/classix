@@ -33,6 +33,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#include "MachineState.h"
 #include "BigEndian.h"
 #include "StdCLib.h"
 #include "StdCLibFunctions.h"

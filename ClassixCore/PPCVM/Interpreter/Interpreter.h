@@ -32,12 +32,13 @@
 #include <iostream>
 #include "PPCRuntimeException.h"
 #include "InterpreterException.h"
+#include "IExecutionEngine.h"
 
 namespace PPCVM
 {
 	namespace Execution
 	{
-		class Interpreter : public InstructionDispatcher<Interpreter>
+		class Interpreter : public InstructionDispatcher<Interpreter>, public IExecutionEngine
 		{
 			MachineState& state;
 			Common::IAllocator& allocator;
@@ -50,8 +51,9 @@ namespace PPCVM
 			
 		public:
 			Interpreter(Common::IAllocator& allocator, MachineState& state);
+			virtual ~Interpreter();
 			
-			void Execute(const void* address);
+			virtual void Execute(const void* address) override;
 			const void* ExecuteOne(const void* address);
 			
 			template<typename TBreakpointSet>

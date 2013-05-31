@@ -1,5 +1,5 @@
 //
-// NativeCall.h
+// ThreadsLibFunctions.cpp
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,27 +19,29 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef pefdump_NativeCall_h
-#define pefdump_NativeCall_h
+#include "ThreadsLib.h"
 
-#include "MachineState.h"
-#include "IExecutionEngine.h"
-
-namespace PPCVM
-{
-	namespace Execution
-	{
-		extern const uint32_t NativeTag;
-		typedef void (*NativeCallback)(void*, MachineState*, IExecutionEngine*);
-		
-		struct NativeCall
-		{
-			uint32_t Tag;
-			NativeCallback Callback;
-			
-			NativeCall(NativeCallback cb);
-		};
-	}
-}
-
-#endif
+const char* LibrarySymbolNames[] = {
+	"GetThreadCurrentTaskRef",
+	"GetDefaultThreadStackSize",
+	"SetThreadTerminator",
+	"DisposeThread",
+	"GetFreeThreadCount",
+	"SetThreadSwitcher",
+	"YieldToThread",
+	"GetSpecificFreeThreadCount",
+	"ThreadBeginCritical",
+	"ThreadCurrentStackSpace",
+	"CreateThreadPool",
+	"SetDebuggerNotificationProcs",
+	"GetThreadStateGivenTaskRef",
+	"SetThreadState",
+	"GetThreadState",
+	"NewThread",
+	"SetThreadStateEndCritical",
+	"SetThreadScheduler",
+	"GetCurrentThread",
+	"ThreadEndCritical",
+	"SetThreadReadyGivenTaskRef",
+	"YieldToAnyThread",
+};

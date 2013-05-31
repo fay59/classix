@@ -35,6 +35,11 @@ namespace OSEnvironment
 		fixedValues[key] = value;
 	}
 	
+	void Gestalt::SetValue(const Common::FourCharCode &code, int32_t value)
+	{
+		SetValue(code.code, value);
+	}
+
 	bool Gestalt::GetValue(uint32_t key, int32_t& value)
 	{
 		auto fixedValueIter = fixedValues.find(key);
@@ -52,6 +57,11 @@ namespace OSEnvironment
 		}
 		
 		return false;
+	}
+	
+	bool Gestalt::GetValue(const Common::FourCharCode& code, int32_t &value)
+	{
+		return GetValue(code.code, value);
 	}
 	
 	Gestalt::~Gestalt()

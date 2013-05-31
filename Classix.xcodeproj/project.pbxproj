@@ -63,6 +63,8 @@
 		DC6E87E4175849FF00D7B74F /* ResourceTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC6E87E3175849FF00D7B74F /* ResourceTypes.cpp */; };
 		DC6E87E717584ADF00D7B74F /* FourCharCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC6E87E517584ADF00D7B74F /* FourCharCode.cpp */; };
 		DC6E87E817584ADF00D7B74F /* FourCharCode.h in Headers */ = {isa = PBXBuildFile; fileRef = DC6E87E617584ADF00D7B74F /* FourCharCode.h */; };
+		DC6E87F51758549B00D7B74F /* ThreadsLib.h in Headers */ = {isa = PBXBuildFile; fileRef = DC6E87F31758549B00D7B74F /* ThreadsLib.h */; };
+		DC6E87FD175854B400D7B74F /* ThreadsLibFunctions.h in Headers */ = {isa = PBXBuildFile; fileRef = DC6E87FB175854B400D7B74F /* ThreadsLibFunctions.h */; };
 		DC6FEAC91661508400DD415C /* export.png in Resources */ = {isa = PBXBuildFile; fileRef = DCE988131660B3D900C28F25 /* export.png */; };
 		DC6FEACA1661508400DD415C /* label.png in Resources */ = {isa = PBXBuildFile; fileRef = DCE988101660A9B400C28F25 /* label.png */; };
 		DC6FEACB1661508400DD415C /* function.png in Resources */ = {isa = PBXBuildFile; fileRef = DCE9880F1660A81A00C28F25 /* function.png */; };
@@ -100,6 +102,11 @@
 		DC717075164F6648008D767E /* SystemRegisterInstructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC72740016471CD800DA17E5 /* SystemRegisterInstructions.cpp */; };
 		DC787EAE164F68E30010A288 /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC787EB2164F6A910010A288 /* StdCLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC787EB0164F6A810010A288 /* StdCLib.cpp */; };
+		DC78983417589378003A4FB0 /* IExecutionEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC78983217589378003A4FB0 /* IExecutionEngine.cpp */; };
+		DC78983517589378003A4FB0 /* IExecutionEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = DC78983317589378003A4FB0 /* IExecutionEngine.h */; };
+		DC7898381758984D003A4FB0 /* ThreadsLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC6E87F21758549B00D7B74F /* ThreadsLib.cpp */; };
+		DC78983917589851003A4FB0 /* ThreadsLibFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC6E87FA175854B400D7B74F /* ThreadsLibFunctions.cpp */; };
+		DC78983A17589869003A4FB0 /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC7ECFD816850D830063F14E /* CXDebugUIController.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC7ECFD716850D830063F14E /* CXDebugUIController.mm */; };
 		DC82C3A51719A69000A11444 /* CXIOSurfaceView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC82C3A41719A69000A11444 /* CXIOSurfaceView.m */; };
 		DC8301EF164FFD770079CE2D /* DlfcnLibraryResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301EC164FFD380079CE2D /* DlfcnLibraryResolver.cpp */; };
@@ -236,6 +243,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = DC539CF8174DC0E400BA5946;
 			remoteInfo = MathLib;
+		};
+		DC789836175897A6003A4FB0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC3DC2716338A7900792F4A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DC6E87EC1758545200D7B74F;
+			remoteInfo = ThreadsLib;
 		};
 		DC930ACF1708C24300B739B1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -457,6 +471,11 @@
 		DC6E87E3175849FF00D7B74F /* ResourceTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResourceTypes.cpp; sourceTree = "<group>"; };
 		DC6E87E517584ADF00D7B74F /* FourCharCode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FourCharCode.cpp; sourceTree = "<group>"; };
 		DC6E87E617584ADF00D7B74F /* FourCharCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FourCharCode.h; sourceTree = "<group>"; };
+		DC6E87ED1758545200D7B74F /* libThreadsLib.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libThreadsLib.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC6E87F21758549B00D7B74F /* ThreadsLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ThreadsLib.cpp; sourceTree = "<group>"; };
+		DC6E87F31758549B00D7B74F /* ThreadsLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadsLib.h; sourceTree = "<group>"; };
+		DC6E87FA175854B400D7B74F /* ThreadsLibFunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ThreadsLibFunctions.cpp; sourceTree = "<group>"; };
+		DC6E87FB175854B400D7B74F /* ThreadsLibFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadsLibFunctions.h; sourceTree = "<group>"; };
 		DC7273F816471CD800DA17E5 /* FloatingPointInstructions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FloatingPointInstructions.cpp; sourceTree = "<group>"; };
 		DC7273FC16471CD800DA17E5 /* IntegerInstructions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntegerInstructions.cpp; sourceTree = "<group>"; };
 		DC7273FD16471CD800DA17E5 /* Interpreter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Interpreter.cpp; sourceTree = "<group>"; };
@@ -476,6 +495,8 @@
 		DC787EAF164F69000010A288 /* StdCLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StdCLib.h; sourceTree = "<group>"; };
 		DC787EB0164F6A810010A288 /* StdCLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StdCLib.cpp; sourceTree = "<group>"; };
 		DC787EB3164F6F110010A288 /* StdCLibFunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StdCLibFunctions.h; sourceTree = "<group>"; };
+		DC78983217589378003A4FB0 /* IExecutionEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IExecutionEngine.cpp; sourceTree = "<group>"; };
+		DC78983317589378003A4FB0 /* IExecutionEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IExecutionEngine.h; sourceTree = "<group>"; };
 		DC7ECFD616850D830063F14E /* CXDebugUIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXDebugUIController.h; sourceTree = "<group>"; };
 		DC7ECFD716850D830063F14E /* CXDebugUIController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CXDebugUIController.mm; sourceTree = "<group>"; };
 		DC82C3A31719A69000A11444 /* CXIOSurfaceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXIOSurfaceView.h; sourceTree = "<group>"; };
@@ -603,6 +624,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC33EC9E174E96C300F66877 /* libClassixCore.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC6E87EA1758545200D7B74F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC78983A17589869003A4FB0 /* libClassixCore.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -802,6 +831,17 @@
 			path = OSEnvironment;
 			sourceTree = "<group>";
 		};
+		DC6E87F11758546000D7B74F /* ThreadsLib */ = {
+			isa = PBXGroup;
+			children = (
+				DC6E87F21758549B00D7B74F /* ThreadsLib.cpp */,
+				DC6E87F31758549B00D7B74F /* ThreadsLib.h */,
+				DC6E87FA175854B400D7B74F /* ThreadsLibFunctions.cpp */,
+				DC6E87FB175854B400D7B74F /* ThreadsLibFunctions.h */,
+			);
+			path = ThreadsLib;
+			sourceTree = "<group>";
+		};
 		DC7273E316471CB300DA17E5 /* Interpreter */ = {
 			isa = PBXGroup;
 			children = (
@@ -825,6 +865,7 @@
 				DC787EAD164F68BB0010A288 /* StdCLib */,
 				DC930AA81708BBDB00B739B1 /* InterfaceLib */,
 				DC539CFD174DC13200BA5946 /* MathLib */,
+				DC6E87F11758546000D7B74F /* ThreadsLib */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -850,7 +891,6 @@
 				DCB00B9D163B6DAD003C88CA /* MachineState.cpp */,
 				DCB00B9E163B6DAD003C88CA /* MachineState.h */,
 				DCA1E14916437D08008C3C8C /* Execution */,
-				DCA1E14B1643810E008C3C8C /* Disassembler */,
 			);
 			path = PPCVM;
 			sourceTree = "<group>";
@@ -1007,6 +1047,9 @@
 				DC5656D216ED070300083F0E /* NotImplementedException.h */,
 				DC72740C1647225500DA17E5 /* TrapException.cpp */,
 				DC72740D1647225500DA17E5 /* TrapException.h */,
+				DC78983217589378003A4FB0 /* IExecutionEngine.cpp */,
+				DC78983317589378003A4FB0 /* IExecutionEngine.h */,
+				DCA1E14B1643810E008C3C8C /* Disassembler */,
 				DC7273E316471CB300DA17E5 /* Interpreter */,
 			);
 			name = Execution;
@@ -1081,6 +1124,7 @@
 				DC930AA61708BBDB00B739B1 /* InterfaceLib.ixLibrary */,
 				DC930AB81708BC8E00B739B1 /* InterfaceLibHead.app */,
 				DC539CF9174DC0E400BA5946 /* libMathLib.dylib */,
+				DC6E87ED1758545200D7B74F /* libThreadsLib.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1238,6 +1282,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DC6E87EB1758545200D7B74F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DC787EA6164F68990010A288 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1266,6 +1317,9 @@
 				DC6E87D91758463F00D7B74F /* Managers.h in Headers */,
 				DC6E87DE1758471600D7B74F /* ResourceManager.h in Headers */,
 				DC6E87E817584ADF00D7B74F /* FourCharCode.h in Headers */,
+				DC6E87F51758549B00D7B74F /* ThreadsLib.h in Headers */,
+				DC6E87FD175854B400D7B74F /* ThreadsLibFunctions.h in Headers */,
+				DC78983517589378003A4FB0 /* IExecutionEngine.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1306,6 +1360,23 @@
 			name = MathLib;
 			productName = MathLib;
 			productReference = DC539CF9174DC0E400BA5946 /* libMathLib.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		DC6E87EC1758545200D7B74F /* ThreadsLib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC6E87EE1758545200D7B74F /* Build configuration list for PBXNativeTarget "ThreadsLib" */;
+			buildPhases = (
+				DC6E87E91758545200D7B74F /* Sources */,
+				DC6E87EA1758545200D7B74F /* Frameworks */,
+				DC6E87EB1758545200D7B74F /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ThreadsLib;
+			productName = ThreadsLib;
+			productReference = DC6E87ED1758545200D7B74F /* libThreadsLib.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		DC787EA7164F68990010A288 /* StdCLib */ = {
@@ -1388,6 +1459,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				DC789837175897A6003A4FB0 /* PBXTargetDependency */,
 				DC33EC9D174E964200F66877 /* PBXTargetDependency */,
 				DC930B281708C86600B739B1 /* PBXTargetDependency */,
 				DC930B261708C86200B739B1 /* PBXTargetDependency */,
@@ -1425,6 +1497,7 @@
 				DC930AA51708BBDB00B739B1 /* InterfaceLib */,
 				DC930AB71708BC8E00B739B1 /* InterfaceLibHead */,
 				DC539CF8174DC0E400BA5946 /* MathLib */,
+				DC6E87EC1758545200D7B74F /* ThreadsLib */,
 			);
 		};
 /* End PBXProject section */
@@ -1509,6 +1582,15 @@
 			files = (
 				DC539D00174DC17E00BA5946 /* MathLib.cpp in Sources */,
 				DC539D04174DC21D00BA5946 /* MathLibFunctions.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC6E87E91758545200D7B74F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC7898381758984D003A4FB0 /* ThreadsLib.cpp in Sources */,
+				DC78983917589851003A4FB0 /* ThreadsLibFunctions.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1676,6 +1758,7 @@
 				DC6E87D81758463F00D7B74F /* Managers.cpp in Sources */,
 				DC6E87E01758471600D7B74F /* ResourceManager.cpp in Sources */,
 				DC6E87E717584ADF00D7B74F /* FourCharCode.cpp in Sources */,
+				DC78983417589378003A4FB0 /* IExecutionEngine.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1698,6 +1781,11 @@
 			isa = PBXTargetDependency;
 			target = DC539CF8174DC0E400BA5946 /* MathLib */;
 			targetProxy = DC33EC9C174E964200F66877 /* PBXContainerItemProxy */;
+		};
+		DC789837175897A6003A4FB0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DC6E87EC1758545200D7B74F /* ThreadsLib */;
+			targetProxy = DC789836175897A6003A4FB0 /* PBXContainerItemProxy */;
 		};
 		DC930AD01708C24300B739B1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1842,6 +1930,36 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		DC6E87EF1758545200D7B74F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		DC6E87F01758545200D7B74F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
@@ -2067,6 +2185,15 @@
 			buildConfigurations = (
 				DC539CFA174DC0E400BA5946 /* Debug */,
 				DC539CFB174DC0E400BA5946 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DC6E87EE1758545200D7B74F /* Build configuration list for PBXNativeTarget "ThreadsLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC6E87EF1758545200D7B74F /* Debug */,
+				DC6E87F01758545200D7B74F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

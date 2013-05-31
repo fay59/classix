@@ -82,6 +82,9 @@ namespace PPCVM
 		Interpreter::Interpreter(Common::IAllocator& allocator, MachineState& state)
 		: state(state), allocator(allocator), endAddress(allocator.AllocateAuto("Interpreter End Address", 4))
 		{ }
+		
+		Interpreter::~Interpreter()
+		{ }
 
 		void Interpreter::Panic(const std::string& error)
 		{
@@ -125,7 +128,7 @@ namespace PPCVM
 #endif
 			
 			void* libGlobals = allocator.ToPointer<void>(state.r2);
-			function->Callback(libGlobals, &state);
+			function->Callback(libGlobals, &state, this);
 			return allocator.ToPointer<const void>(state.lr);
 		}
 

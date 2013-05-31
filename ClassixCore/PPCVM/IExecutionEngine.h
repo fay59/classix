@@ -1,5 +1,5 @@
 //
-// NativeCall.h
+// IExecutionEngine.h
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,27 +19,20 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef pefdump_NativeCall_h
-#define pefdump_NativeCall_h
-
-#include "MachineState.h"
-#include "IExecutionEngine.h"
+#ifndef __Classix__IExecutionEngine__
+#define __Classix__IExecutionEngine__
 
 namespace PPCVM
 {
 	namespace Execution
 	{
-		extern const uint32_t NativeTag;
-		typedef void (*NativeCallback)(void*, MachineState*, IExecutionEngine*);
-		
-		struct NativeCall
+		class IExecutionEngine
 		{
-			uint32_t Tag;
-			NativeCallback Callback;
-			
-			NativeCall(NativeCallback cb);
+		public:
+			virtual void Execute(const void* address) = 0;
+			virtual ~IExecutionEngine() = 0;
 		};
 	}
 }
 
-#endif
+#endif /* defined(__Classix__IExecutionEngine__) */

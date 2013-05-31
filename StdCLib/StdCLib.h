@@ -23,7 +23,6 @@
 #define Classix_StdCLib_h
 
 #include "IAllocator.h"
-#include "MachineState.h"
 #include "SymbolType.h"
 
 namespace StdCLib

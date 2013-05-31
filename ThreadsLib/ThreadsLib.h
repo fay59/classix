@@ -1,5 +1,5 @@
 //
-// NativeCall.h
+// ThreadsLib.h
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,27 +19,29 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef pefdump_NativeCall_h
-#define pefdump_NativeCall_h
+#ifndef __Classix__ThreadsLib__
+#define __Classix__ThreadsLib__
 
-#include "MachineState.h"
-#include "IExecutionEngine.h"
+#include "IAllocator.h"
+#include "SymbolType.h"
 
-namespace PPCVM
+namespace ThreadsLib
 {
-	namespace Execution
-	{
-		extern const uint32_t NativeTag;
-		typedef void (*NativeCallback)(void*, MachineState*, IExecutionEngine*);
-		
-		struct NativeCall
-		{
-			uint32_t Tag;
-			NativeCallback Callback;
-			
-			NativeCall(NativeCallback cb);
-		};
-	}
+	struct Globals;
 }
 
-#endif
+namespace OSEnvironment
+{
+	class Managers;
+}
+
+extern "C"
+{
+	ThreadsLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers);
+	SymbolType LibraryLookup(ThreadsLib::Globals* globals, const char* symbolName, void** symbol);
+	void LibraryUnload(ThreadsLib::Globals* context);
+	
+	extern const char* LibrarySymbolNames[];
+}
+
+#endif /* defined(__Classix__ThreadsLib__) */

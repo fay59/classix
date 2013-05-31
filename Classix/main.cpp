@@ -203,6 +203,7 @@ static int run(const std::string& path, int argc, const char* argv[], const char
 	
 	dlfcnResolver.RegisterLibrary("StdCLib");
 	dlfcnResolver.RegisterLibrary("MathLib");
+	dlfcnResolver.RegisterLibrary("ThreadsLib");
 	bundleResolver.AllowLibrary("InterfaceLib");
 	
 	char* directory = strdup(path.c_str());

@@ -26,6 +26,8 @@
 #include <memory>
 #include <cstdint>
 
+#include "FourCharCode.h"
+
 namespace OSEnvironment
 {
 	class GestaltCallback
@@ -48,8 +50,16 @@ namespace OSEnvironment
 			callbackValues[key] = new TType(args...);
 		}
 		
+		template<typename TType, typename... TParams>
+		void SetCallback(const Common::FourCharCode& code, TParams&&... args)
+		{
+			SetCallback<TType>(code.code, args...);
+		}
+		
 		void SetValue(uint32_t key, int32_t value);
+		void SetValue(const Common::FourCharCode& code, int32_t value);
 		bool GetValue(uint32_t key, int32_t& value);
+		bool GetValue(const Common::FourCharCode& code, int32_t& value);
 		
 		~Gestalt();
 	};
