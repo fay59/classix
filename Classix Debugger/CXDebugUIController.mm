@@ -313,6 +313,9 @@ static NSNib* uiNib;
 	for (const std::string& symbol : symbols)
 	{
 		NSString* title = [NSString stringWithCString:symbol.c_str() encoding:NSUTF8StringEncoding];
+		if (title == nil)
+			title = @"(invalid symbol name)";
+		
 		NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:title action:NULL keyEquivalent:@""] autorelease];
 		item.image = exportImage;
 		[item setEnabled:NO];

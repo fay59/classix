@@ -82,6 +82,8 @@ struct ClassixCoreVM
 	, stack(allocator.AllocateAuto(CXReverseAllocationDetails("Stack", CXStackSize), CXStackSize))
 	{
 		dlfcnResolver.RegisterLibrary("StdCLib");
+		dlfcnResolver.RegisterLibrary("MathLib");
+		dlfcnResolver.RegisterLibrary("ThreadsLib");
 		bundleResolver.AllowLibrary("InterfaceLib");
 		cfm.LibraryResolvers.push_back(&pefResolver);
 		cfm.LibraryResolvers.push_back(&bundleResolver);
