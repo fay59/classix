@@ -26,6 +26,8 @@ namespace Classix
 {
 	uint32_t ProgramControlHandle::RunSymbol(CFM::ResolvedSymbol& symbol)
 	{
+		auto threadMarker = vm.managers.ThreadManager().CreateExecutionMarker();
+		
 		auto vector = vm.allocator.ToPointer<const PEF::TransitionVector>(symbol.Address);
 		BeginTransition(*vector);
 		vm.interpreter.Execute(vm.allocator.ToPointer<void>(pc));
@@ -46,12 +48,15 @@ namespace Classix
 	
 	void ProgramControlHandle::StepInto()
 	{
+		auto threadMarker = vm.managers.ThreadManager().CreateExecutionMarker();
 		const void* newPC = vm.interpreter.ExecuteOne(vm.allocator.ToPointer<void>(pc));
 		pc = vm.allocator.ToIntPtr(newPC);
 	}
 	
 	void ProgramControlHandle::StepOver()
 	{
+		auto threadMarker = vm.managers.ThreadManager().CreateExecutionMarker();
+		
 		Common::UInt32 word = *vm.allocator.ToPointer<Common::UInt32>(pc);
 		PPCVM::Instruction inst = word.Get();
 		if (inst.OPCD == 18 && inst.LK == 1)
@@ -69,6 +74,8 @@ namespace Classix
 	
 	void ProgramControlHandle::RunTo(uint32_t address)
 	{
+		auto threadMarker = vm.managers.ThreadManager().CreateExecutionMarker();
+		
 		std::unordered_set<const void*> until = {vm.allocator.ToPointer<void>(address)};
 		const void* eip = vm.allocator.ToPointer<const void>(pc);
 		eip = vm.interpreter.ExecuteUntil(eip, until);
@@ -100,8 +107,8 @@ namespace Classix
 		return this->operator()(argv, argv + argc, envp, envpEnd);
 	}
 	
-	VirtualMachine::VirtualMachine(Common::IAllocator& allocator)
-	: allocator(allocator), interpreter(allocator, state), pefResolver(allocator, fragmentManager)
+	VirtualMachine::VirtualMachine(Common::IAllocator& allocator, OSEnvironment::Managers& managers)
+	: allocator(allocator), managers(managers), interpreter(allocator, state), pefResolver(allocator, fragmentManager)
 	{
 		AddLibraryResolver(pefResolver);
 	}

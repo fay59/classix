@@ -25,6 +25,7 @@
 #include "IAllocator.h"
 #include "Gestalt.h"
 #include "ResourceManager.h"
+#include "ThreadManager.h"
 
 namespace OSEnvironment
 {
@@ -33,12 +34,14 @@ namespace OSEnvironment
 		Common::IAllocator& allocator;
 		Gestalt gestalt;
 		ResourceManager resourceManager;
+		ThreadManager threadManager;
 		
 	public:
 		Managers(Common::IAllocator& allocator);
 		
 		Gestalt& Gestalt();
 		ResourceManager& ResourceManager();
+		ThreadManager& ThreadManager();
 		
 		inline virtual ~Managers() {}
 	};

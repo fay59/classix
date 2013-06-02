@@ -220,7 +220,7 @@ static int run(const std::string& path, int argc, const char* argv[], const char
 	std::string executable = executableName;
 	free(directory);
 	
-	Classix::VirtualMachine vm(allocator);
+	Classix::VirtualMachine vm(allocator, managers);
 	vm.AddLibraryResolver(dlfcnResolver);
 	vm.AddLibraryResolver(bundleResolver);
 	vm.AddLibraryResolver(dummyResolver);

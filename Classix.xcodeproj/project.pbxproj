@@ -100,6 +100,8 @@
 		DC717073164F6648008D767E /* IntegerInstructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7273FC16471CD800DA17E5 /* IntegerInstructions.cpp */; };
 		DC717074164F6648008D767E /* LoadStoreInstructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7273FF16471CD800DA17E5 /* LoadStoreInstructions.cpp */; };
 		DC717075164F6648008D767E /* SystemRegisterInstructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC72740016471CD800DA17E5 /* SystemRegisterInstructions.cpp */; };
+		DC734277175A50B800E39F20 /* ThreadManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC734275175A50B800E39F20 /* ThreadManager.cpp */; };
+		DC734278175A50B800E39F20 /* ThreadManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DC734276175A50B800E39F20 /* ThreadManager.h */; };
 		DC787EAE164F68E30010A288 /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC787EB2164F6A910010A288 /* StdCLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC787EB0164F6A810010A288 /* StdCLib.cpp */; };
 		DC78983417589378003A4FB0 /* IExecutionEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC78983217589378003A4FB0 /* IExecutionEngine.cpp */; };
@@ -487,6 +489,8 @@
 		DC72740C1647225500DA17E5 /* TrapException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrapException.cpp; sourceTree = "<group>"; };
 		DC72740D1647225500DA17E5 /* TrapException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrapException.h; sourceTree = "<group>"; };
 		DC72740F1647350C00DA17E5 /* FloatingPointStatus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FloatingPointStatus.h; sourceTree = "<group>"; };
+		DC734275175A50B800E39F20 /* ThreadManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ThreadManager.cpp; sourceTree = "<group>"; };
+		DC734276175A50B800E39F20 /* ThreadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadManager.h; sourceTree = "<group>"; };
 		DC75099016C9DEBA00B218DB /* VirtualAddressSpaceAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VirtualAddressSpaceAllocator.cpp; sourceTree = "<group>"; };
 		DC75099116C9DEBA00B218DB /* VirtualAddressSpaceAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VirtualAddressSpaceAllocator.h; sourceTree = "<group>"; };
 		DC75BC361635AD8500F89EA1 /* FragmentManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FragmentManager.cpp; sourceTree = "<group>"; };
@@ -821,12 +825,14 @@
 		DC65EBE11757092C0042885E /* OSEnvironment */ = {
 			isa = PBXGroup;
 			children = (
+				DC6E87D61758463F00D7B74F /* Managers.cpp */,
+				DC6E87D71758463F00D7B74F /* Managers.h */,
 				DC6E87DC1758471600D7B74F /* ResourceManager.cpp */,
 				DC6E87DA1758471600D7B74F /* ResourceManager.h */,
 				DC65EBE21757094E0042885E /* Gestalt.cpp */,
 				DC65EBE31757094E0042885E /* Gestalt.h */,
-				DC6E87D61758463F00D7B74F /* Managers.cpp */,
-				DC6E87D71758463F00D7B74F /* Managers.h */,
+				DC734275175A50B800E39F20 /* ThreadManager.cpp */,
+				DC734276175A50B800E39F20 /* ThreadManager.h */,
 			);
 			path = OSEnvironment;
 			sourceTree = "<group>";
@@ -1320,6 +1326,7 @@
 				DC6E87F51758549B00D7B74F /* ThreadsLib.h in Headers */,
 				DC6E87FD175854B400D7B74F /* ThreadsLibFunctions.h in Headers */,
 				DC78983517589378003A4FB0 /* IExecutionEngine.h in Headers */,
+				DC734278175A50B800E39F20 /* ThreadManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1759,6 +1766,7 @@
 				DC6E87E01758471600D7B74F /* ResourceManager.cpp in Sources */,
 				DC6E87E717584ADF00D7B74F /* FourCharCode.cpp in Sources */,
 				DC78983417589378003A4FB0 /* IExecutionEngine.cpp in Sources */,
+				DC734277175A50B800E39F20 /* ThreadManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

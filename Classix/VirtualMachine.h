@@ -22,15 +22,17 @@
 #ifndef __Classix__VirtualMachine__
 #define __Classix__VirtualMachine__
 
+#include <deque>
+#include <list>
+#include <algorithm>
+
 #include "MachineState.h"
 #include "FragmentManager.h"
 #include "Interpreter.h"
 #include "LibraryResolver.h"
 #include "PEFLibraryResolver.h"
 #include "StackPreparator.h"
-#include <deque>
-#include <list>
-#include <algorithm>
+#include "Managers.h"
 
 namespace Classix
 {
@@ -44,6 +46,7 @@ namespace Classix
 		
 		PPCVM::MachineState state;
 		Common::IAllocator& allocator;
+		OSEnvironment::Managers& managers;
 		
 	public:
 		CFM::FragmentManager fragmentManager;
@@ -53,7 +56,7 @@ namespace Classix
 		PPCVM::Execution::Interpreter interpreter;
 		
 	public:
-		VirtualMachine(Common::IAllocator& allocator);
+		VirtualMachine(Common::IAllocator& allocator, OSEnvironment::Managers& managers);
 		
 		void AddLibraryResolver(CFM::LibraryResolver& resolver);
 		

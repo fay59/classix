@@ -36,4 +36,9 @@ namespace OSEnvironment
 	{
 		return resourceManager;
 	}
+	
+	ThreadManager& Managers::ThreadManager()
+	{
+		return threadManager;
+	}
 }

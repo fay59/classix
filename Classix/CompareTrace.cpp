@@ -136,7 +136,7 @@ int compareTrace(const std::string& path, const std::string& tracePath)
 	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator, managers);
 	dlfcnResolver.RegisterLibrary("StdCLib");
 	
-	Classix::VirtualMachine vm(allocator);
+	Classix::VirtualMachine vm(allocator, managers);
 	vm.AddLibraryResolver(dlfcnResolver);
 	
 	Classix::MainStub stub = vm.LoadMainContainer(path);

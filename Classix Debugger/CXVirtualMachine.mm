@@ -30,6 +30,7 @@
 #include "FragmentManager.h"
 #include "NativeAllocator.h"
 #include "Interpreter.h"
+#include "Managers.h"
 
 #include "FancyDisassembler.h"
 #include "CXObjcDisassemblyWriter.h"
@@ -61,6 +62,7 @@ const NSUInteger CXStackSize = 0x100000;
 struct ClassixCoreVM
 {
 	Common::NativeAllocator allocator;
+	OSEnvironment::Managers managers;
 	PPCVM::MachineState state;
 	CFM::FragmentManager cfm;
 	CFM::PEFLibraryResolver pefResolver;
@@ -71,10 +73,12 @@ struct ClassixCoreVM
 	Common::AutoAllocation stack;
 	
 	ClassixCoreVM()
-	: pefResolver(allocator, cfm)
-	, dlfcnResolver(allocator)
+	: managers(allocator)
+	, dummyResolver(allocator)
+	, pefResolver(allocator, cfm)
+	, dlfcnResolver(allocator, managers)
 	, interp(allocator, state)
-	, bundleResolver(allocator)
+	, bundleResolver(allocator, managers)
 	, stack(allocator.AllocateAuto(CXReverseAllocationDetails("Stack", CXStackSize), CXStackSize))
 	{
 		dlfcnResolver.RegisterLibrary("StdCLib");
@@ -261,6 +265,8 @@ struct ClassixCoreVM
 				PEF::TransitionVector* vector = reinterpret_cast<PEF::TransitionVector*>(entryPoint.Address);
 				vm->PrepareState(result);
 				vm->state.r2 = vector->TableOfContents;
+				
+				auto marker = vm->managers.ThreadManager().CreateExecutionMarker();
 				vm->interp.Execute(vm->allocator.ToPointer<void>(vector->EntryPoint));
 			}
 		}
@@ -513,6 +519,7 @@ struct ClassixCoreVM
 	
 	try
 	{
+		auto marker = vm->managers.ThreadManager().CreateExecutionMarker();
 		eip = vm->interp.ExecuteUntil(eip, cppBreakpoints);
 		self.pc = vm->allocator.ToIntPtr(eip);
 		self.lastError = nil;
@@ -550,6 +557,7 @@ struct ClassixCoreVM
 	const void* eip = vm->allocator.ToPointer<const void>(pc);
 	try
 	{
+		auto marker = vm->managers.ThreadManager().CreateExecutionMarker();
 		eip = vm->interp.ExecuteOne(eip);
 		self.pc = vm->allocator.ToIntPtr(eip);
 		self.lastError = nil;
@@ -575,6 +583,7 @@ struct ClassixCoreVM
 	PPCVM::MachineState oldState = vm->state;
 	try
 	{
+		auto marker = vm->managers.ThreadManager().CreateExecutionMarker();
 		eip = vm->interp.ExecuteUntil(eip, until);
 		self.pc = vm->allocator.ToIntPtr(eip);
 		self.lastError = nil;
