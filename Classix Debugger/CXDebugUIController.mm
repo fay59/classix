@@ -376,7 +376,7 @@ static NSNib* uiNib;
 			const PEF::Container& container = pef->GetContainer();
 			NSMutableDictionary* labelToArray = [NSMutableDictionary dictionary];
 			NSMutableDictionary* addressToLabel = [NSMutableDictionary dictionary];
-			for (int i = 0; i < container.size(); i++)
+			for (size_t i = 0; i < container.size(); i++)
 			{
 				const PEF::InstantiableSection& section = container.GetSection(i);
 				PEF::SectionType type = section.GetSectionType();

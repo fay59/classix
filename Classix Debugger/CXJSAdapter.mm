@@ -41,7 +41,7 @@
 		@selector(setDisplayName:ofLabel:)
 	};
 	
-	for (int i = 0; i < sizeof validSelectors / sizeof(SEL); i++)
+	for (size_t i = 0; i < sizeof validSelectors / sizeof(SEL); i++)
 	{
 		if (validSelectors[i] == selector)
 			return NO;
