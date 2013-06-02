@@ -30,9 +30,10 @@
 		</dict>
 		<dict>
 			<key>CFBundleTypeName</key>
-			<string>Mac OS Classic Application</string>
+			<string>Mac OS Classic Executable</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
+				<string>shlb</string>
 				<string>APPL</string>
 				<string>stub</string>
 				<string>MPST</string>
@@ -118,6 +119,7 @@
 					<string>APPL</string>
 					<string>stub</string>
 					<string>MPST</string>
+					<string>shlb</string>
 				</array>
 			</dict>
 		</dict>
