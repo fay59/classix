@@ -33,9 +33,10 @@ namespace ThreadsLib
 	struct Globals
 	{
 		Common::IAllocator& allocator;
+		OSEnvironment::ThreadManager& threadManager;
 		
-		Globals(Common::IAllocator& allocator)
-		: allocator(allocator)
+		Globals(Common::IAllocator& allocator, OSEnvironment::ThreadManager& threadManager)
+		: allocator(allocator), threadManager(threadManager)
 		{ }
 	};
 	
@@ -54,7 +55,7 @@ extern "C"
 	ThreadsLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers)
 	{
 		managers->Gestalt().SetValue("thds", 3);
-		return allocator->Allocate<Globals>("ThreadsLib Globals", *allocator);
+		return allocator->Allocate<Globals>("ThreadsLib Globals", *allocator, managers->ThreadManager());
 	}
 	
 	SymbolType LibraryLookup(Globals* globals, const char* name, void** result)
@@ -124,7 +125,7 @@ extern "C"
 	
 	void ThreadsLib_ThreadBeginCritical(ThreadsLib::Globals* globals, PPCVM::MachineState* state)
 	{
-		throw PPCVM::NotImplementedException(__func__);
+		globals->threadManager.EnterCriticalSection();
 	}
 	
 	void ThreadsLib_ThreadCurrentStackSpace(ThreadsLib::Globals* globals, PPCVM::MachineState* state)
@@ -179,7 +180,7 @@ extern "C"
 	
 	void ThreadsLib_ThreadEndCritical(ThreadsLib::Globals* globals, PPCVM::MachineState* state)
 	{
-		throw PPCVM::NotImplementedException(__func__);
+		globals->threadManager.ExitCriticalSection();
 	}
 	
 	void ThreadsLib_SetThreadReadyGivenTaskRef(ThreadsLib::Globals* globals, PPCVM::MachineState* state)
