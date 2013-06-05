@@ -26,6 +26,7 @@
 #import "CXDocumentController.h"
 #import "CXRegister.h"
 #import "CXHexFormatter.h"
+#import "CXUnmangle.h"
 
 #include "SymbolResolver.h"
 #include "IAllocator.h"
@@ -312,7 +313,8 @@ static NSNib* uiNib;
 	NSMenu* exportMenu = [[NSMenu alloc] initWithTitle:@"Exports"];
 	for (const std::string& symbol : symbols)
 	{
-		NSString* title = [NSString stringWithCString:symbol.c_str() encoding:NSUTF8StringEncoding];
+		std::string unmangled = CXUnmangle(symbol);
+		NSString* title = [NSString stringWithCString:unmangled.c_str() encoding:NSUTF8StringEncoding];
 		if (title == nil)
 			title = @"(invalid symbol name)";
 		

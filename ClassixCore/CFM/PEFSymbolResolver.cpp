@@ -50,7 +50,8 @@ namespace CFM
 		
 		for (auto iter = loaderSection->RelocationsBegin(); iter != loaderSection->RelocationsEnd(); iter++)
 		{
-			InstantiableSection& section = container.GetSection(iter->GetSectionIndex());
+			const auto& relocation = *iter;
+			InstantiableSection& section = container.GetSection(relocation.GetSectionIndex());
 			PEFRelocator relocator(cfm, container, section);
 			relocator.Execute(iter->begin(), iter->end());
 		}

@@ -25,6 +25,7 @@
 		DC165A0E1711CDA0001BF45B /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC165A0C1711CD8E001BF45B /* IOSurface.framework */; };
 		DC165A0F1711CDA2001BF45B /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC165A0C1711CD8E001BF45B /* IOSurface.framework */; };
 		DC176D091662A91700C76888 /* CXGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC176D081662A91700C76888 /* CXGradientView.m */; };
+		DC1A06CF175BAA0B00E570D1 /* CXUnmangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC1A06CD175BAA0B00E570D1 /* CXUnmangle.cpp */; };
 		DC1FB13916E2962C00E9C7E5 /* CompareTrace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC1FB13816E2962C00E9C7E5 /* CompareTrace.cpp */; };
 		DC264EA7165DF76A00C86BDD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC264EA6165DF76A00C86BDD /* WebKit.framework */; };
 		DC264EAC165DFFEB00C86BDD /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAA165DFFEB00C86BDD /* main.js */; };
@@ -325,6 +326,8 @@
 		DC165A0C1711CD8E001BF45B /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		DC176D071662A91700C76888 /* CXGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXGradientView.h; sourceTree = "<group>"; };
 		DC176D081662A91700C76888 /* CXGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXGradientView.m; sourceTree = "<group>"; };
+		DC1A06CD175BAA0B00E570D1 /* CXUnmangle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CXUnmangle.cpp; sourceTree = "<group>"; };
+		DC1A06CE175BAA0B00E570D1 /* CXUnmangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXUnmangle.h; sourceTree = "<group>"; };
 		DC1FB13816E2962C00E9C7E5 /* CompareTrace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CompareTrace.cpp; sourceTree = "<group>"; };
 		DC264EA6165DF76A00C86BDD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		DC264EAA165DFFEB00C86BDD /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
@@ -1161,6 +1164,8 @@
 				DCCBBD35167AFF2B00BEAF3C /* CXStackFrame.m */,
 				DC86E081166C03730027F40E /* CXReverseAllocationDetails.h */,
 				DC86E080166C03730027F40E /* CXReverseAllocationDetails.cpp */,
+				DC1A06CD175BAA0B00E570D1 /* CXUnmangle.cpp */,
+				DC1A06CE175BAA0B00E570D1 /* CXUnmangle.h */,
 			);
 			name = Debugging;
 			sourceTree = "<group>";
@@ -1580,6 +1585,7 @@
 				DC7ECFD816850D830063F14E /* CXDebugUIController.mm in Sources */,
 				DCB4970916D0883800F38D0A /* CXHexFormatter.m in Sources */,
 				DCE7B22816DA78A100D69F2A /* CXEvent.mm in Sources */,
+				DC1A06CF175BAA0B00E570D1 /* CXUnmangle.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

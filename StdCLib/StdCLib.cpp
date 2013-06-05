@@ -27,6 +27,7 @@
 #include <string>
 #include <sstream>
 #include <regex>
+#include <cstring>
 
 #include <dlfcn.h>
 #include <unistd.h>
@@ -386,7 +387,9 @@ namespace StdCLib
 			matchStart += match.length();
 		}
 		
-		result << std::string(lastMatchEnd, formatString.end());
+		if (matchStart != formatString.end())
+			result << std::string(matchStart, formatString.end());
+		
 		return result.str();
 	}
 }
@@ -1597,7 +1600,8 @@ extern "C"
 
 	void StdCLib_strchr(StdCLib::Globals* globals, MachineState* state)
 	{
-		throw PPCVM::NotImplementedException(__func__);
+		const char* s = ToPointer<const char>(state->r3);
+		state->r3 = ToIntPtr(strchr(s, state->r4));
 	}
 
 	void StdCLib_strcmp(StdCLib::Globals* globals, MachineState* state)
