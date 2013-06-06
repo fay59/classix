@@ -66,7 +66,7 @@ namespace Common
 	}
 	
 	FileMapping::FileMapping(FileMapping&& that)
-	: file(that.file)
+	: file(std::move(that.file))
 	{
 		address = that.address;
 		fileSize = that.fileSize;

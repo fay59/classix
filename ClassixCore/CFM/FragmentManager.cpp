@@ -37,8 +37,7 @@ namespace CFM
 		
 		for (LibraryResolver* libraryResolver : LibraryResolvers)
 		{
-			SymbolResolver* symbolResolver = libraryResolver->ResolveLibrary(name);
-			if (symbolResolver != nullptr)
+			if (SymbolResolver* symbolResolver = libraryResolver->ResolveLibrary(name))
 			{
 				resolvers[name] = symbolResolver;
 				return true;

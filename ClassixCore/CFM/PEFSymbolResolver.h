@@ -31,11 +31,11 @@ namespace CFM
 {
 	class PEFSymbolResolver : public SymbolResolver
 	{
+		Common::IAllocator& allocator;
+		FragmentManager& cfm;
+		
 		Common::FileMapping mapping;
 		PEF::Container container;
-		Common::IAllocator& allocator;
-		
-		FragmentManager& cfm;
 		
 		ResolvedSymbol Symbolize(const std::string& name, const uint8_t* address) const;
 		ResolvedSymbol Symbolize(const std::string& name, const PEF::LoaderHeader::SectionWithOffset& sectionWithOffset) const;

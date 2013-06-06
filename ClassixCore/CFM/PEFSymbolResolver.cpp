@@ -88,7 +88,7 @@ namespace CFM
 	std::vector<ResolvedSymbol> PEFSymbolResolver::GetEntryPoints()
 	{
 		std::vector<ResolvedSymbol> symbols;
-		const std::string* symbolNames[] = {&MainSymbolName, &InitSymbolName, &TermSymbolName};
+		const std::string* symbolNames[] = { &MainSymbolName, &InitSymbolName, &TermSymbolName };
 		const auto header = container.LoaderSection()->Header;
 		
 		for (size_t i = 0; i < 3; i++)

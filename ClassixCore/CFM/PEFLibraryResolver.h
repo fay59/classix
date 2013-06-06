@@ -23,6 +23,7 @@
 #define __pefdump__PEFLibraryResolver__
 
 #include <deque>
+#include <memory>
 #include "LibraryResolver.h"
 #include "FragmentManager.h"
 #include "IAllocator.h"
@@ -34,7 +35,7 @@ namespace CFM
 	{
 		FragmentManager& cfm;
 		Common::IAllocator& allocator;
-		std::deque<PEFSymbolResolver> resolvers;
+		std::deque<std::unique_ptr<PEFSymbolResolver>> resolvers;
 		
 	public:
 		PEFLibraryResolver(Common::IAllocator& allocator, FragmentManager& manager);

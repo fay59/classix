@@ -60,8 +60,9 @@ namespace CFM
 		Common::FileMapping mapping(file.fd);
 		try
 		{
-			resolvers.emplace_back(allocator, cfm, std::move(mapping));
-			return &resolvers.back();
+			PEFSymbolResolver* resolver = new PEFSymbolResolver(allocator, cfm, std::move(mapping));
+			resolvers.emplace_back(resolver);
+			return resolvers.back().get();
 		}
 		catch (LibraryResolutionException& ex)
 		{

@@ -37,9 +37,9 @@ namespace PEF
 	{
 		Common::IAllocator& allocator;
 		const ContainerHeader* header;
+		LoaderSection* loader;
 		std::vector<InstantiableSection> sections;
 		std::vector<int32_t> instantiableSectionIndices;
-		LoaderSection* loader;
 		
 	public:
 		typedef std::vector<InstantiableSection>::iterator iterator;
