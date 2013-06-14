@@ -401,8 +401,8 @@ namespace PPCVM
 		CROP(crxor);
 		OP(isync);
 		
-		BODY(mcrf, Emit(i, "mcrfs", cr(i.CRFD), cr(i.CRFD_5)));
-		BODY(mcrfs, Emit(i, "mcrfs", cr(i.CRFD), cr(i.CRFD_5)));
+		BODY(mcrf, Emit(i, "mcrfs", cr(i.CRFD), cr(i.CRFS)));
+		BODY(mcrfs, Emit(i, "mcrfs", cr(i.CRFD), cr(i.CRFS)));
 		BODY(mcrxr, Emit(i, "mcrxr", cr(i.CRFD)));
 		BODY(mfcr, Emit(i, "mfcr", g(i.RD)));
 		BODY(mffsx, Emit(i, opX("mffs", i.RC), f(i.RD)));

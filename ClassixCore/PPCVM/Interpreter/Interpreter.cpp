@@ -243,15 +243,15 @@ namespace PPCVM
 
 		void Interpreter::bclrx(Instruction inst)
 		{
-			if ((inst.BO_2 & BO_DONT_DECREMENT_FLAG) == 0)
+			if ((inst.BO & BO_DONT_DECREMENT_FLAG) == 0)
 				state.ctr--;
 
-			int counter = ((inst.BO_2 >> 2) | ((state.ctr != 0) ^ (inst.BO_2 >> 1))) & 1;
-			int condition = ((inst.BO_2 >> 4) | (GetCRBit(state, inst.BI_2) == ((inst.BO_2 >> 3) & 1))) & 1;
+			int counter = ((inst.BO >> 2) | ((state.ctr != 0) ^ (inst.BO >> 1))) & 1;
+			int condition = ((inst.BO >> 4) | (GetCRBit(state, inst.BI) == ((inst.BO >> 3) & 1))) & 1;
 
 			if (counter & condition)
 			{
-				if (inst.LK_3)
+				if (inst.LK)
 					state.lr = allocator.ToIntPtr(currentAddress + 1);
 				
 				branchAddress = allocator.ToPointer<const void>(state.lr & ~3);
@@ -261,11 +261,11 @@ namespace PPCVM
 
 		void Interpreter::bcctrx(Instruction inst)
 		{
-			int condition = ((inst.BO_2>>4) | (GetCRBit(state, inst.BI_2) == ((inst.BO_2>>3) & 1))) & 1;
+			int condition = ((inst.BO>>4) | (GetCRBit(state, inst.BI) == ((inst.BO>>3) & 1))) & 1;
 
 			if (condition)
 			{
-				if (inst.LK_3)
+				if (inst.LK)
 					state.lr = allocator.ToIntPtr(currentAddress + 1);
 				
 				branchAddress = allocator.ToPointer<const void>(state.ctr & ~3);
