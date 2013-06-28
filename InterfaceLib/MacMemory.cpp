@@ -42,10 +42,6 @@ void InterfaceLib_BlockMoveData(InterfaceLib::Globals* globals, MachineState* st
 	void* src = globals->allocator.ToPointer<void>(state->r3);
 	void* dst = globals->allocator.ToPointer<void>(state->r4);
 	uint32_t size = state->r5;
-	
-	// I'm not sure memmove is needed, maybe memcpy would do it, but I can't find
-	// documentation for BlockMoveData. If BlockMoveData has undefined behavior
-	// if src and dst overlap, then we should use memcpy.
 	memmove(dst, src, size);
 }
 
@@ -203,7 +199,7 @@ void InterfaceLib_HLock(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_HLockHi(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// do nothing
 }
 
 void InterfaceLib_HNoPurge(InterfaceLib::Globals* globals, MachineState* state)
@@ -278,7 +274,7 @@ void InterfaceLib_MakeMemoryResident(InterfaceLib::Globals* globals, MachineStat
 
 void InterfaceLib_MaxApplZone(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// just do nothing
 }
 
 void InterfaceLib_MaxBlock(InterfaceLib::Globals* globals, MachineState* state)
@@ -308,7 +304,7 @@ void InterfaceLib_MemError(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_MoreMasters(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// do nothing
 }
 
 void InterfaceLib_MoveHHi(InterfaceLib::Globals* globals, MachineState* state)
@@ -480,7 +476,7 @@ void InterfaceLib_SetApplLimit(InterfaceLib::Globals* globals, MachineState* sta
 
 void InterfaceLib_SetGrowZone(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// nothing
 }
 
 void InterfaceLib_SetHandleSize(InterfaceLib::Globals* globals, MachineState* state)

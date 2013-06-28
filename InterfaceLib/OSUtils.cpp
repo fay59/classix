@@ -57,7 +57,7 @@ void InterfaceLib_GetSysPPtr(InterfaceLib::Globals* globals, MachineState* state
 
 void InterfaceLib_InitUtil(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	state->r3 = 0;
 }
 
 void InterfaceLib_IsMetric(InterfaceLib::Globals* globals, MachineState* state)

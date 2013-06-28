@@ -493,7 +493,7 @@ void InterfaceLib_GrafDevice(InterfaceLib::Globals* globals, MachineState* state
 
 void InterfaceLib_HideCursor(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	globals->ipc().PerformAction<void>(IPCMessage::SetCursorVisibility, false);
 }
 
 void InterfaceLib_HidePen(InterfaceLib::Globals* globals, MachineState* state)
@@ -1162,6 +1162,11 @@ void InterfaceLib_SetStdProcs(InterfaceLib::Globals* globals, MachineState* stat
 void InterfaceLib_ShieldCursor(InterfaceLib::Globals* globals, MachineState* state)
 {
 	throw PPCVM::NotImplementedException(__func__);
+}
+
+void InterfaceLib_ShowCursor(InterfaceLib::Globals* globals, MachineState* state)
+{
+	globals->ipc().PerformAction<void>(IPCMessage::SetCursorVisibility, true);
 }
 
 void InterfaceLib_ShowPen(InterfaceLib::Globals* globals, MachineState* state)

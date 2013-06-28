@@ -1083,11 +1083,6 @@ void InterfaceLib_shieldcursor(InterfaceLib::Globals* globals, MachineState* sta
 	throw PPCVM::NotImplementedException(__func__);
 }
 
-void InterfaceLib_ShowCursor(InterfaceLib::Globals* globals, MachineState* state)
-{
-	throw PPCVM::NotImplementedException(__func__);
-}
-
 void InterfaceLib_ShowWindow(InterfaceLib::Globals* globals, MachineState* state)
 {
 	throw PPCVM::NotImplementedException(__func__);

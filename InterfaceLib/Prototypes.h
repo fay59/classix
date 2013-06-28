@@ -2270,6 +2270,7 @@ extern "C"
 	void InterfaceLib_SetStdCProcs(InterfaceLib::Globals* globals, MachineState* state);		// void SetStdCProcs(CQDProcs * procs)
 	void InterfaceLib_SetStdProcs(InterfaceLib::Globals* globals, MachineState* state);		// void SetStdProcs(QDProcs * procs)
 	void InterfaceLib_ShieldCursor(InterfaceLib::Globals* globals, MachineState* state);		// void ShieldCursor(const Rect * shieldRect, Point offsetPt)
+	void InterfaceLib_ShowCursor(InterfaceLib::Globals* globals, MachineState* state);		// void ShowCursor(void)
 	void InterfaceLib_ShowPen(InterfaceLib::Globals* globals, MachineState* state);		// void ShowPen(void)
 	void InterfaceLib_SlopeFromAngle(InterfaceLib::Globals* globals, MachineState* state);		// Fixed SlopeFromAngle(short angle)
 	void InterfaceLib_StdArc(InterfaceLib::Globals* globals, MachineState* state);		// void StdArc(GrafVerb verb, const Rect * r, short startAngle, short arcAngle)
@@ -2979,7 +2980,6 @@ extern "C"
 	void InterfaceLib_sfpputfile(InterfaceLib::Globals* globals, MachineState* state);
 	void InterfaceLib_sfputfile(InterfaceLib::Globals* globals, MachineState* state);
 	void InterfaceLib_shieldcursor(InterfaceLib::Globals* globals, MachineState* state);
-	void InterfaceLib_ShowCursor(InterfaceLib::Globals* globals, MachineState* state);
 	void InterfaceLib_ShowWindow(InterfaceLib::Globals* globals, MachineState* state);
 	void InterfaceLib_stdline(InterfaceLib::Globals* globals, MachineState* state);
 	void InterfaceLib_stdtext(InterfaceLib::Globals* globals, MachineState* state);
