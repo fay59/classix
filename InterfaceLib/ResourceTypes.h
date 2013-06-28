@@ -151,6 +151,39 @@ namespace Resources
 		
 		std::string GetTitle() const;
 	};
+	
+	struct __attribute__((packed)) DITL : Unconstructible
+	{
+		static const Common::FourCharCode key;
+		
+		class Enumerator
+		{
+			friend class DITL;
+			const uint8_t* ptr;
+			int16_t index;
+			const DITL& ditl;
+			
+			Enumerator(const DITL& ditl);
+			
+		public:
+			bool HasItem() const;
+			void MoveNext();
+			Control GetControl() const;
+		};
+		
+		int16_t GetCount() const;
+		Enumerator EnumerateControls() const;
+	};
+	
+	struct __attribute__((packed)) ALRT : Unconstructible
+	{
+		static const Common::FourCharCode key;
+		
+		InterfaceLib::Rect bounds;
+		Common::UInt16 ditl;
+		
+		// TODO complete struct
+	};
 }
 }
 

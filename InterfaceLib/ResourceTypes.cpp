@@ -29,6 +29,8 @@ namespace InterfaceLib
 	const FourCharCode Resources::WIND::key = "WIND";
 	const FourCharCode Resources::MENU::key = "MENU";
 	const FourCharCode Resources::DLOG::key = "DLOG";
+	const FourCharCode Resources::DITL::key = "DITL";
+	const FourCharCode Resources::ALRT::key = "ALRT";
 	
 	const Resources::MENU::Item* Resources::MENU::GetFirstItem() const
 	{
@@ -102,5 +104,81 @@ namespace InterfaceLib
 	{
 		const Str255* string = reinterpret_cast<const Str255*>(&titleLength);
 		return *string;
+	}
+	
+	Resources::DITL::Enumerator::Enumerator(const DITL& ditl)
+	: ditl(ditl), index(0)
+	{
+		ptr = reinterpret_cast<const uint8_t*>(&ditl) + sizeof(Common::SInt16);
+	}
+	
+	bool Resources::DITL::Enumerator::HasItem() const
+	{
+		return index < ditl.GetCount();
+	}
+	
+	void Resources::DITL::Enumerator::MoveNext()
+	{
+		if (!HasItem())
+			throw std::logic_error("Incrementing past limits of enumerator");
+		
+		const uint8_t* newPtr = ptr + 12;
+		Control::Type type = static_cast<Control::Type>(*newPtr & 0x7f);
+		switch (type)
+		{
+			case Control::Button:
+			case Control::CheckBox:
+			case Control::RadioButton:
+			case Control::StaticText:
+			case Control::EditText:
+				newPtr += 1; // bitstring
+				newPtr += 1 + *newPtr; // pstring
+				break;
+				
+			default:
+				assert(false && "Unimplemented control type");
+		}
+		
+		ptr = newPtr;
+		// align on 32 bits
+		intptr_t remainder = reinterpret_cast<intptr_t>(ptr) % 4;
+		if (remainder != 0)
+			newPtr += 4 - remainder;
+		
+		index++;
+	}
+	
+	Control Resources::DITL::Enumerator::GetControl() const
+	{
+		Control control;
+		control.bounds = *reinterpret_cast<const Rect*>(ptr + 4);
+		control.enabled = ptr[12] >> 7;
+		control.type = static_cast<Control::Type>(ptr[12] & 0x7f);
+		
+		switch (control.type)
+		{
+			case Control::Button:
+			case Control::CheckBox:
+			case Control::RadioButton:
+			case Control::StaticText:
+			case Control::EditText:
+				control.label = PascalStringToCPPString(reinterpret_cast<const char*>(ptr + 13));
+				break;
+				
+			default:
+				assert(false && "Unimplemented control type");
+		}
+		
+		return control;
+	}
+	
+	Resources::DITL::Enumerator Resources::DITL::EnumerateControls() const
+	{
+		return Enumerator(*this);
+	}
+	
+	int16_t Resources::DITL::GetCount() const
+	{
+		return *reinterpret_cast<const Common::SInt16*>(this) + 1;
 	}
 }

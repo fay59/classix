@@ -90,6 +90,7 @@ namespace InterfaceLib
 		template<typename T>
 		size_t WriteToPipe(const T& argument)
 		{
+			static_assert(!std::is_pointer<T>::value, "Using WriteToPipe with a pointer type");
 			return ::write(write.write, &argument, sizeof argument);
 		}
 		

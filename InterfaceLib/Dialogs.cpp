@@ -20,6 +20,7 @@
 //
 
 #include <sstream>
+#include <algorithm>
 #include "Prototypes.h"
 #include "NotImplementedException.h"
 #include "InterfaceLib.h"
@@ -189,7 +190,14 @@ void InterfaceLib_NoteAlert(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_ParamText(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	for (size_t i = 0; i < globals->dialogParams.size(); i++)
+	{
+		const char* pascalString = globals->allocator.ToPointer<char>(state->gpr[3 + i]);
+		uint8_t length = *pascalString;
+		pascalString++;
+		
+		globals->dialogParams[i] = std::string(pascalString, pascalString + length);
+	}
 }
 
 void InterfaceLib_ResetAlertStage(InterfaceLib::Globals* globals, MachineState* state)
@@ -249,7 +257,37 @@ void InterfaceLib_StdFilterProc(InterfaceLib::Globals* globals, MachineState* st
 
 void InterfaceLib_StopAlert(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// TODO this needs to be soooooo much better
+	uint32_t key = 0;
+	uint16_t templateKey = static_cast<uint16_t>(state->r3);
+	
+	Resources::ALRT* alert = globals->resources().GetResource<Resources::ALRT>(templateKey);
+	globals->ipc().PerformAction<void>(IPCMessage::CreateDialog, key, alert->bounds, true, std::string("Stop!"));
+	
+	Resources::DITL* ditl = globals->resources().GetResource<Resources::DITL>(alert->ditl);
+	auto enumerator = ditl->EnumerateControls();
+	std::string paramString = "^0";
+	while (enumerator.HasItem())
+	{
+		Control control = enumerator.GetControl();
+		// replace string param placeholders
+		for (size_t i = 0; i < globals->dialogParams.size(); i++)
+		{
+			paramString[1] = static_cast<decltype(paramString)::value_type>('0' + i);
+			std::string::size_type paramPosition = control.label.find(paramString);
+			while (paramPosition != std::string::npos)
+			{
+				control.label.replace(paramPosition, paramString.length(), globals->dialogParams[i]);
+				paramPosition = control.label.find(paramString, paramPosition + globals->dialogParams[i].length());
+			}
+		}
+		
+		globals->ipc().PerformAction<void>(IPCMessage::CreateControl, key, control.type, control.enabled, control.bounds, control.label);
+		enumerator.MoveNext();
+	}
+	
+	// only return when the dialog is closed
+	abort();
 }
 
 void InterfaceLib_UpdateDialog(InterfaceLib::Globals* globals, MachineState* state)

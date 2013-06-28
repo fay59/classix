@@ -44,11 +44,17 @@
 // makes a beep
 -(void)beep;
 
+// sets cursor visibility
+-(void)setCursorVisibility;
+
 // creates a window
 -(void)createWindow;
 
 // creates a dialog
 -(void)createDialog;
+
+// adds a control to a window/dialog
+-(void)createControl;
 
 // closes and destroys a window
 -(void)closeWindow;

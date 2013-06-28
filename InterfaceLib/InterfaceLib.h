@@ -19,6 +19,7 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
+#include <array>
 #include <type_traits>
 #include <unordered_map>
 
@@ -45,6 +46,8 @@ namespace InterfaceLib
 		GrafPortManager grafPorts;
 		std::vector<const Resources::MENU*> menus;
 		UIChannel* uiChannel;
+		
+		std::array<std::string, 4> dialogParams;
 		
 		uint32_t systemFatalErrorHandler;
 		

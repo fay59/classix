@@ -204,17 +204,21 @@ namespace
 	NSRect dragBounds;
 	NSPoint cornerCursorDistance;
 	NSWindow* draggedWindow;
+	
+	BOOL isCursorVisible;
 }
 
 #define IPC_INDEX(x) [(size_t)IPCMessage::x]
 
 static SEL ipcSelectors[] = {
 	IPC_INDEX(Beep) = @selector(beep),
+	IPC_INDEX(SetCursorVisibility) = @selector(setCursorVisibility),
 	IPC_INDEX(PeekNextEvent) = @selector(peekNextEvent),
 	IPC_INDEX(DequeueNextEvent) = @selector(discardNextEvent),
 	IPC_INDEX(IsMouseDown) = @selector(tellIsMouseDown),
 	IPC_INDEX(CreateWindow) = @selector(createWindow),
 	IPC_INDEX(CreateDialog) = @selector(createDialog),
+	IPC_INDEX(CreateControl) = @selector(createControl),
 	IPC_INDEX(CloseWindow) = @selector(closeWindow),
 	IPC_INDEX(RequestUpdate) = @selector(requestUpdate),
 	IPC_INDEX(DragWindow) = @selector(dragWindow),
@@ -279,6 +283,8 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	
 	// reference cycle, but that's not really a problem because NSApplication is global and everlasting anyways
 	eventHandlers = [NSMutableArray arrayWithObject:self];
+	
+	isCursorVisible = YES;
 	
 	return self;
 }
@@ -546,6 +552,31 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	[self sendDone:_cmd];
 }
 
+-(void)setCursorVisibility
+{
+	IPC_PARAM(visible, bool);
+	[self expectDone];
+	
+	if (visible)
+	{
+		if (!isCursorVisible)
+		{
+			[NSCursor unhide];
+			isCursorVisible = YES;
+		}
+	}
+	else
+	{
+		if (isCursorVisible)
+		{
+			[NSCursor hide];
+			isCursorVisible = NO;
+		}
+	}
+	
+	[self sendDone:_cmd];
+}
+
 -(void)createWindow
 {
 	IPC_PARAM(key, uint32_t);
@@ -578,7 +609,66 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	
 	NSString* nsTitle = [NSString stringWithCString:title.c_str() encoding:NSMacOSRomanStringEncoding];
 	NSRect frame = [self classicRectToXRect:windowRect];
-	// TODO complete function
+	
+	[windowDelegate createDialog:key withRect:frame title:nsTitle visible:visible];
+	
+	[self sendDone:_cmd];
+}
+
+-(void)createControl
+{
+	IPC_PARAM(key, uint32_t);
+	IPC_PARAM(type, InterfaceLib::Control::Type);
+	IPC_PARAM(enabled, bool);
+	IPC_PARAM(bounds, InterfaceLib::Rect);
+	IPC_PARAM(label, std::string);
+	[self expectDone];
+	
+	NSWindow* window = [windowDelegate windowForKey:key];
+	
+	NSString* nsLabel = [NSString stringWithCString:label.c_str() encoding:NSMacOSRomanStringEncoding];
+	NSRect windowBounds = [window.contentView bounds];
+	NSRect frame = [self classicRectToXRect:bounds reference:windowBounds];
+
+	id control;
+	switch (type)
+	{
+		case Control::Button:
+			control = [[NSButton alloc] initWithFrame:frame];
+			break;
+			
+		case Control::CheckBox:
+			control = [[NSButton alloc] initWithFrame:frame];
+			[control setButtonType:NSSwitchButton];
+			break;
+			
+		case Control::EditText:
+			control = [[NSTextField alloc] initWithFrame:frame];
+			[control setBezeled:YES];
+			[control setDrawsBackground:YES];
+			[control setEditable:YES];
+			[control setSelectable:YES];
+			break;
+			
+		case Control::RadioButton:
+			control = [[NSButton alloc] initWithFrame:frame];
+			[control setButtonType:NSRadioButton];
+			break;
+			
+		case Control::StaticText:
+			control = [[NSTextField alloc] initWithFrame:frame];
+			[control setBezeled:NO];
+			[control setDrawsBackground:NO];
+			[control setEditable:NO];
+			[control setSelectable:YES];
+			break;
+			
+		default:
+			assert(false && "Not implemented");
+	}
+	
+	[control setStringValue:nsLabel];
+	[window.contentView addSubview:control];
 	
 	[self sendDone:_cmd];
 }
@@ -801,13 +891,18 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	return NO;
 }
 
--(NSRect)classicRectToXRect:(InterfaceLib::Rect)rect
+-(NSRect)classicRectToXRect:(InterfaceLib::Rect)rect reference:(NSRect)referenceRect
 {
-	CGFloat x = rect.left;
-	CGFloat y = screenBounds.size.height - rect.bottom;
+	CGFloat x = referenceRect.origin.x + rect.left;
+	CGFloat y = referenceRect.origin.y + referenceRect.size.height - rect.bottom;
 	CGFloat width = rect.right - rect.left;
 	CGFloat height = rect.bottom - rect.top;
 	return NSMakeRect(x, y, width, height);
+}
+
+-(NSRect)classicRectToXRect:(InterfaceLib::Rect)rect
+{
+	return [self classicRectToXRect:rect reference:screenBounds];
 }
 
 -(NSPoint)classicPointToXPoint:(InterfaceLib::Point)point

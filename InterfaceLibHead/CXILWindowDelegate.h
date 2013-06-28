@@ -22,6 +22,12 @@
 #import <Foundation/Foundation.h>
 #import "CXILEventHandler.h"
 
+typedef enum CXControlType
+{
+	CXControlButton,
+	CXControlLabel,
+} CXControlType;
+
 // This may be kind of a misnomer. It's the delegate class that handles window stuff in lieu of CXILApplication.
 @interface CXILWindowDelegate : NSObject
 
@@ -31,6 +37,8 @@
 -(void)createDialog:(uint32_t)key withRect:(NSRect)rect title:(NSString*)title visible:(BOOL)visible;
 -(void)setDirtyRect:(CGRect)rect inWindow:(uint32_t)key;
 -(void)destroyWindow:(uint32_t)windowID;
+
+-(NSWindow*)windowForKey:(uint32_t)key;
 
 -(id<CXILEventHandler>)startDragWindow:(uint32_t)windowKey mouseLocation:(NSPoint)location dragBounds:(NSRect)bounds;
 

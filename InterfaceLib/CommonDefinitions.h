@@ -390,10 +390,29 @@ namespace InterfaceLib
 		Common::UInt16 routineCount;
 		RoutineRecord routineRecords[0];
 	};
+	
+	struct Control
+	{
+		enum Type
+		{
+			Button = 4,
+			CheckBox = 5,
+			RadioButton = 6,
+			StaticText = 8,
+			EditText = 16,
+		};
 		
+		Type type;
+		bool enabled;
+		InterfaceLib::Rect bounds;
+		std::string label;
+	};
+	
 	enum class IPCMessage : unsigned
 	{
 		Beep,
+		
+		SetCursorVisibility,
 		
 		PeekNextEvent,
 		DequeueNextEvent,
@@ -402,6 +421,7 @@ namespace InterfaceLib
 		
 		CreateWindow,
 		CreateDialog,
+		CreateControl,
 		
 		DragWindow,
 		CloseWindow,

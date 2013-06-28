@@ -116,6 +116,11 @@
 	[windows removeObjectForKey:@(windowID)];
 }
 
+-(NSWindow*)windowForKey:(uint32_t)key
+{
+	return windows[@(key)];
+}
+
 -(id<CXILEventHandler>)startDragWindow:(uint32_t)windowKey mouseLocation:(NSPoint)location dragBounds:(NSRect)bounds
 {
 	NSWindow* window = windows[@(windowKey)];
