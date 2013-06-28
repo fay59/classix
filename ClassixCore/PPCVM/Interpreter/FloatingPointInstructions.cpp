@@ -69,7 +69,12 @@ namespace PPCVM
 		
 		void Interpreter::fdivx(Instruction inst)
 		{
-			Panic("fdivx is not implemented");
+			state.fpr[inst.FS] = state.fpr[inst.FA] / state.fpr[inst.FB];
+			// TODO exceptions?
+			
+			// TODO flags? Dolphin never sets flags.
+			if (inst.Rc)
+				Panic("Flags are not implemented");
 		}
 		
 		void Interpreter::fmaddsx(Instruction inst)
