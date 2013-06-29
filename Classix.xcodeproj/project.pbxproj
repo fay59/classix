@@ -118,6 +118,11 @@
 		DC86E082166C03730027F40E /* CXReverseAllocationDetails.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC86E080166C03730027F40E /* CXReverseAllocationDetails.cpp */; };
 		DC86E08A166C2D390027F40E /* PanicException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC86E088166C2D380027F40E /* PanicException.cpp */; };
 		DC86E08B166C2D390027F40E /* PanicException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC86E089166C2D390027F40E /* PanicException.h */; };
+		DC87262C177EAD5A00201FA9 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC930AA01708BA4800B739B1 /* CoreFoundation.framework */; };
+		DC872632177EAD5A00201FA9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC872630177EAD5A00201FA9 /* InfoPlist.strings */; };
+		DC872639177EADF100201FA9 /* ControlStripLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC872637177EADF100201FA9 /* ControlStripLib.cpp */; };
+		DC87263C177EB39200201FA9 /* ControlStripLibFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC87263A177EB39200201FA9 /* ControlStripLibFunctions.cpp */; };
+		DC87264D177EB5D400201FA9 /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC8A501B1665DB5900B72EB7 /* run.png in Resources */ = {isa = PBXBuildFile; fileRef = DC8A501A1665DB5900B72EB7 /* run.png */; };
 		DC930A9F170888D100B739B1 /* NativeLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = DC930A9D170888D100B739B1 /* NativeLibrary.h */; };
 		DC930AA11708BA4800B739B1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC930AA01708BA4800B739B1 /* CoreFoundation.framework */; };
@@ -254,6 +259,48 @@
 			remoteGlobalIDString = DC6E87EC1758545200D7B74F;
 			remoteInfo = ThreadsLib;
 		};
+		DC87263D177EB4A900201FA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC3DC2716338A7900792F4A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DC87262A177EAD5A00201FA9;
+			remoteInfo = ControlStripLib;
+		};
+		DC872643177EB4E400201FA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC3DC2716338A7900792F4A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DC787EA7164F68990010A288;
+			remoteInfo = StdCLib;
+		};
+		DC872645177EB4E600201FA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC3DC2716338A7900792F4A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DC930AA51708BBDB00B739B1;
+			remoteInfo = InterfaceLib;
+		};
+		DC872647177EB4E700201FA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC3DC2716338A7900792F4A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DC539CF8174DC0E400BA5946;
+			remoteInfo = MathLib;
+		};
+		DC872649177EB4E900201FA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC3DC2716338A7900792F4A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DC6E87EC1758545200D7B74F;
+			remoteInfo = ThreadsLib;
+		};
+		DC87264B177EB4EB00201FA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC3DC2716338A7900792F4A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DC87262A177EAD5A00201FA9;
+			remoteInfo = ControlStripLib;
+		};
 		DC930ACF1708C24300B739B1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DCC3DC2716338A7900792F4A /* Project object */;
@@ -274,20 +321,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = DC787EA7164F68990010A288;
 			remoteInfo = StdCLib;
-		};
-		DC930B291708C86C00B739B1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC3DC2716338A7900792F4A /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DC787EA7164F68990010A288;
-			remoteInfo = StdCLib;
-		};
-		DC930B2B1708C86C00B739B1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC3DC2716338A7900792F4A /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DC930AA51708BBDB00B739B1;
-			remoteInfo = InterfaceLib;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -523,6 +556,14 @@
 		DC86E081166C03730027F40E /* CXReverseAllocationDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXReverseAllocationDetails.h; sourceTree = "<group>"; };
 		DC86E088166C2D380027F40E /* PanicException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PanicException.cpp; sourceTree = "<group>"; };
 		DC86E089166C2D390027F40E /* PanicException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanicException.h; sourceTree = "<group>"; };
+		DC87262B177EAD5A00201FA9 /* ControlStripLib.ixLibrary */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ControlStripLib.ixLibrary; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC87262F177EAD5A00201FA9 /* ControlStripLib-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ControlStripLib-Info.plist"; sourceTree = "<group>"; };
+		DC872631177EAD5A00201FA9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DC872633177EAD5A00201FA9 /* ControlStripLib-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ControlStripLib-Prefix.pch"; sourceTree = "<group>"; };
+		DC872637177EADF100201FA9 /* ControlStripLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlStripLib.cpp; sourceTree = "<group>"; };
+		DC872638177EADF100201FA9 /* ControlStripLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlStripLib.h; sourceTree = "<group>"; };
+		DC87263A177EB39200201FA9 /* ControlStripLibFunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlStripLibFunctions.cpp; sourceTree = "<group>"; };
+		DC87263B177EB39200201FA9 /* ControlStripLibFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlStripLibFunctions.h; sourceTree = "<group>"; };
 		DC8A501A1665DB5900B72EB7 /* run.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = run.png; sourceTree = "<group>"; };
 		DC930A9D170888D100B739B1 /* NativeLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NativeLibrary.h; sourceTree = "<group>"; };
 		DC930AA01708BA4800B739B1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -647,6 +688,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC787EAE164F68E30010A288 /* libClassixCore.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC872628177EAD5A00201FA9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC87264D177EB5D400201FA9 /* libClassixCore.dylib in Frameworks */,
+				DC87262C177EAD5A00201FA9 /* CoreFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -875,6 +925,7 @@
 				DC930AA81708BBDB00B739B1 /* InterfaceLib */,
 				DC539CFD174DC13200BA5946 /* MathLib */,
 				DC6E87F11758546000D7B74F /* ThreadsLib */,
+				DC87262D177EAD5A00201FA9 /* ControlStripLib */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -962,6 +1013,28 @@
 			);
 			name = CFM;
 			path = ../ClassixCore/CFM;
+			sourceTree = "<group>";
+		};
+		DC87262D177EAD5A00201FA9 /* ControlStripLib */ = {
+			isa = PBXGroup;
+			children = (
+				DC872637177EADF100201FA9 /* ControlStripLib.cpp */,
+				DC872638177EADF100201FA9 /* ControlStripLib.h */,
+				DC87263A177EB39200201FA9 /* ControlStripLibFunctions.cpp */,
+				DC87263B177EB39200201FA9 /* ControlStripLibFunctions.h */,
+				DC87262E177EAD5A00201FA9 /* Supporting Files */,
+			);
+			path = ControlStripLib;
+			sourceTree = "<group>";
+		};
+		DC87262E177EAD5A00201FA9 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				DC87262F177EAD5A00201FA9 /* ControlStripLib-Info.plist */,
+				DC872630177EAD5A00201FA9 /* InfoPlist.strings */,
+				DC872633177EAD5A00201FA9 /* ControlStripLib-Prefix.pch */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		DC930AA81708BBDB00B739B1 /* InterfaceLib */ = {
@@ -1134,6 +1207,7 @@
 				DC930AB81708BC8E00B739B1 /* InterfaceLibHead.app */,
 				DC539CF9174DC0E400BA5946 /* libMathLib.dylib */,
 				DC6E87ED1758545200D7B74F /* libThreadsLib.dylib */,
+				DC87262B177EAD5A00201FA9 /* ControlStripLib.ixLibrary */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1349,8 +1423,11 @@
 			buildRules = (
 			);
 			dependencies = (
-				DC930B2A1708C86C00B739B1 /* PBXTargetDependency */,
-				DC930B2C1708C86C00B739B1 /* PBXTargetDependency */,
+				DC872644177EB4E400201FA9 /* PBXTargetDependency */,
+				DC872646177EB4E600201FA9 /* PBXTargetDependency */,
+				DC872648177EB4E700201FA9 /* PBXTargetDependency */,
+				DC87264A177EB4E900201FA9 /* PBXTargetDependency */,
+				DC87264C177EB4EB00201FA9 /* PBXTargetDependency */,
 			);
 			name = "Classix Debugger";
 			productName = "Classix Debugger";
@@ -1407,6 +1484,23 @@
 			productName = StdCLib;
 			productReference = DC787EA8164F68990010A288 /* libStdCLib.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
+		};
+		DC87262A177EAD5A00201FA9 /* ControlStripLib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC872636177EAD5A00201FA9 /* Build configuration list for PBXNativeTarget "ControlStripLib" */;
+			buildPhases = (
+				DC872627177EAD5A00201FA9 /* Sources */,
+				DC872628177EAD5A00201FA9 /* Frameworks */,
+				DC872629177EAD5A00201FA9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ControlStripLib;
+			productName = ControlStripLib;
+			productReference = DC87262B177EAD5A00201FA9 /* ControlStripLib.ixLibrary */;
+			productType = "com.apple.product-type.bundle";
 		};
 		DC930AA51708BBDB00B739B1 /* InterfaceLib */ = {
 			isa = PBXNativeTarget;
@@ -1475,6 +1569,7 @@
 				DC33EC9D174E964200F66877 /* PBXTargetDependency */,
 				DC930B281708C86600B739B1 /* PBXTargetDependency */,
 				DC930B261708C86200B739B1 /* PBXTargetDependency */,
+				DC87263E177EB4A900201FA9 /* PBXTargetDependency */,
 			);
 			name = Classix;
 			productName = Classix;
@@ -1510,6 +1605,7 @@
 				DC930AB71708BC8E00B739B1 /* InterfaceLibHead */,
 				DC539CF8174DC0E400BA5946 /* MathLib */,
 				DC6E87EC1758545200D7B74F /* ThreadsLib */,
+				DC87262A177EAD5A00201FA9 /* ControlStripLib */,
 			);
 		};
 /* End PBXProject section */
@@ -1536,6 +1632,14 @@
 				DC8A501B1665DB5900B72EB7 /* run.png in Resources */,
 				DC307156166884DE00475144 /* breakpoint-end.png in Resources */,
 				DCCA432D167EF7C4001D9AD2 /* CXDocument.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC872629177EAD5A00201FA9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC872632177EAD5A00201FA9 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1613,6 +1717,15 @@
 			files = (
 				DC787EB2164F6A910010A288 /* StdCLib.cpp in Sources */,
 				DC5CF825166165D200577272 /* StdCLibFunctions.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC872627177EAD5A00201FA9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC872639177EADF100201FA9 /* ControlStripLib.cpp in Sources */,
+				DC87263C177EB39200201FA9 /* ControlStripLibFunctions.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1801,6 +1914,36 @@
 			target = DC6E87EC1758545200D7B74F /* ThreadsLib */;
 			targetProxy = DC789836175897A6003A4FB0 /* PBXContainerItemProxy */;
 		};
+		DC87263E177EB4A900201FA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DC87262A177EAD5A00201FA9 /* ControlStripLib */;
+			targetProxy = DC87263D177EB4A900201FA9 /* PBXContainerItemProxy */;
+		};
+		DC872644177EB4E400201FA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DC787EA7164F68990010A288 /* StdCLib */;
+			targetProxy = DC872643177EB4E400201FA9 /* PBXContainerItemProxy */;
+		};
+		DC872646177EB4E600201FA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DC930AA51708BBDB00B739B1 /* InterfaceLib */;
+			targetProxy = DC872645177EB4E600201FA9 /* PBXContainerItemProxy */;
+		};
+		DC872648177EB4E700201FA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DC539CF8174DC0E400BA5946 /* MathLib */;
+			targetProxy = DC872647177EB4E700201FA9 /* PBXContainerItemProxy */;
+		};
+		DC87264A177EB4E900201FA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DC6E87EC1758545200D7B74F /* ThreadsLib */;
+			targetProxy = DC872649177EB4E900201FA9 /* PBXContainerItemProxy */;
+		};
+		DC87264C177EB4EB00201FA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DC87262A177EAD5A00201FA9 /* ControlStripLib */;
+			targetProxy = DC87264B177EB4EB00201FA9 /* PBXContainerItemProxy */;
+		};
 		DC930AD01708C24300B739B1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DC930AB71708BC8E00B739B1 /* InterfaceLibHead */;
@@ -1815,16 +1958,6 @@
 			isa = PBXTargetDependency;
 			target = DC787EA7164F68990010A288 /* StdCLib */;
 			targetProxy = DC930B271708C86600B739B1 /* PBXContainerItemProxy */;
-		};
-		DC930B2A1708C86C00B739B1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DC787EA7164F68990010A288 /* StdCLib */;
-			targetProxy = DC930B291708C86C00B739B1 /* PBXContainerItemProxy */;
-		};
-		DC930B2C1708C86C00B739B1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DC930AA51708BBDB00B739B1 /* InterfaceLib */;
-			targetProxy = DC930B2B1708C86C00B739B1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1883,6 +2016,14 @@
 				DC4C6467165B62920097288E /* en */,
 			);
 			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		DC872630177EAD5A00201FA9 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC872631177EAD5A00201FA9 /* en */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 		DC930AAB1708BBDB00B739B1 /* InfoPlist.strings */ = {
@@ -1999,6 +2140,44 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		DC872634177EAD5A00201FA9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ControlStripLib/ControlStripLib-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "ControlStripLib/ControlStripLib-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = ixLibrary;
+			};
+			name = Debug;
+		};
+		DC872635177EAD5A00201FA9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ControlStripLib/ControlStripLib-Prefix.pch";
+				INFOPLIST_FILE = "ControlStripLib/ControlStripLib-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = ixLibrary;
 			};
 			name = Release;
 		};
@@ -2220,6 +2399,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		DC872636177EAD5A00201FA9 /* Build configuration list for PBXNativeTarget "ControlStripLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC872634177EAD5A00201FA9 /* Debug */,
+				DC872635177EAD5A00201FA9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		DC930AAF1708BBDB00B739B1 /* Build configuration list for PBXNativeTarget "InterfaceLib" */ = {
 			isa = XCConfigurationList;

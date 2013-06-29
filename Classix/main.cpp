@@ -205,6 +205,7 @@ static int run(const std::string& path, int argc, const char* argv[], const char
 	dlfcnResolver.RegisterLibrary("MathLib");
 	dlfcnResolver.RegisterLibrary("ThreadsLib");
 	bundleResolver.AllowLibrary("InterfaceLib");
+	bundleResolver.AllowLibrary("ControlStripLib");
 	
 	char* directory = strdup(path.c_str());
 	char* executableName = directory;

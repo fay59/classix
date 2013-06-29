@@ -104,7 +104,7 @@ void InterfaceLib_SysEnvirons(InterfaceLib::Globals* globals, MachineState* stat
 	SysEnvRec& record = *globals->allocator.ToPointer<SysEnvRec>(state->r4);
 	record.environsVersion = static_cast<int16_t>(state->r3);
 	record.machineType = 0x41;
-	record.systemVersion = globals->managers.Gestalt().GetValue("sysv");
+	record.systemVersion = static_cast<int16_t>(globals->managers.Gestalt().GetValue("sysv"));
 	record.processor = 3;
 	record.hasFPU = false; // we don't have FPU support yet
 	record.hasColorQD = true;
