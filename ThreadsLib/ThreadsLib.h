@@ -2,7 +2,7 @@
 // ThreadsLib.h
 // Classix
 //
-// Copyright (C) 2012 Félix Cloutier
+// Copyright (C) 2013 Félix Cloutier
 //
 // This file is part of Classix.
 //
