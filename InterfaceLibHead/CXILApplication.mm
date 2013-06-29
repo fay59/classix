@@ -635,11 +635,19 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	{
 		case Control::Button:
 			control = [[NSButton alloc] initWithFrame:frame];
+			[control setTitle:nsLabel];
 			break;
 			
 		case Control::CheckBox:
 			control = [[NSButton alloc] initWithFrame:frame];
 			[control setButtonType:NSSwitchButton];
+			[control setTitle:nsLabel];
+			break;
+			
+		case Control::RadioButton:
+			control = [[NSButton alloc] initWithFrame:frame];
+			[control setButtonType:NSRadioButton];
+			[control setTitle:nsLabel];
 			break;
 			
 		case Control::EditText:
@@ -648,11 +656,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 			[control setDrawsBackground:YES];
 			[control setEditable:YES];
 			[control setSelectable:YES];
-			break;
-			
-		case Control::RadioButton:
-			control = [[NSButton alloc] initWithFrame:frame];
-			[control setButtonType:NSRadioButton];
+			[control setStringValue:nsLabel];
 			break;
 			
 		case Control::StaticText:
@@ -661,13 +665,13 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 			[control setDrawsBackground:NO];
 			[control setEditable:NO];
 			[control setSelectable:YES];
+			[control setStringValue:nsLabel];
 			break;
 			
 		default:
 			assert(false && "Not implemented");
 	}
 	
-	[control setStringValue:nsLabel];
 	[window.contentView addSubview:control];
 	
 	[self sendDone:_cmd];
