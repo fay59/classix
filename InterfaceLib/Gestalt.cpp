@@ -38,20 +38,18 @@ void InterfaceLib_DeleteGestaltValue(InterfaceLib::Globals* globals, MachineStat
 
 void InterfaceLib_Gestalt(InterfaceLib::Globals* globals, MachineState* state)
 {
-	Common::SInt32& result = *globals->allocator.ToPointer<Common::SInt32>(state->r4);
-	switch (state->r3)
+	int32_t result;
+	Common::SInt32& output = *globals->allocator.ToPointer<Common::SInt32>(state->r4);
+	if (globals->managers.Gestalt().GetValue(state->r3, result))
 	{
-		case CharCode<'t', 'h', 'd', 's'>::Value: // thread manager
-			result = 0; // absolutely no threading support right now
-			break;
-			
-		default:
-			result = 0;
-			state->r3 = -5551; // gestaltUndefSelectorErr
-			return;
+		output = result;
+		state->r3 = 0;
 	}
-	
-	state->r3 = 0;
+	else
+	{
+		output = 0;
+		state->r3 = -5551;
+	}
 }
 
 void InterfaceLib_NewGestalt(InterfaceLib::Globals* globals, MachineState* state)

@@ -23,6 +23,11 @@
 
 namespace OSEnvironment
 {
+	Gestalt::Gestalt()
+	{
+		SetValue("sysv", 0x0922);
+	}
+	
 	void Gestalt::SetValue(uint32_t key, int32_t value)
 	{
 		auto iter = callbackValues.find(key);
@@ -62,6 +67,19 @@ namespace OSEnvironment
 	bool Gestalt::GetValue(const Common::FourCharCode& code, int32_t &value)
 	{
 		return GetValue(code.code, value);
+	}
+	
+	int32_t Gestalt::GetValue(uint32_t key)
+	{
+		int32_t result;
+		if (!GetValue(key, result))
+			throw std::logic_error("Could not find gestalt key");
+		return result;
+	}
+	
+	int32_t Gestalt::GetValue(const Common::FourCharCode& code)
+	{
+		return GetValue(code.code);
 	}
 	
 	Gestalt::~Gestalt()

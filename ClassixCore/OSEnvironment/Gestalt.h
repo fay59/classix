@@ -43,6 +43,8 @@ namespace OSEnvironment
 		std::unordered_map<uint32_t, GestaltCallback*> callbackValues;
 		
 	public:
+		Gestalt();
+		
 		template<typename TType, typename... TParams>
 		void SetCallback(uint32_t key, TParams&&... args)
 		{
@@ -58,8 +60,11 @@ namespace OSEnvironment
 		
 		void SetValue(uint32_t key, int32_t value);
 		void SetValue(const Common::FourCharCode& code, int32_t value);
+		
 		bool GetValue(uint32_t key, int32_t& value);
 		bool GetValue(const Common::FourCharCode& code, int32_t& value);
+		int32_t GetValue(uint32_t key);
+		int32_t GetValue(const Common::FourCharCode& code);
 		
 		~Gestalt();
 	};
