@@ -31,7 +31,7 @@ namespace PPCVM
 		uint32_t hex;
 
 		Instruction(uint32_t hex) : hex(hex) {}
-		Instruction() : hex(0) {}
+		Instruction() = default;
 
 		struct
 		{

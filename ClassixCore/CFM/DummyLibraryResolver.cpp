@@ -43,7 +43,7 @@ namespace CFM
 	SymbolResolver* DummyLibraryResolver::ResolveLibrary(const std::string &name)
 	{
 		std::cerr << "*** resolving " << name << " as a dummy library\n";
-		uint32_t address = allocator.CreateInvalidAddress("Invalid " + name + " Resolved Address");
+		uint32_t address = allocator.CreateInvalidAddress("Fake " + name + " Resolved Address");
 		resolvers.emplace(std::make_pair(address, DummySymbolResolver(address, name)));
 		return &resolvers.find(address)->second;
 	}

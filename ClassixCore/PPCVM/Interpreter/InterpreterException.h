@@ -22,6 +22,7 @@
 #ifndef __Classix__InterpreterException__
 #define __Classix__InterpreterException__
 
+#include <memory>
 #include <exception>
 #include <cstdint>
 #include "PPCRuntimeException.h"
@@ -32,13 +33,14 @@ namespace PPCVM
 	{
 		class InterpreterException : public std::exception
 		{
-			Common::PPCRuntimeException* reason;
+			std::shared_ptr<Common::PPCRuntimeException> reason;
 			uint32_t pc;
 			
 		public:
 			InterpreterException(uint32_t pc, const Common::PPCRuntimeException& reason);
 			
 			uint32_t GetPC() const;
+			std::shared_ptr<Common::PPCRuntimeException> GetReason();
 			virtual const char* what() const noexcept override;
 			
 			virtual ~InterpreterException() override;

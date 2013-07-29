@@ -287,7 +287,7 @@ void InterfaceLib_StopAlert(InterfaceLib::Globals* globals, MachineState* state)
 	}
 	
 	// only return when the dialog is closed
-	abort();
+	throw PPCVM::NotImplementedException("Alerts not really implemented");
 }
 
 void InterfaceLib_UpdateDialog(InterfaceLib::Globals* globals, MachineState* state)

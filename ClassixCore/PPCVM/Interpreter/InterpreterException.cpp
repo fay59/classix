@@ -34,14 +34,17 @@ namespace PPCVM
 			return pc;
 		}
 		
+		std::shared_ptr<Common::PPCRuntimeException> InterpreterException::GetReason()
+		{
+			return reason;
+		}
+		
 		const char* InterpreterException::what() const noexcept
 		{
 			return reason->what();
 		}
 		
 		InterpreterException::~InterpreterException()
-		{
-			delete reason;
-		}
+		{ }
 	}
 }

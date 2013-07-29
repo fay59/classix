@@ -104,8 +104,7 @@ namespace OSEnvironment
 			if (pair.first == self || pair.second == 0)
 				continue;
 			
-			kern_return_t result = thread_suspend(pair.second);
-			if (result != 0)
+			if (kern_return_t result = thread_suspend(pair.second))
 			{
 				std::cerr << "*** couldn't suspend thread " << pair.second << ": error " << result;
 				abort();
@@ -115,7 +114,7 @@ namespace OSEnvironment
 	
 	void ThreadManager::ExitCriticalSection() noexcept
 	{
-		assert(inCriticalSection != 0 && "Not in a critical section");
+		assert(inCriticalSection > 0 && "Not in a critical section");
 		
 		thread_act_t self = mach_thread_self();
 		for (auto& pair : usedThreads)
@@ -123,8 +122,7 @@ namespace OSEnvironment
 			if (pair.first == self || pair.second == 0)
 				continue;
 			
-			kern_return_t result = thread_resume(pair.second);
-			if (result != 0)
+			if (kern_return_t result = thread_resume(pair.second))
 			{
 				std::cerr << "*** couldn't resume thread " << pair.second << ": error " << result;
 				abort();
