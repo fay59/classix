@@ -36,6 +36,7 @@
 
 #include "MachineState.h"
 #include "BigEndian.h"
+#include "Structures.h"
 #include "StdCLib.h"
 #include "StdCLibFunctions.h"
 #include "SymbolResolver.h"
@@ -172,7 +173,7 @@ namespace StdCLib
 	struct Globals
 	{
 		Scalars scalars;
-		uint8_t padding[32]; // just some buffer space before we get to the allocator
+		std::deque<PEF::TransitionVector> atExit;
 		Common::Allocator& allocator;
 		
 		static std::map<off_t, std::string> FieldOffsets;
@@ -401,7 +402,7 @@ extern "C"
 	SymbolType LibraryLookup(StdCLib::Globals* globals, const char* name, void** result)
 	{
 		if (name == CFM::SymbolResolver::InitSymbolName)
-			name = "__StdCLib_IntEnvInit";
+			name = "__StdCLibInit";
 		
 		char functionName[36] = "StdCLib_";
 		char* end = stpncpy(functionName + 8, name, 27);
@@ -462,7 +463,7 @@ namespace
 
 extern "C"
 {
-	void StdCLib___StdCLib_IntEnvInit(StdCLib::Globals* globals, MachineState* state)
+	void StdCLib___StdCLibInit(StdCLib::Globals* globals, MachineState* state)
 	{
 		globals->scalars._IntEnv.argc = state->r3;
 		globals->scalars._IntEnv.argv = state->r4;
@@ -810,7 +811,9 @@ extern "C"
 
 	void StdCLib_atexit(StdCLib::Globals* globals, MachineState* state)
 	{
-		throw PPCVM::NotImplementedException(__func__);
+		const PEF::TransitionVector* vector = ToPointer<PEF::TransitionVector>(state->r3);
+		globals->atExit.push_back(*vector);
+		state->r3 = 0;
 	}
 
 	void StdCLib_atof(StdCLib::Globals* globals, MachineState* state)
