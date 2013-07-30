@@ -29,7 +29,7 @@
 #include <deque>
 #include <unordered_map>
 
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "BigEndian.h"
 #include "FourCharCode.h"
 
@@ -58,13 +58,13 @@ namespace OSEnvironment
 	{
 		friend class ResourceManager;
 		
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		std::array<uint8_t, 0x70>* systemData;
 		std::array<uint8_t, 0x80>* applicationData;
 		std::unordered_map<uint32_t, std::unordered_map<uint16_t, ResourceEntry>> resourcesById;
 		std::unordered_map<uint32_t, std::unordered_map<std::string, ResourceEntry*>> resourcesByName;
 		
-		explicit ResourceCatalog(Common::IAllocator& allocator, const std::string& filePath);
+		explicit ResourceCatalog(Common::Allocator& allocator, const std::string& filePath);
 		
 	public:
 		ResourceCatalog(const ResourceCatalog&) = delete;
@@ -80,11 +80,11 @@ namespace OSEnvironment
 	
 	class ResourceManager
 	{
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		std::deque<ResourceCatalog> catalogs;
 		
 	public:
-		ResourceManager(Common::IAllocator& allocator);
+		ResourceManager(Common::Allocator& allocator);
 		
 		void LoadFileResources(const std::string& filePath);
 		

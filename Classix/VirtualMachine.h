@@ -45,7 +45,7 @@ namespace Classix
 		friend class ProgramControlHandle;
 		
 		PPCVM::MachineState state;
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		OSEnvironment::Managers& managers;
 		
 	public:
@@ -56,7 +56,7 @@ namespace Classix
 		PPCVM::Execution::Interpreter interpreter;
 		
 	public:
-		VirtualMachine(Common::IAllocator& allocator, OSEnvironment::Managers& managers);
+		VirtualMachine(Common::Allocator& allocator, OSEnvironment::Managers& managers);
 		
 		void AddLibraryResolver(CFM::LibraryResolver& resolver);
 		

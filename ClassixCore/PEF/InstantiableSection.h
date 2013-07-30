@@ -24,20 +24,20 @@
 
 #include <string>
 #include "Structures.h"
-#include "IAllocator.h"
+#include "Allocator.h"
 
 namespace PEF
 {
 	class InstantiableSection
 	{
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		const SectionHeader* header;
 		
 	public:
 		std::string Name;
 		uint8_t* Data;
 		
-		InstantiableSection(Common::IAllocator& allocator, const SectionHeader* header, const std::string& name, const uint8_t* base, const uint8_t* end);
+		InstantiableSection(Common::Allocator& allocator, const SectionHeader* header, const std::string& name, const uint8_t* base, const uint8_t* end);
 		InstantiableSection(const InstantiableSection& that) = delete;
 		InstantiableSection(InstantiableSection&& that);
 		

@@ -25,11 +25,11 @@
 #include <set>
 #include <list>
 #include <array>
-#include "IAllocator.h"
+#include "Allocator.h"
 
 namespace Common
 {
-	class VASAllocator : public Common::IAllocator
+	class VASAllocator : public Common::Allocator
 	{
 		struct VASAllocationDetails;
 		typedef uint8_t MemoryPage[0x1000];

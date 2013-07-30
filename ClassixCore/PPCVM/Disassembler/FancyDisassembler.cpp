@@ -53,7 +53,7 @@ namespace PPCVM
 #pragma mark -
 #pragma mark Section Disassembler
 		
-		SectionDisassembler::SectionDisassembler(Common::IAllocator& allocator, uint32_t sectionNumber, const InstantiableSection& section)
+		SectionDisassembler::SectionDisassembler(Common::Allocator& allocator, uint32_t sectionNumber, const InstantiableSection& section)
 		: allocator(allocator), section(section)
 		{
 			disasm = new Disassembler(allocator, SectionBegin(section), SectionEnd(section));
@@ -94,7 +94,7 @@ namespace PPCVM
 		
 #pragma mark -
 #pragma mark Fancy Disassembler
-		FancyDisassembler::FancyDisassembler(Common::IAllocator& allocator)
+		FancyDisassembler::FancyDisassembler(Common::Allocator& allocator)
 		: allocator(allocator)
 		{ }
 		

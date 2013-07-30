@@ -22,7 +22,7 @@
 #ifndef __Classix__ThreadsLib__
 #define __Classix__ThreadsLib__
 
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "SymbolType.h"
 
 namespace ThreadsLib
@@ -37,7 +37,7 @@ namespace OSEnvironment
 
 extern "C"
 {
-	ThreadsLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers);
+	ThreadsLib::Globals* LibraryLoad(Common::Allocator* allocator, OSEnvironment::Managers* managers);
 	SymbolType LibraryLookup(ThreadsLib::Globals* globals, const char* symbolName, void** symbol);
 	void LibraryUnload(ThreadsLib::Globals* context);
 	

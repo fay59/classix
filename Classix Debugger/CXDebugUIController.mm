@@ -29,7 +29,7 @@
 #import "CXUnmangle.h"
 
 #include "SymbolResolver.h"
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "FragmentManager.h"
 #include "PEFSymbolResolver.h"
 #include "FancyDisassembler.h"
@@ -335,7 +335,7 @@ static NSNib* uiNib;
 	NSMenu* resolverMenu = [[[NSMenu alloc] initWithTitle:@"Debugger"] autorelease];
 	
 	CFM::FragmentManager* cfm;
-	Common::IAllocator* allocator;
+	Common::Allocator* allocator;
 	[[parent.vm fragmentManager] getValue:&cfm];
 	[[parent.vm allocator] getValue:&allocator];
 	

@@ -26,7 +26,7 @@
 #include <memory>
 #include "LibraryResolver.h"
 #include "FragmentManager.h"
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "PEFSymbolResolver.h"
 
 namespace CFM
@@ -34,11 +34,11 @@ namespace CFM
 	class PEFLibraryResolver : public LibraryResolver
 	{
 		FragmentManager& cfm;
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		std::deque<std::unique_ptr<PEFSymbolResolver>> resolvers;
 		
 	public:
-		PEFLibraryResolver(Common::IAllocator& allocator, FragmentManager& manager);
+		PEFLibraryResolver(Common::Allocator& allocator, FragmentManager& manager);
 						   
 		virtual SymbolResolver* ResolveLibrary(const std::string& name) override;
 		virtual ~PEFLibraryResolver() override;

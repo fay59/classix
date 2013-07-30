@@ -127,7 +127,7 @@ namespace ClassixCore
 		CFRelease(bundle);
 	}
 	
-	BundleLibraryResolver::BundleLibraryResolver(Common::IAllocator& allocator, OSEnvironment::Managers& managers, const std::string& directoryPath)
+	BundleLibraryResolver::BundleLibraryResolver(Common::Allocator& allocator, OSEnvironment::Managers& managers, const std::string& directoryPath)
 	: allocator(allocator), managers(managers)
 	{
 		const UInt8* buffer = reinterpret_cast<const UInt8*>(directoryPath.c_str());

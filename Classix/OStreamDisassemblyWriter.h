@@ -25,15 +25,15 @@
 #include <iostream>
 #include <string>
 #include "FancyDisassembler.h"
-#include "IAllocator.h"
+#include "Allocator.h"
 
 class OStreamDisassemblyWriter : public PPCVM::Disassembly::DisassemblyWriter
 {
 	std::ostream& into;
-	Common::IAllocator& allocator;
+	Common::Allocator& allocator;
 	
 public:
-	OStreamDisassemblyWriter(Common::IAllocator& allocator, std::ostream& into);
+	OStreamDisassemblyWriter(Common::Allocator& allocator, std::ostream& into);
 	
 	virtual void EnterSection(const PEF::InstantiableSection& section, uint32_t sectionIndex) override;
 	virtual void EnterLabel(const PPCVM::Disassembly::InstructionRange& label, uint32_t labelAddress) override;

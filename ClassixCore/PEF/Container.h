@@ -29,13 +29,13 @@
 #include "Structures.h"
 #include "InstantiableSection.h"
 #include "LoaderSection.h"
-#include "IAllocator.h"
+#include "Allocator.h"
 
 namespace PEF
 {
 	class Container
 	{
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		const ContainerHeader* header;
 		LoaderSection* loader;
 		std::vector<InstantiableSection> sections;
@@ -48,7 +48,7 @@ namespace PEF
 		const uint8_t* Base;
 		const uint8_t* End;
 		
-		Container(Common::IAllocator& allocator, const void* base, const void* end);
+		Container(Common::Allocator& allocator, const void* base, const void* end);
 		
 		iterator begin();
 		iterator end();
@@ -58,7 +58,7 @@ namespace PEF
 		size_t size() const;
 		size_t data_size() const;
 		
-		Common::IAllocator& GetAllocator();
+		Common::Allocator& GetAllocator();
 		
 		InstantiableSection& GetSection(uint32_t index);
 		const InstantiableSection& GetSection(uint32_t index) const;

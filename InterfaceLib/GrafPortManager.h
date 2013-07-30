@@ -23,7 +23,7 @@
 #define __Classix__GrafPortManager__
 
 #include <unordered_map>
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "CommonDefinitions.h"
 
 // I don't want to #include IOSurface or CoreGraphics here because it brings
@@ -38,14 +38,14 @@ namespace InterfaceLib
 	
 	class GrafPortManager
 	{
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		std::unordered_map<uint32_t, GrafPortData> ports;
 		std::unordered_map<uint32_t, CGRect> updatedRegions;
 		GrafPortData* currentPort;
 		Palette* defaultPalette;
 		
 	public:
-		GrafPortManager(Common::IAllocator& allocator);
+		GrafPortManager(Common::Allocator& allocator);
 		
 		InterfaceLib::Palette& GetDefaultPalette();
 		

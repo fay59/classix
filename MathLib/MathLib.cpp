@@ -30,11 +30,11 @@ namespace MathLib
 {
 	struct Globals
 	{
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		uint32_t FE_DFL_ENV;
 		Common::Real64 pi;
 		
-		Globals(Common::IAllocator& allocator)
+		Globals(Common::Allocator& allocator)
 		: allocator(allocator)
 		{
 			pi = M_PI;
@@ -51,7 +51,7 @@ const std::string envName = "_FE_DFL_ENV";
 
 extern "C"
 {
-	Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers)
+	Globals* LibraryLoad(Common::Allocator* allocator, OSEnvironment::Managers* managers)
 	{
 		return allocator->Allocate<Globals>("MathLib Globals", *allocator);
 	}

@@ -20,7 +20,7 @@
 //
 
 #import "CXDocument.h"
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "PEFSymbolResolver.h"
 
 @interface CXDocument (Private)
@@ -66,7 +66,7 @@ static NSString* CXDebugDocumentUTI = @"com.felixcloutier.classix.document";
 	using namespace CFM;
 	using namespace PEF;
 	
-	IAllocator* allocator;
+	Allocator* allocator;
 	FragmentManager* cfm;
 	
 	[vm.fragmentManager getValue:&cfm];

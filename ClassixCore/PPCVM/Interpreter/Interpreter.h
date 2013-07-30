@@ -23,7 +23,7 @@
 #define INTERPRETER_H
 
 #include "NativeCall.h"
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "MachineState.h"
 #include "Instruction.h"
 #include "InstructionDispatcher.h"
@@ -40,7 +40,7 @@ namespace PPCVM
 		class Interpreter : public InstructionDispatcher<Interpreter>
 		{
 			MachineState& state;
-			Common::IAllocator& allocator;
+			Common::Allocator& allocator;
 			Common::AutoAllocation endAddress;
 			
 			const Common::UInt32* currentAddress;
@@ -49,7 +49,7 @@ namespace PPCVM
 			const void* ExecuteNative(const NativeCall* address);
 			
 		public:
-			Interpreter(Common::IAllocator& allocator, MachineState& state);
+			Interpreter(Common::Allocator& allocator, MachineState& state);
 			virtual ~Interpreter();
 			
 			virtual void Execute(const void* address);

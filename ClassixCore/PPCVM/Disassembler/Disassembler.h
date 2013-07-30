@@ -23,7 +23,7 @@
 #define __Classix__Disassembler__
 
 #include "BigEndian.h"
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "Instruction.h"
 #include "InstructionRange.h"
 #include <map>
@@ -39,16 +39,16 @@ namespace PPCVM
 			
 			std::map<const Common::UInt32*, InstructionRange> labels;
 			
-			void bcx(Common::IAllocator& allocator, const Common::UInt32* address);
-			void bx(Common::IAllocator& allocator, const Common::UInt32* address);
-			void bcctrx(Common::IAllocator& allocator, const Common::UInt32* address);
-			void bclrx(Common::IAllocator& allocator, const Common::UInt32* address);
+			void bcx(Common::Allocator& allocator, const Common::UInt32* address);
+			void bx(Common::Allocator& allocator, const Common::UInt32* address);
+			void bcctrx(Common::Allocator& allocator, const Common::UInt32* address);
+			void bclrx(Common::Allocator& allocator, const Common::UInt32* address);
 			
 		public:
 			typedef std::map<const Common::UInt32*, InstructionRange>::iterator iterator;
 			typedef std::map<const Common::UInt32*, InstructionRange>::const_iterator const_iterator;
 			
-			Disassembler(Common::IAllocator& allocator, const Common::UInt32* begin, const Common::UInt32* end);
+			Disassembler(Common::Allocator& allocator, const Common::UInt32* begin, const Common::UInt32* end);
 			
 			InstructionRange* FindRange(const Common::UInt32* address);
 			const InstructionRange* FindRange(const Common::UInt32* address) const;

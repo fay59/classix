@@ -24,7 +24,7 @@
 #include <unordered_map>
 
 #include "CommonDefinitions.h"
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "MachineState.h"
 #include "SymbolType.h"
 #include "BigEndian.h"
@@ -41,7 +41,7 @@ namespace InterfaceLib
 		// the padding helps make it less harmful if a program was to overwrite stuff from the globals
 		uint8_t padding[0x1000];
 		
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		OSEnvironment::Managers& managers;
 		GrafPortManager grafPorts;
 		std::vector<const Resources::MENU*> menus;
@@ -51,7 +51,7 @@ namespace InterfaceLib
 		
 		uint32_t systemFatalErrorHandler;
 		
-		Globals(Common::IAllocator& allocator, OSEnvironment::Managers& managers);
+		Globals(Common::Allocator& allocator, OSEnvironment::Managers& managers);
 		
 		inline UIChannel& ipc() { return *uiChannel; }
 		inline OSEnvironment::ResourceManager& resources() { return managers.ResourceManager(); }
@@ -65,7 +65,7 @@ namespace InterfaceLib
 
 extern "C"
 {
-	InterfaceLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers);
+	InterfaceLib::Globals* LibraryLoad(Common::Allocator* allocator, OSEnvironment::Managers* managers);
 	SymbolType LibraryLookup(InterfaceLib::Globals* globals, const char* symbolName, void** symbol);
 	void LibraryUnload(InterfaceLib::Globals* context);
 	extern const char* LibrarySymbolNames[];

@@ -107,7 +107,7 @@ namespace Classix
 		return this->operator()(argv, argv + argc, envp, envpEnd);
 	}
 	
-	VirtualMachine::VirtualMachine(Common::IAllocator& allocator, OSEnvironment::Managers& managers)
+	VirtualMachine::VirtualMachine(Common::Allocator& allocator, OSEnvironment::Managers& managers)
 	: allocator(allocator), managers(managers), interpreter(allocator, state), pefResolver(allocator, fragmentManager)
 	{
 		AddLibraryResolver(pefResolver);

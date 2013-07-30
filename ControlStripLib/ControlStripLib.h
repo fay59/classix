@@ -22,7 +22,7 @@
 #ifndef __Classix__File__
 #define __Classix__File__
 
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "SymbolType.h"
 
 namespace ControlStripLib
@@ -37,7 +37,7 @@ namespace OSEnvironment
 
 extern "C"
 {
-	ControlStripLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers);
+	ControlStripLib::Globals* LibraryLoad(Common::Allocator* allocator, OSEnvironment::Managers* managers);
 	SymbolType LibraryLookup(ControlStripLib::Globals* globals, const char* symbolName, void** symbol);
 	void LibraryUnload(ControlStripLib::Globals* context);
 	

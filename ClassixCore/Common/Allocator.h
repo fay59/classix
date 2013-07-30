@@ -1,5 +1,5 @@
 //
-// IAllocator.h
+// Allocator.h
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,8 +19,8 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __pefdump__IAllocator__
-#define __pefdump__IAllocator__
+#ifndef __pefdump__Allocator__
+#define __pefdump__Allocator__
 
 #include <cstdint>
 #include <cstddef>
@@ -33,15 +33,15 @@
 
 namespace Common
 {
-	class IAllocator;
+	class Allocator;
 	
 	class AutoAllocation
 	{
 		uint32_t address;
-		IAllocator& allocator;
+		Allocator& allocator;
 		
 	public:
-		AutoAllocation(IAllocator& allocator, size_t size, const AllocationDetails& details);
+		AutoAllocation(Allocator& allocator, size_t size, const AllocationDetails& details);
 		AutoAllocation(const AutoAllocation& that) = delete;
 		AutoAllocation(AutoAllocation&& that);
 		
@@ -60,7 +60,7 @@ namespace Common
 	// we're not using C++ allocators because we're really more interested in creating big flat memory zones
 	// than actualy creating objects; and besides, we don't want to virally add templates to anything that needs
 	// to allocate memory.
-	class IAllocator
+	class Allocator
 	{
 	public:
 #pragma mark Virtual Interface
@@ -70,7 +70,7 @@ namespace Common
 		virtual const AllocationDetails* GetDetails(uint32_t address) const = 0;
 		virtual uint32_t GetAllocationOffset(uint32_t address) const = 0;
 		
-		virtual ~IAllocator();
+		virtual ~Allocator();
 		
 	protected:
 		virtual void* IntPtrToPointer(uint32_t value) const = 0;
@@ -78,7 +78,7 @@ namespace Common
 		
 #pragma mark -
 	public:
-		enum IAllocatorConstants
+		enum AllocatorConstants
 		{
 			ScribbleAllocPattern = 0xaf,
 			ScribbleFreePattern = 0xbe,
@@ -203,4 +203,4 @@ namespace Common
 	}
 }
 
-#endif /* defined(__pefdump__IAllocator__) */
+#endif /* defined(__pefdump__Allocator__) */

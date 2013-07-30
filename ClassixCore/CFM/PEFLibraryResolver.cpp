@@ -46,7 +46,7 @@ namespace
 
 namespace CFM
 {
-	PEFLibraryResolver::PEFLibraryResolver(Common::IAllocator& allocator, FragmentManager& manager)
+	PEFLibraryResolver::PEFLibraryResolver(Common::Allocator& allocator, FragmentManager& manager)
 	: cfm(manager)
 	, allocator(allocator)
 	{ }

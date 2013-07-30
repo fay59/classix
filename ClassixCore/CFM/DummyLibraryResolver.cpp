@@ -26,7 +26,7 @@
 
 namespace CFM
 {
-	DummyLibraryResolver::DummyLibraryResolver(Common::IAllocator& allocator)
+	DummyLibraryResolver::DummyLibraryResolver(Common::Allocator& allocator)
 	: allocator(allocator)
 	{ }
 	

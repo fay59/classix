@@ -23,7 +23,7 @@
 
 namespace OSEnvironment
 {
-	Managers::Managers(Common::IAllocator& allocator)
+	Managers::Managers(Common::Allocator& allocator)
 	: allocator(allocator), resourceManager(allocator)
 	{ }
 	

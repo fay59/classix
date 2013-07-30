@@ -22,7 +22,7 @@
 #ifndef __Classix__Managers__
 #define __Classix__Managers__
 
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "Gestalt.h"
 #include "ResourceManager.h"
 #include "ThreadManager.h"
@@ -31,13 +31,13 @@ namespace OSEnvironment
 {
 	class Managers
 	{
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		Gestalt gestalt;
 		ResourceManager resourceManager;
 		ThreadManager threadManager;
 		
 	public:
-		Managers(Common::IAllocator& allocator);
+		Managers(Common::Allocator& allocator);
 		
 		Gestalt& Gestalt();
 		ResourceManager& ResourceManager();

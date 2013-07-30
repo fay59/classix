@@ -94,7 +94,7 @@ namespace
 
 namespace OSEnvironment
 {
-	ResourceCatalog::ResourceCatalog(Common::IAllocator& allocator, const std::string& path)
+	ResourceCatalog::ResourceCatalog(Common::Allocator& allocator, const std::string& path)
 	: allocator(allocator)
 	{
 		// FIXME check for buffer overflows!
@@ -237,7 +237,7 @@ namespace OSEnvironment
 		allocator.Deallocate(applicationData);
 	}
 	
-	ResourceManager::ResourceManager(Common::IAllocator& allocator)
+	ResourceManager::ResourceManager(Common::Allocator& allocator)
 	: allocator(allocator)
 	{ }
 	

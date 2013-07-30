@@ -84,7 +84,7 @@ namespace
 		return color;
 	}
 	
-	UGrafPort* AllocateGrafPort(Common::IAllocator& allocator, uint32_t width, uint32_t height, const std::string& allocationName)
+	UGrafPort* AllocateGrafPort(Common::Allocator& allocator, uint32_t width, uint32_t height, const std::string& allocationName)
 	{
 		std::stringstream ss;
 		ss << "GrafPort <" << width << "x" << height << ">";
@@ -106,7 +106,7 @@ namespace
 		InterfaceLib::ColorTable* colorTable;
 		InterfaceLib::Palette* palette;
 		
-		ColorGrafPortEverythingElse(Common::IAllocator& allocator, const Palette* palette)
+		ColorGrafPortEverythingElse(Common::Allocator& allocator, const Palette* palette)
 		{
 			memset(this, 0, sizeof *this);
 			
@@ -146,7 +146,7 @@ namespace
 			pixMap.pmTable = allocator.ToIntPtr(&colorTablePointer);
 		}
 		
-		static ColorGrafPortEverythingElse& Allocate(Common::IAllocator& allocator, const Palette* palette, const std::string& allocationName = "Color Graf Port Support")
+		static ColorGrafPortEverythingElse& Allocate(Common::Allocator& allocator, const Palette* palette, const std::string& allocationName = "Color Graf Port Support")
 		{
 			ColorGrafPortEverythingElse* support = allocator.Allocate<ColorGrafPortEverythingElse>(allocationName, allocator, palette);
 			
@@ -247,7 +247,7 @@ namespace InterfaceLib
 		}
 	};
 	
-	GrafPortManager::GrafPortManager(Common::IAllocator& allocator)
+	GrafPortManager::GrafPortManager(Common::Allocator& allocator)
 	: allocator(allocator)
 	{
 		const int16_t paletteEntryCount = static_cast<int16_t>(ArraySize(defaultColors));

@@ -23,7 +23,7 @@
 
 namespace ClassixCore
 {
-	NativeSymbolResolver::NativeSymbolResolver(Common::IAllocator& allocator, OSEnvironment::Managers& managers, const NativeLibrary& library)
+	NativeSymbolResolver::NativeSymbolResolver(Common::Allocator& allocator, OSEnvironment::Managers& managers, const NativeLibrary& library)
 	: library(library)
 	, allocator(allocator)
 	, managers(managers)

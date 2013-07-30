@@ -22,7 +22,7 @@
 #ifndef __pefdump__STAllocator__
 #define __pefdump__STAllocator__
 
-#include "IAllocator.h"
+#include "Allocator.h"
 #include <cstdint>
 #include <string>
 #include <memory>
@@ -35,7 +35,7 @@ namespace Common
 		template<typename U>
 		friend class STAllocator;
 		
-		IAllocator& allocator;
+		Allocator& allocator;
 		std::shared_ptr<std::string> nextName;
 		
 	public:
@@ -52,7 +52,7 @@ namespace Common
 			*nextName = str;
 		}
 		
-		STAllocator(IAllocator& allocator)
+		STAllocator(Allocator& allocator)
 		: allocator(allocator), nextName(new std::string)
 		{ }
 		

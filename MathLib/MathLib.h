@@ -22,7 +22,7 @@
 #ifndef __Classix__MathLib__
 #define __Classix__MathLib__
 
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "MachineState.h"
 #include "SymbolType.h"
 
@@ -38,7 +38,7 @@ namespace OSEnvironment
 
 extern "C"
 {
-	MathLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers);
+	MathLib::Globals* LibraryLoad(Common::Allocator* allocator, OSEnvironment::Managers* managers);
 	SymbolType LibraryLookup(MathLib::Globals* globals, const char* symbolName, void** symbol);
 	void LibraryUnload(MathLib::Globals* globals);
 	

@@ -53,7 +53,7 @@ namespace
 #endif
 	
 	template<typename T>
-	inline T* GetEffectivePointer(Common::IAllocator& allocator, MachineState& state, Instruction inst)
+	inline T* GetEffectivePointer(Common::Allocator& allocator, MachineState& state, Instruction inst)
 	{
 		uint32_t address = inst.RA
 			? state.gpr[inst.RA] + inst.SIMM_16
@@ -62,7 +62,7 @@ namespace
 	}
 	
 	template<typename T>
-	inline T* GetEffectiveArrayPointer(Common::IAllocator& allocator, MachineState& state, Instruction inst, size_t count)
+	inline T* GetEffectiveArrayPointer(Common::Allocator& allocator, MachineState& state, Instruction inst, size_t count)
 	{
 		uint32_t address = inst.RA
 			? state.gpr[inst.RA] + inst.SIMM_16
@@ -71,14 +71,14 @@ namespace
 	}
 	
 	template<typename T>
-	inline T* GetEffectivePointerU(Common::IAllocator& allocator, MachineState& state, Instruction inst)
+	inline T* GetEffectivePointerU(Common::Allocator& allocator, MachineState& state, Instruction inst)
 	{
 		uint32_t address = state.gpr[inst.RA] + inst.SIMM_16;
 		return allocator.ToPointer<T>(address);
 	}
 	
 	template<typename T>
-	inline T* GetEffectivePointerX(Common::IAllocator& allocator, MachineState& state, Instruction inst)
+	inline T* GetEffectivePointerX(Common::Allocator& allocator, MachineState& state, Instruction inst)
 	{
 		uint32_t address = inst.RA
 			? state.gpr[inst.RA] + state.gpr[inst.RB]
@@ -87,7 +87,7 @@ namespace
 	}
 	
 	template<typename T>
-	inline T* GetEffectivePointerUX(Common::IAllocator& allocator, MachineState& state, Instruction inst)
+	inline T* GetEffectivePointerUX(Common::Allocator& allocator, MachineState& state, Instruction inst)
 	{
 		uint32_t address = state.gpr[inst.RA] + state.gpr[inst.RB];
 		return allocator.ToPointer<T>(address);

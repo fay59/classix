@@ -48,7 +48,7 @@ namespace ClassixCore
 	
 	class BundleLibraryResolver : public CFM::LibraryResolver
 	{
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		OSEnvironment::Managers& managers;
 		std::unordered_map<std::string, CFBundleRef> allBundles;
 		std::unordered_set<std::string> allowedBundles;
@@ -56,7 +56,7 @@ namespace ClassixCore
 		std::deque<NativeSymbolResolver> resolvers;
 		
 	public:
-		explicit BundleLibraryResolver(Common::IAllocator& allocator, OSEnvironment::Managers& managers, const std::string& directoryPath = ".");
+		explicit BundleLibraryResolver(Common::Allocator& allocator, OSEnvironment::Managers& managers, const std::string& directoryPath = ".");
 		BundleLibraryResolver(const BundleLibraryResolver& resolver);
 		BundleLibraryResolver(BundleLibraryResolver&& resolver);
 		

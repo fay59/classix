@@ -26,7 +26,7 @@ namespace PPCVM
 {
 	namespace Disassembly
 	{
-		Disassembler::Disassembler(Common::IAllocator& allocator, const Common::UInt32* begin, const Common::UInt32* end)
+		Disassembler::Disassembler(Common::Allocator& allocator, const Common::UInt32* begin, const Common::UInt32* end)
 		: begin(begin), end(end)
 		{
 			assert(begin <= end && "End before begin");
@@ -59,7 +59,7 @@ namespace PPCVM
 			}
 		}
 		
-		void Disassembler::bx(Common::IAllocator& allocator, const Common::UInt32* address)
+		void Disassembler::bx(Common::Allocator& allocator, const Common::UInt32* address)
 		{
 			Instruction inst = address->Get();
 			if (inst.LK == 0)
@@ -80,7 +80,7 @@ namespace PPCVM
 			{ }
 		}
 		
-		void Disassembler::bcx(Common::IAllocator& allocator, const Common::UInt32 *address)
+		void Disassembler::bcx(Common::Allocator& allocator, const Common::UInt32 *address)
 		{
 			Instruction inst = address->Get();
 			if (inst.LK == 0 && (inst.BO & 0b10100) == 0b10100)
@@ -101,7 +101,7 @@ namespace PPCVM
 			{ }
 		}
 		
-		void Disassembler::bcctrx(Common::IAllocator& allocator, const Common::UInt32 *address)
+		void Disassembler::bcctrx(Common::Allocator& allocator, const Common::UInt32 *address)
 		{
 			Instruction inst = address->Get();
 			if (inst.LK == 0 && (inst.BO & 0b10100) == 0b10100)
@@ -113,7 +113,7 @@ namespace PPCVM
 			// indirect branch, no idea where this is going.
 		}
 		
-		void Disassembler::bclrx(Common::IAllocator& allocator, const Common::UInt32 *address)
+		void Disassembler::bclrx(Common::Allocator& allocator, const Common::UInt32 *address)
 		{
 			Instruction inst = address->Get();
 			if (inst.LK == 0 && (inst.BO & 0b10100) == 0b10100)

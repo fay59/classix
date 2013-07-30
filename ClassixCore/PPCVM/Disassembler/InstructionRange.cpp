@@ -28,7 +28,7 @@ namespace PPCVM
 {
 	namespace Disassembly
 	{
-		InstructionRange::InstructionRange(Common::IAllocator& allocator, const Common::UInt32* begin)
+		InstructionRange::InstructionRange(Common::Allocator& allocator, const Common::UInt32* begin)
 		: Begin(begin), End(nullptr), allocator(allocator), TableOfContents(nullptr)
 		{
 			Instruction first = begin->Get();

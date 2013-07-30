@@ -28,7 +28,7 @@
 #include <deque>
 
 #include "NativeLibrary.h"
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "STAllocator.h"
 #include "Structures.h"
 #include "SymbolResolver.h"
@@ -46,7 +46,7 @@ namespace ClassixCore
 		void* globals;
 		
 		// symbol cache
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		OSEnvironment::Managers& managers;
 		Common::STAllocator<uint8_t> stlAllocator;
 		std::list<PEF::TransitionVector, Common::STAllocator<PEF::TransitionVector>> transitions;
@@ -57,7 +57,7 @@ namespace ClassixCore
 		PEF::TransitionVector& MakeTransitionVector(const std::string& symbolName, void* address);
 		
 	public:
-		NativeSymbolResolver(Common::IAllocator& allocator, OSEnvironment::Managers& managers, const NativeLibrary& library);
+		NativeSymbolResolver(Common::Allocator& allocator, OSEnvironment::Managers& managers, const NativeLibrary& library);
 		
 		void* GetGlobals();
 		const void* GetGlobals() const;

@@ -27,7 +27,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "Container.h"
 #include "Disassembler.h"
 
@@ -41,7 +41,7 @@ namespace PPCVM
 		{
 			friend class FancyDisassembler;
 			
-			Common::IAllocator& allocator;
+			Common::Allocator& allocator;
 			const PEF::InstantiableSection& section;
 			PPCVM::Disassembly::Disassembler* disasm;
 			uint32_t sectionNumber;
@@ -49,7 +49,7 @@ namespace PPCVM
 		public:
 			typedef std::unordered_map<uint32_t, uint32_t> MetadataMap;
 			
-			SectionDisassembler(Common::IAllocator& allocator, uint32_t sectionNumber, const PEF::InstantiableSection& section);
+			SectionDisassembler(Common::Allocator& allocator, uint32_t sectionNumber, const PEF::InstantiableSection& section);
 			SectionDisassembler(const SectionDisassembler& that) = delete;
 			SectionDisassembler(SectionDisassembler&& that);
 			
@@ -62,7 +62,7 @@ namespace PPCVM
 		{
 			typedef PPCVM::Disassembly::InstructionRange InstructionRange;
 			
-			Common::IAllocator& allocator;
+			Common::Allocator& allocator;
 			SectionDisassembler::MetadataMap metadata;
 			std::map<uint32_t, SectionDisassembler> sections;
 			std::unordered_map<InstructionRange*, PPCVM::Disassembly::Disassembler*> rangeToDisasm;
@@ -75,7 +75,7 @@ namespace PPCVM
 			void TryFollowBranch(PPCVM::Disassembly::InstructionRange* range, const Common::UInt32* currentAddress, const Common::UInt32 *targetAddress, const uint8_t* r2);
 			
 		public:
-			FancyDisassembler(Common::IAllocator& allocator);
+			FancyDisassembler(Common::Allocator& allocator);
 			
 			void Disassemble(const PEF::Container& container, DisassemblyWriter& writer);
 		};

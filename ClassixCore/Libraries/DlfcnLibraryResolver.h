@@ -29,7 +29,7 @@
 #include "LibraryResolver.h"
 #include "NativeLibrary.h"
 #include "MachineState.h"
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "SymbolType.h"
 #include "NativeSymbolResolver.h"
 
@@ -48,13 +48,13 @@ namespace ClassixCore
 	
 	class DlfcnLibraryResolver : public CFM::LibraryResolver
 	{
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		OSEnvironment::Managers& managers;
 		std::unordered_map<std::string, DlfcnLibrary> libraries;
 		std::deque<NativeSymbolResolver> resolvers;
 		
 	public:
-		DlfcnLibraryResolver(Common::IAllocator& allocator, OSEnvironment::Managers& managers);
+		DlfcnLibraryResolver(Common::Allocator& allocator, OSEnvironment::Managers& managers);
 		DlfcnLibraryResolver(const DlfcnLibraryResolver&) = delete;
 		
 		void RegisterLibrary(const std::string& cfmName);

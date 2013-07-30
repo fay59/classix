@@ -24,7 +24,7 @@
 
 #include <map>
 #include "LibraryResolver.h"
-#include "IAllocator.h"
+#include "Allocator.h"
 
 namespace CFM
 {
@@ -33,10 +33,10 @@ namespace CFM
 	class DummyLibraryResolver : public LibraryResolver
 	{
 		std::map<uint32_t, DummySymbolResolver> resolvers;
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		
 	public:
-		DummyLibraryResolver(Common::IAllocator& allocator);
+		DummyLibraryResolver(Common::Allocator& allocator);
 		
 		const DummySymbolResolver* ResolverForAddress(uint32_t address) const;
 		

@@ -1,5 +1,5 @@
 //
-// IAllocator.cpp
+// Allocator.cpp
 // Classix
 //
 // Copyright (C) 2012 Félix Cloutier
@@ -19,11 +19,11 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
-#include "IAllocator.h"
+#include "Allocator.h"
 
 namespace Common
 {
-	AutoAllocation::AutoAllocation(IAllocator& allocator, size_t size, const AllocationDetails& details)
+	AutoAllocation::AutoAllocation(Allocator& allocator, size_t size, const AllocationDetails& details)
 	: allocator(allocator)
 	{
 		void* pointer = allocator.Allocate(details, size);
@@ -58,21 +58,21 @@ namespace Common
 			allocator.Deallocate(**this);
 	}
 
-	AutoAllocation IAllocator::AllocateAuto(const std::string& zoneName, size_t size)
+	AutoAllocation Allocator::AllocateAuto(const std::string& zoneName, size_t size)
 	{
 		return AllocateAuto(AllocationDetails(zoneName, size), size);
 	}
 	
-	AutoAllocation IAllocator::AllocateAuto(const Common::AllocationDetails &details, size_t size)
+	AutoAllocation Allocator::AllocateAuto(const Common::AllocationDetails &details, size_t size)
 	{
 		return AutoAllocation(*this, size, details);
 	}
 	
-	uint8_t* IAllocator::Allocate(const std::string &zoneName, size_t size)
+	uint8_t* Allocator::Allocate(const std::string &zoneName, size_t size)
 	{
 		return Allocate(AllocationDetails(zoneName, size), size);
 	}
 
-	IAllocator::~IAllocator()
+	Allocator::~Allocator()
 	{ }
 }

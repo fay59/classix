@@ -173,12 +173,12 @@ namespace StdCLib
 	{
 		Scalars scalars;
 		uint8_t padding[32]; // just some buffer space before we get to the allocator
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		
 		static std::map<off_t, std::string> FieldOffsets;
 		static std::map<std::string, size_t> FieldLocations;
 		
-		Globals(Common::IAllocator* allocator)
+		Globals(Common::Allocator* allocator)
 		: allocator(*allocator)
 		{
 			memset(&scalars, 0, sizeof scalars);
@@ -398,7 +398,7 @@ namespace StdCLib
 #pragma mark Lifecycle
 extern "C"
 {
-	StdCLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers)
+	StdCLib::Globals* LibraryLoad(Common::Allocator* allocator, OSEnvironment::Managers* managers)
 	{
 		return allocator->Allocate<StdCLib::Globals>(StdCLib::GlobalsDetails(), allocator);
 	}

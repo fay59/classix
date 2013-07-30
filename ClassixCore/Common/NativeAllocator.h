@@ -22,13 +22,13 @@
 #ifndef __pefdump__NativeAllocator__
 #define __pefdump__NativeAllocator__
 
-#include "IAllocator.h"
+#include "Allocator.h"
 #include <map>
 #include <deque>
 
 namespace Common
 {
-	class NativeAllocator : public IAllocator
+	class NativeAllocator : public Allocator
 	{
 		struct AllocatedRange
 		{

@@ -20,7 +20,7 @@
 //
 
 #include <sstream>
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "StackPreparator.h"
 #include "BigEndian.h"
 
@@ -38,7 +38,7 @@ namespace
 			this->end = begin + size;
 			this->sp = end;
 			
-			memset(begin, Common::IAllocator::ScribbleStackPattern, size);
+			memset(begin, Common::Allocator::ScribbleStackPattern, size);
 		}
 		
 		ptrdiff_t WriteString(const std::string& string)

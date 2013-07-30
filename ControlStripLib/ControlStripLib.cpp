@@ -30,9 +30,9 @@ namespace ControlStripLib
 {
 	struct Globals
 	{
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		
-		Globals(Common::IAllocator& allocator)
+		Globals(Common::Allocator& allocator)
 		: allocator(allocator)
 		{ }
 	};
@@ -40,7 +40,7 @@ namespace ControlStripLib
 
 extern "C"
 {
-	ControlStripLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers)
+	ControlStripLib::Globals* LibraryLoad(Common::Allocator* allocator, OSEnvironment::Managers* managers)
 	{
 		managers->Gestalt().SetValue("sdev", 0);
 		return allocator->Allocate<ControlStripLib::Globals>("ControlStripLib Globals", *allocator);

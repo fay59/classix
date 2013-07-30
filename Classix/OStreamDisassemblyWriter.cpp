@@ -27,7 +27,7 @@ using namespace PPCVM::Disassembly;
 
 static char endline = '\n';
 
-OStreamDisassemblyWriter::OStreamDisassemblyWriter(Common::IAllocator& allocator, std::ostream& into)
+OStreamDisassemblyWriter::OStreamDisassemblyWriter(Common::Allocator& allocator, std::ostream& into)
 : into(into), allocator(allocator)
 { }
 

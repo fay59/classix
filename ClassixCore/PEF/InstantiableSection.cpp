@@ -188,7 +188,7 @@ namespace
 
 namespace PEF
 {
-	InstantiableSection::InstantiableSection(Common::IAllocator& allocator, const SectionHeader* header, const std::string& name, const uint8_t* base, const uint8_t* end)
+	InstantiableSection::InstantiableSection(Common::Allocator& allocator, const SectionHeader* header, const std::string& name, const uint8_t* base, const uint8_t* end)
 	: allocator(allocator)
 	{
 		uint32_t packedSize = header->PackedSize;

@@ -92,7 +92,7 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 	NSMutableDictionary* uniqueNames = [NSMutableDictionary dictionary];
 	NSMutableDictionary* disassemblyDictionary = [NSMutableDictionary dictionary];
 	
-	Common::IAllocator* allocator;
+	Common::Allocator* allocator;
 	CFM::FragmentManager* cfm;
 	[vm.allocator getValue:&allocator];
 	[vm.fragmentManager getValue:&cfm];
@@ -220,7 +220,7 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 
 -(NSString*)uniqueNameForAddress:(uint32_t)address
 {
-	Common::IAllocator* allocator;
+	Common::Allocator* allocator;
 	[vm.allocator getValue:&allocator];
 	const unsigned char* pointer = allocator->ToPointer<unsigned char>(address);
 	
@@ -249,7 +249,7 @@ static NSUInteger CXFindNextSmaller(NSArray* sortedArray, NSNumber* number)
 		{
 			if (info.section->Size() - 4 >= offset)
 			{
-				Common::IAllocator* allocator;
+				Common::Allocator* allocator;
 				[vm.allocator getValue:&allocator];
 				return allocator->ToIntPtr(info.section->Data + offset);
 			}

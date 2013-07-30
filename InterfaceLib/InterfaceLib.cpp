@@ -55,7 +55,7 @@ namespace
 
 namespace InterfaceLib
 {
-	Globals::Globals(Common::IAllocator& allocator, OSEnvironment::Managers& managers)
+	Globals::Globals(Common::Allocator& allocator, OSEnvironment::Managers& managers)
 	: allocator(allocator), managers(managers), grafPorts(allocator)
 	{ }
 	
@@ -70,7 +70,7 @@ namespace InterfaceLib
 	}
 }
 
-InterfaceLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers)
+InterfaceLib::Globals* LibraryLoad(Common::Allocator* allocator, OSEnvironment::Managers* managers)
 {
 	return allocator->Allocate<InterfaceLib::Globals>("InterfaceLib globals", *allocator, *managers);
 }

@@ -22,7 +22,7 @@
 #ifndef Classix_StdCLib_h
 #define Classix_StdCLib_h
 
-#include "IAllocator.h"
+#include "Allocator.h"
 #include "SymbolType.h"
 
 namespace StdCLib
@@ -37,7 +37,7 @@ namespace OSEnvironment
 
 extern "C"
 {
-	StdCLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers);
+	StdCLib::Globals* LibraryLoad(Common::Allocator* allocator, OSEnvironment::Managers* managers);
 	SymbolType LibraryLookup(StdCLib::Globals* globals, const char* symbolName, void** symbol);
 	void LibraryUnload(StdCLib::Globals* context);
 	

@@ -75,7 +75,7 @@
 		DC6FEACF1661508400DD415C /* cxdb.xhtml in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAE165DFFF800C86BDD /* cxdb.xhtml */; };
 		DC6FEAD01661508400DD415C /* cxdb.css in Resources */ = {isa = PBXBuildFile; fileRef = DC264EAB165DFFEB00C86BDD /* cxdb.css */; };
 		DC71705A164F6618008D767E /* FileMapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC5E33C5163A496300944FFD /* FileMapping.cpp */; };
-		DC71705B164F6618008D767E /* IAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBF81638451400BFA046 /* IAllocator.cpp */; };
+		DC71705B164F6618008D767E /* Allocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBF81638451400BFA046 /* Allocator.cpp */; };
 		DC71705C164F6618008D767E /* NativeAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */; };
 		DC71705E164F6624008D767E /* Container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF3599616384E1400EC1A95 /* Container.cpp */; };
 		DC71705F164F6624008D767E /* Export.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF3599A16384E1400EC1A95 /* Export.cpp */; };
@@ -585,8 +585,8 @@
 		DC9E43C2165E8E6900AAC682 /* CXDocumentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXDocumentController.m; sourceTree = "<group>"; };
 		DC9E43C9165EA20300AAC682 /* CXJSONEncode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXJSONEncode.h; sourceTree = "<group>"; };
 		DC9E43CA165EA22400AAC682 /* CXJSONEncode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXJSONEncode.m; sourceTree = "<group>"; };
-		DCA6DBF81638451400BFA046 /* IAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IAllocator.cpp; sourceTree = "<group>"; };
-		DCA6DBF91638451400BFA046 /* IAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAllocator.h; sourceTree = "<group>"; };
+		DCA6DBF81638451400BFA046 /* Allocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Allocator.cpp; sourceTree = "<group>"; };
+		DCA6DBF91638451400BFA046 /* Allocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Allocator.h; sourceTree = "<group>"; };
 		DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NativeAllocator.cpp; sourceTree = "<group>"; };
 		DCA6DBFC1638460600BFA046 /* NativeAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NativeAllocator.h; sourceTree = "<group>"; };
 		DCAB94021648B1CD00E9B4E1 /* NativeCall.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NativeCall.h; sourceTree = "<group>"; };
@@ -786,8 +786,8 @@
 			children = (
 				DC29C3D0166AB92400B35EF7 /* AllocationDetails.cpp */,
 				DC29C3D1166AB92400B35EF7 /* AllocationDetails.h */,
-				DCA6DBF81638451400BFA046 /* IAllocator.cpp */,
-				DCA6DBF91638451400BFA046 /* IAllocator.h */,
+				DCA6DBF81638451400BFA046 /* Allocator.cpp */,
+				DCA6DBF91638451400BFA046 /* Allocator.h */,
 				DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */,
 				DCA6DBFC1638460600BFA046 /* NativeAllocator.h */,
 				DC75099016C9DEBA00B218DB /* VirtualAddressSpaceAllocator.cpp */,
@@ -1830,7 +1830,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC71705A164F6618008D767E /* FileMapping.cpp in Sources */,
-				DC71705B164F6618008D767E /* IAllocator.cpp in Sources */,
+				DC71705B164F6618008D767E /* Allocator.cpp in Sources */,
 				DC71705C164F6618008D767E /* NativeAllocator.cpp in Sources */,
 				DC71705E164F6624008D767E /* Container.cpp in Sources */,
 				DC71705F164F6624008D767E /* Export.cpp in Sources */,

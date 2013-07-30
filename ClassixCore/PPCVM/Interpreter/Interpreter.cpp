@@ -79,7 +79,7 @@ namespace PPCVM
 {
 	namespace Execution
 	{
-		Interpreter::Interpreter(Common::IAllocator& allocator, MachineState& state)
+		Interpreter::Interpreter(Common::Allocator& allocator, MachineState& state)
 		: state(state), allocator(allocator), endAddress(allocator.AllocateAuto("Interpreter End Address", 4))
 		{ }
 		

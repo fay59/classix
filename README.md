@@ -77,7 +77,7 @@ shared library.
 ### Memory Management
 
 Classes that need to be able to deal with memory visible to the emulator pass
-around an `IAllocator` instance. An `IAllocator`'s responsibility is to
+around an `Allocator` instance. An `Allocator`'s responsibility is to
 allocate and deallocate memory in the address range that the PowerPC emulator
 need to be able to access, and to translate `uint32_t` virtual PowerPC addresses
 into native pointers. Right now, the only allocator is the native allocator,
@@ -85,7 +85,7 @@ that simply uses `malloc` and `free`, and it only works on 32-bits platforms
 because of that.
 
 There are a number of services that clients can use to ease memory management.
-The `IAllocator` class can return a RAII-style allocation object that frees the
+The `Allocator` class can return a RAII-style allocation object that frees the
 allocated memory when it goes out of scope, and there is a `STAllocator` class
 that can be used as a STL allocator. Extra care is required when using, though:
 you _cannot_ afford to reallocate a block of memory, since that would change its

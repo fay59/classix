@@ -31,10 +31,10 @@ namespace ThreadsLib
 {
 	struct Globals
 	{
-		Common::IAllocator& allocator;
+		Common::Allocator& allocator;
 		OSEnvironment::ThreadManager& threadManager;
 		
-		Globals(Common::IAllocator& allocator, OSEnvironment::ThreadManager& threadManager)
+		Globals(Common::Allocator& allocator, OSEnvironment::ThreadManager& threadManager)
 		: allocator(allocator), threadManager(threadManager)
 		{ }
 	};
@@ -50,7 +50,7 @@ using PPCVM::MachineState;
 
 extern "C"
 {
-	ThreadsLib::Globals* LibraryLoad(Common::IAllocator* allocator, OSEnvironment::Managers* managers)
+	ThreadsLib::Globals* LibraryLoad(Common::Allocator* allocator, OSEnvironment::Managers* managers)
 	{
 		managers->Gestalt().SetValue("thds", 3);
 		return allocator->Allocate<Globals>("ThreadsLib Globals", *allocator, managers->ThreadManager());

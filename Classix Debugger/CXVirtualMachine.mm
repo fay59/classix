@@ -304,14 +304,14 @@ struct ClassixCoreVM
 
 -(NSValue*)allocator
 {
-	Common::IAllocator* allocator = &vm->allocator;
+	Common::Allocator* allocator = &vm->allocator;
 	return [NSValue value:&allocator withObjCType:@encode(typeof allocator)];
 }
 
 -(NSString*)symbolNameOfAddress:(unsigned int)address
 {
 	using namespace PPCVM::Execution;
-	Common::IAllocator& allocator = vm->allocator;
+	Common::Allocator& allocator = vm->allocator;
 	try
 	{
 		const NativeCall* pointer = allocator.ToPointer<NativeCall>(address);
