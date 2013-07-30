@@ -112,7 +112,7 @@ namespace StdCLib
 	#define _BLA		 0x40
 	#define _HEX		 0x80
 
-	const uint8_t cTypeCharClasses[0x100]={
+	const uint8_t cTypeCharClasses[0x100] = {
 		_CTL, _CTL, _CTL, _CTL, _CTL, _CTL, _CTL, _CTL,
 		_CTL, _CTL|_WSP, _CTL|_WSP, _CTL|_WSP, _CTL|_WSP, _CTL|_WSP, _CTL, _CTL,
 		_CTL, _CTL, _CTL, _CTL, _CTL, _CTL, _CTL, _CTL,
@@ -210,9 +210,6 @@ namespace StdCLib
 		}
 	};
 
-	#pragma clang diagnostic push
-	#pragma clang diagnostic ignored "-Winvalid-offsetof"
-
 	std::map<off_t, std::string> Globals::FieldOffsets
 	{
 		std::make_pair(offsetof(Scalars, __C_phase), "__C_phase"),
@@ -282,8 +279,6 @@ namespace StdCLib
 		std::make_pair("TimeData", offsetof(Scalars, TimeData)),
 		std::make_pair("cType", offsetof(Scalars, cType)),
 	};
-
-	#pragma clang diagnostics pop
 
 	class GlobalsDetails : public Common::AllocationDetails
 	{

@@ -27,6 +27,11 @@ namespace OSEnvironment
 	: allocator(allocator), resourceManager(allocator)
 	{ }
 	
+	Common::Allocator& Managers::Allocator()
+	{
+		return allocator;
+	}
+	
 	Gestalt& Managers::Gestalt()
 	{
 		return gestalt;

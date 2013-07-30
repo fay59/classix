@@ -120,9 +120,7 @@ namespace Common
 		
 		TNativeInt AsBigEndian;
 		
-		inline BigEndianInt()
-		: AsBigEndian(0)
-		{ }
+		BigEndianInt() = default;
 		
 		inline explicit BigEndianInt(TNativeInt nativeInt)
 		{

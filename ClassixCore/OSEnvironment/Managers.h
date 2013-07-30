@@ -39,6 +39,7 @@ namespace OSEnvironment
 	public:
 		Managers(Common::Allocator& allocator);
 		
+		Common::Allocator& Allocator();
 		Gestalt& Gestalt();
 		ResourceManager& ResourceManager();
 		ThreadManager& ThreadManager();
