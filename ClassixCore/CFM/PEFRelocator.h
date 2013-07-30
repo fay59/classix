@@ -64,7 +64,12 @@ namespace CFM
 		void AddSymbol(uint32_t index);
 		
 		void RelocBySectDWithSkip(uint32_t value);
-		void RelocGroup(uint32_t value);
+		void RelocBySectC(uint32_t value);
+		void RelocBySectD(uint32_t value);
+		void RelocTVector12(uint32_t value);
+		void RelocTVector8(uint32_t value);
+		void RelocVTable8(uint32_t value);
+		void RelocImportRun(uint32_t value);
 		void RelocSmallByIndex(uint32_t value);
 		void RelocIncrementPosition(uint32_t value);
 		void RelocSmallRepeat(uint32_t value, Relocation::iterator current);

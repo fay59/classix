@@ -98,67 +98,71 @@ namespace CFM
 			Add(sectionD);
 	}
 	
-	void PEFRelocator::RelocGroup(uint32_t value)
+	void PEFRelocator::RelocBySectC(uint32_t value)
 	{
-		int subopcode = (value >> 9) & 0xf;
 		int runLength = (value & 0x1ff) + 1;
-		switch (subopcode)
+		for (int i = 0; i < runLength; i++)
+			Add(sectionC);
+	}
+	
+	void PEFRelocator::RelocBySectD(uint32_t value)
+	{
+		int runLength = (value & 0x1ff) + 1;
+		for (int i = 0; i < runLength; i++)
+			Add(sectionD);
+	}
+	
+	void PEFRelocator::RelocTVector12(uint32_t value)
+	{
+		int runLength = (value & 0x1ff) + 1;
+		for (int i = 0; i < runLength; i++)
 		{
-			case 0:
-				for (int i = 0; i < runLength; i++)
-					Add(sectionC);
-				break;
-				
-			case 1:
-				for (int i = 0; i < runLength; i++)
-					Add(sectionD);
-				break;
-				
-			case 2:
-				for (int i = 0; i < runLength; i++)
-				{
-					Add(sectionC);
-					Add(sectionD);
-					relocAddress += 4;
-				}
-				break;
-				
-			case 3:
-				for (int i = 0; i < runLength; i++)
-				{
-					Add(sectionC);
-					Add(sectionD);
-				}
-				break;
-				
-			case 4:
-				for (int i = 0; i < runLength; i++)
-				{
-					Add(sectionD);
-					relocAddress += 4;
-				}
-				break;
-				
-			case 5:
-				for (int i = 0; i < runLength; i++)
-				{
-					AddSymbol(importIndex);
-					importIndex++;
-				}
-				break;
+			Add(sectionC);
+			Add(sectionD);
+			relocAddress += 4;
+		}
+	}
+	
+	void PEFRelocator::RelocTVector8(uint32_t value)
+	{
+		int runLength = (value & 0x1ff) + 1;
+		for (int i = 0; i < runLength; i++)
+		{
+			Add(sectionC);
+			Add(sectionD);
+		}
+	}
+	
+	void PEFRelocator::RelocVTable8(uint32_t value)
+	{
+		int runLength = (value & 0x1ff) + 1;
+		for (int i = 0; i < runLength; i++)
+		{
+			Add(sectionD);
+			relocAddress += 4;
+		}
+	}
+	
+	void PEFRelocator::RelocImportRun(uint32_t value)
+	{
+		int runLength = (value & 0x1ff) + 1;
+		for (int i = 0; i < runLength; i++)
+		{
+			AddSymbol(importIndex);
+			importIndex++;
 		}
 	}
 	
 	void PEFRelocator::RelocSmallByIndex(uint32_t value)
 	{
 		int subOpcode = (value >> 9) & 0xf;
-		int index = value & 0x1ff;
+		int index = value & 0x01ff;
 		RelocByIndex(subOpcode, index);
 	}
 	
 	void PEFRelocator::RelocIncrementPosition(uint32_t value)
 	{
-		uint32_t increment = (value & 0xfff) + 1;
+		uint32_t increment = (value & 0x0fff) + 1;
 		relocAddress += increment;
 	}
 	
@@ -171,19 +175,19 @@ namespace CFM
 	
 	void PEFRelocator::RelocSetPosition(uint32_t value)
 	{
-		relocAddress = value & 0xffffff;
+		relocAddress = value & 0x00ffffff;
 	}
 	
 	void PEFRelocator::RelocLargeByImport(uint32_t value)
 	{
-		importIndex = value & 0xffffff;
+		importIndex = value & 0x00ffffff;
 		AddSymbol(importIndex);
 		importIndex++;
 	}
 	
 	void PEFRelocator::RelocLargeRepeat(uint32_t value, Relocation::iterator current)
 	{
-		const int repeatCount = 0x7fffff;
+		const int repeatCount = 0x007fffff;
 		const int blockCount = ((value >> 22) & 0xf) + 1;
 		Loop(current - blockCount, current, repeatCount);
 	}
@@ -191,7 +195,7 @@ namespace CFM
 	void PEFRelocator::RelocLargeSetOrBySection(uint32_t value)
 	{
 		int subOpcode = (value >> 22) & 0xf;
-		int index = value & 0x7fffff;
+		int index = value & 0x007fffff;
 		RelocByIndex(subOpcode, index);
 	}
 	
@@ -199,32 +203,37 @@ namespace CFM
 	{
 		for (auto iter = begin; iter != end; iter++)
 		{
-			uint32_t value = *iter;
-			if (value >> 14 == 0b00)
-				RelocBySectDWithSkip(value);
-			else if (value >> 13 == 0b010)
-				RelocGroup(value);
-			else if (value >> 13 == 0b011)
-				RelocSmallByIndex(value);
-			else if (value >> 12 == 0b1000)
-				RelocIncrementPosition(value);
-			else if (value >> 12 == 0b1001)
-				RelocSmallRepeat(value, iter);
-			else
+			uint16_t value = *iter;
+			uint8_t opcode = value >> 9;
+			switch (opcode)
 			{
-				iter++;
-				value <<= 16;
-				value |= *iter;
-				if (value >> 26 == 0b101000)
-					RelocSetPosition(value);
-				else if (value >> 26 == 0b101001)
-					RelocLargeByImport(value);
-				else if (value >> 26 == 0b101100)
-					RelocLargeRepeat(value, iter - 1);
-				else if (value >> 26 == 0b101101)
-					RelocLargeSetOrBySection(value);
-				else
-					throw std::logic_error("unknown instruction prefix");
+				case 0x00 ... 0x1f: RelocBySectDWithSkip(value); break;
+				
+				case 0x20: RelocBySectC(value); break;
+				case 0x21: RelocBySectD(value); break;
+				case 0x22: RelocTVector12(value); break;
+				case 0x23: RelocTVector8(value); break;
+				case 0x24: RelocVTable8(value); break;
+				case 0x25: RelocImportRun(value); break;
+					
+				case 0x30 ... 0x33: RelocSmallByIndex(value); break;
+					
+				case 0x40 ... 0x47: RelocIncrementPosition(value); break;
+				case 0x48 ... 0x4f: RelocSmallRepeat(value, iter); break;
+					
+				default:
+					iter++;
+					uint32_t large = (value << 16) | *iter;
+					switch (opcode)
+					{
+						case 0x50 ... 0x51: RelocSetPosition(large); break;
+						case 0x52 ... 0x53: RelocLargeByImport(large); break;
+						case 0x58 ... 0x59: RelocLargeRepeat(large, iter); break;
+						case 0x5a ... 0x5b: RelocLargeSetOrBySection(large); break;
+							
+						default: throw std::logic_error("unknown opcode prefix");
+					}
+					break;
 			}
 		}
 	}
