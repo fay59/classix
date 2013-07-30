@@ -168,8 +168,8 @@ namespace CFM
 	
 	void PEFRelocator::RelocSmallRepeat(uint32_t value, Relocation::iterator current)
 	{
-		const int blockCount = ((value >> 8) & 0xff) + 1;
-		const int repeatCount = (value & 0xf) + 1;
+		int blockCount = ((value >> 8) & 0x0f) + 1;
+		int repeatCount = (value & 0xff) + 1;
 		Loop(current - blockCount, current, repeatCount);
 	}
 	
@@ -187,8 +187,8 @@ namespace CFM
 	
 	void PEFRelocator::RelocLargeRepeat(uint32_t value, Relocation::iterator current)
 	{
-		const int repeatCount = 0x007fffff;
-		const int blockCount = ((value >> 22) & 0xf) + 1;
+		int repeatCount = 0x003fffff;
+		int blockCount = ((value >> 22) & 0xf) + 1;
 		Loop(current - blockCount, current, repeatCount);
 	}
 	
