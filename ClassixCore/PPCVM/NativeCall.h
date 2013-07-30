@@ -23,14 +23,13 @@
 #define pefdump_NativeCall_h
 
 #include "MachineState.h"
-#include "IExecutionEngine.h"
 
 namespace PPCVM
 {
 	namespace Execution
 	{
 		extern const uint32_t NativeTag;
-		typedef void (*NativeCallback)(void*, MachineState*, IExecutionEngine*);
+		typedef void (*NativeCallback)(void*, MachineState*);
 		
 		struct NativeCall
 		{

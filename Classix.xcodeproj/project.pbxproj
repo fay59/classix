@@ -105,8 +105,6 @@
 		DC734278175A50B800E39F20 /* ThreadManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DC734276175A50B800E39F20 /* ThreadManager.h */; };
 		DC787EAE164F68E30010A288 /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC787EB2164F6A910010A288 /* StdCLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC787EB0164F6A810010A288 /* StdCLib.cpp */; };
-		DC78983417589378003A4FB0 /* IExecutionEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC78983217589378003A4FB0 /* IExecutionEngine.cpp */; };
-		DC78983517589378003A4FB0 /* IExecutionEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = DC78983317589378003A4FB0 /* IExecutionEngine.h */; };
 		DC7898381758984D003A4FB0 /* ThreadsLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC6E87F21758549B00D7B74F /* ThreadsLib.cpp */; };
 		DC78983917589851003A4FB0 /* ThreadsLibFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC6E87FA175854B400D7B74F /* ThreadsLibFunctions.cpp */; };
 		DC78983A17589869003A4FB0 /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
@@ -535,8 +533,6 @@
 		DC787EAF164F69000010A288 /* StdCLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StdCLib.h; sourceTree = "<group>"; };
 		DC787EB0164F6A810010A288 /* StdCLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StdCLib.cpp; sourceTree = "<group>"; };
 		DC787EB3164F6F110010A288 /* StdCLibFunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StdCLibFunctions.h; sourceTree = "<group>"; };
-		DC78983217589378003A4FB0 /* IExecutionEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IExecutionEngine.cpp; sourceTree = "<group>"; };
-		DC78983317589378003A4FB0 /* IExecutionEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IExecutionEngine.h; sourceTree = "<group>"; };
 		DC7ECFD616850D830063F14E /* CXDebugUIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXDebugUIController.h; sourceTree = "<group>"; };
 		DC7ECFD716850D830063F14E /* CXDebugUIController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CXDebugUIController.mm; sourceTree = "<group>"; };
 		DC82C3A31719A69000A11444 /* CXIOSurfaceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXIOSurfaceView.h; sourceTree = "<group>"; };
@@ -1129,8 +1125,6 @@
 				DC5656D216ED070300083F0E /* NotImplementedException.h */,
 				DC72740C1647225500DA17E5 /* TrapException.cpp */,
 				DC72740D1647225500DA17E5 /* TrapException.h */,
-				DC78983217589378003A4FB0 /* IExecutionEngine.cpp */,
-				DC78983317589378003A4FB0 /* IExecutionEngine.h */,
 				DCA1E14B1643810E008C3C8C /* Disassembler */,
 				DC7273E316471CB300DA17E5 /* Interpreter */,
 			);
@@ -1404,7 +1398,6 @@
 				DC6E87E817584ADF00D7B74F /* FourCharCode.h in Headers */,
 				DC6E87F51758549B00D7B74F /* ThreadsLib.h in Headers */,
 				DC6E87FD175854B400D7B74F /* ThreadsLibFunctions.h in Headers */,
-				DC78983517589378003A4FB0 /* IExecutionEngine.h in Headers */,
 				DC734278175A50B800E39F20 /* ThreadManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1884,7 +1877,6 @@
 				DC6E87D81758463F00D7B74F /* Managers.cpp in Sources */,
 				DC6E87E01758471600D7B74F /* ResourceManager.cpp in Sources */,
 				DC6E87E717584ADF00D7B74F /* FourCharCode.cpp in Sources */,
-				DC78983417589378003A4FB0 /* IExecutionEngine.cpp in Sources */,
 				DC734277175A50B800E39F20 /* ThreadManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2407,6 +2399,7 @@
 				DC872635177EAD5A00201FA9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DC930AAF1708BBDB00B739B1 /* Build configuration list for PBXNativeTarget "InterfaceLib" */ = {
 			isa = XCConfigurationList;

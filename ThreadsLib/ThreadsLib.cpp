@@ -26,7 +26,6 @@
 #include "MachineState.h"
 #include "Managers.h"
 #include "NotImplementedException.h"
-#include "IExecutionEngine.h"
 
 namespace ThreadsLib
 {
@@ -48,7 +47,6 @@ namespace ThreadsLib
 
 using ThreadsLib::Globals;
 using PPCVM::MachineState;
-using PPCVM::Execution::IExecutionEngine;
 
 extern "C"
 {

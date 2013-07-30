@@ -128,7 +128,7 @@ namespace PPCVM
 #endif
 			
 			void* libGlobals = allocator.ToPointer<void>(state.r2);
-			function->Callback(libGlobals, &state, this);
+			function->Callback(libGlobals, &state);
 			return allocator.ToPointer<const void>(state.lr);
 		}
 
