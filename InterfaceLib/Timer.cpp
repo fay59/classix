@@ -19,8 +19,12 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
+#include <chrono>
+#include "InterfaceLib.h"
 #include "Prototypes.h"
 #include "NotImplementedException.h"
+
+using namespace std::chrono;
 
 void InterfaceLib_InstallTimeTask(InterfaceLib::Globals* globals, MachineState* state)
 {
@@ -44,7 +48,9 @@ void InterfaceLib_InsXTime(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_Microseconds(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	auto duration = high_resolution_clock::now().time_since_epoch();
+	long long micros = duration_cast<microseconds>(duration).count();
+	*globals->allocator.ToPointer<Common::UInt32>(state->r3) = static_cast<uint32_t>(micros);
 }
 
 void InterfaceLib_PrimeTime(InterfaceLib::Globals* globals, MachineState* state)

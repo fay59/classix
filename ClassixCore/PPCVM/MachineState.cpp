@@ -21,24 +21,13 @@
 
 #include "MachineState.h"
 #include <cstring>
-#include <mach/mach_time.h>
+#include <chrono>
 
 namespace
 {
-	inline mach_timebase_info_data_t GetTimebaseInfo()
-	{
-		mach_timebase_info_data_t data;
-		mach_timebase_info(&data);
-		return data;
-	}
-	
-	mach_timebase_info_data_t timebaseInfo = GetTimebaseInfo();
-	
 	uint64_t GetElapsedNanos()
 	{
-		uint64_t now = mach_absolute_time();
-		// hopefully this won't overflow
-		return now * timebaseInfo.numer / timebaseInfo.denom;
+		return std::chrono::high_resolution_clock::now().time_since_epoch().count();
 	}
 	
 	const int kNanosInSeconds = 1000000000;
