@@ -23,6 +23,13 @@
 #include "FloatingPointStatus.h"
 #include "TrapException.h"
 
+// a macro conveys best the ugliness of the kludge
+#define PRAY_NO_FLAGS_NO_EXCEPTIONS() \
+	do { if (inst.Rc) Panic("FPU flags and exceptions are not implemented"); } while(0)
+
+// I would like to state that single-precision instructions, as I understand them,
+// are very silly
+
 namespace PPCVM
 {
 	namespace Execution
@@ -70,11 +77,7 @@ namespace PPCVM
 		void Interpreter::fdivx(Instruction inst)
 		{
 			state.fpr[inst.FS] = state.fpr[inst.FA] / state.fpr[inst.FB];
-			// TODO exceptions?
-			
-			// TODO flags? Dolphin never sets flags.
-			if (inst.Rc)
-				Panic("Flags are not implemented");
+			PRAY_NO_FLAGS_NO_EXCEPTIONS();
 		}
 		
 		void Interpreter::fmaddsx(Instruction inst)
@@ -84,12 +87,14 @@ namespace PPCVM
 		
 		void Interpreter::fmaddx(Instruction inst)
 		{
-			Panic("fmaddx is not implemented");
+			state.fpr[inst.FS] = state.fpr[inst.FA] * state.fpr[inst.FC] + state.fpr[inst.FB];
+			PRAY_NO_FLAGS_NO_EXCEPTIONS();
 		}
 		
 		void Interpreter::fmrx(Instruction inst)
 		{
-			Panic("fmrx is not implemented");
+			state.fpr[inst.FS] = state.fpr[inst.FB];
+			PRAY_NO_FLAGS_NO_EXCEPTIONS();
 		}
 		
 		void Interpreter::fmsubsx(Instruction inst)
@@ -109,7 +114,8 @@ namespace PPCVM
 		
 		void Interpreter::fmulx(Instruction inst)
 		{
-			Panic("fmulx is not implemented");
+			state.fpr[inst.FS] = state.fpr[inst.FA] * state.fpr[inst.FC];
+			PRAY_NO_FLAGS_NO_EXCEPTIONS();
 		}
 		
 		void Interpreter::fnabsx(Instruction inst)
@@ -149,7 +155,10 @@ namespace PPCVM
 		
 		void Interpreter::frspx(Instruction inst)
 		{
-			Panic("frspx is not implemented");
+			// TODO round with correct rounding mode
+			float single = static_cast<float>(state.fpr[inst.FB]);
+			state.fpr[inst.FS] = single;
+			PRAY_NO_FLAGS_NO_EXCEPTIONS();
 		}
 		
 		void Interpreter::frsqrtex(Instruction inst)
@@ -169,12 +178,15 @@ namespace PPCVM
 		
 		void Interpreter::fsubsx(Instruction inst)
 		{
-			Panic("fsubsx is not implemented");
+			float result = static_cast<float>(state.fpr[inst.FA]) - static_cast<float>(state.fpr[inst.FB]);
+			state.fpr[inst.FS] = result;
+			PRAY_NO_FLAGS_NO_EXCEPTIONS();
 		}
 		
 		void Interpreter::fsubx(Instruction inst)
 		{
-			Panic("fsubx is not implemented");
+			state.fpr[inst.FS] = state.fpr[inst.FA] - state.fpr[inst.FB];
+			PRAY_NO_FLAGS_NO_EXCEPTIONS();
 		}
 	}
 }
