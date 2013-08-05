@@ -38,6 +38,9 @@
 // discard the next EventRecord matching the EventMask; does nothing if there's no such event
 -(void)discardNextEvent;
 
+// discards event matching a mask until an event of a given mask is found
+-(void)discardEventsUntil;
+
 // tells if the mouse button is down
 -(void)tellIsMouseDown;
 

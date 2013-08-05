@@ -41,12 +41,30 @@ void InterfaceLib_Button(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_EventAvail(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	// same as GetNextEvent, but without discarding the event if it's matched
+	globals->ipc().PerformAction<void>(IPCMessage::RefreshWindows);
+	
+	EventMask mask = static_cast<EventMask>(state->r3);
+	uint32_t timeout = 0xffffffff;
+	
+	MacRegion empty;
+	empty.rgnSize = 10;
+	empty.rgnBBox.top = 0;
+	empty.rgnBBox.left = 0;
+	empty.rgnBBox.right = 0;
+	empty.rgnBBox.bottom = 0;
+	
+	EventRecord nextEvent = globals->ipc().PerformAction<EventRecord>(IPCMessage::PeekNextEvent, mask, timeout, empty);
+	
+	*globals->allocator.ToPointer<EventRecord>(state->r4) = nextEvent;
+	state->r3 = nextEvent.what != 0;
 }
 
 void InterfaceLib_FlushEvents(InterfaceLib::Globals* globals, MachineState* state)
 {
-	throw PPCVM::NotImplementedException(__func__);
+	EventMask discardMask = static_cast<EventMask>(state->r3);
+	EventMask stopMask = static_cast<EventMask>(state->r4);
+	globals->ipc().PerformAction<void>(IPCMessage::DiscardEventsUntil, discardMask, stopMask);
 }
 
 void InterfaceLib_GetCaretTime(InterfaceLib::Globals* globals, MachineState* state)

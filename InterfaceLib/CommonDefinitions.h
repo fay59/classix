@@ -416,6 +416,7 @@ namespace InterfaceLib
 		
 		PeekNextEvent,
 		DequeueNextEvent,
+		DiscardEventsUntil,
 		IsMouseDown,
 		RequestUpdate,
 		

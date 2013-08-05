@@ -216,6 +216,7 @@ static SEL ipcSelectors[] = {
 	IPC_INDEX(SetCursorVisibility) = @selector(setCursorVisibility),
 	IPC_INDEX(PeekNextEvent) = @selector(peekNextEvent),
 	IPC_INDEX(DequeueNextEvent) = @selector(discardNextEvent),
+	IPC_INDEX(DiscardEventsUntil) = @selector(discardEventsUntil),
 	IPC_INDEX(IsMouseDown) = @selector(tellIsMouseDown),
 	IPC_INDEX(CreateWindow) = @selector(createWindow),
 	IPC_INDEX(CreateDialog) = @selector(createDialog),
@@ -530,6 +531,32 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		{
 			eventQueue.erase(iter);
 			break;
+		}
+	}
+	
+	[self sendDone:_cmd];
+}
+
+-(void)discardEventsUntil
+{
+	IPC_PARAM(discardMask, uint16_t);
+	IPC_PARAM(stopMask, uint16_t);
+	[self expectDone];
+
+	auto iter = eventQueue.begin();
+	while (iter != eventQueue.end())
+	{
+		if (((1 << iter->what) & stopMask) != 0)
+		{
+			break;
+		}
+		else if (((1 << iter->what) & discardMask) != 0)
+		{
+			iter = eventQueue.erase(iter);
+		}
+		else
+		{
+			iter++;
 		}
 	}
 	
