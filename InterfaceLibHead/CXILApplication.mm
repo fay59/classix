@@ -34,6 +34,8 @@
 
 #define IPC_PARAM(name, type)	type name; do { if (!channel->Read(name)) [self terminate:self]; } while (false)
 
+#define TODO_WARN_ONCE(msg)		do { static BOOL warn_##__LINE__ = NO; if (!warn_##__LINE__) { NSLog(@"*** %@", msg); warn_##__LINE__ = YES; } } while (0)
+
 using namespace Common;
 using namespace InterfaceLib;
 
@@ -83,8 +85,7 @@ namespace
 		if ((modifierFlags & NSControlKeyMask) == NSControlKeyMask)
 			modifiers |= static_cast<uint16_t>(EventModifierFlags::controlKey);
 		
-		// TODO active state?
-		// TODO right shift, command, control?
+		TODO_WARN_ONCE(@"CXILModifierFlags does not handle active state or right shift, command and control keys");
 		return modifiers;
 	}
 	
@@ -394,7 +395,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 			[super sendEvent:theEvent];
 			return kCXILEventHandlerNormalResolution;
 			
-			// TODO updateEvent, diskEvent, activateEvent, osEvent, highLevelEvent
+			TODO_WARN_ONCE(@"handleEvent: does not trigger updateEvent, diskEvent, activateEvent, osEvent or highLevelEvent");
 	}
 	
 	eventRecord.message = message;
@@ -453,7 +454,6 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 
 -(void)sendDone:(SEL)cmd
 {
-	//printf("- Answering with %s\n", sel_getName(cmd));
 	char done[] = {'D', 'O', 'N', 'E'};
 	channel->Write(done);
 }
@@ -501,7 +501,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	IPC_PARAM(mouseMoveRegion, MacRegionMax);
 	[self expectDone];
 	
-	// TODO enable mouse move events inside mouseMoveRegion
+	TODO_WARN_ONCE(@"Mouse move events aren't tracked in mouseMoveRegion");
 	
 	currentlyWaitingOn = static_cast<EventMask>(desiredEvent);
 	
@@ -865,7 +865,9 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	NSTimeInterval now = CXILTimeStamp();
 	NSInteger frontWindow = [self mainWindow].windowNumber;
 	NSString* characters = [NSString stringWithCString:charString encoding:NSMacOSRomanStringEncoding];
-	unsigned short keyCode = 0; // bleh, TODO: find the key code by the char
+	unsigned short keyCode = 0;
+	
+	TODO_WARN_ONCE(@"menuKey would need the keyCode behind the char");
 	
 	menuGate.ignoresMouseEvents = YES;
 	
