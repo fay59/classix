@@ -25,14 +25,6 @@
 
 using namespace InterfaceLib;
 
-namespace
-{
-	void RefreshWindows(InterfaceLib::Globals* globals)
-	{
-		
-	}
-}
-
 void InterfaceLib_Button(InterfaceLib::Globals* globals, MachineState* state)
 {
 	globals->ipc().PerformAction<void>(IPCMessage::RefreshWindows);
@@ -41,12 +33,10 @@ void InterfaceLib_Button(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_EventAvail(InterfaceLib::Globals* globals, MachineState* state)
 {
-	// same as GetNextEvent, but without discarding the event if it's matched
+	// same as GetNextEvent, but without discarding the event if it's matched, and without a timeout
 	globals->ipc().PerformAction<void>(IPCMessage::RefreshWindows);
 	
 	EventMask mask = static_cast<EventMask>(state->r3);
-	uint32_t timeout = 0xffffffff;
-	
 	MacRegion empty;
 	empty.rgnSize = 10;
 	empty.rgnBBox.top = 0;
@@ -54,7 +44,7 @@ void InterfaceLib_EventAvail(InterfaceLib::Globals* globals, MachineState* state
 	empty.rgnBBox.right = 0;
 	empty.rgnBBox.bottom = 0;
 	
-	EventRecord nextEvent = globals->ipc().PerformAction<EventRecord>(IPCMessage::PeekNextEvent, mask, timeout, empty);
+	EventRecord nextEvent = globals->ipc().PerformAction<EventRecord>(IPCMessage::PeekNextEvent, mask, 0, empty);
 	
 	*globals->allocator.ToPointer<EventRecord>(state->r4) = nextEvent;
 	state->r3 = nextEvent.what != 0;

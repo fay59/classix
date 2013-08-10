@@ -515,9 +515,35 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 		}
 	}
 	
-	// otherwise, wait for one such event
-	NSTimeInterval timeout = ticksTimeout / 60.;
-	waitLimit = [NSTimer scheduledTimerWithTimeInterval:timeout target:self selector:@selector(stopWaitingOnEvent) userInfo:nil repeats:NO];
+	// With a 0 timeout, return immediately
+	if (ticksTimeout == 0)
+	{
+		// enqueue an update event for the new window
+		uint16_t mouseButtonState = ([NSEvent pressedMouseButtons] & 1) == 1
+			? static_cast<uint16_t>(EventModifierFlags::mouseButtonState)
+			: 0;
+		uint16_t modifiers = mouseButtonState | CXILEventRecordModifierFlags([NSEvent modifierFlags]);
+		
+		// no event found, return an empty event
+		EventRecord record = {
+			.what = Common::UInt16(static_cast<uint16_t>(EventCode::nullEvent)),
+			.when = Common::UInt32(CXILClassicTimeStamp()),
+			.where = [self xPointToClassicPoint:[NSEvent mouseLocation]],
+			.modifiers = Common::UInt16(modifiers),
+			.message = Common::UInt32(0),
+		};
+		
+		channel->Write(record);
+		[self sendDone:_cmd];
+		
+		currentlyWaitingOn = EventMask::noEvent;
+	}
+	else
+	{
+		// otherwise, wait for one such event
+		NSTimeInterval timeout = ticksTimeout / 60.;
+		waitLimit = [NSTimer scheduledTimerWithTimeInterval:timeout target:self selector:@selector(stopWaitingOnEvent) userInfo:nil repeats:NO];
+	}
 }
 
 -(void)discardNextEvent
