@@ -29,10 +29,24 @@
 
 namespace Common
 {
+	FileDescriptor::FileDescriptor(int fd)
+	: fd(fd)
+	{ }
+	
+	FileDescriptor::operator int()
+	{
+		return fd;
+	}
+	
+	FileDescriptor::~FileDescriptor()
+	{
+		close(fd);
+	}
+	
 	FileMapping::FileMapping(const std::string& path)
 	: file(path)
 	{
-		int fd = open(file.c_str(), O_RDONLY);
+		FileDescriptor fd = open(file.c_str(), O_RDONLY);
 		if (fd == -1)
 			throw std::logic_error(strerror(errno));
 		
@@ -41,7 +55,6 @@ namespace Common
 		
 		fileSize = lseek(fd, 0, SEEK_END);
 		address = mmap(nullptr, static_cast<size_t>(fileSize), PROT_READ, MAP_PRIVATE, fd, 0);
-		close(fd);
 		
 		if (address == MAP_FAILED)
 			throw std::logic_error(strerror(errno));

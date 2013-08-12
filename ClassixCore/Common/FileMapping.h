@@ -26,6 +26,15 @@
 
 namespace Common
 {
+	class FileDescriptor
+	{
+		int fd;
+	public:
+		FileDescriptor(int fd);
+		operator int();
+		~FileDescriptor();
+	};
+	
 	class FileMapping
 	{
 		long long fileSize;
