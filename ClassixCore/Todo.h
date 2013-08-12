@@ -26,16 +26,23 @@
 
 #include <stdio.h>
 
-inline void TodoMessage(int* guard, size_t line, const char* function, const char* message)
+inline void TodoMessage(char* guard, const char* filePath, size_t line, const char* function, const char* message)
 {
 	if (*guard == 0)
 	{
 		*guard = 1;
-		printf("%s(%lu): %s", function, line, message);
+		const char* fileName = filePath;
+		for (const char* iter = filePath; *iter != 0; iter++)
+		{
+			if (*iter == '/')
+				fileName = iter + 1;
+		}
+		
+		printf("<TODO> %s:%lu: %s: %s\n", fileName, line, function, message);
 	}
 }
 
-# define TODO(msg) do { static int warn_##__LINE__ = 0; TodoMessage(&warn_##__LINE__, __LINE__, __func__, (msg)); } while (0)
+# define TODO(msg) do { static char warn_##__LINE__ = 0; TodoMessage(&warn_##__LINE__, __FILE__, __LINE__, __func__, (msg)); } while (0)
 
 #else
 
