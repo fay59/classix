@@ -47,6 +47,7 @@
 #include "NativeCall.h"
 #include "FancyDisassembler.h"
 #include "OStreamDisassemblyWriter.h"
+#include "DebugStub.h"
 
 // be super-generous: apps on Mac OS 9, by default, have a 32 KB stack
 // but we give them 1 MB since messing with ApplLimit has no effect
@@ -230,6 +231,18 @@ static int run(const std::string& path, int argc, const char* argv[], const char
 	return stub(argc, argv, envp);
 }
 
+static int debugStub(uint16_t port, const std::string& path, int argc, const char** argv, const char* envp[])
+{
+	const char** envEnd = envp;
+	while (*envEnd != nullptr) envEnd++;
+	
+	Classix::DebugStub stub(path);
+	stub.SetArguments(argv, argv + argc);
+	stub.SetEnvironment(envp, envEnd);
+	stub.Accept(port);
+	return stub.RunToEnd();
+}
+
 static int inflateAndDump(const std::string& path, const std::string& targetDir)
 {
 	Common::NativeAllocator allocator;
@@ -299,6 +312,11 @@ int main(int argc, const char* argv[], const char* envp[])
 			return disassemble(ppcPath);
 		else if (mode == "-r")
 			return run(ppcPath, argc - 2, argv + 2, envp);
+		else if (mode == "-s")
+		{
+			const uint16_t port = 25464;
+			return debugStub(port, ppcPath, argc - 2, argv + 2, envp);
+		}
 		else
 		{
 			if (argc < 4) return usage();

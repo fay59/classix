@@ -237,6 +237,8 @@
 		DCE9880E16604ED700C28F25 /* CXNavBar.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE9880D16604ED700C28F25 /* CXNavBar.m */; };
 		DCF538C5167C37B9000D6E02 /* InstructionDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCF538C3167C37B9000D6E02 /* InstructionDecoder.cpp */; };
 		DCF538C6167C37B9000D6E02 /* InstructionDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = DCF538C4167C37B9000D6E02 /* InstructionDecoder.h */; };
+		DCFB29B217B6F2ED0088747B /* ControlStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFB29B017B6F2ED0088747B /* ControlStream.cpp */; };
+		DCFB29B517B717590088747B /* DebugStub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFB29B317B717590088747B /* DebugStub.cpp */; };
 		DCFC0CFF166DA2CA0069AE5E /* CXCodeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DCFC0CFE166DA2CA0069AE5E /* CXCodeLabel.m */; };
 		DCFE917F1707FDE4002A4086 /* BundleLibraryResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCFE917D1707FDE4002A4086 /* BundleLibraryResolver.cpp */; };
 		DCFE91801707FDE4002A4086 /* BundleLibraryResolver.h in Headers */ = {isa = PBXBuildFile; fileRef = DCFE917E1707FDE4002A4086 /* BundleLibraryResolver.h */; };
@@ -647,6 +649,10 @@
 		DCF3D732170A9F2B003B487F /* Prototypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prototypes.h; sourceTree = "<group>"; };
 		DCF538C3167C37B9000D6E02 /* InstructionDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InstructionDecoder.cpp; sourceTree = "<group>"; };
 		DCF538C4167C37B9000D6E02 /* InstructionDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InstructionDecoder.h; sourceTree = "<group>"; };
+		DCFB29B017B6F2ED0088747B /* ControlStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlStream.cpp; sourceTree = "<group>"; };
+		DCFB29B117B6F2ED0088747B /* ControlStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlStream.h; sourceTree = "<group>"; };
+		DCFB29B317B717590088747B /* DebugStub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebugStub.cpp; sourceTree = "<group>"; };
+		DCFB29B417B717590088747B /* DebugStub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugStub.h; sourceTree = "<group>"; };
 		DCFC0CFD166DA2CA0069AE5E /* CXCodeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXCodeLabel.h; sourceTree = "<group>"; };
 		DCFC0CFE166DA2CA0069AE5E /* CXCodeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXCodeLabel.m; sourceTree = "<group>"; };
 		DCFE917D1707FDE4002A4086 /* BundleLibraryResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BundleLibraryResolver.cpp; sourceTree = "<group>"; };
@@ -1113,6 +1119,7 @@
 				DC8301F6165010690079CE2D /* VirtualMachine.h */,
 				DC0D42A9165EDDBB00883586 /* OStreamDisassemblyWriter.cpp */,
 				DC0D42AA165EDDBB00883586 /* OStreamDisassemblyWriter.h */,
+				DCFB29AF17B6F27F0088747B /* Debug Stub */,
 			);
 			path = Classix;
 			sourceTree = "<group>";
@@ -1340,6 +1347,17 @@
 				DC62873216F4F1FB00265AA6 /* Unknown.cpp */,
 			);
 			name = PPC;
+			sourceTree = "<group>";
+		};
+		DCFB29AF17B6F27F0088747B /* Debug Stub */ = {
+			isa = PBXGroup;
+			children = (
+				DCFB29B017B6F2ED0088747B /* ControlStream.cpp */,
+				DCFB29B117B6F2ED0088747B /* ControlStream.h */,
+				DCFB29B317B717590088747B /* DebugStub.cpp */,
+				DCFB29B417B717590088747B /* DebugStub.h */,
+			);
+			path = "Debug Stub";
 			sourceTree = "<group>";
 		};
 		DCFE91811707FDE9002A4086 /* Bundle */ = {
@@ -1892,6 +1910,8 @@
 				DC0D42AB165EDDBB00883586 /* OStreamDisassemblyWriter.cpp in Sources */,
 				DCB8737716E06AAB00D87513 /* PatchExecutable.mm in Sources */,
 				DC1FB13916E2962C00E9C7E5 /* CompareTrace.cpp in Sources */,
+				DCFB29B217B6F2ED0088747B /* ControlStream.cpp in Sources */,
+				DCFB29B517B717590088747B /* DebugStub.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
