@@ -25,6 +25,7 @@
 #include "MathLibFunctions.h"
 #include "NotImplementedException.h"
 #include "MachineState.h"
+#include "Todo.h"
 
 namespace MathLib
 {
@@ -38,7 +39,7 @@ namespace MathLib
 		: allocator(allocator)
 		{
 			pi = M_PI;
-			// TODO give a value to FE_DFL_ENV
+			TODO("MathLib::Globals should initialize FE_DFL_ENV");
 		}
 	};
 }

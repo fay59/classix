@@ -28,13 +28,12 @@
 #include <unordered_map>
 #include "CommonDefinitions.h"
 #include "CFOwningRef.h"
+#include "Todo.h"
 
 #import "CXILApplication.h"
 #import "CXILWindowDelegate.h"
 
 #define IPC_PARAM(name, type)	type name; do { if (!channel->Read(name)) [self terminate:self]; } while (false)
-
-#define TODO_WARN_ONCE(msg)		do { static BOOL warn_##__LINE__ = NO; if (!warn_##__LINE__) { NSLog(@"*** %@", msg); warn_##__LINE__ = YES; } } while (0)
 
 using namespace Common;
 using namespace InterfaceLib;
@@ -85,7 +84,7 @@ namespace
 		if ((modifierFlags & NSControlKeyMask) == NSControlKeyMask)
 			modifiers |= static_cast<uint16_t>(EventModifierFlags::controlKey);
 		
-		TODO_WARN_ONCE(@"CXILModifierFlags does not handle active state or right shift, command and control keys");
+		TODO("CXILModifierFlags does not handle active state or right shift, command and control keys");
 		return modifiers;
 	}
 	
@@ -396,7 +395,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 			[super sendEvent:theEvent];
 			return kCXILEventHandlerNormalResolution;
 			
-			TODO_WARN_ONCE(@"handleEvent: does not trigger updateEvent, diskEvent, activateEvent, osEvent or highLevelEvent");
+			TODO("handleEvent: does not trigger updateEvent, diskEvent, activateEvent, osEvent or highLevelEvent");
 	}
 	
 	eventRecord.message = message;
@@ -502,7 +501,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	IPC_PARAM(mouseMoveRegion, MacRegionMax);
 	[self expectDone];
 	
-	TODO_WARN_ONCE(@"Mouse move events aren't tracked in mouseMoveRegion");
+	TODO("Mouse move events aren't tracked in mouseMoveRegion");
 	
 	currentlyWaitingOn = static_cast<EventMask>(desiredEvent);
 	
@@ -920,7 +919,7 @@ const size_t ipcSelectorCount = sizeof ipcSelectors / sizeof(SEL);
 	NSString* characters = [NSString stringWithCString:charString encoding:NSMacOSRomanStringEncoding];
 	unsigned short keyCode = 0;
 	
-	TODO_WARN_ONCE(@"menuKey would need the keyCode behind the char");
+	TODO("menuKey would need the keyCode behind the char");
 	
 	menuGate.ignoresMouseEvents = YES;
 	

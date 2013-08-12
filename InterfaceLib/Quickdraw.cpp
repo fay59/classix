@@ -28,6 +28,7 @@
 #include "InterfaceLib.h"
 #include "NotImplementedException.h"
 #include "CFOwningRef.h"
+#include "Todo.h"
 
 using namespace InterfaceLib;
 
@@ -544,7 +545,8 @@ void InterfaceLib_InitGraf(InterfaceLib::Globals* globals, MachineState* state)
 	QDGlobals* qd = globals->allocator.ToPointer<QDGlobals>(state->r3 - sizeof(QDGlobals) + sizeof(UInt32));
 	qd->screenBits.bounds = screenRect;
 	qd->thePort = grafPtr;
-	// TODO patterns and cursor
+	
+	TODO("Initialize patterns and cursor");
 }
 
 void InterfaceLib_InitPort(InterfaceLib::Globals* globals, MachineState* state)

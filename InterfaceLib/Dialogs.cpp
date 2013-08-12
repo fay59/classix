@@ -25,6 +25,7 @@
 #include "NotImplementedException.h"
 #include "InterfaceLib.h"
 #include "ResourceTypes.h"
+#include "Todo.h"
 
 using namespace InterfaceLib;
 using namespace InterfaceLib::Resources;
@@ -257,7 +258,7 @@ void InterfaceLib_StdFilterProc(InterfaceLib::Globals* globals, MachineState* st
 
 void InterfaceLib_StopAlert(InterfaceLib::Globals* globals, MachineState* state)
 {
-	// TODO this needs to be soooooo much better
+	TODO("StopAlert really has a nasty and incomplete implementation");
 	uint32_t key = 0;
 	uint16_t templateKey = static_cast<uint16_t>(state->r3);
 	

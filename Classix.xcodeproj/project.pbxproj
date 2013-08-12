@@ -548,6 +548,7 @@
 		DC83021B1650B2D70079CE2D /* Disassembler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Disassembler.h; path = ClassixCore/PPCVM/Disassembler/Disassembler.h; sourceTree = SOURCE_ROOT; };
 		DC83021D1650D1A60079CE2D /* InstructionRange.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionRange.cpp; path = ClassixCore/PPCVM/Disassembler/InstructionRange.cpp; sourceTree = SOURCE_ROOT; };
 		DC83021E1650D1A60079CE2D /* InstructionRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionRange.h; path = ClassixCore/PPCVM/Disassembler/InstructionRange.h; sourceTree = SOURCE_ROOT; };
+		DC83FAFC17B8B88700788C54 /* Todo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Todo.h; sourceTree = "<group>"; };
 		DC86E080166C03730027F40E /* CXReverseAllocationDetails.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CXReverseAllocationDetails.cpp; sourceTree = "<group>"; };
 		DC86E081166C03730027F40E /* CXReverseAllocationDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXReverseAllocationDetails.h; sourceTree = "<group>"; };
 		DC86E088166C2D380027F40E /* PanicException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PanicException.cpp; sourceTree = "<group>"; };
@@ -1215,6 +1216,7 @@
 				DC82A9B91636F4E100EAEDCD /* PPCVM */,
 				DCB00B95163B6B76003C88CA /* Native Libraries */,
 				DC65EBE11757092C0042885E /* OSEnvironment */,
+				DC83FAFC17B8B88700788C54 /* Todo.h */,
 			);
 			path = ClassixCore;
 			sourceTree = "<group>";
@@ -2281,12 +2283,11 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
-					"ENABLE_ANTIALIASING=0",
+					"TODOS=1",
 					"$(inherited)",
 				);
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
 					"$(inherited)",
-					"DEBUG_TRACE_NATIVE=1",
 					"DEBUG_DISASSEMBLE=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;

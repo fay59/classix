@@ -22,12 +22,13 @@
 #include "Prototypes.h"
 #include "InterfaceLib.h"
 #include "NotImplementedException.h"
+#include "Todo.h"
 
 using namespace InterfaceLib;
 
 void InterfaceLib_AppendResMenu(InterfaceLib::Globals* globals, MachineState* state)
 {
-	// TODO something
+	TODO("AppendResMenu does nothing");
 }
 
 void InterfaceLib_CalcMenuSize(InterfaceLib::Globals* globals, MachineState* state)

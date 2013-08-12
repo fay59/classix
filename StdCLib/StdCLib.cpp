@@ -41,6 +41,7 @@
 #include "StdCLibFunctions.h"
 #include "SymbolResolver.h"
 #include "NotImplementedException.h"
+#include "Todo.h"
 
 using PPCVM::MachineState;
 
@@ -328,10 +329,9 @@ namespace StdCLib
 		{}
 	};
 	
-	// TODO handle the vararg calling convention correctly: this can fail horribly with large calls, or calls that
-	// have floats as first and second arguments
 	std::string StringPrintF(const std::string& formatString, Globals& globals, const uint32_t* gpr, const double* fpr)
 	{
+		TODO("Handle vararg calls better");
 		std::string doubleTypes = "aAeEfFgG";
 		std::regex rx("%([0-9]+\\$)?(#?)(0?)(-?)( ?)(\\+?)('?)([0-9]?)(\\.[0-9]*)?[hLljtzq]*[diouxXDOUeEfFgGaAcCsSpn]");
 		std::smatch match;
@@ -903,8 +903,7 @@ extern "C"
 
 	void StdCLib_exit(StdCLib::Globals* globals, MachineState* state)
 	{
-		// TODO longjmp to __target_for_exit
-		// for now we'll just kill the host (which is really, really bad)
+		TODO("This should longjmp to __target_for_exit instead of calling exit");
 		exit(state->r3);
 	}
 

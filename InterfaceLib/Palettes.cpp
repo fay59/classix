@@ -23,6 +23,7 @@
 #include "Prototypes.h"
 #include "NotImplementedException.h"
 #include "InterfaceLib.h"
+#include "Todo.h"
 
 void InterfaceLib_ActivatePalette(InterfaceLib::Globals* globals, MachineState* state)
 {
@@ -137,7 +138,7 @@ void InterfaceLib_PmBackColor(InterfaceLib::Globals* globals, MachineState* stat
 
 void InterfaceLib_PmForeColor(InterfaceLib::Globals* globals, MachineState* state)
 {
-	// TODO support for 8-bit pixel depth
+	TODO("Add support for 8-bit pixel depth");
 	InterfaceLib::UGrafPort& port = globals->grafPorts.GetCurrentPort();
 	if (InterfaceLib::ColorTable* table = globals->grafPorts.ColorTableOfGrafPort(port))
 	{

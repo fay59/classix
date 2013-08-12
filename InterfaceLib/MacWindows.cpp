@@ -25,6 +25,7 @@
 #include "InterfaceLib.h"
 #include "ResourceTypes.h"
 #include "NotImplementedException.h"
+#include "Todo.h"
 
 using namespace OSEnvironment;
 using namespace InterfaceLib;
@@ -226,7 +227,7 @@ void InterfaceLib_InvalRgn(InterfaceLib::Globals* globals, MachineState* state)
 
 void InterfaceLib_NewCWindow(InterfaceLib::Globals* globals, MachineState* state)
 {
-	// TODO check ABI for parameters, I'm not entirely sure so many of them are passed by registers
+	TODO("NewCWindow has so many parameters it should be verified that they all fit in registers");
 	
 	// We use storage pointers as window indentifiers in the UI head, since they're guaranteed to be unique
 	// for ay given window.

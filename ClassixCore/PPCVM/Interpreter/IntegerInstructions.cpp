@@ -39,6 +39,7 @@
 
 #include "Interpreter.h"
 #include "TrapException.h"
+#include "Todo.h"
 
 namespace
 {
@@ -142,7 +143,7 @@ namespace PPCVM
 		{
 			uint32_t a = state.gpr[inst.RA];
 			uint32_t imm = (uint32_t)(int32_t)inst.SIMM_16;
-			// TODO(ector): verify this thing
+			TODO("According to Dolphin's 'ector', addic needs some verifying");
 			state.gpr[inst.RD] = a + imm;
 			state.xer_ca = Carry(a, imm);
 		}

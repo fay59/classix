@@ -25,6 +25,7 @@
 #import "CXDBRequest.h"
 #import "CXCodeLabel.h"
 #import "CXDisassembly.h"
+#include "Todo.h"
 
 @interface CXDBURLProtocol (Private)
 
@@ -146,7 +147,8 @@ static NSString* CXHTMLSpecialChars(NSString* string)
 	[highlightRules appendString:@".selected-sr1 .sr1, .selected-sr1 .sr8, .selected-sr1 .sr9 "];
 	[highlightRules appendString:@"{ background-color: rgba(44, 118, 202, 0.4); border-radius: 3px; }\n"];
 	[highlightRules appendString:@"]]></style>"];
-	// TODO highlight special registers
+	
+	TODO("Special registers should be highlighted");
 	
 	NSString* uniqueName = request.params.lastObject;
 	NSMutableString* xhtmlDisassembly = [NSMutableString stringWithString:@"<table id=\"disasm\">"];

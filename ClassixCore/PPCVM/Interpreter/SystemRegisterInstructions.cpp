@@ -40,6 +40,7 @@
 #include <cassert>
 #include <sstream>
 #include "Interpreter.h"
+#include "Todo.h"
 
 namespace
 {
@@ -197,7 +198,7 @@ namespace PPCVM
 			}
 			else
 			{
-				//TODO: use lookup table? probably not worth it
+				TODO("Dolphin dev said 'Use a lookup table'?");
 				uint32_t mask = 0;
 				for (int i = 0; i < 8; i++) {
 					if (crm & (1 << i))

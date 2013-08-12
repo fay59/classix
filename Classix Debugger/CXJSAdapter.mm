@@ -23,6 +23,7 @@
 #import "CXDocument.h"
 #import "CXRegister.h"
 #import "CXJSONEncode.h"
+#include "Todo.h"
 
 @implementation CXJSAdapter
 
@@ -93,13 +94,14 @@
 
 -(NSDictionary*)representationsOfSPR:(uint32_t)spr
 {
+	TODO("representationsOfSPR: was not implemented");
 	return @{@"TODO": @""};
 }
 
 -(NSDictionary*)representationsOfCR:(uint32_t)crNumber
 {
 	CXRegister* cr = [document.vm.fpr objectAtIndex:crNumber];
-	return @{@"unsigned": cr.value, @"TODO": @""};
+	return @{@"unsigned": cr.value};
 }
 
 -(NSDictionary*)representationsOfMemoryAddress:(uint32_t)memoryAddress

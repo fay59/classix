@@ -27,6 +27,7 @@
 #include <iomanip>
 #include "GrafPortManager.h"
 #include "CFOwningRef.h"
+#include "Todo.h"
 
 namespace
 {
@@ -289,7 +290,7 @@ namespace InterfaceLib
 		port.portBits.bounds = bounds;
 		port.portRect = bounds;
 		port.procs = 0;
-		// TODO complete initialization
+		TODO("InitializeGrayGrafPort is not fully implemented");
 		
 		uint32_t address = allocator.ToIntPtr(&port);
 		GrafPortData& insertedValue = ports.emplace(std::make_pair(address, GrafPortData(&uPort, nullptr))).first->second;

@@ -22,6 +22,7 @@
 #include "Interpreter.h"
 #include "FloatingPointStatus.h"
 #include "TrapException.h"
+#include "Todo.h"
 
 // a macro conveys best the ugliness of the kludge
 #define PRAY_NO_FLAGS_NO_EXCEPTIONS() \
@@ -155,7 +156,7 @@ namespace PPCVM
 		
 		void Interpreter::frspx(Instruction inst)
 		{
-			// TODO round with correct rounding mode
+			TODO("frsp should round with the correct rounding mode");
 			float single = static_cast<float>(state.fpr[inst.FB]);
 			state.fpr[inst.FS] = single;
 			PRAY_NO_FLAGS_NO_EXCEPTIONS();
