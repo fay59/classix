@@ -44,9 +44,9 @@ namespace PEF
 		static uint32_t HashSymbol(const ExportedSymbol& symbol);
 		
 	private:
-		typedef uint32_t (*HashFunction)(const std::string&);
+		typedef uint32_t HashFunction(const std::string&);
 		std::vector<std::string> symbolNames;
-		std::unordered_map<std::string, ExportedSymbol, HashFunction> symbolTable;
+		std::unordered_map<std::string, ExportedSymbol, HashFunction&> symbolTable;
 		
 	public:
 		typedef std::vector<std::string>::const_iterator name_iterator;

@@ -29,14 +29,14 @@ namespace PPCVM
 	namespace Execution
 	{
 		extern const uint32_t NativeTag;
-		typedef void (*NativeCallback)(void*, MachineState*);
+		typedef void NativeCallback(void*, MachineState*);
 		
 		struct NativeCall
 		{
 			uint32_t Tag;
-			NativeCallback Callback;
+			NativeCallback& Callback;
 			
-			NativeCall(NativeCallback cb);
+			NativeCall(NativeCallback& cb);
 		};
 	}
 }

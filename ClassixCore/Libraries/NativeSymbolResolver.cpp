@@ -58,7 +58,7 @@ namespace ClassixCore
 	PEF::TransitionVector& NativeSymbolResolver::MakeTransitionVector(const std::string& symbolName, void* address)
 	{
 		stlAllocator.SetNextName("Native Call Trampoline Block");
-		nativeCalls.emplace_back((NativeCallback)address);
+		nativeCalls.emplace_back(*reinterpret_cast<NativeCallback*>(address));
 		NativeCall& call = nativeCalls.back();
 		
 		PEF::TransitionVector vector;

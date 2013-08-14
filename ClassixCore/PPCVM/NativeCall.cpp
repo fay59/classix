@@ -23,8 +23,8 @@
 
 extern const uint32_t PPCVM::Execution::NativeTag = 0x4e544956; // 'NTIV'
 
-PPCVM::Execution::NativeCall::NativeCall(NativeCallback cb)
+PPCVM::Execution::NativeCall::NativeCall(NativeCallback& cb)
+: Callback(cb)
 {
 	Tag = NativeTag;
-	this->Callback = cb;
 }
