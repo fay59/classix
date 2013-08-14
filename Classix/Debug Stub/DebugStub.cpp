@@ -56,6 +56,8 @@ namespace
 		std::string stringResult = result;
 		return stringResult;
 	}
+	
+	const char hexgits[] = "0123456789abcdef";
 }
 
 namespace Classix
@@ -84,8 +86,11 @@ namespace Classix
 	const std::unordered_map<std::string, DebugStub::RemoteCommand> DebugStub::commands = {
 		std::make_pair("H", &DebugStub::SetOperationTargetThread),
 		std::make_pair("?", &DebugStub::GetStopReason),
+		std::make_pair("m", &DebugStub::ReadMemory),
 		std::make_pair("vCont", &DebugStub::Resume),
 		std::make_pair("qC", &DebugStub::QueryCurrentThread),
+		std::make_pair("qfThreadInfo", &DebugStub::QueryThreadList),
+		std::make_pair("qsThreadInfo", &DebugStub::QueryThreadList),
 		std::make_pair("qOffsets", &DebugStub::QuerySectionOffsets),
 		std::make_pair("qHostInfo", &DebugStub::QueryHostInformation),
 		std::make_pair("qRegisterInfo", &DebugStub::QueryRegisterInformation),
@@ -141,17 +146,43 @@ namespace Classix
 		return NoError;
 	}
 	
-	uint8_t DebugStub::QueryCurrentThread(const std::string &commandString, std::string &output)
-	{
-		TODO("Threads aren't supported, returning QC1");
-		output = "QC1";
-		return NoError;
-	}
-	
 	uint8_t DebugStub::GetStopReason(const std::string &commandString, std::string &output)
 	{
 		// assume always stopped for a breakpoint
 		output = StringPrintf("S%02hhx", static_cast<uint8_t>(SIGTRAP));
+		return NoError;
+	}
+	
+	uint8_t DebugStub::ReadMemory(const std::string &commandString, std::string &outputString)
+	{
+		uint32_t address;
+		uint32_t size;
+		if (sscanf(commandString.c_str(), "m%x,%x", &address, &size) != 2)
+		{
+			return InvalidFormat;
+		}
+		
+		size_t read = 0;
+		size_t invalid = size;
+		const uint8_t* data = nullptr;
+		if (auto details = context->allocator->GetDetails(address))
+		{
+			uint32_t offset = context->allocator->GetAllocationOffset(address);
+			read = std::max(details->Size() - offset, static_cast<size_t>(size));
+			invalid = size - read;
+			data = context->allocator->ToPointer<uint8_t>(address);
+		}
+		
+		outputString.clear();
+		outputString.reserve(size * 2 + 1);
+		for (size_t i = 0; i < read; i++)
+		{
+			uint8_t value = data[i];
+			outputString += hexgits[value >> 4];
+			outputString += hexgits[value & 0xf];
+		}
+		
+		outputString.resize(size * 2, 'e');
 		return NoError;
 	}
 	
@@ -174,8 +205,30 @@ namespace Classix
 	uint8_t DebugStub::QueryHostInformation(const std::string &commandString, std::string &output)
 	{
 		output = StringPrintf("cputype:%u;cpusubtype:%u;ostype:%s;vendor:%s;endian:%s;ptrsize:%u",
-			CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "classic", "fcloutier", "little", 4);
+			CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "classic", "fcloutier", "big", 4);
 		
+		return NoError;
+	}
+	
+	uint8_t DebugStub::QueryCurrentThread(const std::string &commandString, std::string &output)
+	{
+		TODO("Threads aren't supported, returning QC1");
+		output = "QC1";
+		return NoError;
+	}
+	
+	uint8_t DebugStub::QueryThreadList(const std::string &commandString, std::string &output)
+	{
+		// no support for fragmentation
+		if (commandString[1] == 's')
+		{
+			output = "l";
+		}
+		else
+		{
+			TODO("Threads aren't supported, returning 1");
+			output = "m1";
+		}
 		return NoError;
 	}
 	
