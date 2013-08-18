@@ -31,15 +31,11 @@ namespace OSEnvironment
 {
 	class ThreadManager
 	{
-		mutable std::recursive_mutex usedThreadsLock;
-		unsigned inCriticalSection;
-		std::unordered_map<thread_act_t, size_t> usedThreads;
-		
 	public:
 		class ExecutionMarker
 		{
 			friend class ThreadManager;
-			ThreadManager* manager;
+			ThreadManager& manager;
 			ExecutionMarker(ThreadManager& manager);
 			
 		public:
@@ -48,15 +44,33 @@ namespace OSEnvironment
 			~ExecutionMarker();
 		};
 		
-		ThreadManager();
-		
-		bool IsThreadExecuting() const;
-		void MarkThreadAsExecuting();
-		void UnmarkThreadAsExecuting();
+		virtual bool IsThreadExecuting() const = 0;
+		virtual void MarkThreadAsExecuting() = 0;
+		virtual void UnmarkThreadAsExecuting() = 0;
 		ExecutionMarker CreateExecutionMarker();
 		
-		void EnterCriticalSection() noexcept;
-		void ExitCriticalSection() noexcept;
+		virtual void EnterCriticalSection() noexcept = 0;
+		virtual void ExitCriticalSection() noexcept = 0;
+		
+		virtual ~ThreadManager();
+	};
+	
+	class NativeThreadManager : public ThreadManager
+	{
+		// needs to be a recursive mutex so EnterCriticalSection doesn't
+		mutable std::recursive_mutex usedThreadsLock;
+		unsigned inCriticalSection;
+		std::unordered_map<thread_act_t, size_t> usedThreads;
+		
+	public:
+		NativeThreadManager();
+		
+		virtual bool IsThreadExecuting() const override;
+		virtual void MarkThreadAsExecuting() override;
+		virtual void UnmarkThreadAsExecuting() override;
+		
+		virtual void EnterCriticalSection() noexcept override;
+		virtual void ExitCriticalSection() noexcept override;
 	};
 }
 

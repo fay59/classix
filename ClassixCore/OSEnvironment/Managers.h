@@ -34,10 +34,10 @@ namespace OSEnvironment
 		Common::Allocator& allocator;
 		Gestalt gestalt;
 		ResourceManager resourceManager;
-		ThreadManager threadManager;
+		ThreadManager& threadManager;
 		
 	public:
-		Managers(Common::Allocator& allocator);
+		Managers(Common::Allocator& allocator, class ThreadManager& threads);
 		
 		Common::Allocator& Allocator();
 		Gestalt& Gestalt();

@@ -25,67 +25,19 @@
 
 #include "ThreadManager.h"
 
-namespace
-{
-	struct RAIIMutexLock
-	{
-		std::recursive_mutex& mutex;
-		
-		RAIIMutexLock(std::recursive_mutex& mutex) : mutex(mutex)
-		{
-			mutex.lock();
-		}
-		
-		~RAIIMutexLock() { mutex.unlock(); }
-	};
-}
-
 namespace OSEnvironment
 {
 	ThreadManager::ExecutionMarker::ExecutionMarker(ThreadManager& manager)
-	: manager(&manager)
-	{
-		this->manager->MarkThreadAsExecuting();
-	}
+	: manager(manager)
+	{ }
 	
 	ThreadManager::ExecutionMarker::ExecutionMarker(ThreadManager::ExecutionMarker&& that)
 	: manager(that.manager)
-	{
-		that.manager = nullptr;
-	}
+	{ }
 	
 	ThreadManager::ExecutionMarker::~ExecutionMarker()
 	{
-		manager->UnmarkThreadAsExecuting();
-	}
-	
-	ThreadManager::ThreadManager()
-	{
-		inCriticalSection = 0;
-	}
-	
-	bool ThreadManager::IsThreadExecuting() const
-	{
-		RAIIMutexLock lock(usedThreadsLock);
-		auto iter = usedThreads.find(mach_thread_self());
-		if (iter == usedThreads.end())
-			return false;
-		
-		return iter->second != 0;
-	}
-	
-	void ThreadManager::MarkThreadAsExecuting()
-	{
-		RAIIMutexLock lock(usedThreadsLock);
-		usedThreads[mach_thread_self()]++;
-	}
-	
-	void ThreadManager::UnmarkThreadAsExecuting()
-	{
-		RAIIMutexLock lock(usedThreadsLock);
-		size_t& count = usedThreads[mach_thread_self()];
-		assert(count != 0 && "Reference count underflow");
-		count++;
+		manager.UnmarkThreadAsExecuting();
 	}
 	
 	ThreadManager::ExecutionMarker ThreadManager::CreateExecutionMarker()
@@ -93,7 +45,39 @@ namespace OSEnvironment
 		return ExecutionMarker(*this);
 	}
 	
-	void ThreadManager::EnterCriticalSection() noexcept
+	ThreadManager::~ThreadManager()
+	{ }
+	
+	NativeThreadManager::NativeThreadManager()
+	{
+		inCriticalSection = 0;
+	}
+	
+	bool NativeThreadManager::IsThreadExecuting() const
+	{
+		std::unique_lock<std::recursive_mutex> lock(usedThreadsLock);
+		auto iter = usedThreads.find(mach_thread_self());
+		if (iter == usedThreads.end())
+			return false;
+		
+		return iter->second != 0;
+	}
+	
+	void NativeThreadManager::MarkThreadAsExecuting()
+	{
+		std::unique_lock<std::recursive_mutex> lock(usedThreadsLock);
+		usedThreads[mach_thread_self()]++;
+	}
+	
+	void NativeThreadManager::UnmarkThreadAsExecuting()
+	{
+		std::unique_lock<std::recursive_mutex> lock(usedThreadsLock);
+		size_t& count = usedThreads[mach_thread_self()];
+		assert(count != 0 && "Reference count underflow");
+		count++;
+	}
+	
+	void NativeThreadManager::EnterCriticalSection() noexcept
 	{
 		usedThreadsLock.lock();
 		inCriticalSection++;
@@ -104,15 +88,15 @@ namespace OSEnvironment
 			if (pair.first == self || pair.second == 0)
 				continue;
 			
-			if (kern_return_t result = thread_suspend(pair.second))
+			if (kern_return_t error = thread_suspend(pair.second))
 			{
-				std::cerr << "*** couldn't suspend thread " << pair.second << ": error " << result;
+				std::cerr << "*** couldn't suspend thread " << pair.second << ": error " << error;
 				abort();
 			}
 		}
 	}
 	
-	void ThreadManager::ExitCriticalSection() noexcept
+	void NativeThreadManager::ExitCriticalSection() noexcept
 	{
 		assert(inCriticalSection > 0 && "Not in a critical section");
 		
@@ -122,9 +106,9 @@ namespace OSEnvironment
 			if (pair.first == self || pair.second == 0)
 				continue;
 			
-			if (kern_return_t result = thread_resume(pair.second))
+			if (kern_return_t error = thread_resume(pair.second))
 			{
-				std::cerr << "*** couldn't resume thread " << pair.second << ": error " << result;
+				std::cerr << "*** couldn't resume thread " << pair.second << ": error " << error;
 				abort();
 			}
 		}

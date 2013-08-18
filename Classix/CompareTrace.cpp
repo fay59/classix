@@ -132,7 +132,8 @@ public:
 int compareTrace(const std::string& path, const std::string& tracePath)
 {
 	Common::NativeAllocator allocator;
-	OSEnvironment::Managers managers(allocator);
+	OSEnvironment::NativeThreadManager threads;
+	OSEnvironment::Managers managers(allocator, threads);
 	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator, managers);
 	dlfcnResolver.RegisterLibrary("StdCLib");
 	

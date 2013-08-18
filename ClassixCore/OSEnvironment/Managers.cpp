@@ -23,8 +23,8 @@
 
 namespace OSEnvironment
 {
-	Managers::Managers(Common::Allocator& allocator)
-	: allocator(allocator), resourceManager(allocator)
+	Managers::Managers(Common::Allocator& allocator, class ThreadManager& threads)
+	: allocator(allocator), resourceManager(allocator), threadManager(threads)
 	{ }
 	
 	Common::Allocator& Managers::Allocator()
