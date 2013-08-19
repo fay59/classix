@@ -28,10 +28,11 @@
 #include "Instruction.h"
 #include "InstructionDispatcher.h"
 #include "BigEndian.h"
-#include <string>
-#include <iostream>
 #include "PPCRuntimeException.h"
 #include "InterpreterException.h"
+#include <string>
+#include <iostream>
+#include <atomic>
 
 namespace PPCVM
 {
@@ -42,21 +43,26 @@ namespace PPCVM
 			MachineState& state;
 			Common::Allocator& allocator;
 			Common::AutoAllocation endAddress;
+			Common::AutoAllocation interruptAddress;
 			
 			const Common::UInt32* currentAddress;
-			const void* branchAddress;
-			const void* ExecuteUntilBranch(const void* address);
+			std::atomic<const void*> branchAddress;
+			
+			void SetBranchAddress(uint32_t branchAddress);
+			void ExecuteUntilBranch(const void* address);
 			const void* ExecuteNative(const NativeCall* address);
 			
 		public:
 			Interpreter(Common::Allocator& allocator, MachineState& state);
-			virtual ~Interpreter();
+			~Interpreter();
 			
-			virtual void Execute(const void* address);
+			void Execute(const void* address);
+			void Interrupt();
+			
 			const void* ExecuteOne(const void* address);
 			
 			template<typename TBreakpointSet>
-			const void* ExecuteUntil(const void* address, const TBreakpointSet& breakpoints);
+			const void* ExecuteUntil(const void* address, const TBreakpointSet& breakpoints) __attribute__((deprecated("Set breakpoints in-memory like a real programmer")));
 			
 			// problems
 			void Panic(const std::string& errorMessage);
@@ -296,7 +302,7 @@ namespace PPCVM
 				
 				if (branchAddress != nullptr)
 				{
-					currentAddress = reinterpret_cast<const Common::UInt32*>(branchAddress);
+					currentAddress = reinterpret_cast<const Common::UInt32*>(branchAddress.load());
 					branchAddress = nullptr;
 				}
 			}

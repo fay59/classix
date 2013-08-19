@@ -30,6 +30,7 @@ namespace PPCVM
 	class TrapException : public Common::PPCRuntimeException
 	{
 		std::string trapName;
+		
 	public:
 		TrapException(const std::string& trapName);
 		

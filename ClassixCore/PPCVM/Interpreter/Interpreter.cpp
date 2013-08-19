@@ -23,17 +23,12 @@
 #include "InstructionDecoder.h"
 #include "NativeCall.h"
 #include "PanicException.h"
+#include "TrapException.h"
 #include <iostream>
 #include <sstream>
 #include <cassert>
 #include <dlfcn.h>
-
-#ifdef DEBUG
-static uint8_t _writeBucket_;
-# define CHECK_JUMP_TARGET()	(_writeBucket_ = *(uint8_t*)branchAddress)
-#else
-# define CHECK_JUMP_TARGET()
-#endif
+#include "Todo.h"
 
 namespace
 {
@@ -80,7 +75,9 @@ namespace PPCVM
 	namespace Execution
 	{
 		Interpreter::Interpreter(Common::Allocator& allocator, MachineState& state)
-		: state(state), allocator(allocator), endAddress(allocator.AllocateAuto("Interpreter End Address", 4))
+		: state(state), allocator(allocator),
+			endAddress(allocator.AllocateAuto("Interpreter End Address", 4)),
+			interruptAddress(allocator.AllocateAuto("Interpreter Interrupt Address", 4))
 		{ }
 		
 		Interpreter::~Interpreter()
@@ -96,6 +93,35 @@ namespace PPCVM
 			std::stringstream ss;
 			ss << "Unknown instruction " << Disassembly::InstructionDecoder::Decode(inst);
 			Panic(ss.str());
+		}
+		
+		void Interpreter::SetBranchAddress(uint32_t target)
+		{
+			const void* voidTarget = allocator.ToPointer<const void>(target);
+			const void* oldBranch = branchAddress.exchange(voidTarget);
+			
+			// We know Interrupt() was called if oldBranch is not null at this point. Normally this is picked up
+			// at branching time (with ExecuteUntilBranch returning), but if we're inside a branch instruction,
+			// we risk overwriting the branch, so check here too. Also, we can't risk letting the execution loop
+			// increment PC if we're not going to branch.
+			if (oldBranch != nullptr)
+			{
+				branchAddress.store(oldBranch);
+				throw TrapException("interrupted");
+			}
+		}
+		
+		void Interpreter::Interrupt()
+		{
+			const void* expected = nullptr;
+			const void* target = *interruptAddress;
+			
+			// Don't stop if a branch is already happening. I can see a lot of things going wrong
+			// if this happens. Just try again until we're good, it shouldn't take long anyways.
+			// Spurious fails are OK because the interpreter shouldn't be back on its feet before the interrupting
+			// thread gives its go anyways.
+			while (!branchAddress.compare_exchange_weak(expected, target))
+				expected = nullptr;
 		}
 		
 		const void* Interpreter::ExecuteNative(const NativeCall* function)
@@ -132,7 +158,7 @@ namespace PPCVM
 			return allocator.ToPointer<const void>(state.lr);
 		}
 
-		const void* Interpreter::ExecuteUntilBranch(const void* address)
+		void Interpreter::ExecuteUntilBranch(const void* address)
 		{
 			currentAddress = reinterpret_cast<const Common::UInt32*>(address);
 			branchAddress = nullptr;
@@ -140,11 +166,21 @@ namespace PPCVM
 			{
 				try
 				{
-					const Common::UInt32& instructionCode = *currentAddress;
+					Common::UInt32 instructionCode = *currentAddress;
 					if (instructionCode.AsBigEndian == NativeTag)
 					{
 						const NativeCall* call = static_cast<const NativeCall*>(address);
-						branchAddress = ExecuteNative(call);
+						const void* returnAddress = ExecuteNative(call);
+						
+						// Native calls absolutely have to be atomic, so if we were interrupted in the middle of one,
+						// set currentAddress to the branch address and then give up. Otherwise set branchAddress
+						// to the return address and keep going.
+						const void* oldBranch = branchAddress.exchange(returnAddress);
+						if (oldBranch == *interruptAddress)
+						{
+							currentAddress = reinterpret_cast<const Common::UInt32*>(returnAddress);
+							throw TrapException("interrupted");
+						}
 					}
 					else
 					{
@@ -159,17 +195,17 @@ namespace PPCVM
 					throw InterpreterException(pc, ex);
 				}
 			} while (branchAddress == nullptr);
-			return branchAddress;
 		}
 		
 		const void* Interpreter::ExecuteOne(const void *address)
 		{
+			// ExecuteOne is not interruptible
 			currentAddress = reinterpret_cast<const Common::UInt32*>(address);
 			branchAddress = nullptr;
 			
 			try
 			{
-				const Common::UInt32& instructionCode = *currentAddress;
+				Common::UInt32 instructionCode = *currentAddress;
 				if (instructionCode.AsBigEndian == NativeTag)
 				{
 					const NativeCall* call = static_cast<const NativeCall*>(address);
@@ -188,15 +224,21 @@ namespace PPCVM
 				throw InterpreterException(pc, ex);
 			}
 			
-			return branchAddress == nullptr ? currentAddress : branchAddress;
+			const void* br = branchAddress.load(std::memory_order_relaxed);
+			return br == nullptr ? currentAddress : br;
 		}
 
 		void Interpreter::Execute(const void* address)
 		{
+			const void* interrupt = *interruptAddress;
 			state.lr = endAddress.GetVirtualAddress();
 			while (address != *endAddress)
 			{
-				address = ExecuteUntilBranch(address);
+				ExecuteUntilBranch(address);
+				
+				address = branchAddress.load();
+				if (address == interrupt)
+					throw TrapException("interrupted");
 			}
 		}
 
@@ -210,8 +252,7 @@ namespace PPCVM
 			if (!inst.AA)
 				target += address;
 			
-			branchAddress = allocator.ToPointer<const void>(target);
-			CHECK_JUMP_TARGET();
+			SetBranchAddress(target);
 		}
 
 		void Interpreter::bcx(Instruction inst)
@@ -236,8 +277,7 @@ namespace PPCVM
 				uint32_t target = SignExt16(bd);
 				if (!inst.AA)
 					target += address;
-				branchAddress = allocator.ToPointer<const void>(target);
-				CHECK_JUMP_TARGET();
+				SetBranchAddress(target);
 			}
 		}
 
@@ -254,8 +294,7 @@ namespace PPCVM
 				if (inst.LK)
 					state.lr = allocator.ToIntPtr(currentAddress + 1);
 				
-				branchAddress = allocator.ToPointer<const void>(state.lr & ~3);
-				CHECK_JUMP_TARGET();
+				SetBranchAddress(state.lr & ~3);
 			}
 		}
 
@@ -268,8 +307,7 @@ namespace PPCVM
 				if (inst.LK)
 					state.lr = allocator.ToIntPtr(currentAddress + 1);
 				
-				branchAddress = allocator.ToPointer<const void>(state.ctr & ~3);
-				CHECK_JUMP_TARGET();
+				SetBranchAddress(state.ctr & ~3);
 			}
 		}
 
