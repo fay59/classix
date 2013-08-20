@@ -24,6 +24,7 @@
 #include <mach/mach.h>
 
 #include "ThreadManager.h"
+#include "Todo.h"
 
 namespace OSEnvironment
 {
@@ -50,12 +51,13 @@ namespace OSEnvironment
 	
 	NativeThreadManager::NativeThreadManager()
 	{
+		TODO("The interface isn't so great, maybe MarkThreadAsExecuting is a bad idea.");
 		inCriticalSection = 0;
 	}
 	
 	bool NativeThreadManager::IsThreadExecuting() const
 	{
-		std::unique_lock<std::recursive_mutex> lock(usedThreadsLock);
+		std::lock_guard<std::recursive_mutex> lock(usedThreadsLock);
 		auto iter = usedThreads.find(mach_thread_self());
 		if (iter == usedThreads.end())
 			return false;
@@ -65,13 +67,13 @@ namespace OSEnvironment
 	
 	void NativeThreadManager::MarkThreadAsExecuting()
 	{
-		std::unique_lock<std::recursive_mutex> lock(usedThreadsLock);
+		std::lock_guard<std::recursive_mutex> lock(usedThreadsLock);
 		usedThreads[mach_thread_self()]++;
 	}
 	
 	void NativeThreadManager::UnmarkThreadAsExecuting()
 	{
-		std::unique_lock<std::recursive_mutex> lock(usedThreadsLock);
+		std::lock_guard<std::recursive_mutex> lock(usedThreadsLock);
 		size_t& count = usedThreads[mach_thread_self()];
 		assert(count != 0 && "Reference count underflow");
 		count++;
@@ -88,9 +90,9 @@ namespace OSEnvironment
 			if (pair.first == self || pair.second == 0)
 				continue;
 			
-			if (kern_return_t error = thread_suspend(pair.second))
+			if (kern_return_t error = thread_suspend(pair.first))
 			{
-				std::cerr << "*** couldn't suspend thread " << pair.second << ": error " << error;
+				std::cerr << "*** couldn't suspend thread " << pair.first << ": error " << error;
 				abort();
 			}
 		}
@@ -106,9 +108,9 @@ namespace OSEnvironment
 			if (pair.first == self || pair.second == 0)
 				continue;
 			
-			if (kern_return_t error = thread_resume(pair.second))
+			if (kern_return_t error = thread_resume(pair.first))
 			{
-				std::cerr << "*** couldn't resume thread " << pair.second << ": error " << error;
+				std::cerr << "*** couldn't resume thread " << pair.first << ": error " << error;
 				abort();
 			}
 		}
