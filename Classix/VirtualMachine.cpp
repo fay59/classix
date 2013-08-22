@@ -85,7 +85,7 @@ namespace Classix
 	MainStub::MainStub(VirtualMachine& vm, CFM::ResolvedSymbol mainSymbol)
 	: vm(vm), mainSymbol(mainSymbol)
 	{
-		StackSize = 0x100000;
+		StackSize = Common::StackPreparator::DefaultStackSize;
 	}
 	
 	uint32_t MainStub::operator()(const std::string& argv0)

@@ -49,9 +49,6 @@
 #include "OStreamDisassemblyWriter.h"
 #include "DebugStub.h"
 
-// be super-generous: apps on Mac OS 9, by default, have a 32 KB stack
-// but we give them 1 MB since messing with ApplLimit has no effect
-const uint32_t defaultStackSize = 0x100000;
 const char endline = '\n';
 
 static char classChars[] = {

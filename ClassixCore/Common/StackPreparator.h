@@ -33,6 +33,8 @@ namespace Common
 		std::deque<std::string> envp;
 		
 	public:
+		static const size_t DefaultStackSize;
+		
 		struct StackInfo
 		{
 			char* sp;
@@ -59,7 +61,7 @@ namespace Common
 			envp.insert(envp.end(), begin, end);
 		}
 		
-		StackInfo WriteStack(char* stack, uint32_t virtualAddress, size_t stackSize);
+		StackInfo WriteStack(char* stack, uint32_t virtualAddress, size_t stackSize) const;
 	};
 }
 

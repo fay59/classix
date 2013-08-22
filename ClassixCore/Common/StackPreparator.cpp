@@ -72,6 +72,8 @@ namespace
 
 namespace Common
 {
+	const size_t StackPreparator::DefaultStackSize = 0x10000; // 64KB ought to be enough for anybody
+	
 	size_t StackPreparator::ArgumentCount() const
 	{
 		return argv.size();
@@ -94,7 +96,7 @@ namespace Common
 		AddEnvironmentVariable(ss.str());
 	}
 	
-	StackPreparator::StackInfo StackPreparator::WriteStack(char *stack, uint32_t virtualAddress, size_t stackSize)
+	StackPreparator::StackInfo StackPreparator::WriteStack(char *stack, uint32_t virtualAddress, size_t stackSize) const
 	{
 		//  stack layout:
 		// +-------------+

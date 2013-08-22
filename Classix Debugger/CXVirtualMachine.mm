@@ -57,8 +57,6 @@ NSString* CXVirtualMachineBreakpointAddressKey = @"breakpointAddress";
 NSString* CXVirtualMachineAddedBreakpoint = @"added breakpoint";
 NSString* CXVirtualMachineRemovedBreakpoint = @"removed breakpoint";
 
-const NSUInteger CXStackSize = 0x100000;
-
 struct ClassixCoreVM
 {
 	Common::NativeAllocator allocator;
@@ -79,7 +77,7 @@ struct ClassixCoreVM
 	, dlfcnResolver(allocator, managers)
 	, interp(allocator, state)
 	, bundleResolver(allocator, managers)
-	, stack(allocator.AllocateAuto(CXReverseAllocationDetails("Stack", CXStackSize), CXStackSize))
+	, stack(allocator.AllocateAuto(CXReverseAllocationDetails("Stack", Common::StackPreparator::DefaultStackSize), Common::StackPreparator::DefaultStackSize))
 	{
 		dlfcnResolver.RegisterLibrary("StdCLib");
 		dlfcnResolver.RegisterLibrary("MathLib");
@@ -254,7 +252,7 @@ struct ClassixCoreVM
 	}
 	
 	Common::AutoAllocation& stack = vm->stack;
-	auto result = stackPrep.WriteStack(static_cast<char*>(*stack), stack.GetVirtualAddress(), CXStackSize);
+	auto result = stackPrep.WriteStack(static_cast<char*>(*stack), stack.GetVirtualAddress(), Common::StackPreparator::DefaultStackSize);
 	
 	for (auto& pair : vm->cfm)
 	{
@@ -475,7 +473,7 @@ struct ClassixCoreVM
 	
 	// this relies on the fact that the stack is allocated on a 4-byte boundary
 	uint32_t stackWord = vm->state.r1 & ~0b11;
-	const UInt32* stackGuard = static_cast<UInt32*>(*vm->stack) + CXStackSize / sizeof (UInt32);
+	const UInt32* stackGuard = static_cast<UInt32*>(*vm->stack) + Common::StackPreparator::DefaultStackSize / sizeof (UInt32);
 	uint32_t stackEnd = vm->allocator.ToIntPtr(stackGuard);
 	uint32_t stackWordCount = (stackEnd - stackWord) / sizeof (UInt32);
 	
