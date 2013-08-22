@@ -22,6 +22,7 @@
 #include "Interpreter.h"
 #include "FloatingPointStatus.h"
 #include "TrapException.h"
+#include "InvalidInstructionException.h"
 #include "Todo.h"
 
 // a macro conveys best the ugliness of the kludge
@@ -37,42 +38,42 @@ namespace PPCVM
 	{
 		void Interpreter::fabsx(Instruction inst)
 		{
-			Panic("fabsx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 
 		void Interpreter::faddsx(Instruction inst)
 		{
-			Panic("faddsx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::faddx(Instruction inst)
 		{
-			Panic("faddx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fcmpo(Instruction inst)
 		{
-			Panic("fcmpo is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fcmpu(Instruction inst)
 		{
-			Panic("fcmpu is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fctiwx(Instruction inst)
 		{
-			Panic("fctiwx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fctiwzx(Instruction inst)
 		{
-			Panic("fctiwzx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fdivsx(Instruction inst)
 		{
-			Panic("fdivsx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fdivx(Instruction inst)
@@ -83,7 +84,7 @@ namespace PPCVM
 		
 		void Interpreter::fmaddsx(Instruction inst)
 		{
-			Panic("fmaddsx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fmaddx(Instruction inst)
@@ -100,17 +101,17 @@ namespace PPCVM
 		
 		void Interpreter::fmsubsx(Instruction inst)
 		{
-			Panic("fmsubsx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fmsubx(Instruction inst)
 		{
-			Panic("fmsubx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fmulsx(Instruction inst)
 		{
-			Panic("fmulsx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fmulx(Instruction inst)
@@ -121,37 +122,37 @@ namespace PPCVM
 		
 		void Interpreter::fnabsx(Instruction inst)
 		{
-			Panic("fnabsx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fnegx(Instruction inst)
 		{
-			Panic("fnegx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fnmaddsx(Instruction inst)
 		{
-			Panic("fnmaddsx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fnmaddx(Instruction inst)
 		{
-			Panic("fnmaddx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fnmsubsx(Instruction inst)
 		{
-			Panic("fnmsubsx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fnmsubx(Instruction inst)
 		{
-			Panic("fnmsubx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fresx(Instruction inst)
 		{
-			Panic("fresx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::frspx(Instruction inst)
@@ -164,17 +165,17 @@ namespace PPCVM
 		
 		void Interpreter::frsqrtex(Instruction inst)
 		{
-			Panic("frsqrtex is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fselx(Instruction inst)
 		{
-			Panic("fselx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fsqrtx(Instruction inst)
 		{
-			Panic("fsqrtx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::fsubsx(Instruction inst)

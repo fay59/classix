@@ -40,6 +40,7 @@
 #include <cassert>
 #include <sstream>
 #include "Interpreter.h"
+#include "InvalidInstructionException.h"
 #include "Todo.h"
 
 namespace
@@ -131,7 +132,7 @@ namespace PPCVM
 
 		void Interpreter::mcrfs(Instruction inst)
 		{
-			Panic("mcrfs is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::mcrxr(Instruction inst)
@@ -147,7 +148,7 @@ namespace PPCVM
 		
 		void Interpreter::mffsx(Instruction inst)
 		{
-			Panic("mffsx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::mfspr(Instruction inst)
@@ -186,7 +187,7 @@ namespace PPCVM
 		
 		void Interpreter::mftb(Instruction inst)
 		{
-			Panic("mftb is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::mtcrf(Instruction inst)
@@ -210,22 +211,22 @@ namespace PPCVM
 		
 		void Interpreter::mtfsb0x(Instruction inst)
 		{
-			Panic("mtfsb0x is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::mtfsb1x(Instruction inst)
 		{
-			Panic("mtfsb1x is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::mtfsfix(Instruction inst)
 		{
-			Panic("mtfsfix is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::mtfsfx(Instruction inst)
 		{
-			Panic("mtfsfx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::mtspr(Instruction inst)

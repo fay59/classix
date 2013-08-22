@@ -113,6 +113,8 @@
 		DC8301EF164FFD770079CE2D /* DlfcnLibraryResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301EC164FFD380079CE2D /* DlfcnLibraryResolver.cpp */; };
 		DC8301F3165006FB0079CE2D /* NativeSymbolResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F0165006D00079CE2D /* NativeSymbolResolver.cpp */; };
 		DC8301F7165010690079CE2D /* VirtualMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC8301F5165010690079CE2D /* VirtualMachine.cpp */; };
+		DC84997517C54B660069F113 /* InvalidInstructionException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC84997317C54B660069F113 /* InvalidInstructionException.cpp */; };
+		DC84997617C54B660069F113 /* InvalidInstructionException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC84997417C54B660069F113 /* InvalidInstructionException.h */; };
 		DC86E082166C03730027F40E /* CXReverseAllocationDetails.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC86E080166C03730027F40E /* CXReverseAllocationDetails.cpp */; };
 		DC86E08A166C2D390027F40E /* PanicException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC86E088166C2D380027F40E /* PanicException.cpp */; };
 		DC86E08B166C2D390027F40E /* PanicException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC86E089166C2D390027F40E /* PanicException.h */; };
@@ -551,6 +553,8 @@
 		DC83021D1650D1A60079CE2D /* InstructionRange.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionRange.cpp; path = ClassixCore/PPCVM/Disassembler/InstructionRange.cpp; sourceTree = SOURCE_ROOT; };
 		DC83021E1650D1A60079CE2D /* InstructionRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionRange.h; path = ClassixCore/PPCVM/Disassembler/InstructionRange.h; sourceTree = SOURCE_ROOT; };
 		DC83FAFC17B8B88700788C54 /* Todo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Todo.h; sourceTree = "<group>"; };
+		DC84997317C54B660069F113 /* InvalidInstructionException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InvalidInstructionException.cpp; sourceTree = "<group>"; };
+		DC84997417C54B660069F113 /* InvalidInstructionException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InvalidInstructionException.h; sourceTree = "<group>"; };
 		DC86E080166C03730027F40E /* CXReverseAllocationDetails.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CXReverseAllocationDetails.cpp; sourceTree = "<group>"; };
 		DC86E081166C03730027F40E /* CXReverseAllocationDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXReverseAllocationDetails.h; sourceTree = "<group>"; };
 		DC86E088166C2D380027F40E /* PanicException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PanicException.cpp; sourceTree = "<group>"; };
@@ -909,6 +913,8 @@
 			children = (
 				DC07B17B1669D39900A78205 /* InterpreterException.cpp */,
 				DC07B17C1669D39900A78205 /* InterpreterException.h */,
+				DC84997317C54B660069F113 /* InvalidInstructionException.cpp */,
+				DC84997417C54B660069F113 /* InvalidInstructionException.h */,
 				DC86E088166C2D380027F40E /* PanicException.cpp */,
 				DC86E089166C2D390027F40E /* PanicException.h */,
 				DC7273FE16471CD800DA17E5 /* Interpreter.h */,
@@ -1419,6 +1425,7 @@
 				DC6E87F51758549B00D7B74F /* ThreadsLib.h in Headers */,
 				DC6E87FD175854B400D7B74F /* ThreadsLibFunctions.h in Headers */,
 				DC734278175A50B800E39F20 /* ThreadManager.h in Headers */,
+				DC84997617C54B660069F113 /* InvalidInstructionException.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1898,6 +1905,7 @@
 				DC6E87E01758471600D7B74F /* ResourceManager.cpp in Sources */,
 				DC6E87E717584ADF00D7B74F /* FourCharCode.cpp in Sources */,
 				DC734277175A50B800E39F20 /* ThreadManager.cpp in Sources */,
+				DC84997517C54B660069F113 /* InvalidInstructionException.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

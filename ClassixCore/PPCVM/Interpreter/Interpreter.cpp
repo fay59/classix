@@ -21,6 +21,7 @@
 
 #include "Interpreter.h"
 #include "InstructionDecoder.h"
+#include "InvalidInstructionException.h"
 #include "NativeCall.h"
 #include "PanicException.h"
 #include "TrapException.h"
@@ -90,9 +91,7 @@ namespace PPCVM
 
 		void Interpreter::unknown(Instruction inst)
 		{
-			std::stringstream ss;
-			ss << "Unknown instruction " << Disassembly::InstructionDecoder::Decode(inst);
-			Panic(ss.str());
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::SetBranchAddress(uint32_t target)
@@ -313,108 +312,108 @@ namespace PPCVM
 
 		void Interpreter::sc(Instruction inst)
 		{
-			Panic("sc is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		// supervisor mode instructions (not implemented)
 		void Interpreter::dcba(Instruction inst)
 		{
-			Panic("dcba is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::dcbf(Instruction inst)
 		{
-			Panic("dcbf is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::dcbst(Instruction inst)
 		{
-			Panic("dcbst is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::dcbt(Instruction inst)
 		{
-			Panic("dcbt is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::dcbtst(Instruction inst)
 		{
-			Panic("dcbtst is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::dcbz(Instruction inst)
 		{
-			Panic("dcbz is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::dcbi(Instruction inst)
 		{
-			Panic("dcbi is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::eciwx(Instruction inst)
 		{
-			Panic("eciwx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::ecowx(Instruction inst)
 		{
-			Panic("ecowx is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::icbi(Instruction inst)
 		{
-			Panic("icbi is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::mfmsr(Instruction inst)
 		{
-			Panic("mfmsr is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::mfsr(Instruction inst)
 		{
-			Panic("mfsr is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::mfsrin(Instruction inst)
 		{
-			Panic("mfsrin is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::mtmsr(Instruction inst)
 		{
-			Panic("mtmsr is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::mtsr(Instruction inst)
 		{
-			Panic("mtsr is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::mtsrin(Instruction inst)
 		{
-			Panic("mtsrin is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::rfi(Instruction inst)
 		{
-			Panic("rfi is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::tlbia(Instruction inst)
 		{
-			Panic("tlbia is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::tlbie(Instruction inst)
 		{
-			Panic("tlbie is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 		
 		void Interpreter::tlbsync(Instruction inst)
 		{
-			Panic("tlbsync is not implemented");
+			throw InvalidInstructionException(inst);
 		}
 	}
 }
