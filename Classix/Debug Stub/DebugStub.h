@@ -39,7 +39,6 @@ namespace Classix
 {
 	struct DebugContext
 	{
-		std::shared_ptr<WaitQueue<std::string>> sink;
 		std::unique_ptr<Common::Allocator> allocator;
 		std::deque<std::unique_ptr<CFM::LibraryResolver>> resolvers;
 		DebugThreadManager threads;
@@ -50,7 +49,7 @@ namespace Classix
 		std::thread::native_handle_type globalTargetThread;
 		
 		DebugContext(const std::string& executable);
-		void Start();
+		void Start(std::shared_ptr<WaitQueue<std::string>>& sink);
 	};
 	
 	class DebugStub
@@ -58,6 +57,7 @@ namespace Classix
 		typedef uint8_t (DebugStub::*RemoteCommand)(const std::string&, std::string&);
 		
 		// lifecycle
+		std::shared_ptr<WaitQueue<std::string>> sink;
 		std::unique_ptr<ControlStream> stream;
 		std::unique_ptr<DebugContext> context;
 		
@@ -69,13 +69,14 @@ namespace Classix
 		// commands state
 		static const std::unordered_map<std::string, RemoteCommand> commands;
 		
-		static void ExecutionMain(DebugStub* self);
+		void SinkMain();
 		
 		// Commands
 		uint8_t SetOperationTargetThread(const std::string& commandString, std::string& output);
 		uint8_t GetStopReason(const std::string& commandString, std::string& output);
 		uint8_t Resume(const std::string& commandString, std::string& output);
 		uint8_t ReadMemory(const std::string& commandString, std::string& outputString);
+		uint8_t Kill(const std::string& commandString, std::string& outputString);
 		
 		// Query commands
 		uint8_t QueryCurrentThread(const std::string& commandString, std::string& output);

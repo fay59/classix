@@ -49,6 +49,18 @@ void ThreadContext::Resume()
 	cvShouldResume.notify_one();
 }
 
+void ThreadContext::Kill()
+{
+	std::unique_lock<std::mutex> guard(mShouldResume);
+	if (executionState == ThreadState::Executing)
+	{
+		Interrupt();
+	}
+	
+	executionState = ThreadState::Completed;
+	cvShouldResume.notify_one();
+}
+
 std::thread::native_handle_type ThreadContext::GetThreadId()
 {
 	return thread.native_handle();
@@ -60,6 +72,7 @@ ThreadUpdate::ThreadUpdate(ThreadContext& ctx)
 
 void DebugThreadManager::DebugLoop(ThreadContext& context, bool autostart)
 {
+	context.stopReason = StopReason::InterruptTrap;
 	context.executionState = autostart ? ThreadState::Executing : ThreadState::Stopped;
 	changingContexts.PutOne(ThreadUpdate(context));
 	
@@ -67,8 +80,11 @@ void DebugThreadManager::DebugLoop(ThreadContext& context, bool autostart)
 	{
 		{
 			std::unique_lock<std::mutex> guard(context.mShouldResume);
-			context.cvShouldResume.wait(guard, [&context] { return context.executionState == ThreadState::Executing; });
+			context.cvShouldResume.wait(guard, [&context] { return context.executionState != ThreadState::Stopped; });
 		}
+		
+		if (context.executionState == ThreadState::Completed)
+			break;
 		
 		context.stopReason = StopReason::Executing;
 		const void* location = allocator.ToPointer<void>(context.pc);
@@ -141,25 +157,25 @@ void DebugThreadManager::SetCommandSink(std::shared_ptr<WaitQueue<std::string>>&
 
 void DebugThreadManager::ConsumeThreadEvents()
 {
-	while (true)
+	bool run = true;
+	while (run)
 	{
 		ThreadUpdate update = changingContexts.TakeOne();
 		std::thread::native_handle_type threadId = update.context.GetThreadId();
-		switch (update.state)
+		
+		if (update.state == ThreadState::Completed)
 		{
-			case ThreadState::Completed:
-				update.context.thread.join();
-				threads.erase(threadId);
-				// fall through
-				
-			case ThreadState::Stopped:
-			case ThreadState::Executing:
-				sink->PutOne("qThreadStopInfo");
-				break;
-				
-			default:
-				assert(false && "Should not be receiving notification for this thread status change");
+			update.context.thread.join();
+			
+			std::lock_guard<std::recursive_mutex> guard(threadsLock);
+			threads.erase(threadId);
+			if (threads.size() == 0)
+			{
+				run = false;
+			}
 		}
+		
+		sink->PutOne("qThreadStopInfo");
 	}
 }
 
@@ -187,4 +203,15 @@ size_t DebugThreadManager::ThreadCount() const
 {
 	std::lock_guard<std::recursive_mutex> lock(threadsLock);
 	return threads.size();
+}
+
+bool DebugThreadManager::GetThread(std::thread::native_handle_type handle, ThreadContext*& context)
+{
+	std::lock_guard<std::recursive_mutex> lock(threadsLock);
+	auto iter = threads.find(handle);
+	if (iter == threads.end())
+		return false;
+	
+	context = iter->second.get();
+	return true;
 }

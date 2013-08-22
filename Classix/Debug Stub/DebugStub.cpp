@@ -57,13 +57,19 @@ namespace
 		return stringResult;
 	}
 	
+	uint8_t stopSignals[] = {
+		[static_cast<size_t>(StopReason::InterruptTrap)] = SIGTRAP,
+		[static_cast<size_t>(StopReason::AccessViolation)] = SIGSEGV,
+		[static_cast<size_t>(StopReason::InvalidInstruction)] = SIGILL,
+	};
+	
 	const char hexgits[] = "0123456789abcdef";
 }
 
 namespace Classix
 {
 	DebugContext::DebugContext(const std::string& executable)
-	: sink(new WaitQueue<std::string>), allocator(new Common::NativeAllocator), threads(*allocator), managers(*allocator, threads)
+	: allocator(new Common::NativeAllocator), threads(*allocator), managers(*allocator, threads)
 	{
 		ClassixCore::BundleLibraryResolver* bundleResolver = new ClassixCore::BundleLibraryResolver(*allocator, managers);
 		bundleResolver->AllowLibrary("InterfaceLib");
@@ -89,12 +95,13 @@ namespace Classix
 			throw std::logic_error("Couldn't load executable");
 	}
 	
-	void DebugContext::Start()
+	void DebugContext::Start(std::shared_ptr<WaitQueue<std::string>>& sink)
 	{
-		// run each library initializer in a different thread, because we can
 		Common::StackPreparator stackPrep;
 		
-		size_t initializers = 0;
+		// Do a pass to find all init symbols and the main symbol. We need this to be able to create the main thread
+		// before the initializer threads.
+		std::vector<CFM::ResolvedSymbol> initSymbols;
 		CFM::ResolvedSymbol mainSymbol(CFM::SymbolUniverse::LostInTimeAndSpace, "??", 0);
 		for (auto& pair : fragmentManager)
 		{
@@ -102,11 +109,9 @@ namespace Classix
 			auto entryPoints = resolver->GetEntryPoints();
 			for (auto& entryPoint : entryPoints)
 			{
-				if (entryPoint.Name == CFM::SymbolResolver::InitSymbolName)
+				if (entryPoint.Name == CFM::SymbolResolver::InitSymbolName && entryPoint.Universe != CFM::SymbolUniverse::LostInTimeAndSpace)
 				{
-					initializers++;
-					const PEF::TransitionVector* transition = allocator->ToPointer<PEF::TransitionVector>(entryPoint.Address);
-					threads.StartThread(stackPrep, Common::StackPreparator::DefaultStackSize, *transition, true);
+					initSymbols.push_back(entryPoint);
 				}
 				else if (entryPoint.Name == CFM::SymbolResolver::MainSymbolName)
 				{
@@ -118,8 +123,21 @@ namespace Classix
 		
 		assert(mainSymbol.Universe != CFM::SymbolUniverse::LostInTimeAndSpace);
 		
+		// Start (but don't run) the main thread. We create it because the DebugThreadManager will stop
+		// its run loop if it reaches 0 threads.
+		const PEF::TransitionVector* vector = allocator->ToPointer<PEF::TransitionVector>(mainSymbol.Address);
+		auto& thread = threads.StartThread(stackPrep, Common::StackPreparator::DefaultStackSize, *vector, false);
+		globalTargetThread = thread.GetThreadId();
+		
+		// Run the initializers
+		for (const CFM::ResolvedSymbol& entryPoint : initSymbols)
+		{
+			const PEF::TransitionVector* transition = allocator->ToPointer<PEF::TransitionVector>(entryPoint.Address);
+			threads.StartThread(stackPrep, Common::StackPreparator::DefaultStackSize, *transition, true);
+		}
+		
 		// wait for all initializers to complete; expect 2 qThreadStopInfo commands per initializer
-		size_t infoCountRemaining = initializers * 2;
+		size_t infoCountRemaining = initSymbols.size() * 2;
 		auto threadSink = threads.GetCommandSink();
 		while (infoCountRemaining > 0)
 		{
@@ -127,11 +145,6 @@ namespace Classix
 			assert(command == "qThreadStopInfo");
 			infoCountRemaining--;
 		}
-		
-		// start (but don't run) the main thread
-		const PEF::TransitionVector* vector = allocator->ToPointer<PEF::TransitionVector>(mainSymbol.Address);
-		auto& thread = threads.StartThread(stackPrep, Common::StackPreparator::DefaultStackSize, *vector, false);
-		globalTargetThread = thread.GetThreadId();
 		
 		// wait for the thread start notification, then replace the sink with the context sink
 		std::string command = threadSink->TakeOne();
@@ -145,6 +158,7 @@ namespace Classix
 		std::make_pair("m", &DebugStub::ReadMemory),
 		std::make_pair("vCont", &DebugStub::Resume),
 		std::make_pair("qC", &DebugStub::QueryCurrentThread),
+		std::make_pair("k", &DebugStub::Kill),
 		std::make_pair("qfThreadInfo", &DebugStub::QueryThreadList),
 		std::make_pair("qsThreadInfo", &DebugStub::QueryThreadList),
 		std::make_pair("qOffsets", &DebugStub::QuerySectionOffsets),
@@ -154,7 +168,7 @@ namespace Classix
 	};
 	
 	DebugStub::DebugStub(const std::string& path)
-	: executablePath(path)
+	: executablePath(path), sink(new WaitQueue<std::string>)
 	{ }
 	
 	uint8_t DebugStub::SetOperationTargetThread(const std::string &commandString, std::string &output)
@@ -174,9 +188,45 @@ namespace Classix
 	
 	uint8_t DebugStub::GetStopReason(const std::string &commandString, std::string &output)
 	{
-		// assume always stopped for a breakpoint
-		output = StringPrintf("S%02hhxthread:%i;", static_cast<uint8_t>(SIGTRAP), 1);
-		return NoError;
+		if (commandString == "?")
+		{
+			output.clear();
+			context->threads.ForEachThread([&output] (ThreadContext& context)
+			{
+				size_t reasonIndex = static_cast<size_t>(context.stopReason.load());
+				intptr_t serializableHandle = reinterpret_cast<intptr_t>(context.GetThreadId());
+				output += StringPrintf("S%02hhxthread:%zx;", stopSignals[reasonIndex], serializableHandle);
+			});
+			return NoError;
+		}
+		else
+		{
+			// just this thread
+			intptr_t handle;
+			int assigned = sscanf(commandString.c_str(), "qThreadStopInfo%zx", &handle);
+			if (assigned != 1)
+				return InvalidFormat;
+			
+			ThreadContext* threadContext;
+			if (context->threads.GetThread(reinterpret_cast<std::thread::native_handle_type>(handle), threadContext))
+			{
+				size_t reasonIndex = static_cast<size_t>(threadContext->stopReason.load());
+				output = StringPrintf("S%02hhxthread:%zx;", stopSignals[reasonIndex], handle);
+				return NoError;
+			}
+		}
+		return InvalidData;
+	}
+	
+	uint8_t DebugStub::Resume(const std::string &commandString, std::string &output)
+	{
+		if (commandString == "vCont?")
+		{
+			output = "vCont;c;s;t";
+			return NoError;
+		}
+		
+		return NotImplemented;
 	}
 	
 	uint8_t DebugStub::ReadMemory(const std::string &commandString, std::string &outputString)
@@ -212,15 +262,31 @@ namespace Classix
 		return NoError;
 	}
 	
-	uint8_t DebugStub::Resume(const std::string &commandString, std::string &output)
+	uint8_t DebugStub::Kill(const std::string &commandString, std::string &outputString)
 	{
-		if (commandString == "vCont?")
+		// Technically, there's a race condition here where a thread created just before Kill is called
+		// would survive. In fact, this is very unlikely to be an issue because Mac OS Classic threads are
+		// rather rare; but if this seems to happen, remember to check this place.
+		
+		size_t threadCount = 0;
+		std::shared_ptr<WaitQueue<std::string>> killQueue(new WaitQueue<std::string>);
+		context->threads.SetCommandSink(killQueue);
+		context->threads.ForEachThread([&threadCount] (ThreadContext& context)
 		{
-			output = "vCont;c;s;t";
-			return NoError;
+			context.Kill();
+			threadCount++;
+		});
+		
+		for (size_t i = 0; i < threadCount; i++)
+		{
+			std::string command = killQueue->TakeOne();
+			assert(command == "qThreadStopInfo");
 		}
 		
-		return NotImplemented;
+		assert(context->threads.ThreadCount() == 0);
+		context.reset();
+		outputString = "OK";
+		return NoError;
 	}
 	
 	uint8_t DebugStub::QuerySectionOffsets(const std::string &commandString, std::string &output)
@@ -251,8 +317,12 @@ namespace Classix
 		}
 		else
 		{
-			TODO("Threads aren't supported, returning 1");
-			output = "m1";
+			output = "m";
+			context->threads.ForEachThread([&output] (ThreadContext& context)
+			{
+				output += StringPrintf("%zx,", reinterpret_cast<intptr_t>(context.GetThreadId()));
+			});
+			output.resize(output.length() - 1);
 		}
 		return NoError;
 	}
@@ -341,7 +411,21 @@ namespace Classix
 	void DebugStub::Accept(uint16_t port)
 	{
 		context.reset(new DebugContext(executablePath));
-		stream.reset(new ControlStream(ControlStream::Listen(context->sink, port)));
+		stream.reset(new ControlStream(ControlStream::Listen(sink, port)));
+	}
+	
+	void DebugStub::SinkMain()
+	{
+		try
+		{
+			stream->ConsumeReadEvents();
+		}
+		catch (...)
+		{
+			stream.reset();
+			std::string dummy;
+			Kill("k", dummy);
+		}
 	}
 	
 	void DebugStub::Execute()
@@ -349,14 +433,14 @@ namespace Classix
 		// The thread manager uses a different wait queue at first, so the command stream can read commands
 		// and send back acknowledges right away
 		std::thread getThreadEvents(&DebugThreadManager::ConsumeThreadEvents, &context->threads);
-		std::thread readCommands(&ControlStream::ConsumeReadEvents, stream.get());
+		std::thread readCommands(&DebugStub::SinkMain, this);
 		
-		context->Start();
+		context->Start(sink);
 		
 		std::string command, output;
-		while (true)
+		while (context || stream)
 		{
-			bool gotOne = context->sink->TakeOne(command, std::chrono::milliseconds(500));
+			bool gotOne = sink->TakeOne(command, std::chrono::milliseconds(500));
 			if (gotOne)
 			{
 				TODO("StreamMain's dispatch algorithm isn't very beautiful");
@@ -381,11 +465,12 @@ namespace Classix
 				
 				stream->WriteAnswer("");
 			}
-			else
-			{
-				TODO("We should check if the stub socket is still alive, if not we need to terminate");
-			}
 		nextCommand:;
 		}
+		
+		// if we're stuck on this guy, check for the race condition where a thread is created right before
+		// Kill is called
+		getThreadEvents.join();
+		readCommands.join();
 	}
 }

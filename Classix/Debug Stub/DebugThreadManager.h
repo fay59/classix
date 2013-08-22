@@ -25,6 +25,7 @@
 #include <mutex>
 #include <thread>
 #include <memory>
+#include <vector>
 #include <condition_variable>
 
 #include "ThreadManager.h"
@@ -66,6 +67,7 @@ struct ThreadContext
 	
 	void Interrupt();
 	void Resume();
+	void Kill();
 	
 	std::thread::native_handle_type GetThreadId();
 	
@@ -124,7 +126,19 @@ public:
 	void ConsumeThreadEvents(); // expected to run on a dedicated thread
 	
 	ThreadContext& StartThread(const Common::StackPreparator& stack, size_t stackSize, const PEF::TransitionVector& entryPoint, bool startNow = false);
+
 	size_t ThreadCount() const;
+	bool GetThread(std::thread::native_handle_type handle, ThreadContext*& context);
+	
+	template<typename TAction>
+	void ForEachThread(TAction&& action)
+	{
+		std::lock_guard<std::recursive_mutex> guard(threadsLock);
+		for (auto& pair : threads)
+		{
+			action(*pair.second.get());
+		}
+	}
 };
 
 #endif /* defined(__Classix__DebugThreadManager__) */

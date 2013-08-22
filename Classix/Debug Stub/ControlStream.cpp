@@ -169,56 +169,49 @@ namespace Classix
 	
 	void ControlStream::ConsumeReadEvents()
 	{
-		try
+		std::string command;
+		command.reserve(32);
+		while (true)
 		{
-			std::string command;
-			command.reserve(32);
-			while (true)
+			command.clear();
+			if (reader->Read() != '$')
 			{
-				command.clear();
-				if (reader->Read() != '$')
-				{
-					throw std::logic_error("Malformed packet");
-				}
-				
-				uint8_t checksum = 0;
-				for (char c = reader->Read(); c != '#'; c = reader->Read())
-				{
-					command += c;
-					checksum += c;
-				}
-				
-				char strChecksum[2];
-				reader->Read(strChecksum);
-				uint8_t expectedChecksum = Byte(strChecksum);
-				if (expectedChecksum != checksum)
-				{
-					if (expectAcks)
-					{
-						write(fd, &nack, sizeof nack);
-					}
-					else if (expectedChecksum != 0)
-					{
-						// lldb sends packets with a zero cheksum after QStartNoAckMode has been enabled
-						throw std::logic_error("Damaged packet");
-					}
-				}
-				
+				throw std::logic_error("Malformed packet");
+			}
+			
+			uint8_t checksum = 0;
+			for (char c = reader->Read(); c != '#'; c = reader->Read())
+			{
+				command += c;
+				checksum += c;
+			}
+			
+			char strChecksum[2];
+			reader->Read(strChecksum);
+			uint8_t expectedChecksum = Byte(strChecksum);
+			if (expectedChecksum != checksum)
+			{
 				if (expectAcks)
 				{
-					write(fd, &ack, sizeof ack);
+					write(fd, &nack, sizeof nack);
 				}
-				std::cerr << "<- " << command << std::endl;
-				
-				if (!HandleMetaPacket(command))
+				else if (expectedChecksum != 0)
 				{
-					commandQueue->PutOne(command);
+					// lldb sends packets with a zero cheksum after QStartNoAckMode has been enabled
+					throw std::logic_error("Damaged packet");
 				}
 			}
-		}
-		catch (std::logic_error&)
-		{
-			// exit thread
+			
+			if (expectAcks)
+			{
+				write(fd, &ack, sizeof ack);
+			}
+			std::cerr << "<- " << command << std::endl;
+			
+			if (!HandleMetaPacket(command))
+			{
+				commandQueue->PutOne(command);
+			}
 		}
 	}
 	
