@@ -25,6 +25,8 @@
 #include <cstdint>
 #include <string>
 #include <memory>
+#include <thread>
+#include "WaitQueue.h"
 
 namespace Classix
 {
@@ -35,10 +37,13 @@ namespace Classix
 		int fd;
 		std::unique_ptr<BufferedReader> reader;
 		
+		std::shared_ptr<WaitQueue<std::string>> commandQueue;
+		
+		// control parameters
 		bool expectAcks;
 		size_t maxPayloadSize;
 		
-		explicit ControlStream(int fd);
+		ControlStream(std::shared_ptr<WaitQueue<std::string>>&, int fd);
 		
 		bool HandleMetaPacket(const std::string& packet);
 		
@@ -46,14 +51,15 @@ namespace Classix
 		ControlStream(const ControlStream& that) = delete;
 		ControlStream(ControlStream&& that);
 		
-		static ControlStream Listen(uint16_t port);
+		static ControlStream Listen(std::shared_ptr<WaitQueue<std::string>>& waitQueue, uint16_t port);
 		
-		std::string ReadCommand();
 		void WriteAnswer(const std::string& answer);
 		void WriteAnswer(uint8_t errorCode);
 		
 		bool ExpectsAcks() const;
 		size_t MaxPayloadSize() const;
+		
+		void ConsumeReadEvents(); // expected to run on a dedicated thread
 		
 		~ControlStream();
 	};

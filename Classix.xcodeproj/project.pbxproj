@@ -35,6 +35,9 @@
 		DC30714E1668800D00475144 /* CXJSAdapter.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC30714D1668800D00475144 /* CXJSAdapter.mm */; };
 		DC307156166884DE00475144 /* breakpoint-end.png in Resources */ = {isa = PBXBuildFile; fileRef = DC307155166884DE00475144 /* breakpoint-end.png */; };
 		DC33EC9E174E96C300F66877 /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
+		DC490D2C17C5D46A001F9AFD /* DebugThreadManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DC490D2917C5D46A001F9AFD /* DebugThreadManager.h */; };
+		DC490D2D17C5D46A001F9AFD /* WaitQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = DC490D2A17C5D46A001F9AFD /* WaitQueue.h */; };
+		DC490D2E17C5D46A001F9AFD /* DebugThreadManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC490D2B17C5D46A001F9AFD /* DebugThreadManager.cpp */; };
 		DC4C644F165B62910097288E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC4C644E165B62910097288E /* Cocoa.framework */; };
 		DC4C6459165B62910097288E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC4C6457165B62910097288E /* InfoPlist.strings */; };
 		DC4C645B165B62910097288E /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC4C645A165B62910097288E /* main.mm */; };
@@ -386,6 +389,9 @@
 		DC40D0251635CABE008CA9BC /* LibraryResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryResolver.h; sourceTree = "<group>"; };
 		DC40D0271635CBD1008CA9BC /* PEFLibraryResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PEFLibraryResolver.cpp; sourceTree = "<group>"; };
 		DC40D0281635CBD1008CA9BC /* PEFLibraryResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEFLibraryResolver.h; sourceTree = "<group>"; };
+		DC490D2917C5D46A001F9AFD /* DebugThreadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugThreadManager.h; sourceTree = "<group>"; };
+		DC490D2A17C5D46A001F9AFD /* WaitQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaitQueue.h; sourceTree = "<group>"; };
+		DC490D2B17C5D46A001F9AFD /* DebugThreadManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebugThreadManager.cpp; sourceTree = "<group>"; };
 		DC4C644B165B62910097288E /* Classix Debugger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Classix Debugger.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC4C644E165B62910097288E /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		DC4C6451165B62910097288E /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -1362,6 +1368,9 @@
 				DCFB29B117B6F2ED0088747B /* ControlStream.h */,
 				DCFB29B317B717590088747B /* DebugStub.cpp */,
 				DCFB29B417B717590088747B /* DebugStub.h */,
+				DC490D2B17C5D46A001F9AFD /* DebugThreadManager.cpp */,
+				DC490D2917C5D46A001F9AFD /* DebugThreadManager.h */,
+				DC490D2A17C5D46A001F9AFD /* WaitQueue.h */,
 			);
 			path = "Debug Stub";
 			sourceTree = "<group>";
@@ -1426,6 +1435,8 @@
 				DC6E87FD175854B400D7B74F /* ThreadsLibFunctions.h in Headers */,
 				DC734278175A50B800E39F20 /* ThreadManager.h in Headers */,
 				DC84997617C54B660069F113 /* InvalidInstructionException.h in Headers */,
+				DC490D2C17C5D46A001F9AFD /* DebugThreadManager.h in Headers */,
+				DC490D2D17C5D46A001F9AFD /* WaitQueue.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1906,6 +1917,7 @@
 				DC6E87E717584ADF00D7B74F /* FourCharCode.cpp in Sources */,
 				DC734277175A50B800E39F20 /* ThreadManager.cpp in Sources */,
 				DC84997517C54B660069F113 /* InvalidInstructionException.cpp in Sources */,
+				DC490D2E17C5D46A001F9AFD /* DebugThreadManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

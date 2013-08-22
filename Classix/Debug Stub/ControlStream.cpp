@@ -80,7 +80,10 @@ namespace Classix
 		
 	public:
 		BufferedReader(int fd) : fd(fd)
-		{ }
+		{
+			readIndex = 0;
+			maxIndex = 0;
+		}
 		
 		inline char Read()
 		{
@@ -117,8 +120,8 @@ namespace Classix
 		}
 	};
 	
-	ControlStream::ControlStream(int fd)
-	: fd(fd), reader(new BufferedReader(fd))
+	ControlStream::ControlStream(std::shared_ptr<WaitQueue<std::string>>& queue, int fd)
+	: fd(fd), commandQueue(queue), reader(new BufferedReader(fd))
 	{
 		expectAcks = true;
 		maxPayloadSize = 0x4000;
@@ -128,13 +131,13 @@ namespace Classix
 	}
 	
 	ControlStream::ControlStream(ControlStream&& that)
-	: reader(std::move(reader))
+	: reader(std::move(reader)), commandQueue(std::move(that.commandQueue))
 	{
 		fd = that.fd;
 		that.fd = -1;
 	}
 	
-	ControlStream ControlStream::Listen(uint16_t port)
+	ControlStream ControlStream::Listen(std::shared_ptr<WaitQueue<std::string>>& queue, uint16_t port)
 	{
 		FileDescriptor sd = socket(PF_INET6, SOCK_STREAM, getprotobyname("TCP")->p_proto);
 		setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof on);
@@ -161,52 +164,62 @@ namespace Classix
 			throw std::logic_error("Couldn't accept client");
 		}
 		
-		return ControlStream(client);
+		return ControlStream(queue, client);
 	}
 	
-	std::string ControlStream::ReadCommand()
+	void ControlStream::ConsumeReadEvents()
 	{
-		std::string command;
-		command.reserve(32);
-		do
+		try
 		{
-			command.clear();
-			if (reader->Read() != '$')
+			std::string command;
+			command.reserve(32);
+			while (true)
 			{
-				throw std::logic_error("Malformed packet");
-			}
-			
-			uint8_t checksum = 0;
-			for (char c = reader->Read(); c != '#'; c = reader->Read())
-			{
-				command += c;
-				checksum += c;
-			}
-			
-			char strChecksum[2];
-			reader->Read(strChecksum);
-			uint8_t expectedChecksum = Byte(strChecksum);
-			if (expectedChecksum != checksum)
-			{
+				command.clear();
+				if (reader->Read() != '$')
+				{
+					throw std::logic_error("Malformed packet");
+				}
+				
+				uint8_t checksum = 0;
+				for (char c = reader->Read(); c != '#'; c = reader->Read())
+				{
+					command += c;
+					checksum += c;
+				}
+				
+				char strChecksum[2];
+				reader->Read(strChecksum);
+				uint8_t expectedChecksum = Byte(strChecksum);
+				if (expectedChecksum != checksum)
+				{
+					if (expectAcks)
+					{
+						write(fd, &nack, sizeof nack);
+					}
+					else if (expectedChecksum != 0)
+					{
+						// lldb sends packets with a zero cheksum after QStartNoAckMode has been enabled
+						throw std::logic_error("Damaged packet");
+					}
+				}
+				
 				if (expectAcks)
 				{
-					write(fd, &nack, sizeof nack);
+					write(fd, &ack, sizeof ack);
 				}
-				else if (expectedChecksum != 0)
+				std::cerr << "<- " << command << std::endl;
+				
+				if (!HandleMetaPacket(command))
 				{
-					// lldb sends packets with a zero cheksum after QStartNoAckMode has been enabled
-					throw std::logic_error("Damaged packet");
+					commandQueue->PutOne(command);
 				}
 			}
-			
-			if (expectAcks)
-			{
-				write(fd, &ack, sizeof ack);
-			}
-			std::cerr << "<- " << command << std::endl;
-		} while (HandleMetaPacket(command));
-		
-		return command;
+		}
+		catch (std::logic_error&)
+		{
+			// exit thread
+		}
 	}
 	
 	void ControlStream::WriteAnswer(const std::string &answer)

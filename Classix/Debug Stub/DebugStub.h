@@ -26,24 +26,28 @@
 #include <deque>
 #include <unordered_map>
 
+#include "WaitQueue.h"
 #include "ControlStream.h"
 #include "Allocator.h"
 #include "Managers.h"
 #include "LibraryResolver.h"
 #include "MachineState.h"
 #include "FragmentManager.h"
+#include "DebugThreadManager.h"
 
 namespace Classix
 {
 	struct DebugContext
 	{
+		std::shared_ptr<WaitQueue<std::string>> sink;
 		std::unique_ptr<Common::Allocator> allocator;
 		std::deque<std::unique_ptr<CFM::LibraryResolver>> resolvers;
+		DebugThreadManager threads;
 		OSEnvironment::Managers managers;
-		PPCVM::MachineState state;
 		CFM::FragmentManager fragmentManager;
 		
 		DebugContext(const std::string& executable);
+		void Start();
 	};
 	
 	class DebugStub
@@ -59,12 +63,12 @@ namespace Classix
 		std::deque<std::string> args;
 		std::deque<std::string> env;
 		
-		// commands
+		// commands state
 		static const std::unordered_map<std::string, RemoteCommand> commands;
-		std::unordered_map<char, int> operationTargetThreads;
+		std::unordered_map<char, thread_act_t> operationTargetThreads;
+		thread_act_t globalTargetThread;
 		
 		static void ExecutionMain(DebugStub* self);
-		static void StreamMain(DebugStub* self);
 		
 		// Commands
 		uint8_t SetOperationTargetThread(const std::string& commandString, std::string& output);
@@ -99,7 +103,7 @@ namespace Classix
 		}
 		
 		void Accept(uint16_t port);
-		uint32_t RunToEnd();
+		void Execute();
 	};
 }
 

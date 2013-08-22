@@ -29,6 +29,7 @@
 #include "DlfcnLibraryResolver.h"
 #include "PEFLibraryResolver.h"
 #include "DummyLibraryResolver.h"
+#include "DebugThreadManager.h"
 #include "Todo.h"
 
 namespace
@@ -63,7 +64,7 @@ namespace
 namespace Classix
 {
 	DebugContext::DebugContext(const std::string& executable)
-	: allocator(new Common::NativeAllocator), managers(*allocator)
+	: sink(new WaitQueue<std::string>), allocator(new Common::NativeAllocator), threads(*allocator), managers(*allocator, threads)
 	{
 		ClassixCore::BundleLibraryResolver* bundleResolver = new ClassixCore::BundleLibraryResolver(*allocator, managers);
 		bundleResolver->AllowLibrary("InterfaceLib");
@@ -81,6 +82,61 @@ namespace Classix
 		
 		CFM::DummyLibraryResolver* dummyResolver = new CFM::DummyLibraryResolver(*allocator);
 		resolvers.emplace_back(dummyResolver);
+		
+		for (auto& ptr : resolvers)
+			fragmentManager.LibraryResolvers.push_back(ptr.get());
+		
+		if (!fragmentManager.LoadContainer(executable))
+			throw std::logic_error("Couldn't load executable");
+	}
+	
+	void DebugContext::Start()
+	{
+		// run each library initializer in a different thread, because we can
+		Common::StackPreparator stackPrep;
+		
+		size_t initializers = 0;
+		CFM::ResolvedSymbol mainSymbol(CFM::SymbolUniverse::LostInTimeAndSpace, "??", 0);
+		for (auto& pair : fragmentManager)
+		{
+			CFM::SymbolResolver* resolver = pair.second;
+			auto entryPoints = resolver->GetEntryPoints();
+			for (auto& entryPoint : entryPoints)
+			{
+				if (entryPoint.Name == CFM::SymbolResolver::InitSymbolName)
+				{
+					initializers++;
+					const PEF::TransitionVector* transition = allocator->ToPointer<PEF::TransitionVector>(entryPoint.Address);
+					threads.StartThread(stackPrep, Common::StackPreparator::DefaultStackSize, *transition, true);
+				}
+				else if (entryPoint.Name == CFM::SymbolResolver::MainSymbolName)
+				{
+					assert(mainSymbol.Universe == CFM::SymbolUniverse::LostInTimeAndSpace && "Already assigned a main symbol");
+					mainSymbol = entryPoint;
+				}
+			}
+		}
+		
+		assert(mainSymbol.Universe != CFM::SymbolUniverse::LostInTimeAndSpace);
+		
+		// wait for all initializers to complete; expect 2 qThreadStopInfo commands per initializer
+		size_t infoCountRemaining = initializers * 2;
+		auto threadSink = threads.GetCommandSink();
+		while (infoCountRemaining > 0)
+		{
+			std::string command = threadSink->TakeOne();
+			assert(command == "qThreadStopInfo");
+			infoCountRemaining--;
+		}
+		
+		// start (but don't run) the main thread
+		const PEF::TransitionVector* vector = allocator->ToPointer<PEF::TransitionVector>(mainSymbol.Address);
+		threads.StartThread(stackPrep, Common::StackPreparator::DefaultStackSize, *vector, false);
+		
+		// wait for the thread start notification, then replace the sink with the context sink
+		std::string command = threadSink->TakeOne();
+		assert(command == "qThreadStopInfo");
+		threads.SetCommandSink(sink);
 	}
 	
 	const std::unordered_map<std::string, DebugStub::RemoteCommand> DebugStub::commands = {
@@ -94,43 +150,12 @@ namespace Classix
 		std::make_pair("qOffsets", &DebugStub::QuerySectionOffsets),
 		std::make_pair("qHostInfo", &DebugStub::QueryHostInformation),
 		std::make_pair("qRegisterInfo", &DebugStub::QueryRegisterInformation),
+		std::make_pair("qThreadStopInfo", &DebugStub::GetStopReason),
 	};
 	
 	DebugStub::DebugStub(const std::string& path)
 	: executablePath(path)
 	{ }
-	
-	void DebugStub::StreamMain(Classix::DebugStub* self)
-	{
-		std::string output;
-		while (true)
-		{
-			std::string command = self->stream->ReadCommand();
-			
-			TODO("StreamMain's dispatch algorithm isn't very beautiful");
-			for (const auto& pair : commands)
-			{
-				if (command.compare(0, pair.first.length(), pair.first) == 0)
-				{
-					uint8_t commandResult = (self->*pair.second)(command, output);
-					if (commandResult == 0)
-					{
-						self->stream->WriteAnswer(output);
-					}
-					else
-					{
-						self->stream->WriteAnswer(commandResult);
-					}
-					
-					// this goto could be avoided if C++ had a loop ... else construct like Python :/
-					goto nextCommand;
-				}
-			}
-			
-			self->stream->WriteAnswer("");
-		nextCommand:;
-		}
-	}
 	
 	uint8_t DebugStub::SetOperationTargetThread(const std::string &commandString, std::string &output)
 	{
@@ -149,7 +174,7 @@ namespace Classix
 	uint8_t DebugStub::GetStopReason(const std::string &commandString, std::string &output)
 	{
 		// assume always stopped for a breakpoint
-		output = StringPrintf("S%02hhx", static_cast<uint8_t>(SIGTRAP));
+		output = StringPrintf("S%02hhxthread:%i;", static_cast<uint8_t>(SIGTRAP), 1);
 		return NoError;
 	}
 	
@@ -315,18 +340,52 @@ namespace Classix
 	
 	void DebugStub::Accept(uint16_t port)
 	{
-		stream.reset(new ControlStream(ControlStream::Listen(port)));
 		context.reset(new DebugContext(executablePath));
+		stream.reset(new ControlStream(ControlStream::Listen(context->sink, port)));
 	}
 	
-	uint32_t DebugStub::RunToEnd()
+	void DebugStub::Execute()
 	{
-		std::thread streamThread(StreamMain, this);
-		streamThread.join();
+		// The thread manager uses a different wait queue at first, so the command stream can read commands
+		// and send back acknowledges right away
+		std::thread getThreadEvents(&DebugThreadManager::ConsumeThreadEvents, &context->threads);
+		std::thread readCommands(&ControlStream::ConsumeReadEvents, stream.get());
 		
-		uint32_t result = context->state.r3;
-		stream.reset();
-		context.reset();
-		return result;
+		context->Start();
+		
+		std::string command, output;
+		while (true)
+		{
+			bool gotOne = context->sink->TakeOne(command, std::chrono::milliseconds(500));
+			if (gotOne)
+			{
+				TODO("StreamMain's dispatch algorithm isn't very beautiful");
+				for (const auto& pair : commands)
+				{
+					if (command.compare(0, pair.first.length(), pair.first) == 0)
+					{
+						uint8_t commandResult = (this->*pair.second)(command, output);
+						if (commandResult == 0)
+						{
+							stream->WriteAnswer(output);
+						}
+						else
+						{
+							stream->WriteAnswer(commandResult);
+						}
+						
+						// this goto could be avoided if C++ had a loop ... else construct like Python :/
+						goto nextCommand;
+					}
+				}
+				
+				stream->WriteAnswer("");
+			}
+			else
+			{
+				TODO("We should check if the stub socket is still alive, if not we need to terminate");
+			}
+		nextCommand:;
+		}
 	}
 }

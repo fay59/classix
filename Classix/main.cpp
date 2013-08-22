@@ -194,7 +194,8 @@ static int disassemble(const std::string& path)
 static int run(const std::string& path, int argc, const char* argv[], const char* envp[])
 {
 	Common::NativeAllocator allocator;
-	OSEnvironment::Managers managers(allocator);
+	OSEnvironment::NativeThreadManager threads;
+	OSEnvironment::Managers managers(allocator, threads);
 	CFM::DummyLibraryResolver dummyResolver(allocator);
 	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator, managers);
 	ClassixCore::BundleLibraryResolver bundleResolver(allocator, managers);
@@ -237,13 +238,16 @@ static int debugStub(uint16_t port, const std::string& path, int argc, const cha
 	stub.SetArguments(argv, argv + argc);
 	stub.SetEnvironment(envp, envEnd);
 	stub.Accept(port);
-	return stub.RunToEnd();
+	stub.Execute();
+	
+	return 0;
 }
 
 static int inflateAndDump(const std::string& path, const std::string& targetDir)
 {
 	Common::NativeAllocator allocator;
-	OSEnvironment::Managers managers(allocator);
+	OSEnvironment::NativeThreadManager threads;
+	OSEnvironment::Managers managers(allocator, threads);
 	CFM::FragmentManager fragmentManager;
 	CFM::PEFLibraryResolver pefResolver(allocator, fragmentManager);
 	ClassixCore::DlfcnLibraryResolver dlfcnResolver(allocator, managers);
