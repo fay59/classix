@@ -84,6 +84,7 @@ namespace Classix
 		uint8_t QuerySectionOffsets(const std::string& commandString, std::string& output);
 		uint8_t QueryHostInformation(const std::string& commandString, std::string& output);
 		uint8_t QueryRegisterInformation(const std::string& commandString, std::string& output);
+		uint8_t QueryProcessInformation(const std::string& commandString, std::string& output);
 		
 	public:
 		DebugStub(const std::string& executablePath);

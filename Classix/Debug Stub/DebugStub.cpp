@@ -21,6 +21,7 @@
 
 #include <thread>
 #include <signal.h>
+#include <unistd.h>
 
 #include "DebugStub.h"
 #include "NativeAllocator.h"
@@ -165,6 +166,7 @@ namespace Classix
 		std::make_pair("qHostInfo", &DebugStub::QueryHostInformation),
 		std::make_pair("qRegisterInfo", &DebugStub::QueryRegisterInformation),
 		std::make_pair("qThreadStopInfo", &DebugStub::GetStopReason),
+		std::make_pair("qProcessInfo", &DebugStub::QueryProcessInformation),
 	};
 	
 	DebugStub::DebugStub(const std::string& path)
@@ -405,6 +407,15 @@ namespace Classix
 		{
 			output += "generic:ra;";
 		}
+		return NoError;
+	}
+	
+	uint8_t DebugStub::QueryProcessInformation(const std::string &commandString, std::string &output)
+	{
+		if (uint8_t error = QueryHostInformation(commandString, output))
+			return error;
+		
+		output += StringPrintf(";pid:%x;", getpid());
 		return NoError;
 	}
 	
