@@ -20,6 +20,7 @@
 //
 
 #include <thread>
+#include <algorithm>
 #include <signal.h>
 #include <unistd.h>
 
@@ -434,8 +435,7 @@ namespace Classix
 		catch (...)
 		{
 			stream.reset();
-			std::string dummy;
-			Kill("k", dummy);
+			sink->PutOne("k");
 		}
 	}
 	
@@ -448,35 +448,40 @@ namespace Classix
 		
 		context->Start(sink);
 		
+		uint8_t commandResult;
 		std::string command, output;
 		while (context || stream)
 		{
 			bool gotOne = sink->TakeOne(command, std::chrono::milliseconds(500));
 			if (gotOne)
 			{
-				TODO("StreamMain's dispatch algorithm isn't very beautiful");
-				for (const auto& pair : commands)
+				auto iter = std::find_if(commands.begin(), commands.end(), [&command] (const decltype(commands)::value_type& pair)
 				{
-					if (command.compare(0, pair.first.length(), pair.first) == 0)
-					{
-						uint8_t commandResult = (this->*pair.second)(command, output);
-						if (commandResult == 0)
-						{
-							stream->WriteAnswer(output);
-						}
-						else
-						{
-							stream->WriteAnswer(commandResult);
-						}
-						
-						// this goto could be avoided if C++ had a loop ... else construct like Python :/
-						goto nextCommand;
-					}
+					return command.compare(0, pair.first.length(), pair.first) == 0;
+				});
+				
+				if (iter == commands.end())
+				{
+					commandResult = NoError;
+					output = "";
+				}
+				else
+				{
+					commandResult = (this->*iter->second)(command, output);
 				}
 				
-				stream->WriteAnswer("");
+				if (stream)
+				{
+					if (commandResult == 0)
+					{
+						stream->WriteAnswer(output);
+					}
+					else
+					{
+						stream->WriteAnswer(commandResult);
+					}
+				}
 			}
-		nextCommand:;
 		}
 		
 		// if we're stuck on this guy, check for the race condition where a thread is created right before
