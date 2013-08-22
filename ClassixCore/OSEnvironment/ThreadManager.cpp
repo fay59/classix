@@ -30,11 +30,21 @@ namespace OSEnvironment
 {
 	ThreadManager::ExecutionMarker::ExecutionMarker(ThreadManager& manager)
 	: manager(manager)
-	{ }
+	{
+		manager.MarkThreadAsExecuting();
+	}
 	
 	ThreadManager::ExecutionMarker::ExecutionMarker(ThreadManager::ExecutionMarker&& that)
 	: manager(that.manager)
-	{ }
+	{
+		manager.MarkThreadAsExecuting();
+	}
+	
+	ThreadManager::ExecutionMarker::ExecutionMarker(const ThreadManager::ExecutionMarker& that)
+	: manager(that.manager)
+	{
+		manager.MarkThreadAsExecuting();
+	}
 	
 	ThreadManager::ExecutionMarker::~ExecutionMarker()
 	{
@@ -76,7 +86,7 @@ namespace OSEnvironment
 		std::lock_guard<std::recursive_mutex> lock(usedThreadsLock);
 		size_t& count = usedThreads[mach_thread_self()];
 		assert(count != 0 && "Reference count underflow");
-		count++;
+		count--;
 	}
 	
 	void NativeThreadManager::EnterCriticalSection() noexcept

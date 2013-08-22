@@ -39,7 +39,7 @@ namespace OSEnvironment
 			ExecutionMarker(ThreadManager& manager);
 			
 		public:
-			ExecutionMarker(const ExecutionMarker& that) = delete;
+			ExecutionMarker(const ExecutionMarker& that);
 			ExecutionMarker(ExecutionMarker&& that);
 			~ExecutionMarker();
 		};
