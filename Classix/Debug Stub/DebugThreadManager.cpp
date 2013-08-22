@@ -19,6 +19,8 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
+#include <pthread.h>
+
 #include "Todo.h"
 #include "DebugThreadManager.h"
 #include "InvalidInstructionException.h"
@@ -47,9 +49,9 @@ void ThreadContext::Resume()
 	cvShouldResume.notify_one();
 }
 
-std::thread::id ThreadContext::GetThreadId()
+std::thread::native_handle_type ThreadContext::GetThreadId()
 {
-	return thread.get_id();
+	return thread.native_handle();
 }
 
 ThreadUpdate::ThreadUpdate(ThreadContext& ctx)
@@ -102,7 +104,7 @@ DebugThreadManager::DebugThreadManager(Common::Allocator& allocator)
 bool DebugThreadManager::IsThreadExecuting() const
 {
 	std::lock_guard<std::recursive_mutex> lock(threadsLock);
-	auto iter = threads.find(std::this_thread::get_id());
+	auto iter = threads.find(pthread_self());
 	return iter != threads.end();
 }
 
@@ -114,7 +116,7 @@ void DebugThreadManager::MarkThreadAsExecuting()
 void DebugThreadManager::UnmarkThreadAsExecuting()
 {
 	std::lock_guard<std::recursive_mutex> lock(threadsLock);
-	threads.erase(std::this_thread::get_id());
+	threads.erase(pthread_self());
 }
 
 void DebugThreadManager::EnterCriticalSection() noexcept
@@ -142,7 +144,7 @@ void DebugThreadManager::ConsumeThreadEvents()
 	while (true)
 	{
 		ThreadUpdate update = changingContexts.TakeOne();
-		std::thread::id threadId = update.context.GetThreadId();
+		std::thread::native_handle_type threadId = update.context.GetThreadId();
 		switch (update.state)
 		{
 			case ThreadState::Completed:
@@ -161,7 +163,7 @@ void DebugThreadManager::ConsumeThreadEvents()
 	}
 }
 
-void DebugThreadManager::StartThread(const Common::StackPreparator& stack, size_t stackSize, const PEF::TransitionVector& entryPoint, bool startNow)
+ThreadContext& DebugThreadManager::StartThread(const Common::StackPreparator& stack, size_t stackSize, const PEF::TransitionVector& entryPoint, bool startNow)
 {
 	ThreadContext* context = new ThreadContext(allocator, *this, stackSize);
 	auto info = stack.WriteStack(static_cast<char*>(**context->stack), context->stack->GetVirtualAddress(), stackSize);
@@ -177,6 +179,8 @@ void DebugThreadManager::StartThread(const Common::StackPreparator& stack, size_
 	// this should stay at the end of the method or be scoped
 	std::lock_guard<std::recursive_mutex> lock(threadsLock);
 	threads[context->GetThreadId()].reset(context);
+	
+	return *context;
 }
 
 size_t DebugThreadManager::ThreadCount() const

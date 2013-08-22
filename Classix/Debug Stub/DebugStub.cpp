@@ -21,7 +21,6 @@
 
 #include <thread>
 #include <signal.h>
-#include <mach/machine.h>
 
 #include "DebugStub.h"
 #include "NativeAllocator.h"
@@ -131,7 +130,8 @@ namespace Classix
 		
 		// start (but don't run) the main thread
 		const PEF::TransitionVector* vector = allocator->ToPointer<PEF::TransitionVector>(mainSymbol.Address);
-		threads.StartThread(stackPrep, Common::StackPreparator::DefaultStackSize, *vector, false);
+		auto& thread = threads.StartThread(stackPrep, Common::StackPreparator::DefaultStackSize, *vector, false);
+		globalTargetThread = thread.GetThreadId();
 		
 		// wait for the thread start notification, then replace the sink with the context sink
 		std::string command = threadSink->TakeOne();
@@ -160,13 +160,14 @@ namespace Classix
 	uint8_t DebugStub::SetOperationTargetThread(const std::string &commandString, std::string &output)
 	{
 		char command;
-		int threadId;
+		size_t encodedId;
 		
-		int assigned = sscanf(commandString.c_str(), "H%c%i", &command, &threadId);
+		int assigned = sscanf(commandString.c_str(), "H%c%zx", &command, &encodedId);
 		if (assigned != 2)
 			return InvalidFormat;
 		
-		operationTargetThreads[command] = threadId;
+		// super evil cast! gotta do what we gotta do: thread IDs need to be serializable to text
+		context->operationTargetThreads[command] = reinterpret_cast<pthread_t>(encodedId);
 		output = "OK";
 		return NoError;
 	}
@@ -237,8 +238,7 @@ namespace Classix
 	
 	uint8_t DebugStub::QueryCurrentThread(const std::string &commandString, std::string &output)
 	{
-		TODO("Threads aren't supported, returning QC1");
-		output = "QC1";
+		output = StringPrintf("QC%zx", reinterpret_cast<intptr_t>(context->globalTargetThread));
 		return NoError;
 	}
 	

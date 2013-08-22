@@ -67,7 +67,7 @@ struct ThreadContext
 	void Interrupt();
 	void Resume();
 	
-	std::thread::id GetThreadId();
+	std::thread::native_handle_type GetThreadId();
 	
 private:
 	PPCVM::Execution::Interpreter interpreter;
@@ -100,7 +100,7 @@ class DebugThreadManager : public OSEnvironment::ThreadManager
 	unsigned inCriticalSection;
 	
 	mutable std::recursive_mutex threadsLock;
-	std::unordered_map<std::thread::id, std::unique_ptr<ThreadContext>> threads;
+	std::unordered_map<std::thread::native_handle_type, std::unique_ptr<ThreadContext>> threads;
 	
 	// wait queues
 	std::shared_ptr<WaitQueue<std::string>> sink;
@@ -123,7 +123,7 @@ public:
 	
 	void ConsumeThreadEvents(); // expected to run on a dedicated thread
 	
-	void StartThread(const Common::StackPreparator& stack, size_t stackSize, const PEF::TransitionVector& entryPoint, bool startNow = false);
+	ThreadContext& StartThread(const Common::StackPreparator& stack, size_t stackSize, const PEF::TransitionVector& entryPoint, bool startNow = false);
 	size_t ThreadCount() const;
 };
 

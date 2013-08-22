@@ -46,6 +46,9 @@ namespace Classix
 		OSEnvironment::Managers managers;
 		CFM::FragmentManager fragmentManager;
 		
+		std::unordered_map<char, std::thread::native_handle_type> operationTargetThreads;
+		std::thread::native_handle_type globalTargetThread;
+		
 		DebugContext(const std::string& executable);
 		void Start();
 	};
@@ -65,8 +68,6 @@ namespace Classix
 		
 		// commands state
 		static const std::unordered_map<std::string, RemoteCommand> commands;
-		std::unordered_map<char, thread_act_t> operationTargetThreads;
-		thread_act_t globalTargetThread;
 		
 		static void ExecutionMain(DebugStub* self);
 		
