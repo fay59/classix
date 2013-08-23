@@ -309,7 +309,7 @@ namespace Classix
 	uint8_t DebugStub::QueryHostInformation(const std::string &commandString, std::string &output)
 	{
 		output = StringPrintf("cputype:%u;cpusubtype:%u;ostype:%s;vendor:%s;endian:%s;ptrsize:%u",
-			CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "classic", "fcloutier", "big", 4);
+			CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "unknown", "unknown", "big", 4);
 		
 		return NoError;
 	}
@@ -381,7 +381,7 @@ namespace Classix
 			offset = 32 * 4 + 32 * 8 + (regNumber - 64);
 			snprintf(regName, sizeof regName, "cr%lu", regNumber - 64);
 		}
-		else if (regNumber < 75)
+		else if (regNumber < 76)
 		{
 			set = "System Registers";
 			bitSize = 32;
@@ -394,6 +394,7 @@ namespace Classix
 				case 0: strncpy(regName, "xer", sizeof regName); break;
 				case 1: strncpy(regName, "lr", sizeof regName); break;
 				case 2: strncpy(regName, "ctr", sizeof regName); break;
+				case 3: strncpy(regName, "pc", sizeof regName); break;
 				default: snprintf(regName, sizeof regName, "sr%lu", regNumber - 72); break;
 			}
 		}
@@ -420,6 +421,10 @@ namespace Classix
 		else if (regNumber == 73)
 		{
 			output += "generic:ra;";
+		}
+		else if (regNumber == 75)
+		{
+			output += "generic:pc;";
 		}
 		return NoError;
 	}
