@@ -65,6 +65,7 @@ namespace Classix
 		std::string executablePath;
 		std::deque<std::string> args;
 		std::deque<std::string> env;
+		uint16_t runCount;
 		
 		// commands state
 		static const std::unordered_map<std::string, RemoteCommand> commands;

@@ -83,6 +83,7 @@ namespace Classix
 		{
 			readIndex = 0;
 			maxIndex = 0;
+			memset(buffer, 0, sizeof buffer);
 		}
 		
 		inline char Read()
@@ -174,7 +175,8 @@ namespace Classix
 		while (true)
 		{
 			command.clear();
-			if (reader->Read() != '$')
+			char first = reader->Read();
+			if (first != '$')
 			{
 				throw std::logic_error("Malformed packet");
 			}

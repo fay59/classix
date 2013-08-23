@@ -41,6 +41,7 @@ namespace
 		NotImplemented,
 		InvalidFormat,
 		InvalidData,
+		TargetKilled,
 	};
 	
 	std::string StringPrintf(const char* format, ...) __attribute__((format(printf, 1, 2)));
@@ -191,6 +192,8 @@ namespace Classix
 	
 	uint8_t DebugStub::GetStopReason(const std::string &commandString, std::string &output)
 	{
+		if (!context) return TargetKilled;
+		
 		if (commandString == "?")
 		{
 			output.clear();
@@ -223,6 +226,8 @@ namespace Classix
 	
 	uint8_t DebugStub::Resume(const std::string &commandString, std::string &output)
 	{
+		if (!context) return TargetKilled;
+		
 		if (commandString == "vCont?")
 		{
 			output = "vCont;c;s;t";
@@ -234,6 +239,8 @@ namespace Classix
 	
 	uint8_t DebugStub::ReadMemory(const std::string &commandString, std::string &outputString)
 	{
+		if (!context) return TargetKilled;
+		
 		uint32_t address;
 		uint32_t size;
 		if (sscanf(commandString.c_str(), "m%x,%x", &address, &size) != 2)
@@ -267,6 +274,8 @@ namespace Classix
 	
 	uint8_t DebugStub::Kill(const std::string &commandString, std::string &outputString)
 	{
+		if (!context) return TargetKilled;
+		
 		// Technically, there's a race condition here where a thread created just before Kill is called
 		// would survive. In fact, this is very unlikely to be an issue because Mac OS Classic threads are
 		// rather rare; but if this seems to happen, remember to check this place.
@@ -307,12 +316,16 @@ namespace Classix
 	
 	uint8_t DebugStub::QueryCurrentThread(const std::string &commandString, std::string &output)
 	{
+		if (!context) return TargetKilled;
+		
 		output = StringPrintf("QC%zx", reinterpret_cast<intptr_t>(context->globalTargetThread));
 		return NoError;
 	}
 	
 	uint8_t DebugStub::QueryThreadList(const std::string &commandString, std::string &output)
 	{
+		if (!context) return TargetKilled;
+		
 		// no support for fragmentation
 		if (commandString[1] == 's')
 		{
@@ -413,10 +426,13 @@ namespace Classix
 	
 	uint8_t DebugStub::QueryProcessInformation(const std::string &commandString, std::string &output)
 	{
+		if (!context) return TargetKilled;
+		
 		if (uint8_t error = QueryHostInformation(commandString, output))
 			return error;
 		
-		output += StringPrintf(";pid:%x;", getpid());
+		uint32_t pid = (getpid() << 16) | runCount;
+		output += StringPrintf(";pid:%x;", pid);
 		return NoError;
 	}
 	
@@ -424,6 +440,7 @@ namespace Classix
 	{
 		context.reset(new DebugContext(executablePath));
 		stream.reset(new ControlStream(ControlStream::Listen(sink, port)));
+		runCount++;
 	}
 	
 	void DebugStub::SinkMain()
@@ -484,8 +501,8 @@ namespace Classix
 			}
 		}
 		
-		// if we're stuck on this guy, check for the race condition where a thread is created right before
-		// Kill is called
+		// if we're stuck on this guy, check for the race condition where a thread is
+		// created right before Kill is called
 		getThreadEvents.join();
 		readCommands.join();
 	}
