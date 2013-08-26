@@ -60,6 +60,7 @@ NSString* CXVirtualMachineRemovedBreakpoint = @"removed breakpoint";
 struct ClassixCoreVM
 {
 	Common::NativeAllocator allocator;
+	OSEnvironment::NativeThreadManager threads;
 	OSEnvironment::Managers managers;
 	PPCVM::MachineState state;
 	CFM::FragmentManager cfm;
@@ -71,7 +72,7 @@ struct ClassixCoreVM
 	Common::AutoAllocation stack;
 	
 	ClassixCoreVM()
-	: managers(allocator)
+	: managers(allocator, threads)
 	, dummyResolver(allocator)
 	, pefResolver(allocator, cfm)
 	, dlfcnResolver(allocator, managers)

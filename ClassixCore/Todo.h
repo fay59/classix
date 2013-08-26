@@ -26,6 +26,9 @@
 
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C"
+#endif
 inline void TodoMessage(char* guard, const char* filePath, size_t line, const char* function, const char* message)
 {
 	if (*guard == 0)
@@ -42,7 +45,7 @@ inline void TodoMessage(char* guard, const char* filePath, size_t line, const ch
 	}
 }
 
-# define TODO(msg) do { static char warn_##__LINE__ = 0; TodoMessage(&warn_##__LINE__, __FILE__, __LINE__, __func__, (msg)); } while (0)
+#define TODO(msg) do { static char warn_##__LINE__ = 0; TodoMessage(&warn_##__LINE__, __FILE__, __LINE__, __func__, (msg)); } while (0)
 
 #else
 
