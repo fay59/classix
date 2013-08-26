@@ -102,7 +102,7 @@ namespace Common
 		// +-------------+
 		// | string area |
 		// +-------------+
-		// |      0      |
+		// | separator 0 |
 		// +-------------+
 		// |    env[n]   |
 		// +-------------+
@@ -110,7 +110,7 @@ namespace Common
 		// +-------------+
 		// |    env[0]   | <-- envp
 		// +-------------+
-		// |      0      |
+		// | separator 0 |
 		// +-------------+
 		// | arg[argc-1] |
 		// +-------------+
@@ -118,7 +118,19 @@ namespace Common
 		// +-------------+
 		// |    arg[0]   | <-- argv
 		// +-------------+
-		// |     argc    | <-- sp
+		// | separator 0 |
+		// +-------------+
+		// |   0 (toc)   |
+		// +-------------+
+		// |      0      |
+		// +-------------+
+		// |      0      |
+		// +-------------+
+		// |    0 (lr)   |
+		// +-------------+
+		// |    0 (cr)   |
+		// +-------------+
+		// |    0 (sp)   | <-- sp
 		// +-------------+
 		
 		StackInfo result;
@@ -161,10 +173,13 @@ namespace Common
 		assert(offsetIterator == stringOffsets.rend() && "Somehow didn't write an offset to each string");
 		
 		result.argv = reinterpret_cast<char**>(builder.sp);
-		builder.Write<uint32_t>(argv.size());
+		result.argc = argv.size();
+		
+		// separator 0, r2, reserved, reserved, lr, cr, sp
+		for (size_t i = 0; i < 7; i++)
+			builder.Write<uint32_t>(0);
 		
 		result.sp = builder.sp;
-		result.argc = argv.size();
 		return result;
 	}
 }
