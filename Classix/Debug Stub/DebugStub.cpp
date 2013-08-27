@@ -41,6 +41,7 @@ namespace
 		NotImplemented,
 		InvalidFormat,
 		InvalidData,
+		InvalidTarget,
 		TargetKilled,
 	};
 	
@@ -162,6 +163,7 @@ namespace Classix
 		std::make_pair("vCont", &DebugStub::Resume),
 		std::make_pair("qC", &DebugStub::QueryCurrentThread),
 		std::make_pair("k", &DebugStub::Kill),
+		std::make_pair("p", &DebugStub::ReadSingleRegister),
 		std::make_pair("qfThreadInfo", &DebugStub::QueryThreadList),
 		std::make_pair("qsThreadInfo", &DebugStub::QueryThreadList),
 		std::make_pair("qOffsets", &DebugStub::QuerySectionOffsets),
@@ -302,6 +304,69 @@ namespace Classix
 		assert(context->threads.ThreadCount() == 0);
 		context.reset();
 		outputString = "OK";
+		return NoError;
+	}
+	
+	uint8_t DebugStub::ReadSingleRegister(const std::string &commandString, std::string &outputString)
+	{
+		if (!context) return TargetKilled;
+		
+		ThreadContext* thread;
+		if (!context->threads.GetThread(context->globalTargetThread, thread))
+		{
+			return InvalidTarget;
+		}
+		
+		size_t registerNumber;
+		if (sscanf(commandString.c_str(), "p%zx", &registerNumber) != 1)
+		{
+			return InvalidFormat;
+		}
+		
+		uint64_t value;
+		switch (registerNumber)
+		{
+			case 0 ... 31: // rN
+				value = thread->machineState.gpr[registerNumber];
+				outputString = StringPrintf("%08llx", value);
+				break;
+				
+			case 32 ... 63: // frN
+				value = *reinterpret_cast<uint64_t*>(&thread->machineState.fpr[registerNumber - 32]);
+				outputString = StringPrintf("%016llx", value);
+				break;
+				
+			case 64 ... 71: // crN
+				value = thread->machineState.cr[registerNumber - 64];
+				outputString = StringPrintf("%02llx", value);
+				break;
+				
+			case 72: // xer
+				value = thread->machineState.xer;
+				outputString = StringPrintf("%08llx", value);
+				break;
+				
+			case 73: // lr
+				value = thread->machineState.lr;
+				outputString = StringPrintf("%08llx", value);
+				break;
+				
+			case 74: // ctr
+				value = thread->machineState.ctr;
+				outputString = StringPrintf("%08llx", value);
+				break;
+				
+			case 75: // pc
+				assert(thread->executionState == ThreadState::Stopped && "PC cannot be queried on a running thread");
+				value = thread->pc;
+				outputString = StringPrintf("%08llx", value);
+				break;
+				
+			default:
+				assert(false && "Unknown register");
+				return InvalidData;
+		}
+		
 		return NoError;
 	}
 	
