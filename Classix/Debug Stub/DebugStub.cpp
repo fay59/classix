@@ -47,7 +47,7 @@ namespace
 	std::string StringPrintf(const char* format, ...) __attribute__((format(printf, 1, 2)));
 	std::string StringPrintf(const char* format, ...)
 	{
-		std::unique_ptr<char, decltype(&free)> freeResult(nullptr, free);
+		std::unique_ptr<char, decltype(free)&> freeResult(nullptr, free);
 		
 		char* result;
 		va_list ap;
@@ -169,6 +169,8 @@ namespace Classix
 		std::make_pair("qRegisterInfo", &DebugStub::QueryRegisterInformation),
 		std::make_pair("qThreadStopInfo", &DebugStub::GetStopReason),
 		std::make_pair("qProcessInfo", &DebugStub::QueryProcessInformation),
+		
+		std::make_pair("$StreamClosed", &DebugStub::PrivateStreamClosed),
 	};
 	
 	DebugStub::DebugStub(const std::string& path)
@@ -279,6 +281,8 @@ namespace Classix
 		// Technically, there's a race condition here where a thread created just before Kill is called
 		// would survive. In fact, this is very unlikely to be an issue because Mac OS Classic threads are
 		// rather rare; but if this seems to happen, remember to check this place.
+		// (We would probably need to add a field in the thread manager to prevent thread creation once killing is
+		// initiated, or something of that effect.)
 		
 		size_t threadCount = 0;
 		std::shared_ptr<WaitQueue<std::string>> killQueue(new WaitQueue<std::string>);
@@ -403,10 +407,10 @@ namespace Classix
 			return InvalidData;
 		}
 		
-		output = StringPrintf("name:%s;bitsize:%u;offset:%lu;encoding:%s;format:%s;set=%s;", regName, bitSize, offset, encoding, format, set);
+		output = StringPrintf("name:%s;bitsize:%u;offset:%lu;encoding:%s;format:%s;set:%s;", regName, bitSize, offset, encoding, format, set);
 		if (regNumber == 1)
 		{
-			output += "alt-name:sp;generic=sp;";
+			output += "alt-name:sp;generic:fp;";
 		}
 		else if (regNumber == 2)
 		{
@@ -441,6 +445,14 @@ namespace Classix
 		return NoError;
 	}
 	
+	uint8_t DebugStub::PrivateStreamClosed(const std::string&, std::string& output)
+	{
+		Kill("k", output);
+		context.reset();
+		stream.reset();
+		return NoError;
+	}
+	
 	void DebugStub::Accept(uint16_t port)
 	{
 		context.reset(new DebugContext(executablePath));
@@ -456,8 +468,7 @@ namespace Classix
 		}
 		catch (...)
 		{
-			stream.reset();
-			sink->PutOne("k");
+			sink->PutOne("$StreamClosed");
 		}
 	}
 	
@@ -484,8 +495,8 @@ namespace Classix
 				
 				if (iter == commands.end())
 				{
+					output.clear();
 					commandResult = NoError;
-					output = "";
 				}
 				else
 				{
@@ -507,7 +518,7 @@ namespace Classix
 		}
 		
 		// if we're stuck on this guy, check for the race condition where a thread is
-		// created right before Kill is called
+		// created right before Kill is called, and see the Kill method for ideas on how to fix it
 		getThreadEvents.join();
 		readCommands.join();
 	}

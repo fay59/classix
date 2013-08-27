@@ -535,8 +535,6 @@
 		DC72740F1647350C00DA17E5 /* FloatingPointStatus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FloatingPointStatus.h; sourceTree = "<group>"; };
 		DC734275175A50B800E39F20 /* ThreadManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ThreadManager.cpp; sourceTree = "<group>"; };
 		DC734276175A50B800E39F20 /* ThreadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadManager.h; sourceTree = "<group>"; };
-		DC75099016C9DEBA00B218DB /* VirtualAddressSpaceAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VirtualAddressSpaceAllocator.cpp; sourceTree = "<group>"; };
-		DC75099116C9DEBA00B218DB /* VirtualAddressSpaceAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VirtualAddressSpaceAllocator.h; sourceTree = "<group>"; };
 		DC75BC361635AD8500F89EA1 /* FragmentManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FragmentManager.cpp; sourceTree = "<group>"; };
 		DC75BC371635AD8500F89EA1 /* FragmentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FragmentManager.h; sourceTree = "<group>"; };
 		DC787EA8164F68990010A288 /* libStdCLib.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libStdCLib.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -807,8 +805,6 @@
 				DCA6DBF91638451400BFA046 /* Allocator.h */,
 				DCA6DBFB1638460600BFA046 /* NativeAllocator.cpp */,
 				DCA6DBFC1638460600BFA046 /* NativeAllocator.h */,
-				DC75099016C9DEBA00B218DB /* VirtualAddressSpaceAllocator.cpp */,
-				DC75099116C9DEBA00B218DB /* VirtualAddressSpaceAllocator.h */,
 				DC9D8D41164F2E2800036FDD /* STAllocator.h */,
 				DC5EE2E916CE068200B2629F /* StackPreparator.cpp */,
 				DC5EE2EA16CE068200B2629F /* StackPreparator.h */,
