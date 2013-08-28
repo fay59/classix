@@ -520,8 +520,8 @@ extern "C"
 		jmpBuf[2] = state->r1;
 		jmpBuf[3] = state->r2;
 		jmpBuf[4] = 0;
-		memcpy(jmpBuf + 5, state->gpr + 13, 19 * sizeof(uint32_t));
-		memcpy(jmpBuf + 24, state->fpr + 14, 18 * sizeof(double));
+		memcpy(jmpBuf + 5, state->gpr + 13, 18 * sizeof(uint32_t));
+		memcpy(jmpBuf + 24, state->fpr + 14, 17 * sizeof(double));
 		jmpBuf[61] = 0;
 		jmpBuf[62] = 0;
 		
@@ -903,8 +903,9 @@ extern "C"
 
 	void StdCLib_exit(StdCLib::Globals* globals, MachineState* state)
 	{
-		TODO("This should longjmp to __target_for_exit instead of calling exit");
-		exit(state->r3);
+		state->r3 = ToIntPtr(globals->scalars.__target_for_exit);
+		state->r4 = 1;
+		StdCLib_longjmp(globals, state);
 	}
 
 	void StdCLib_faccess(StdCLib::Globals* globals, MachineState* state)
@@ -1276,7 +1277,16 @@ extern "C"
 
 	void StdCLib_longjmp(StdCLib::Globals* globals, MachineState* state)
 	{
-		throw PPCVM::NotImplementedException(__func__);
+		uint32_t* jmpBuf = ToPointer<uint32_t>(state->r3);
+		state->lr = jmpBuf[0];
+		state->SetCR(jmpBuf[1]);
+		state->r1 = jmpBuf[2];
+		state->r2 = jmpBuf[3];
+		state->r3 = state->r4;
+		memcpy(state->gpr + 13, jmpBuf + 5, 18 * sizeof(uint32_t));
+		memcpy(state->fpr + 14, jmpBuf + 24, 17 * sizeof(double));
+		
+		globals->scalars.errno_ = 0;
 	}
 
 	void StdCLib_lseek(StdCLib::Globals* globals, MachineState* state)
