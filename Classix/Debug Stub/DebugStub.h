@@ -48,7 +48,9 @@ namespace Classix
 		std::unordered_map<char, std::thread::native_handle_type> operationTargetThreads;
 		std::thread::native_handle_type globalTargetThread;
 		
-		DebugContext(const std::string& executable);
+		uint32_t pid;
+		
+		DebugContext(const std::string& executable, uint32_t pid);
 		void Start(std::shared_ptr<WaitQueue<std::string>>& sink);
 	};
 	

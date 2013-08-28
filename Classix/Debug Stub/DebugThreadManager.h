@@ -103,6 +103,7 @@ class DebugThreadManager : public OSEnvironment::ThreadManager
 	
 	mutable std::recursive_mutex threadsLock;
 	std::unordered_map<std::thread::native_handle_type, std::unique_ptr<ThreadContext>> threads;
+	uint32_t lastExitCode;
 	
 	// wait queues
 	std::shared_ptr<WaitQueue<std::string>> sink;
@@ -124,6 +125,7 @@ public:
 	void SetCommandSink(std::shared_ptr<WaitQueue<std::string>>& sink);
 	
 	void ConsumeThreadEvents(); // expected to run on a dedicated thread
+	uint32_t GetLastExitCode() const; // exit code of the last thread to complete
 	
 	ThreadContext& StartThread(const Common::StackPreparator& stack, size_t stackSize, const PEF::TransitionVector& entryPoint, bool startNow = false);
 

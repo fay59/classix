@@ -74,8 +74,8 @@ namespace
 
 namespace Classix
 {
-	DebugContext::DebugContext(const std::string& executable)
-	: allocator(new Common::NativeAllocator), threads(*allocator), managers(*allocator, threads)
+	DebugContext::DebugContext(const std::string& executable, uint32_t pid)
+	: allocator(new Common::NativeAllocator), threads(*allocator), managers(*allocator, threads), pid(pid)
 	{
 		ClassixCore::BundleLibraryResolver* bundleResolver = new ClassixCore::BundleLibraryResolver(*allocator, managers);
 		bundleResolver->AllowLibrary("InterfaceLib");
@@ -142,19 +142,19 @@ namespace Classix
 			threads.StartThread(stackPrep, Common::StackPreparator::DefaultStackSize, *transition, true);
 		}
 		
-		// wait for all initializers to complete; expect 2 qThreadStopInfo commands per initializer
+		// wait for all initializers to complete; expect 2 '?' commands per initializer
 		size_t infoCountRemaining = initSymbols.size() * 2;
 		auto threadSink = threads.GetCommandSink();
 		while (infoCountRemaining > 0)
 		{
 			std::string command = threadSink->TakeOne();
-			assert(command == "qThreadStopInfo");
+			assert(command == "?");
 			infoCountRemaining--;
 		}
 		
 		// wait for the thread start notification, then replace the sink with the context sink
 		std::string command = threadSink->TakeOne();
-		assert(command == "qThreadStopInfo");
+		assert(command == "?");
 		threads.SetCommandSink(sink);
 	}
 	
@@ -204,12 +204,21 @@ namespace Classix
 		if (commandString == "?")
 		{
 			output.clear();
-			context->threads.ForEachThread([&output] (ThreadContext& context)
+			size_t threadCount = 0;
+			context->threads.ForEachThread([&output, &threadCount] (ThreadContext& context)
 			{
 				size_t reasonIndex = static_cast<size_t>(context.stopReason.load());
 				intptr_t serializableHandle = reinterpret_cast<intptr_t>(context.GetThreadId());
 				output += StringPrintf("S%02hhxthread:%zx;", stopSignals[reasonIndex], serializableHandle);
+				threadCount++;
 			});
+			
+			if (threadCount == 0)
+			{
+				uint32_t exitCode = context->threads.GetLastExitCode();
+				output = StringPrintf("W%02hhx;pid=%x", static_cast<uint8_t>(exitCode), context->pid);
+			}
+			
 			return NoError;
 		}
 		else
@@ -301,7 +310,7 @@ namespace Classix
 		for (size_t i = 0; i < threadCount; i++)
 		{
 			std::string command = killQueue->TakeOne();
-			assert(command == "qThreadStopInfo");
+			assert(command == "?");
 		}
 		
 		assert(context->threads.ThreadCount() == 0);
@@ -518,9 +527,8 @@ namespace Classix
 	{
 		if (!context) return TargetKilled;
 		
-		uint32_t pid = (getpid() << 16) | runCount;
 		output = StringPrintf("cputype:%x;cpusubtype:%x;ostype:%s;vendor:%s;endian:%s;ptrsize:%u;pid:%x",
-							  CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "unknown", "unknown", "big", 4, pid);
+							  CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "unknown", "unknown", "big", 4, context->pid);
 		
 		return NoError;
 	}
@@ -535,7 +543,8 @@ namespace Classix
 	
 	void DebugStub::Accept(uint16_t port)
 	{
-		context.reset(new DebugContext(executablePath));
+		uint32_t pid = (getpid() * 10) | runCount;
+		context.reset(new DebugContext(executablePath, pid));
 		stream.reset(new ControlStream(ControlStream::Listen(sink, port)));
 		runCount++;
 	}

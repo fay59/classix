@@ -114,7 +114,7 @@ void DebugThreadManager::DebugLoop(ThreadContext& context, bool autostart)
 }
 
 DebugThreadManager::DebugThreadManager(Common::Allocator& allocator)
-: allocator(allocator), sink(new WaitQueue<std::string>)
+: allocator(allocator), sink(new WaitQueue<std::string>), lastExitCode(0xeeeeeeee)
 { }
 
 bool DebugThreadManager::IsThreadExecuting() const
@@ -168,6 +168,7 @@ void DebugThreadManager::ConsumeThreadEvents()
 			update.context.thread.join();
 			
 			std::lock_guard<std::recursive_mutex> guard(threadsLock);
+			lastExitCode = update.context.machineState.r3;
 			threads.erase(threadId);
 			if (threads.size() == 0)
 			{
@@ -175,8 +176,13 @@ void DebugThreadManager::ConsumeThreadEvents()
 			}
 		}
 		
-		sink->PutOne("qThreadStopInfo");
+		sink->PutOne("?");
 	}
+}
+
+uint32_t DebugThreadManager::GetLastExitCode() const
+{
+	return lastExitCode;
 }
 
 ThreadContext& DebugThreadManager::StartThread(const Common::StackPreparator& stack, size_t stackSize, const PEF::TransitionVector& entryPoint, bool startNow)
