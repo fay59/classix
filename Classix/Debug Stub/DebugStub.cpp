@@ -43,6 +43,8 @@ namespace
 		InvalidData,
 		InvalidTarget,
 		TargetKilled,
+		
+		NoReply = 0xff
 	};
 	
 	std::string StringPrintf(const char* format, ...) __attribute__((format(printf, 1, 2)));
@@ -160,8 +162,9 @@ namespace Classix
 		std::make_pair("H", &DebugStub::SetOperationTargetThread),
 		std::make_pair("?", &DebugStub::GetStopReason),
 		std::make_pair("m", &DebugStub::ReadMemory),
-		std::make_pair("vCont", &DebugStub::Resume),
+		std::make_pair("vCont", &DebugStub::ThreadResume),
 		std::make_pair("qC", &DebugStub::QueryCurrentThread),
+		std::make_pair("c", &DebugStub::Continue),
 		std::make_pair("k", &DebugStub::Kill),
 		std::make_pair("p", &DebugStub::ReadSingleRegister),
 		std::make_pair("qfThreadInfo", &DebugStub::QueryThreadList),
@@ -228,7 +231,7 @@ namespace Classix
 		return InvalidData;
 	}
 	
-	uint8_t DebugStub::Resume(const std::string &commandString, std::string &output)
+	uint8_t DebugStub::ThreadResume(const std::string &commandString, std::string &output)
 	{
 		if (!context) return TargetKilled;
 		
@@ -305,6 +308,17 @@ namespace Classix
 		context.reset();
 		outputString = "OK";
 		return NoError;
+	}
+	
+	uint8_t DebugStub::Continue(const std::string &commandString, std::string &outputString)
+	{
+		if (!context) return TargetKilled;
+		
+		context->threads.ForEachThread([] (ThreadContext& context) { context.Resume(); });
+		
+		outputString.clear();
+		
+		return NoReply;
 	}
 	
 	uint8_t DebugStub::ReadSingleRegister(const std::string &commandString, std::string &outputString)
@@ -575,7 +589,7 @@ namespace Classix
 					{
 						stream->WriteAnswer(output);
 					}
-					else
+					else if (commandResult != NoReply)
 					{
 						stream->WriteAnswer(commandResult);
 					}

@@ -75,9 +75,10 @@ namespace Classix
 		// Commands
 		uint8_t SetOperationTargetThread(const std::string& commandString, std::string& output);
 		uint8_t GetStopReason(const std::string& commandString, std::string& output);
-		uint8_t Resume(const std::string& commandString, std::string& output);
+		uint8_t ThreadResume(const std::string& commandString, std::string& output);
 		uint8_t ReadMemory(const std::string& commandString, std::string& outputString);
 		uint8_t Kill(const std::string& commandString, std::string& outputString);
+		uint8_t Continue(const std::string& commandString, std::string& outputString);
 		uint8_t ReadSingleRegister(const std::string& commandString, std::string& outputString);
 		
 		// Query commands
