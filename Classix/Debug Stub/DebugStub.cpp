@@ -377,6 +377,8 @@ namespace Classix
 	
 	uint8_t DebugStub::QueryHostInformation(const std::string &commandString, std::string &output)
 	{
+		// for some reason, someone decided that qHostInfo should use base 10
+		// but qProcessInfo should use base 16
 		output = StringPrintf("cputype:%u;cpusubtype:%u;ostype:%s;vendor:%s;endian:%s;ptrsize:%u",
 			CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "unknown", "unknown", "big", 4);
 		
@@ -502,11 +504,10 @@ namespace Classix
 	{
 		if (!context) return TargetKilled;
 		
-		if (uint8_t error = QueryHostInformation(commandString, output))
-			return error;
-		
 		uint32_t pid = (getpid() << 16) | runCount;
-		output += StringPrintf(";pid:%x;", pid);
+		output = StringPrintf("cputype:%x;cpusubtype:%x;ostype:%s;vendor:%s;endian:%s;ptrsize:%u;pid:%x",
+							  CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "unknown", "unknown", "big", 4, pid);
+		
 		return NoError;
 	}
 	
