@@ -268,7 +268,7 @@ struct ClassixCoreVM
 				vm->state.r2 = vector->TableOfContents;
 				
 				auto marker = vm->managers.ThreadManager().CreateExecutionMarker();
-				vm->interp.Execute(vm->allocator.ToPointer<void>(vector->EntryPoint));
+				vm->interp.Execute(vm->allocator.ToPointer<Common::UInt32>(vector->EntryPoint));
 			}
 		}
 	}
@@ -515,7 +515,7 @@ struct ClassixCoreVM
 		cppBreakpoints.insert(address);
 	}
 	
-	const void* eip = vm->allocator.ToPointer<void>(pc);
+	const Common::UInt32* eip = vm->allocator.ToPointer<Common::UInt32>(pc);
 	PPCVM::MachineState oldState = vm->state;
 	
 	try
@@ -555,7 +555,7 @@ struct ClassixCoreVM
 	using namespace PPCVM::Execution;
 	
 	PPCVM::MachineState oldState = vm->state;
-	const void* eip = vm->allocator.ToPointer<const void>(pc);
+	const Common::UInt32* eip = vm->allocator.ToPointer<Common::UInt32>(pc);
 	try
 	{
 		auto marker = vm->managers.ThreadManager().CreateExecutionMarker();
@@ -580,7 +580,7 @@ struct ClassixCoreVM
 -(void)runTo:(uint32_t)location
 {
 	std::unordered_set<const void*> until = {vm->allocator.ToPointer<const void>(location)};
-	const void* eip = vm->allocator.ToPointer<const void>(pc);
+	const Common::UInt32* eip = vm->allocator.ToPointer<Common::UInt32>(pc);
 	PPCVM::MachineState oldState = vm->state;
 	try
 	{

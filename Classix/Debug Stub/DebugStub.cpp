@@ -33,6 +33,8 @@
 #include "DebugThreadManager.h"
 #include "Todo.h"
 
+using namespace Common;
+
 namespace
 {
 	enum DebugStubErrorCodes : uint8_t
@@ -75,7 +77,7 @@ namespace
 namespace Classix
 {
 	DebugContext::DebugContext(const std::string& executable, uint32_t pid)
-	: allocator(new Common::NativeAllocator), threads(*allocator), managers(*allocator, threads), pid(pid)
+	: allocator(new NativeAllocator), threads(*allocator), managers(*allocator, threads), pid(pid)
 	{
 		ClassixCore::BundleLibraryResolver* bundleResolver = new ClassixCore::BundleLibraryResolver(*allocator, managers);
 		bundleResolver->AllowLibrary("InterfaceLib");
@@ -103,7 +105,7 @@ namespace Classix
 	
 	void DebugContext::Start(std::shared_ptr<WaitQueue<std::string>>& sink)
 	{
-		Common::StackPreparator stackPrep;
+		StackPreparator stackPrep;
 		
 		// Do a pass to find all init symbols and the main symbol. We need this to be able to create the main thread
 		// before the initializer threads.
@@ -132,14 +134,14 @@ namespace Classix
 		// Start (but don't run) the main thread. We create it because the DebugThreadManager will stop
 		// its run loop if it reaches 0 threads.
 		const PEF::TransitionVector* vector = allocator->ToPointer<PEF::TransitionVector>(mainSymbol.Address);
-		auto& thread = threads.StartThread(stackPrep, Common::StackPreparator::DefaultStackSize, *vector, false);
+		auto& thread = threads.StartThread(stackPrep, StackPreparator::DefaultStackSize, *vector, false);
 		globalTargetThread = thread.GetThreadId();
 		
 		// Run the initializers
 		for (const CFM::ResolvedSymbol& entryPoint : initSymbols)
 		{
 			const PEF::TransitionVector* transition = allocator->ToPointer<PEF::TransitionVector>(entryPoint.Address);
-			threads.StartThread(stackPrep, Common::StackPreparator::DefaultStackSize, *transition, true);
+			threads.StartThread(stackPrep, StackPreparator::DefaultStackSize, *transition, true);
 		}
 		
 		// wait for all initializers to complete; expect 2 '?' commands per initializer
@@ -163,10 +165,10 @@ namespace Classix
 		std::make_pair("?", &DebugStub::GetStopReason),
 		std::make_pair("m", &DebugStub::ReadMemory),
 		std::make_pair("vCont", &DebugStub::ThreadResume),
-		std::make_pair("qC", &DebugStub::QueryCurrentThread),
 		std::make_pair("c", &DebugStub::Continue),
 		std::make_pair("k", &DebugStub::Kill),
 		std::make_pair("p", &DebugStub::ReadSingleRegister),
+		std::make_pair("qC", &DebugStub::QueryCurrentThread),
 		std::make_pair("qfThreadInfo", &DebugStub::QueryThreadList),
 		std::make_pair("qsThreadInfo", &DebugStub::QueryThreadList),
 		std::make_pair("qOffsets", &DebugStub::QuerySectionOffsets),
@@ -207,7 +209,7 @@ namespace Classix
 			size_t threadCount = 0;
 			context->threads.ForEachThread([&output, &threadCount] (ThreadContext& context)
 			{
-				size_t reasonIndex = static_cast<size_t>(context.stopReason.load());
+				size_t reasonIndex = static_cast<size_t>(context.GetStopReason());
 				intptr_t serializableHandle = reinterpret_cast<intptr_t>(context.GetThreadId());
 				output += StringPrintf("S%02hhxthread:%zx;", stopSignals[reasonIndex], serializableHandle);
 				threadCount++;
@@ -232,7 +234,7 @@ namespace Classix
 			ThreadContext* threadContext;
 			if (context->threads.GetThread(reinterpret_cast<std::thread::native_handle_type>(handle), threadContext))
 			{
-				size_t reasonIndex = static_cast<size_t>(threadContext->stopReason.load());
+				size_t reasonIndex = static_cast<size_t>(threadContext->GetStopReason());
 				output = StringPrintf("S%02hhxthread:%zx;", stopSignals[reasonIndex], handle);
 				return NoError;
 			}
@@ -249,8 +251,32 @@ namespace Classix
 			output = "vCont;c;s;t";
 			return NoError;
 		}
-		
-		return NotImplemented;
+		else
+		{
+			char action;
+			int charCount;
+			size_t targetThread;
+			const char* actions = commandString.c_str() + 5;
+			while (sscanf(actions, ";%c:%zx%n", &action, &targetThread, &charCount) == 2) // %n doesn't count
+			{
+				ThreadContext* threadContext;
+				if (context->threads.GetThread(reinterpret_cast<std::thread::native_handle_type>(targetThread), threadContext))
+				{
+					switch (action)
+					{
+						case 's': threadContext->Perform(RunCommand::StepOver); break;
+						case 't': threadContext->Perform(RunCommand::SingleStep); break;
+						case 'c': threadContext->Perform(RunCommand::Continue); break;
+						default:
+							return NotImplemented;
+					}
+				}
+				actions += charCount;
+			}
+			
+			// no immediate reply; reply as we stop again
+			return NoReply;
+		}
 	}
 	
 	uint8_t DebugStub::ReadMemory(const std::string &commandString, std::string &outputString)
@@ -323,7 +349,7 @@ namespace Classix
 	{
 		if (!context) return TargetKilled;
 		
-		context->threads.ForEachThread([] (ThreadContext& context) { context.Resume(); });
+		context->threads.ForEachThread([] (ThreadContext& context) { context.Perform(RunCommand::Continue); });
 		
 		outputString.clear();
 		
@@ -346,43 +372,44 @@ namespace Classix
 			return InvalidFormat;
 		}
 		
+		uint8_t length;
 		uint64_t value;
 		switch (registerNumber)
 		{
 			case 0 ... 31: // rN
 				value = thread->machineState.gpr[registerNumber];
-				outputString = StringPrintf("%08llx", value);
+				length = 8;
 				break;
 				
 			case 32 ... 63: // frN
-				value = *reinterpret_cast<uint64_t*>(&thread->machineState.fpr[registerNumber - 32]);
-				outputString = StringPrintf("%016llx", value);
+				value = HostToBig<uint64_t>::Swap(*reinterpret_cast<uint64_t*>(&thread->machineState.fpr[registerNumber - 32]));
+				length = 16;
 				break;
 				
 			case 64 ... 71: // crN
 				value = thread->machineState.cr[registerNumber - 64];
-				outputString = StringPrintf("%02llx", value);
+				length = 2;
 				break;
 				
 			case 72: // xer
 				value = thread->machineState.xer;
-				outputString = StringPrintf("%08llx", value);
+				length = 8;
 				break;
 				
 			case 73: // lr
 				value = thread->machineState.lr;
-				outputString = StringPrintf("%08llx", value);
+				length = 8;
 				break;
 				
 			case 74: // ctr
 				value = thread->machineState.ctr;
-				outputString = StringPrintf("%08llx", value);
+				length = 8;
 				break;
 				
 			case 75: // pc
-				assert(thread->executionState == ThreadState::Stopped && "PC cannot be queried on a running thread");
+				assert(thread->GetThreadState() == ThreadState::Stopped && "PC cannot be queried on a running thread");
 				value = thread->pc;
-				outputString = StringPrintf("%08llx", value);
+				length = 8;
 				break;
 				
 			default:
@@ -390,6 +417,7 @@ namespace Classix
 				return InvalidData;
 		}
 		
+		outputString = StringPrintf("%0*llx", length, value);
 		return NoError;
 	}
 	

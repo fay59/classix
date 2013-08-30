@@ -27,11 +27,16 @@
 #include "AccessViolationException.h"
 #include "TrapException.h"
 
+using namespace Common;
+using namespace PPCVM;
+
+const uint32_t BreakpointTrap = 0x7C000008;
+
 ThreadContext::ThreadContext(Common::Allocator& allocator, DebugThreadManager& threads, size_t stackSize)
-	: interpreter(allocator, machineState)
+	: interpreter(allocator, machineState) , stack(allocator.AllocateAuto("Thread Stack", stackSize))
 {
 	executionState = ThreadState::NotReady;
-	stack.reset(new Common::AutoAllocation(allocator.AllocateAuto("Thread Stack", stackSize)));
+	nextAction = RunCommand::None;
 }
 
 void ThreadContext::Interrupt()
@@ -39,13 +44,26 @@ void ThreadContext::Interrupt()
 	interpreter.Interrupt();
 }
 
-void ThreadContext::Resume()
+ThreadState ThreadContext::GetThreadState() const
+{
+	return executionState;
+}
+
+StopReason ThreadContext::GetStopReason() const
+{
+	return stopReason;
+}
+
+void ThreadContext::Perform(RunCommand command)
 {
 	if (executionState != ThreadState::Stopped)
 		throw std::logic_error("Threads can only be resumed from the Stopped state");
 	
+	if (static_cast<int>(command) < 0)
+		throw std::logic_error("Cannot use private command");
+	
 	std::unique_lock<std::mutex> guard(mShouldResume);
-	executionState = ThreadState::Executing;
+	nextAction = command;
 	cvShouldResume.notify_one();
 }
 
@@ -57,7 +75,7 @@ void ThreadContext::Kill()
 		Interrupt();
 	}
 	
-	executionState = ThreadState::Completed;
+	nextAction = RunCommand::Kill;
 	cvShouldResume.notify_one();
 }
 
@@ -66,51 +84,107 @@ std::thread::native_handle_type ThreadContext::GetThreadId()
 	return thread.native_handle();
 }
 
+RunCommand ThreadContext::GetNextAction()
+{
+	std::unique_lock<std::mutex> guard(mShouldResume);
+	cvShouldResume.wait(guard, [this] { return nextAction.load() != RunCommand::None; });
+	return nextAction.exchange(RunCommand::None);
+}
+
 ThreadUpdate::ThreadUpdate(ThreadContext& ctx)
-: context(ctx), state(context.executionState)
+: context(ctx), state(context.GetThreadState())
 { }
 
 void DebugThreadManager::DebugLoop(ThreadContext& context, bool autostart)
 {
 	context.stopReason = StopReason::InterruptTrap;
-	context.executionState = autostart ? ThreadState::Executing : ThreadState::Stopped;
+	context.executionState = ThreadState::Stopped;
 	changingContexts.PutOne(ThreadUpdate(context));
 	
-	while (true)
+	if (autostart)
 	{
-		{
-			std::unique_lock<std::mutex> guard(context.mShouldResume);
-			context.cvShouldResume.wait(guard, [&context] { return context.executionState != ThreadState::Stopped; });
-		}
-		
-		if (context.executionState == ThreadState::Completed)
-			break;
-		
-		context.stopReason = StopReason::Executing;
-		const void* location = allocator.ToPointer<void>(context.pc);
+		context.Perform(RunCommand::Continue);
+	}
+	
+	while (context.executionState != ThreadState::Completed)
+	{
+		UInt32* location = allocator.ToPointer<UInt32>(context.pc);
+		RunCommand action = context.GetNextAction();
 		try
 		{
-			context.interpreter.Execute(location);
-			break;
+			if (action == RunCommand::Kill)
+			{
+				context.pc = allocator.ToIntPtr(context.interpreter.GetEndAddress());
+			}
+			else if (action == RunCommand::Continue)
+			{
+				context.interpreter.Execute(location);
+				context.pc = allocator.ToIntPtr(context.interpreter.GetEndAddress());
+			}
+			else if (action == RunCommand::SingleStep)
+			{
+				location = context.interpreter.ExecuteOne(location);
+				context.pc = allocator.ToIntPtr(location);
+			}
+			else if (action == RunCommand::StepOver)
+			{
+				Instruction instruction(location->Get());
+				if (instruction.OPCD != 18 || instruction.LK == 0)
+				{
+					// step over is the same as single step, unless we step over a call instruction...
+					location = context.interpreter.ExecuteOne(location);
+					context.pc = allocator.ToIntPtr(location);
+				}
+				else
+				{
+					// ...then we should set a breakpoint on the next instruction, and execute until we reach it,
+					// and make sure the stack is the same size (otherwise we're doing recursion).
+					Breakpoint stopAtNext = CreateBreakpoint(&location[1]);
+					uint32_t stopPC = allocator.ToIntPtr(stopAtNext.GetLocation());
+					uint32_t sp = context.machineState.r1;
+					do
+					{
+						try
+						{
+							// don't be stuck on the breakpoint if it's the first instruction we execute
+							if (location == stopAtNext.GetLocation())
+							{
+								location = context.interpreter.ExecuteOne(location, stopAtNext.GetInstruction());
+							}
+							context.interpreter.Execute(location);
+							context.pc = allocator.ToIntPtr(context.interpreter.GetEndAddress());
+							break;
+						}
+						catch (Execution::InterpreterException& ex)
+						{
+							context.pc = ex.GetPC();
+							auto cause = ex.GetReason().get();
+							if (dynamic_cast<TrapException*>(cause) == nullptr || context.pc != stopPC)
+								throw;
+						}
+					} while (context.machineState.r1 != sp);
+				}
+			}
+			
+			context.executionState = context.pc == allocator.ToIntPtr(context.interpreter.GetEndAddress())
+				? ThreadState::Completed
+				: ThreadState::Stopped;
 		}
-		catch (PPCVM::Execution::InterpreterException& ex)
+		catch (Execution::InterpreterException& ex)
 		{
 			context.pc = ex.GetPC();
+			context.executionState = ThreadState::Stopped;
 			auto cause = ex.GetReason().get();
-			if (dynamic_cast<PPCVM::Execution::InvalidInstructionException*>(cause))
+			if (dynamic_cast<Execution::InvalidInstructionException*>(cause))
 				context.stopReason = StopReason::InvalidInstruction;
 			else if (dynamic_cast<Common::AccessViolationException*>(cause))
 				context.stopReason = StopReason::AccessViolation;
-			else if (dynamic_cast<PPCVM::TrapException*>(cause))
+			else if (dynamic_cast<TrapException*>(cause))
 				context.stopReason = StopReason::InterruptTrap;
-			
-			changingContexts.PutOne(ThreadUpdate(context));
 		}
+		
+		changingContexts.PutOne(ThreadUpdate(context));
 	}
-	
-	context.stack.reset();
-	context.executionState = ThreadState::Completed;
-	changingContexts.PutOne(ThreadUpdate(context));
 }
 
 DebugThreadManager::DebugThreadManager(Common::Allocator& allocator)
@@ -143,6 +217,40 @@ void DebugThreadManager::EnterCriticalSection() noexcept
 void DebugThreadManager::ExitCriticalSection() noexcept
 {
 	TODO("Implement critical sections");
+}
+
+void DebugThreadManager::SetBreakpoint(UInt32 *location)
+{
+	std::lock_guard<std::mutex> guard(breakpointsLock);
+	auto iter = breakpoints.find(location);
+	if (iter == breakpoints.end())
+	{
+		iter = breakpoints.insert(std::make_pair(location, std::make_pair(Instruction(location->Get()), 0))).first;
+		*location = BreakpointTrap;
+	}
+	
+	iter->second.second++;
+}
+
+bool DebugThreadManager::RemoveBreakpoint(UInt32 *location)
+{
+	std::lock_guard<std::mutex> guard(breakpointsLock);
+	auto iter = breakpoints.find(location);
+	if (iter == breakpoints.end())
+		return false;
+	
+	iter->second.second--;
+	if (iter->second.second == 0)
+	{
+		*iter->first = iter->second.first.hex;
+		breakpoints.erase(iter);
+	}
+	return true;
+}
+
+DebugThreadManager::Breakpoint DebugThreadManager::CreateBreakpoint(UInt32 *location)
+{
+	return Breakpoint(*this, location);
 }
 
 std::shared_ptr<WaitQueue<std::string>> DebugThreadManager::GetCommandSink()
@@ -187,8 +295,12 @@ uint32_t DebugThreadManager::GetLastExitCode() const
 
 ThreadContext& DebugThreadManager::StartThread(const Common::StackPreparator& stack, size_t stackSize, const PEF::TransitionVector& entryPoint, bool startNow)
 {
-	ThreadContext* context = new ThreadContext(allocator, *this, stackSize);
-	auto info = stack.WriteStack(static_cast<char*>(**context->stack), context->stack->GetVirtualAddress(), stackSize);
+	// lldb enforces some alignment constraints on the stack, so align it correctly by allocating some additional memory
+	ThreadContext* context = new ThreadContext(allocator, *this, stackSize + 0x200);
+	uint32_t stackAddress = allocator.ToIntPtr(*context->stack);
+	stackAddress += 0x200;
+	stackAddress &= ~0x1ff;
+	auto info = stack.WriteStack(allocator.ToPointer<char>(stackAddress), stackAddress, stackSize);
 	context->machineState.r1 = allocator.ToIntPtr(info.sp);
 	context->machineState.r2 = entryPoint.TableOfContents;
 	context->machineState.r3 = context->machineState.r27 = info.argc;
@@ -196,7 +308,7 @@ ThreadContext& DebugThreadManager::StartThread(const Common::StackPreparator& st
 	context->machineState.r5 = context->machineState.r29 = allocator.ToIntPtr(info.envp);
 	context->pc = entryPoint.EntryPoint;
 	
-	context->thread = std::thread(std::bind(&DebugThreadManager::DebugLoop, this, std::ref(*context), startNow));
+	context->thread = std::thread(&DebugThreadManager::DebugLoop, this, std::ref(*context), startNow);
 	
 	// this should stay at the end of the method or be scoped
 	std::lock_guard<std::recursive_mutex> lock(threadsLock);
@@ -220,4 +332,34 @@ bool DebugThreadManager::GetThread(std::thread::native_handle_type handle, Threa
 	
 	context = iter->second.get();
 	return true;
+}
+
+DebugThreadManager::Breakpoint::Breakpoint(DebugThreadManager& manager, UInt32* instruction)
+: threads(manager), location(instruction), instruction(*instruction)
+{
+	threads.SetBreakpoint(instruction);
+}
+
+DebugThreadManager::Breakpoint::Breakpoint(Breakpoint&& that)
+: threads(that.threads), instruction(that.instruction), location(that.location)
+{
+	that.location = nullptr;
+}
+
+const UInt32* DebugThreadManager::Breakpoint::GetLocation() const
+{
+	return location;
+}
+
+PPCVM::Instruction DebugThreadManager::Breakpoint::GetInstruction() const
+{
+	return instruction;
+}
+
+DebugThreadManager::Breakpoint::~Breakpoint()
+{
+	if (location != nullptr)
+	{
+		threads.RemoveBreakpoint(location);
+	}
 }

@@ -30,7 +30,7 @@ namespace Classix
 		
 		auto vector = vm.allocator.ToPointer<const PEF::TransitionVector>(symbol.Address);
 		BeginTransition(*vector);
-		vm.interpreter.Execute(vm.allocator.ToPointer<void>(pc));
+		vm.interpreter.Execute(vm.allocator.ToPointer<Common::UInt32>(pc));
 		return vm.state.r3;
 	}
 	
@@ -49,7 +49,7 @@ namespace Classix
 	void ProgramControlHandle::StepInto()
 	{
 		auto threadMarker = vm.managers.ThreadManager().CreateExecutionMarker();
-		const void* newPC = vm.interpreter.ExecuteOne(vm.allocator.ToPointer<void>(pc));
+		const Common::UInt32* newPC = vm.interpreter.ExecuteOne(vm.allocator.ToPointer<Common::UInt32>(pc));
 		pc = vm.allocator.ToIntPtr(newPC);
 	}
 	
@@ -77,7 +77,7 @@ namespace Classix
 		auto threadMarker = vm.managers.ThreadManager().CreateExecutionMarker();
 		
 		std::unordered_set<const void*> until = {vm.allocator.ToPointer<void>(address)};
-		const void* eip = vm.allocator.ToPointer<const void>(pc);
+		const Common::UInt32* eip = vm.allocator.ToPointer<Common::UInt32>(pc);
 		eip = vm.interpreter.ExecuteUntil(eip, until);
 		pc = vm.allocator.ToIntPtr(eip);
 	}

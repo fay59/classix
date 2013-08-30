@@ -31,6 +31,8 @@
 #include <dlfcn.h>
 #include "Todo.h"
 
+using namespace Common;
+
 namespace
 {
 	using namespace PPCVM;
@@ -75,7 +77,7 @@ namespace PPCVM
 {
 	namespace Execution
 	{
-		Interpreter::Interpreter(Common::Allocator& allocator, MachineState& state)
+		Interpreter::Interpreter(Allocator& allocator, MachineState& state)
 		: state(state), allocator(allocator),
 			endAddress(allocator.AllocateAuto("Interpreter End Address", 4)),
 			interruptAddress(allocator.AllocateAuto("Interpreter Interrupt Address", 4))
@@ -83,6 +85,11 @@ namespace PPCVM
 		
 		Interpreter::~Interpreter()
 		{ }
+		
+		const UInt32* Interpreter::GetEndAddress() const
+		{
+			return static_cast<const UInt32*>(*endAddress);
+		}
 
 		void Interpreter::Panic(const std::string& error)
 		{
@@ -96,8 +103,8 @@ namespace PPCVM
 		
 		void Interpreter::SetBranchAddress(uint32_t target)
 		{
-			const void* voidTarget = allocator.ToPointer<const void>(target);
-			const void* oldBranch = branchAddress.exchange(voidTarget);
+			const UInt32* voidTarget = allocator.ToPointer<UInt32>(target);
+			const UInt32* oldBranch = branchAddress.exchange(voidTarget);
 			
 			// We know Interrupt() was called if oldBranch is not null at this point. Normally this is picked up
 			// at branching time (with ExecuteUntilBranch returning), but if we're inside a branch instruction,
@@ -112,8 +119,8 @@ namespace PPCVM
 		
 		void Interpreter::Interrupt()
 		{
-			const void* expected = nullptr;
-			const void* target = *interruptAddress;
+			const UInt32* expected = nullptr;
+			const UInt32* target = static_cast<UInt32*>(*interruptAddress);
 			
 			// Don't stop if a branch is already happening. I can see a lot of things going wrong
 			// if this happens. Just try again until we're good, it shouldn't take long anyways.
@@ -123,7 +130,7 @@ namespace PPCVM
 				expected = nullptr;
 		}
 		
-		const void* Interpreter::ExecuteNative(const NativeCall* function)
+		const UInt32* Interpreter::ExecuteNative(const NativeCall* function)
 		{
 			if (function->Tag != NativeTag)
 			{
@@ -154,22 +161,21 @@ namespace PPCVM
 			
 			void* libGlobals = allocator.ToPointer<void>(state.r2);
 			function->Callback(libGlobals, &state);
-			return allocator.ToPointer<const void>(state.lr);
+			return allocator.ToPointer<UInt32>(state.lr);
 		}
 
-		void Interpreter::ExecuteUntilBranch(const void* address)
+		void Interpreter::ExecuteUntilBranch(const UInt32* address)
 		{
-			currentAddress = reinterpret_cast<const Common::UInt32*>(address);
+			currentAddress = address;
 			branchAddress = nullptr;
 			do
 			{
 				try
 				{
-					Common::UInt32 instructionCode = *currentAddress;
-					if (instructionCode.AsBigEndian == NativeTag)
+					if (currentAddress->AsBigEndian == NativeTag)
 					{
-						const NativeCall* call = static_cast<const NativeCall*>(address);
-						const void* returnAddress = ExecuteNative(call);
+						const NativeCall* call = reinterpret_cast<const NativeCall*>(currentAddress);
+						const UInt32* returnAddress = ExecuteNative(call);
 						
 						// Native calls absolutely have to be atomic, so if we were interrupted in the middle of one,
 						// set currentAddress to the branch address and then give up. Otherwise set branchAddress
@@ -177,18 +183,18 @@ namespace PPCVM
 						const void* oldBranch = branchAddress.exchange(returnAddress);
 						if (oldBranch == *interruptAddress)
 						{
-							currentAddress = reinterpret_cast<const Common::UInt32*>(returnAddress);
+							currentAddress = returnAddress;
 							throw TrapException("interrupted");
 						}
 					}
 					else
 					{
-						Instruction inst = instructionCode.Get();
-						Dispatch(inst);
+						Instruction instruction = currentAddress->Get();
+						Dispatch(instruction);
 						currentAddress++;
 					}
 				}
-				catch (Common::PPCRuntimeException& ex)
+				catch (PPCRuntimeException& ex)
 				{
 					uint32_t pc = allocator.ToIntPtr(currentAddress);
 					throw InterpreterException(pc, ex);
@@ -196,38 +202,69 @@ namespace PPCVM
 			} while (branchAddress == nullptr);
 		}
 		
-		const void* Interpreter::ExecuteOne(const void *address)
+		UInt32* Interpreter::ExecuteOne(UInt32* address)
+		{
+			return const_cast<UInt32*>(ExecuteOne(static_cast<const UInt32*>(address)));
+		}
+		
+		UInt32* Interpreter::ExecuteOne(UInt32 *address, Instruction instruction)
+		{
+			return const_cast<UInt32*>(ExecuteOne(static_cast<const UInt32*>(address), instruction));
+		}
+		
+		const UInt32* Interpreter::ExecuteOne(const UInt32 *address)
 		{
 			// ExecuteOne is not interruptible
-			currentAddress = reinterpret_cast<const Common::UInt32*>(address);
+			currentAddress = address;
 			branchAddress = nullptr;
 			
 			try
 			{
-				Common::UInt32 instructionCode = *currentAddress;
-				if (instructionCode.AsBigEndian == NativeTag)
+				if (address->AsBigEndian == NativeTag)
 				{
-					const NativeCall* call = static_cast<const NativeCall*>(address);
+					const NativeCall* call = reinterpret_cast<const NativeCall*>(address);
 					branchAddress = ExecuteNative(call);
 				}
 				else
 				{
-					Instruction inst = instructionCode.Get();
-					Dispatch(inst);
+					Instruction instruction(currentAddress->Get());
+					Dispatch(instruction);
 					currentAddress++;
 				}
 			}
-			catch (Common::PPCRuntimeException& ex)
+			catch (PPCRuntimeException& ex)
 			{
 				uint32_t pc = allocator.ToIntPtr(currentAddress);
 				throw InterpreterException(pc, ex);
 			}
 			
-			const void* br = branchAddress.load(std::memory_order_relaxed);
+			const UInt32* br = branchAddress.load(std::memory_order_relaxed);
+			return br == nullptr ? currentAddress : br;
+		}
+		
+		const UInt32* Interpreter::ExecuteOne(const UInt32 *baseAddress, Instruction instruction)
+		{
+			// ExecuteOne is not interruptible
+			currentAddress = baseAddress;
+			branchAddress = nullptr;
+			
+			try
+			{
+				assert(instruction.hex != NativeTag && "Cannot simulate a native call");
+				Dispatch(instruction);
+				currentAddress++;
+			}
+			catch (PPCRuntimeException& ex)
+			{
+				uint32_t pc = allocator.ToIntPtr(currentAddress);
+				throw InterpreterException(pc, ex);
+			}
+			
+			const UInt32* br = branchAddress.load(std::memory_order_relaxed);
 			return br == nullptr ? currentAddress : br;
 		}
 
-		void Interpreter::Execute(const void* address)
+		void Interpreter::Execute(const UInt32* address)
 		{
 			const void* interrupt = *interruptAddress;
 			state.lr = endAddress.GetVirtualAddress();

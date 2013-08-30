@@ -51,22 +51,32 @@ enum class StopReason
 	InvalidInstruction,
 };
 
+enum class RunCommand
+{
+	Kill = -1,
+	None = 0,
+	
+	// Commands <= 0 cannot be passed to Perform
+	SingleStep,
+	StepOver,
+	Continue,
+};
+
 class DebugThreadManager;
 
 struct ThreadContext
 {
 	friend class DebugThreadManager;
 	
-	std::unique_ptr<Common::AutoAllocation> stack;
+	Common::AutoAllocation stack;
 	PPCVM::MachineState machineState;
 	uint32_t pc; // valid only when thread is stopped
 	
-	// wrapped in atomics for visibility between threads
-	std::atomic<ThreadState> executionState;
-	std::atomic<StopReason> stopReason;
+	ThreadState GetThreadState() const;
+	StopReason GetStopReason() const;
+	void Perform(RunCommand command);
 	
 	void Interrupt();
-	void Resume();
 	void Kill();
 	
 	std::thread::native_handle_type GetThreadId();
@@ -74,10 +84,16 @@ struct ThreadContext
 private:
 	PPCVM::Execution::Interpreter interpreter;
 	std::thread thread;
+	ThreadState executionState;
+	StopReason stopReason;
+	
 	std::mutex mShouldResume;
 	std::condition_variable cvShouldResume;
+	std::atomic<RunCommand> nextAction;
 	
 	ThreadContext(Common::Allocator& allocator, DebugThreadManager& manager, size_t stackSize);
+	
+	RunCommand GetNextAction();
 	
 	ThreadContext(const ThreadContext&) = delete;
 	ThreadContext(ThreadContext&&) = delete;
@@ -96,6 +112,7 @@ struct ThreadUpdate
 class DebugThreadManager : public OSEnvironment::ThreadManager
 {
 	friend class ThreadContext;
+	friend class Breakpoint;
 	
 	// needs to be a recursive mutex so EnterCriticalSection doesn't
 	Common::Allocator& allocator;
@@ -105,6 +122,9 @@ class DebugThreadManager : public OSEnvironment::ThreadManager
 	std::unordered_map<std::thread::native_handle_type, std::unique_ptr<ThreadContext>> threads;
 	uint32_t lastExitCode;
 	
+	mutable std::mutex breakpointsLock;
+	std::unordered_map<Common::UInt32*, std::pair<PPCVM::Instruction, unsigned>> breakpoints;
+	
 	// wait queues
 	std::shared_ptr<WaitQueue<std::string>> sink;
 	WaitQueue<ThreadUpdate> changingContexts;
@@ -112,6 +132,24 @@ class DebugThreadManager : public OSEnvironment::ThreadManager
 	void DebugLoop(ThreadContext& context, bool autostart);
 	
 public:
+	class Breakpoint
+	{
+		friend class DebugThreadManager;
+		DebugThreadManager& threads;
+		Common::UInt32* location;
+		PPCVM::Instruction instruction;
+		
+		Breakpoint(DebugThreadManager& manager, Common::UInt32* location);
+
+	public:
+		Breakpoint(Breakpoint&& that);
+		Breakpoint(const Breakpoint& that) = delete;
+		
+		const Common::UInt32* GetLocation() const;
+		PPCVM::Instruction GetInstruction() const;
+		~Breakpoint();
+	};
+	
 	DebugThreadManager(Common::Allocator& allocator);
 	
 	virtual bool IsThreadExecuting() const override;
@@ -120,6 +158,10 @@ public:
 	
 	virtual void EnterCriticalSection() noexcept override;
 	virtual void ExitCriticalSection() noexcept override;
+	
+	void SetBreakpoint(Common::UInt32* location);
+	bool RemoveBreakpoint(Common::UInt32* location);
+	Breakpoint CreateBreakpoint(Common::UInt32* location);
 	
 	std::shared_ptr<WaitQueue<std::string>> GetCommandSink();
 	void SetCommandSink(std::shared_ptr<WaitQueue<std::string>>& sink);

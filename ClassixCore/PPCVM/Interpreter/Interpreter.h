@@ -46,23 +46,28 @@ namespace PPCVM
 			Common::AutoAllocation interruptAddress;
 			
 			const Common::UInt32* currentAddress;
-			std::atomic<const void*> branchAddress;
+			std::atomic<const Common::UInt32*> branchAddress;
 			
 			void SetBranchAddress(uint32_t branchAddress);
-			void ExecuteUntilBranch(const void* address);
-			const void* ExecuteNative(const NativeCall* address);
+			void ExecuteUntilBranch(const Common::UInt32* address);
+			const Common::UInt32* ExecuteNative(const NativeCall* address);
 			
 		public:
 			Interpreter(Common::Allocator& allocator, MachineState& state);
 			~Interpreter();
 			
-			void Execute(const void* address);
+			const Common::UInt32* GetEndAddress() const;
+			
+			void Execute(const Common::UInt32* address);
 			void Interrupt();
 			
-			const void* ExecuteOne(const void* address);
+			Common::UInt32* ExecuteOne(Common::UInt32* address);
+			Common::UInt32* ExecuteOne(Common::UInt32* baseAddress, Instruction instruction);
+			const Common::UInt32* ExecuteOne(const Common::UInt32* address);
+			const Common::UInt32* ExecuteOne(const Common::UInt32* baseAddress, Instruction instruction);
 			
 			template<typename TBreakpointSet>
-			const void* ExecuteUntil(const void* address, const TBreakpointSet& breakpoints) __attribute__((deprecated("Set breakpoints in-memory like a real programmer")));
+			const Common::UInt32* ExecuteUntil(const Common::UInt32* address, const TBreakpointSet& breakpoints) __attribute__((deprecated("Set breakpoints in-memory like a real programmer")));
 			
 			// problems
 			void Panic(const std::string& errorMessage);
@@ -271,26 +276,25 @@ namespace PPCVM
 		};
 		
 		template<typename TBreakpointSet>
-		const void* Interpreter::ExecuteUntil(const void *address, const TBreakpointSet &breakpoints)
+		const Common::UInt32* Interpreter::ExecuteUntil(const Common::UInt32* address, const TBreakpointSet& breakpoints)
 		{
-			currentAddress = reinterpret_cast<const Common::UInt32*>(address);
+			currentAddress = address;
 			branchAddress = nullptr;
 			
 			do
 			{
-				const Common::UInt32& instructionCode = *currentAddress;
+				Instruction instruction(currentAddress->Get());
 				
 				try
 				{
-					if (instructionCode.AsBigEndian == NativeTag)
+					if (instruction.hex == NativeTag)
 					{
 						const NativeCall* call = reinterpret_cast<const NativeCall*>(currentAddress);
 						branchAddress = ExecuteNative(call);
 					}
 					else
 					{
-						Instruction inst = instructionCode.Get();
-						Dispatch(inst);
+						Dispatch(instruction);
 						currentAddress++;
 					}
 				}

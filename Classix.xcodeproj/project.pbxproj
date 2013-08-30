@@ -50,6 +50,7 @@
 		DC539D01174DC17E00BA5946 /* MathLib.h in Headers */ = {isa = PBXBuildFile; fileRef = DC539CFF174DC17E00BA5946 /* MathLib.h */; };
 		DC539D04174DC21D00BA5946 /* MathLibFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC539D02174DC21D00BA5946 /* MathLibFunctions.cpp */; };
 		DC539D05174DC21D00BA5946 /* MathLibFunctions.h in Headers */ = {isa = PBXBuildFile; fileRef = DC539D03174DC21D00BA5946 /* MathLibFunctions.h */; };
+		DC5584FE17D0FAF50063B608 /* Interpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7273FD16471CD800DA17E5 /* Interpreter.cpp */; };
 		DC5656D316ED070400083F0E /* NotImplementedException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC5656D116ED070300083F0E /* NotImplementedException.cpp */; };
 		DC5656D416ED070400083F0E /* NotImplementedException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC5656D216ED070300083F0E /* NotImplementedException.h */; };
 		DC5CF824166153D200577272 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = DC5CF823166153D200577272 /* arrow.png */; };
@@ -99,7 +100,6 @@
 		DC71706E164F663E008D767E /* MachineState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCB00B9D163B6DAD003C88CA /* MachineState.cpp */; };
 		DC71706F164F6642008D767E /* NativeCall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC9D8D3A164EC05800036FDD /* NativeCall.cpp */; };
 		DC717070164F6642008D767E /* TrapException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC72740C1647225500DA17E5 /* TrapException.cpp */; };
-		DC717071164F6648008D767E /* Interpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7273FD16471CD800DA17E5 /* Interpreter.cpp */; };
 		DC717072164F6648008D767E /* FloatingPointInstructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7273F816471CD800DA17E5 /* FloatingPointInstructions.cpp */; };
 		DC717073164F6648008D767E /* IntegerInstructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7273FC16471CD800DA17E5 /* IntegerInstructions.cpp */; };
 		DC717074164F6648008D767E /* LoadStoreInstructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7273FF16471CD800DA17E5 /* LoadStoreInstructions.cpp */; };
@@ -1885,7 +1885,6 @@
 				DC71706E164F663E008D767E /* MachineState.cpp in Sources */,
 				DC71706F164F6642008D767E /* NativeCall.cpp in Sources */,
 				DC717070164F6642008D767E /* TrapException.cpp in Sources */,
-				DC717071164F6648008D767E /* Interpreter.cpp in Sources */,
 				DC717072164F6648008D767E /* FloatingPointInstructions.cpp in Sources */,
 				DC717073164F6648008D767E /* IntegerInstructions.cpp in Sources */,
 				DC717074164F6648008D767E /* LoadStoreInstructions.cpp in Sources */,
@@ -1914,6 +1913,7 @@
 				DC734277175A50B800E39F20 /* ThreadManager.cpp in Sources */,
 				DC84997517C54B660069F113 /* InvalidInstructionException.cpp in Sources */,
 				DC490D2E17C5D46A001F9AFD /* DebugThreadManager.cpp in Sources */,
+				DC5584FE17D0FAF50063B608 /* Interpreter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
