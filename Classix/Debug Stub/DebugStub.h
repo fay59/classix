@@ -82,6 +82,8 @@ namespace Classix
 		uint8_t Kill(const std::string& commandString, std::string& outputString);
 		uint8_t Continue(const std::string& commandString, std::string& outputString);
 		uint8_t ReadSingleRegister(const std::string& commandString, std::string& outputString);
+		uint8_t SetBreakpoint(const std::string& commandString, std::string& outputString);
+		uint8_t RemoveBreakpoint(const std::string& commandString, std::string& outputString);
 		
 		// Query commands
 		uint8_t QueryCurrentThread(const std::string& commandString, std::string& output);

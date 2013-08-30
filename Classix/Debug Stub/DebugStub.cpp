@@ -168,6 +168,9 @@ namespace Classix
 		std::make_pair("c", &DebugStub::Continue),
 		std::make_pair("k", &DebugStub::Kill),
 		std::make_pair("p", &DebugStub::ReadSingleRegister),
+		std::make_pair("Z", &DebugStub::SetBreakpoint),
+		std::make_pair("z", &DebugStub::RemoveBreakpoint),
+		
 		std::make_pair("qC", &DebugStub::QueryCurrentThread),
 		std::make_pair("qfThreadInfo", &DebugStub::QueryThreadList),
 		std::make_pair("qsThreadInfo", &DebugStub::QueryThreadList),
@@ -419,6 +422,54 @@ namespace Classix
 		
 		outputString = StringPrintf("%0*llx", length, value);
 		return NoError;
+	}
+	
+	uint8_t DebugStub::SetBreakpoint(const std::string &commandString, std::string &outputString)
+	{
+		if (!context) return TargetKilled;
+		
+		uint8_t type;
+		uint32_t address;
+		uint8_t kind;
+		if (sscanf(commandString.c_str(), "Z%hhu;%x;%hhu", &type, &address, &kind) == 3)
+		{
+			if (type == 0 && kind == 4)
+			{
+				UInt32* breakpointAddress = context->allocator->ToPointer<UInt32>(address);
+				context->threads.SetBreakpoint(breakpointAddress);
+				return NoError;
+			}
+			else
+			{
+				return NotImplemented;
+			}
+		}
+		
+		return InvalidData;
+	}
+	
+	uint8_t DebugStub::RemoveBreakpoint(const std::string &commandString, std::string &outputString)
+	{
+		if (!context) return TargetKilled;
+		
+		uint8_t type;
+		uint32_t address;
+		uint8_t kind;
+		if (sscanf(commandString.c_str(), "z%hhu;%x;%hhu", &type, &address, &kind) == 3)
+		{
+			if (type == 0 && kind == 4)
+			{
+				UInt32* breakpointAddress = context->allocator->ToPointer<UInt32>(address);
+				context->threads.RemoveBreakpoint(breakpointAddress);
+				return NoError;
+			}
+			else
+			{
+				return NotImplemented;
+			}
+		}
+		
+		return InvalidData;
 	}
 	
 	uint8_t DebugStub::QuerySectionOffsets(const std::string &commandString, std::string &output)
