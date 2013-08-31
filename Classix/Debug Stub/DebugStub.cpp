@@ -131,8 +131,8 @@ namespace Classix
 		
 		assert(mainSymbol.Universe != CFM::SymbolUniverse::LostInTimeAndSpace);
 		
-		// Start (but don't run) the main thread. We create it because the DebugThreadManager will stop
-		// its run loop if it reaches 0 threads.
+		// Start (but don't run) the main thread. We create it because once a thread is created, the DebugThreadManager
+		// will stop its main loop if it reaches 0 threads again.
 		const PEF::TransitionVector* vector = allocator->ToPointer<PEF::TransitionVector>(mainSymbol.Address);
 		auto& thread = threads.StartThread(stackPrep, StackPreparator::DefaultStackSize, *vector, false);
 		globalTargetThread = thread.GetThreadId();
@@ -144,19 +144,19 @@ namespace Classix
 			threads.StartThread(stackPrep, StackPreparator::DefaultStackSize, *transition, true);
 		}
 		
-		// wait for all initializers to complete; expect 2 '?' commands per initializer
+		// wait for all initializers to complete; expect two $ThreadStatusChanged commands per initializer
 		size_t infoCountRemaining = initSymbols.size() * 2;
 		auto threadSink = threads.GetCommandSink();
 		while (infoCountRemaining > 0)
 		{
 			std::string command = threadSink->TakeOne();
-			assert(command == "?");
+			assert(command == "$ThreadStatusChanged");
 			infoCountRemaining--;
 		}
 		
-		// wait for the thread start notification, then replace the sink with the context sink
+		// wait for the thread start notification, then replace the thread manager's event sink with our event sink
 		std::string command = threadSink->TakeOne();
-		assert(command == "?");
+		assert(command == "$ThreadStatusChanged");
 		threads.SetCommandSink(sink);
 	}
 	
@@ -181,6 +181,7 @@ namespace Classix
 		std::make_pair("qProcessInfo", &DebugStub::QueryProcessInformation),
 		
 		std::make_pair("$StreamClosed", &DebugStub::PrivateStreamClosed),
+		std::make_pair("$ThreadStatusChanged", &DebugStub::GetStopReason),
 	};
 	
 	DebugStub::DebugStub(const std::string& path)
@@ -339,7 +340,7 @@ namespace Classix
 		for (size_t i = 0; i < threadCount; i++)
 		{
 			std::string command = killQueue->TakeOne();
-			assert(command == "?");
+			assert(command == "$ThreadStatusChanged");
 		}
 		
 		assert(context->threads.ThreadCount() == 0);
@@ -435,9 +436,16 @@ namespace Classix
 		{
 			if (type == 0 && kind == 4)
 			{
-				UInt32* breakpointAddress = context->allocator->ToPointer<UInt32>(address);
-				context->threads.SetBreakpoint(breakpointAddress);
-				return NoError;
+				try
+				{
+					UInt32* breakpointAddress = context->allocator->ToPointer<UInt32>(address);
+					context->threads.SetBreakpoint(breakpointAddress);
+					return NoError;
+				}
+				catch (AccessViolationException& ex)
+				{
+					return InvalidData;
+				}
 			}
 			else
 			{
@@ -459,9 +467,16 @@ namespace Classix
 		{
 			if (type == 0 && kind == 4)
 			{
-				UInt32* breakpointAddress = context->allocator->ToPointer<UInt32>(address);
-				context->threads.RemoveBreakpoint(breakpointAddress);
-				return NoError;
+				try
+				{
+					UInt32* breakpointAddress = context->allocator->ToPointer<UInt32>(address);
+					context->threads.RemoveBreakpoint(breakpointAddress);
+					return NoError;
+				}
+				catch (AccessViolationException& ex)
+				{
+					return InvalidData;
+				}
 			}
 			else
 			{
@@ -481,7 +496,7 @@ namespace Classix
 	{
 		// for some reason, someone decided that qHostInfo should use base 10
 		// but qProcessInfo should use base 16
-		output = StringPrintf("cputype:%u;cpusubtype:%u;ostype:%s;vendor:%s;endian:%s;ptrsize:%u",
+		output = StringPrintf("cputype:%u;cpusubtype:%u;ostype:%s;vendor:%s;endian:%s;ptrsize:%u;",
 			CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "unknown", "unknown", "big", 4);
 		
 		return NoError;
@@ -606,7 +621,7 @@ namespace Classix
 	{
 		if (!context) return TargetKilled;
 		
-		output = StringPrintf("cputype:%x;cpusubtype:%x;ostype:%s;vendor:%s;endian:%s;ptrsize:%u;pid:%x",
+		output = StringPrintf("cputype:%x;cpusubtype:%x;ostype:%s;vendor:%s;endian:%s;ptrsize:%u;pid:%x;",
 							  CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "unknown", "unknown", "big", 4, context->pid);
 		
 		return NoError;

@@ -284,7 +284,7 @@ void DebugThreadManager::ConsumeThreadEvents()
 			}
 		}
 		
-		sink->PutOne("?");
+		sink->PutOne("$ThreadStatusChanged");
 	}
 }
 
