@@ -33,6 +33,7 @@
 #include "DebugThreadManager.h"
 #include "Todo.h"
 
+using namespace std;
 using namespace Common;
 
 namespace
@@ -49,10 +50,10 @@ namespace
 		NoReply = 0xff
 	};
 	
-	std::string StringPrintf(const char* format, ...) __attribute__((format(printf, 1, 2)));
-	std::string StringPrintf(const char* format, ...)
+	string StringPrintf(const char* format, ...) __attribute__((format(printf, 1, 2)));
+	string StringPrintf(const char* format, ...)
 	{
-		std::unique_ptr<char, decltype(free)&> freeResult(nullptr, free);
+		unique_ptr<char, decltype(free)&> freeResult(nullptr, free);
 		
 		char* result;
 		va_list ap;
@@ -61,7 +62,7 @@ namespace
 		va_end(ap);
 		
 		freeResult.reset(result);
-		std::string stringResult = result;
+		string stringResult = result;
 		return stringResult;
 	}
 	
@@ -76,7 +77,7 @@ namespace
 
 namespace Classix
 {
-	DebugContext::DebugContext(const std::string& executable, uint32_t pid)
+	DebugContext::DebugContext(const string& executable, uint32_t pid)
 	: allocator(new NativeAllocator), threads(*allocator), managers(*allocator, threads), pid(pid)
 	{
 		ClassixCore::BundleLibraryResolver* bundleResolver = new ClassixCore::BundleLibraryResolver(*allocator, managers);
@@ -100,16 +101,16 @@ namespace Classix
 			fragmentManager.LibraryResolvers.push_back(ptr.get());
 		
 		if (!fragmentManager.LoadContainer(executable))
-			throw std::logic_error("Couldn't load executable");
+			throw logic_error("Couldn't load executable");
 	}
 	
-	void DebugContext::Start(std::shared_ptr<WaitQueue<std::string>>& sink)
+	void DebugContext::Start(shared_ptr<WaitQueue<string>>& sink)
 	{
 		StackPreparator stackPrep;
 		
 		// Do a pass to find all init symbols and the main symbol. We need this to be able to create the main thread
 		// before the initializer threads.
-		std::vector<CFM::ResolvedSymbol> initSymbols;
+		vector<CFM::ResolvedSymbol> initSymbols;
 		CFM::ResolvedSymbol mainSymbol(CFM::SymbolUniverse::LostInTimeAndSpace, "??", 0);
 		for (auto& pair : fragmentManager)
 		{
@@ -149,46 +150,46 @@ namespace Classix
 		auto threadSink = threads.GetCommandSink();
 		while (infoCountRemaining > 0)
 		{
-			std::string command = threadSink->TakeOne();
+			string command = threadSink->TakeOne();
 			assert(command == "$ThreadStatusChanged");
 			infoCountRemaining--;
 		}
 		
 		// wait for the thread start notification, then replace the thread manager's event sink with our event sink
-		std::string command = threadSink->TakeOne();
+		string command = threadSink->TakeOne();
 		assert(command == "$ThreadStatusChanged");
 		threads.SetCommandSink(sink);
 	}
 	
-	const std::unordered_map<std::string, DebugStub::RemoteCommand> DebugStub::commands = {
-		std::make_pair("H", &DebugStub::SetOperationTargetThread),
-		std::make_pair("?", &DebugStub::GetStopReason),
-		std::make_pair("m", &DebugStub::ReadMemory),
-		std::make_pair("vCont", &DebugStub::ThreadResume),
-		std::make_pair("c", &DebugStub::Continue),
-		std::make_pair("k", &DebugStub::Kill),
-		std::make_pair("p", &DebugStub::ReadSingleRegister),
-		std::make_pair("Z", &DebugStub::SetBreakpoint),
-		std::make_pair("z", &DebugStub::RemoveBreakpoint),
+	const unordered_map<string, DebugStub::RemoteCommand> DebugStub::commands = {
+		make_pair("H", &DebugStub::SetOperationTargetThread),
+		make_pair("?", &DebugStub::GetStopReason),
+		make_pair("m", &DebugStub::ReadMemory),
+		make_pair("vCont", &DebugStub::ThreadResume),
+		make_pair("c", &DebugStub::Continue),
+		make_pair("k", &DebugStub::Kill),
+		make_pair("p", &DebugStub::ReadSingleRegister),
+		make_pair("Z", &DebugStub::SetBreakpoint),
+		make_pair("z", &DebugStub::RemoveBreakpoint),
 		
-		std::make_pair("qC", &DebugStub::QueryCurrentThread),
-		std::make_pair("qfThreadInfo", &DebugStub::QueryThreadList),
-		std::make_pair("qsThreadInfo", &DebugStub::QueryThreadList),
-		std::make_pair("qOffsets", &DebugStub::QuerySectionOffsets),
-		std::make_pair("qHostInfo", &DebugStub::QueryHostInformation),
-		std::make_pair("qRegisterInfo", &DebugStub::QueryRegisterInformation),
-		std::make_pair("qThreadStopInfo", &DebugStub::GetStopReason),
-		std::make_pair("qProcessInfo", &DebugStub::QueryProcessInformation),
+		make_pair("qC", &DebugStub::QueryCurrentThread),
+		make_pair("qfThreadInfo", &DebugStub::QueryThreadList),
+		make_pair("qsThreadInfo", &DebugStub::QueryThreadList),
+		make_pair("qOffsets", &DebugStub::QuerySectionOffsets),
+		make_pair("qHostInfo", &DebugStub::QueryHostInformation),
+		make_pair("qRegisterInfo", &DebugStub::QueryRegisterInformation),
+		make_pair("qThreadStopInfo", &DebugStub::GetStopReason),
+		make_pair("qProcessInfo", &DebugStub::QueryProcessInformation),
 		
-		std::make_pair("$StreamClosed", &DebugStub::PrivateStreamClosed),
-		std::make_pair("$ThreadStatusChanged", &DebugStub::GetStopReason),
+		make_pair("$StreamClosed", &DebugStub::PrivateStreamClosed),
+		make_pair("$ThreadStatusChanged", &DebugStub::GetStopReason),
 	};
 	
-	DebugStub::DebugStub(const std::string& path)
-	: executablePath(path), sink(new WaitQueue<std::string>)
+	DebugStub::DebugStub(const string& path)
+	: executablePath(path), sink(new WaitQueue<string>)
 	{ }
 	
-	uint8_t DebugStub::SetOperationTargetThread(const std::string &commandString, std::string &output)
+	uint8_t DebugStub::SetOperationTargetThread(const string &commandString, string &output)
 	{
 		char command;
 		size_t encodedId;
@@ -203,7 +204,7 @@ namespace Classix
 		return NoError;
 	}
 	
-	uint8_t DebugStub::GetStopReason(const std::string &commandString, std::string &output)
+	uint8_t DebugStub::GetStopReason(const string &commandString, string &output)
 	{
 		if (!context) return TargetKilled;
 		
@@ -236,7 +237,7 @@ namespace Classix
 				return InvalidFormat;
 			
 			ThreadContext* threadContext;
-			if (context->threads.GetThread(reinterpret_cast<std::thread::native_handle_type>(handle), threadContext))
+			if (context->threads.GetThread(reinterpret_cast<thread::native_handle_type>(handle), threadContext))
 			{
 				size_t reasonIndex = static_cast<size_t>(threadContext->GetStopReason());
 				output = StringPrintf("S%02hhxthread:%zx;", stopSignals[reasonIndex], handle);
@@ -246,7 +247,7 @@ namespace Classix
 		return InvalidData;
 	}
 	
-	uint8_t DebugStub::ThreadResume(const std::string &commandString, std::string &output)
+	uint8_t DebugStub::ThreadResume(const string &commandString, string &output)
 	{
 		if (!context) return TargetKilled;
 		
@@ -264,7 +265,7 @@ namespace Classix
 			while (sscanf(actions, ";%c:%zx%n", &action, &targetThread, &charCount) == 2) // %n doesn't count
 			{
 				ThreadContext* threadContext;
-				if (context->threads.GetThread(reinterpret_cast<std::thread::native_handle_type>(targetThread), threadContext))
+				if (context->threads.GetThread(reinterpret_cast<thread::native_handle_type>(targetThread), threadContext))
 				{
 					switch (action)
 					{
@@ -283,7 +284,7 @@ namespace Classix
 		}
 	}
 	
-	uint8_t DebugStub::ReadMemory(const std::string &commandString, std::string &outputString)
+	uint8_t DebugStub::ReadMemory(const string &commandString, string &outputString)
 	{
 		if (!context) return TargetKilled;
 		
@@ -300,7 +301,7 @@ namespace Classix
 		if (auto details = context->allocator->GetDetails(address))
 		{
 			uint32_t offset = context->allocator->GetAllocationOffset(address);
-			read = std::max(details->Size() - offset, static_cast<size_t>(size));
+			read = max(details->Size() - offset, static_cast<size_t>(size));
 			invalid = size - read;
 			data = context->allocator->ToPointer<uint8_t>(address);
 		}
@@ -318,7 +319,7 @@ namespace Classix
 		return NoError;
 	}
 	
-	uint8_t DebugStub::Kill(const std::string &commandString, std::string &outputString)
+	uint8_t DebugStub::Kill(const string &commandString, string &outputString)
 	{
 		if (!context) return TargetKilled;
 		
@@ -329,7 +330,7 @@ namespace Classix
 		// initiated, or something of that effect.)
 		
 		size_t threadCount = 0;
-		std::shared_ptr<WaitQueue<std::string>> killQueue(new WaitQueue<std::string>);
+		shared_ptr<WaitQueue<string>> killQueue(new WaitQueue<string>);
 		context->threads.SetCommandSink(killQueue);
 		context->threads.ForEachThread([&threadCount] (ThreadContext& context)
 		{
@@ -339,7 +340,7 @@ namespace Classix
 		
 		for (size_t i = 0; i < threadCount; i++)
 		{
-			std::string command = killQueue->TakeOne();
+			string command = killQueue->TakeOne();
 			assert(command == "$ThreadStatusChanged");
 		}
 		
@@ -349,7 +350,7 @@ namespace Classix
 		return NoError;
 	}
 	
-	uint8_t DebugStub::Continue(const std::string &commandString, std::string &outputString)
+	uint8_t DebugStub::Continue(const string &commandString, string &outputString)
 	{
 		if (!context) return TargetKilled;
 		
@@ -360,7 +361,7 @@ namespace Classix
 		return NoReply;
 	}
 	
-	uint8_t DebugStub::ReadSingleRegister(const std::string &commandString, std::string &outputString)
+	uint8_t DebugStub::ReadSingleRegister(const string &commandString, string &outputString)
 	{
 		if (!context) return TargetKilled;
 		
@@ -425,7 +426,7 @@ namespace Classix
 		return NoError;
 	}
 	
-	uint8_t DebugStub::SetBreakpoint(const std::string &commandString, std::string &outputString)
+	uint8_t DebugStub::SetBreakpoint(const string &commandString, string &outputString)
 	{
 		if (!context) return TargetKilled;
 		
@@ -456,7 +457,7 @@ namespace Classix
 		return InvalidData;
 	}
 	
-	uint8_t DebugStub::RemoveBreakpoint(const std::string &commandString, std::string &outputString)
+	uint8_t DebugStub::RemoveBreakpoint(const string &commandString, string &outputString)
 	{
 		if (!context) return TargetKilled;
 		
@@ -487,22 +488,22 @@ namespace Classix
 		return InvalidData;
 	}
 	
-	uint8_t DebugStub::QuerySectionOffsets(const std::string &commandString, std::string &output)
+	uint8_t DebugStub::QuerySectionOffsets(const string &commandString, string &output)
 	{
 		return NotImplemented;
 	}
 	
-	uint8_t DebugStub::QueryHostInformation(const std::string &commandString, std::string &output)
+	uint8_t DebugStub::QueryHostInformation(const string &commandString, string &output)
 	{
 		// for some reason, someone decided that qHostInfo should use base 10
 		// but qProcessInfo should use base 16
-		output = StringPrintf("cputype:%u;cpusubtype:%u;ostype:%s;vendor:%s;endian:%s;ptrsize:%u;",
+		output = StringPrintf("cputype:%u;cpusubtype:%u;ostype:%s;vendor:%s;endian:%s;ptrsize:%u;arch:powerpc-unknown-unknown;",
 			CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "unknown", "unknown", "big", 4);
 		
 		return NoError;
 	}
 	
-	uint8_t DebugStub::QueryCurrentThread(const std::string &commandString, std::string &output)
+	uint8_t DebugStub::QueryCurrentThread(const string &commandString, string &output)
 	{
 		if (!context) return TargetKilled;
 		
@@ -510,7 +511,7 @@ namespace Classix
 		return NoError;
 	}
 	
-	uint8_t DebugStub::QueryThreadList(const std::string &commandString, std::string &output)
+	uint8_t DebugStub::QueryThreadList(const string &commandString, string &output)
 	{
 		if (!context) return TargetKilled;
 		
@@ -531,7 +532,7 @@ namespace Classix
 		return NoError;
 	}
 	
-	uint8_t DebugStub::QueryRegisterInformation(const std::string &commandString, std::string &output)
+	uint8_t DebugStub::QueryRegisterInformation(const string &commandString, string &output)
 	{
 		// registers are ordered this way: gpr, fpr, cr
 		unsigned long regNumber = strtoul(commandString.data() + 13, nullptr, 16);
@@ -617,17 +618,17 @@ namespace Classix
 		return NoError;
 	}
 	
-	uint8_t DebugStub::QueryProcessInformation(const std::string &commandString, std::string &output)
+	uint8_t DebugStub::QueryProcessInformation(const string &commandString, string &output)
 	{
 		if (!context) return TargetKilled;
 		
-		output = StringPrintf("cputype:%x;cpusubtype:%x;ostype:%s;vendor:%s;endian:%s;ptrsize:%u;pid:%x;",
-							  CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "unknown", "unknown", "big", 4, context->pid);
+		output = StringPrintf("cputype:%x;cpusubtype:%x;ostype:%s;vendor:%s;endian:%s;ptrsize:%u;pid:%x;arch:powerpc-unknown-unknown;",
+			CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "unknown", "unknown", "big", 4, context->pid);
 		
 		return NoError;
 	}
 	
-	uint8_t DebugStub::PrivateStreamClosed(const std::string&, std::string& output)
+	uint8_t DebugStub::PrivateStreamClosed(const string&, string& output)
 	{
 		Kill("k", output);
 		context.reset();
@@ -659,19 +660,18 @@ namespace Classix
 	{
 		// The thread manager uses a different wait queue at first, so the command stream can read commands
 		// and send back acknowledges right away
-		std::thread getThreadEvents(&DebugThreadManager::ConsumeThreadEvents, &context->threads);
-		std::thread readCommands(&DebugStub::SinkMain, this);
+		thread getThreadEvents(&DebugThreadManager::ConsumeThreadEvents, &context->threads);
+		thread readCommands(&DebugStub::SinkMain, this);
 		
 		context->Start(sink);
 		
 		uint8_t commandResult;
-		std::string command, output;
+		string command, output;
 		while (context || stream)
 		{
-			bool gotOne = sink->TakeOne(command, std::chrono::milliseconds(500));
-			if (gotOne)
+			if (sink->TakeOne(command, chrono::milliseconds(500)))
 			{
-				auto iter = std::find_if(commands.begin(), commands.end(), [&command] (const decltype(commands)::value_type& pair)
+				auto iter = find_if(commands.begin(), commands.end(), [&command] (const pair<string, RemoteCommand>& pair)
 				{
 					return command.compare(0, pair.first.length(), pair.first) == 0;
 				});
