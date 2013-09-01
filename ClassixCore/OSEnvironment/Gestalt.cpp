@@ -33,7 +33,6 @@ namespace OSEnvironment
 		auto iter = callbackValues.find(key);
 		if (iter != callbackValues.end())
 		{
-			delete iter->second;
 			callbackValues.erase(iter);
 		}
 		
@@ -80,13 +79,5 @@ namespace OSEnvironment
 	int32_t Gestalt::GetValue(const Common::FourCharCode& code)
 	{
 		return GetValue(code.code);
-	}
-	
-	Gestalt::~Gestalt()
-	{
-		for (auto& pair : callbackValues)
-		{
-			delete pair.second;
-		}
 	}
 }

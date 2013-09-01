@@ -25,6 +25,7 @@
 #include "Allocator.h"
 #include <map>
 #include <deque>
+#include <memory>
 
 namespace Common
 {
@@ -34,14 +35,12 @@ namespace Common
 		{
 			void* start;
 			void* end;
-			AllocationDetails* details;
+			std::shared_ptr<AllocationDetails> details;
 			
 			AllocatedRange();
 			AllocatedRange(void* start, void* end, const AllocationDetails& details);
 			AllocatedRange(const AllocatedRange& that) = delete;
 			AllocatedRange(AllocatedRange&& that);
-			
-			~AllocatedRange();
 		};
 		
 		std::map<uint32_t, AllocatedRange> ranges;
@@ -49,7 +48,7 @@ namespace Common
 		unsigned char* invalidPageBegin;
 		unsigned char* invalidPageEnd;
 		
-		const AllocatedRange* GetAllocationRange(uint32_t address) const;
+		const NativeAllocator::AllocatedRange* GetAllocationRange(uint32_t address) const;
 		
 	protected:
 		virtual void* IntPtrToPointer(uint32_t value) const override;
@@ -61,7 +60,7 @@ namespace Common
 		virtual uint32_t CreateInvalidAddress(const AllocationDetails& reason) override;
 		virtual uint8_t* Allocate(const AllocationDetails& details, size_t size) override;
 		virtual void Deallocate(void* address) override;
-		virtual const AllocationDetails* GetDetails(uint32_t address) const override;
+		virtual std::shared_ptr<AllocationDetails> GetDetails(uint32_t address) const override;
 		virtual uint32_t GetAllocationOffset(uint32_t address) const override;
 		
 		void PrintMemoryMap() const;

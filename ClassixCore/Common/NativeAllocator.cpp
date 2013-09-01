@@ -51,16 +51,11 @@ namespace Common
 	{ }
 	
 	NativeAllocator::AllocatedRange::AllocatedRange(AllocatedRange&& that)
-	: start(that.start), end(that.end), details(that.details)
+	: start(that.start), end(that.end), details(std::move(that.details))
 	{
 		that.start = nullptr;
 		that.end = nullptr;
 		that.details = nullptr;
-	}
-	
-	NativeAllocator::AllocatedRange::~AllocatedRange()
-	{
-		delete details;
 	}
 	
 	NativeAllocator::NativeAllocator()
@@ -133,7 +128,7 @@ namespace Common
 		return nullptr;
 	}
 	
-	const AllocationDetails* NativeAllocator::GetDetails(uint32_t address) const
+	std::shared_ptr<AllocationDetails> NativeAllocator::GetDetails(uint32_t address) const
 	{
 		auto range = GetAllocationRange(address);
 		return range == nullptr ? nullptr : range->details;

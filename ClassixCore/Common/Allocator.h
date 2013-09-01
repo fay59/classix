@@ -27,6 +27,7 @@
 #include <cassert>
 #include <string>
 #include <utility>
+#include <memory>
 #include "AllocationDetails.h"
 #include "AccessViolationException.h"
 #include "BigEndian.h"
@@ -67,7 +68,7 @@ namespace Common
 		virtual uint8_t* Allocate(const AllocationDetails& details, size_t size) = 0;
 		virtual void Deallocate(void* address) = 0;
 		
-		virtual const AllocationDetails* GetDetails(uint32_t address) const = 0;
+		virtual std::shared_ptr<AllocationDetails> GetDetails(uint32_t address) const = 0;
 		virtual uint32_t GetAllocationOffset(uint32_t address) const = 0;
 		
 		virtual ~Allocator();
@@ -91,7 +92,7 @@ namespace Common
 		AutoAllocation AllocateAuto(const std::string& zoneName, size_t size);
 		AutoAllocation AllocateAuto(const AllocationDetails& details, size_t size);
 		
-		inline const AllocationDetails* GetDetails(const void* address) const
+		inline std::shared_ptr<AllocationDetails> GetDetails(const void* address) const
 		{
 			return GetDetails(ToIntPtr(address));
 		}

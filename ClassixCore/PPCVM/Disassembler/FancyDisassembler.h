@@ -24,6 +24,7 @@
 
 #include <iostream>
 #include <string>
+#include <memory>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -43,7 +44,7 @@ namespace PPCVM
 			
 			Common::Allocator& allocator;
 			const PEF::InstantiableSection& section;
-			PPCVM::Disassembly::Disassembler* disasm;
+			std::shared_ptr<PPCVM::Disassembly::Disassembler> disasm;
 			uint32_t sectionNumber;
 			
 		public:
@@ -54,8 +55,6 @@ namespace PPCVM
 			SectionDisassembler(SectionDisassembler&& that);
 			
 			void WriteTo(DisassemblyWriter& writer, MetadataMap metadata) const;
-			
-			~SectionDisassembler();
 		};
 		
 		class FancyDisassembler
@@ -65,7 +64,7 @@ namespace PPCVM
 			Common::Allocator& allocator;
 			SectionDisassembler::MetadataMap metadata;
 			std::map<uint32_t, SectionDisassembler> sections;
-			std::unordered_map<InstructionRange*, PPCVM::Disassembly::Disassembler*> rangeToDisasm;
+			std::unordered_map<InstructionRange*, std::shared_ptr<PPCVM::Disassembly::Disassembler>> rangeToDisasm;
 			std::unordered_set<InstructionRange*> unprocessedRanges;
 			std::unordered_map<InstructionRange*, const uint8_t*> r2Values;
 			

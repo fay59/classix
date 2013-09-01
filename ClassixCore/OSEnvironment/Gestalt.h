@@ -40,7 +40,7 @@ namespace OSEnvironment
 	class Gestalt
 	{
 		std::unordered_map<uint32_t, int32_t> fixedValues;
-		std::unordered_map<uint32_t, GestaltCallback*> callbackValues;
+		std::unordered_map<uint32_t, std::unique_ptr<GestaltCallback>> callbackValues;
 		
 	public:
 		Gestalt();
@@ -65,8 +65,6 @@ namespace OSEnvironment
 		bool GetValue(const Common::FourCharCode& code, int32_t& value);
 		int32_t GetValue(uint32_t key);
 		int32_t GetValue(const Common::FourCharCode& code);
-		
-		~Gestalt();
 	};
 }
 

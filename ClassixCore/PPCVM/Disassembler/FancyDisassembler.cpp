@@ -56,15 +56,14 @@ namespace PPCVM
 		SectionDisassembler::SectionDisassembler(Common::Allocator& allocator, uint32_t sectionNumber, const InstantiableSection& section)
 		: allocator(allocator), section(section)
 		{
-			disasm = new Disassembler(allocator, SectionBegin(section), SectionEnd(section));
+			disasm.reset(new Disassembler(allocator, SectionBegin(section), SectionEnd(section)));
 			this->sectionNumber = sectionNumber;
 		}
 		
 		SectionDisassembler::SectionDisassembler(SectionDisassembler&& that)
 		: allocator(that.allocator), section(that.section), sectionNumber(that.sectionNumber)
 		{
-			disasm = that.disasm;
-			that.disasm = nullptr;
+			disasm = std::move(that.disasm);
 		}
 		
 		void SectionDisassembler::WriteTo(DisassemblyWriter& writer, MetadataMap metadata) const
@@ -87,11 +86,6 @@ namespace PPCVM
 			}
 		}
 		
-		SectionDisassembler::~SectionDisassembler()
-		{
-			delete disasm;
-		}
-		
 #pragma mark -
 #pragma mark Fancy Disassembler
 		FancyDisassembler::FancyDisassembler(Common::Allocator& allocator)
@@ -107,7 +101,7 @@ namespace PPCVM
 					continue;
 				
 				SectionDisassembler sectionDisasm(allocator, i, section);
-				Disassembler* disasm = sectionDisasm.disasm;
+				std::shared_ptr<Disassembler>& disasm = sectionDisasm.disasm;
 				for (auto iter = disasm->Begin(); iter != disasm->End(); iter++)
 					rangeToDisasm[&iter->second] = disasm;
 				
