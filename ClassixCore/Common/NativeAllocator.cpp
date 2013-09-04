@@ -115,17 +115,15 @@ namespace Common
 	
 	const NativeAllocator::AllocatedRange* NativeAllocator::GetAllocationRange(uint32_t address) const
 	{
-		for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
+		auto iter = ranges.upper_bound(address);
+		if (iter != ranges.begin())
 		{
-			const auto& range = iter->second;
-			if (ToIntPtr(range.end) < address)
-				continue;
-			
-			if (ToIntPtr(range.start) > address)
-				break;
-			
-			return &range;
+			iter--;
+			const AllocatedRange& range = iter->second;
+			if (ToIntPtr(range.start) <= address && ToIntPtr(range.end) > address)
+				return &range;
 		}
+		
 		return nullptr;
 	}
 	
@@ -135,13 +133,24 @@ namespace Common
 		return range == nullptr ? nullptr : range->details;
 	}
 	
-	uint32_t NativeAllocator::GetNextAllocation(uint32_t address) const
+	uint32_t NativeAllocator::GetUpperAllocation(uint32_t address) const
 	{
-		auto iter = ranges.lower_bound(address);
-		if (iter == ranges.end())
-			return 0xffffffff;
+		auto iter = ranges.upper_bound(address);
+		if (iter != ranges.begin())
+		{
+			iter--;
+			const AllocatedRange& range = iter->second;
+			if (ToIntPtr(range.start) <= address && ToIntPtr(range.end) > address)
+				return iter->first;
+			
+			iter++;
+			if (iter != ranges.end())
+			{
+				return iter->first;
+			}
+		}
 		
-		return ToIntPtr(iter->second.start);
+		return 0xffffffff;
 	}
 	
 	uint32_t NativeAllocator::GetAllocationOffset(uint32_t address) const

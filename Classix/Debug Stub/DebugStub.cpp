@@ -305,8 +305,8 @@ namespace Classix
 		uint32_t written = 0;
 		while (written < size)
 		{
-			uint32_t nextAddress = context->allocator->GetNextAllocation(address);
-			for (uint32_t i = address + written; i < nextAddress && written < size; i++)
+			uint32_t upperAddress = context->allocator->GetUpperAllocation(address);
+			for (uint32_t i = address + written; i < upperAddress && written < size; i++)
 			{
 				// using EE instead of ee helps distinguish between invalid locations and actual 0xee bytes
 				// when looking at the stream
@@ -314,10 +314,15 @@ namespace Classix
 				written++;
 			}
 			
-			if (shared_ptr<const AllocationDetails> details = context->allocator->GetDetails(nextAddress))
+			if (shared_ptr<const AllocationDetails> details = context->allocator->GetDetails(upperAddress))
 			{
 				size_t dataSize = details->Size();
-				const uint8_t* data = context->allocator->ToPointer<uint8_t>(nextAddress);
+				const uint8_t* data = context->allocator->ToPointer<uint8_t>(upperAddress);
+				if (upperAddress < address)
+				{
+					data += address - upperAddress;
+				}
+				
 				for (size_t i = 0; i < dataSize && written < size; i++)
 				{
 					ss << hexgits[data[i] >> 4];

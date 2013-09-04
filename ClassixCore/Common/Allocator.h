@@ -69,7 +69,7 @@ namespace Common
 		virtual void Deallocate(void* address) = 0;
 		
 		virtual std::shared_ptr<const AllocationDetails> GetDetails(uint32_t address) const = 0;
-		virtual uint32_t GetNextAllocation(uint32_t address) const = 0;
+		virtual uint32_t GetUpperAllocation(uint32_t address) const = 0;
 		virtual uint32_t GetAllocationOffset(uint32_t address) const = 0;
 		
 		virtual ~Allocator();

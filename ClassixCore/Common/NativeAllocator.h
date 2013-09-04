@@ -61,7 +61,7 @@ namespace Common
 		virtual uint8_t* Allocate(const AllocationDetails& details, size_t size) override;
 		virtual void Deallocate(void* address) override;
 		virtual std::shared_ptr<const AllocationDetails> GetDetails(uint32_t address) const override;
-		virtual uint32_t GetNextAllocation(uint32_t address) const override;
+		virtual uint32_t GetUpperAllocation(uint32_t address) const override;
 		virtual uint32_t GetAllocationOffset(uint32_t address) const override;
 		
 		void PrintMemoryMap() const;
