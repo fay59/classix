@@ -302,25 +302,26 @@ namespace Classix
 		}
 		
 		stringstream ss;
-		ss << hex << setw(2) << setfill('0');
-		
 		uint32_t written = 0;
 		while (written < size)
 		{
 			uint32_t nextAddress = context->allocator->GetNextAllocation(address);
 			for (uint32_t i = address + written; i < nextAddress && written < size; i++)
 			{
-				ss << 0xee;
+				// using EE instead of ee helps distinguish between invalid locations and actual 0xee bytes
+				// when looking at the stream
+				ss << "EE";
 				written++;
 			}
 			
 			if (shared_ptr<const AllocationDetails> details = context->allocator->GetDetails(nextAddress))
 			{
 				size_t dataSize = details->Size();
-				uint8_t* data = context->allocator->ToPointer<uint8_t>(nextAddress);
+				const uint8_t* data = context->allocator->ToPointer<uint8_t>(nextAddress);
 				for (size_t i = 0; i < dataSize && written < size; i++)
 				{
-					ss << static_cast<unsigned>(data[i]);
+					ss << hexgits[data[i] >> 4];
+					ss << hexgits[data[i] & 0xf];
 					written++;
 				}
 			}
