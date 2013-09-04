@@ -135,13 +135,13 @@ namespace Common
 		return range == nullptr ? nullptr : range->details;
 	}
 	
-	std::shared_ptr<const AllocationDetails> NativeAllocator::GetNextAllocation(uint32_t address) const
+	uint32_t NativeAllocator::GetNextAllocation(uint32_t address) const
 	{
 		auto iter = ranges.lower_bound(address);
 		if (iter == ranges.end())
-			return nullptr;
+			return 0;
 		
-		return iter->second.details;
+		return ToIntPtr(iter->second.start);
 	}
 	
 	uint32_t NativeAllocator::GetAllocationOffset(uint32_t address) const
