@@ -82,12 +82,14 @@ namespace Classix
 	DebugContext::DebugContext(const string& executable, uint32_t pid)
 	: allocator(new NativeAllocator), threads(*allocator), managers(*allocator, threads), pid(pid)
 	{
-		ClassixCore::BundleLibraryResolver* bundleResolver = new ClassixCore::BundleLibraryResolver(*allocator, managers);
+		using namespace ClassixCore;
+		
+		BundleLibraryResolver* bundleResolver = new BundleLibraryResolver(*allocator, managers);
 		bundleResolver->AllowLibrary("InterfaceLib");
 		bundleResolver->AllowLibrary("ControlStripLib");
 		resolvers.emplace_back(bundleResolver);
 		
-		ClassixCore::DlfcnLibraryResolver* dlfcnResolver = new ClassixCore::DlfcnLibraryResolver(*allocator, managers);
+		DlfcnLibraryResolver* dlfcnResolver = new DlfcnLibraryResolver(*allocator, managers);
 		dlfcnResolver->RegisterLibrary("StdCLib");
 		dlfcnResolver->RegisterLibrary("MathLib");
 		dlfcnResolver->RegisterLibrary("ThreadsLib");
@@ -108,31 +110,33 @@ namespace Classix
 	
 	void DebugContext::Start(shared_ptr<WaitQueue<string>>& sink)
 	{
+		using namespace CFM;
+		
 		StackPreparator stackPrep;
 		
 		// Do a pass to find all init symbols and the main symbol. We need this to be able to create the main thread
 		// before the initializer threads.
-		vector<CFM::ResolvedSymbol> initSymbols;
-		CFM::ResolvedSymbol mainSymbol(CFM::SymbolUniverse::LostInTimeAndSpace, "??", 0);
+		vector<ResolvedSymbol> initSymbols;
+		ResolvedSymbol mainSymbol(SymbolUniverse::LostInTimeAndSpace, "??", 0);
 		for (auto& pair : fragmentManager)
 		{
-			CFM::SymbolResolver* resolver = pair.second;
+			SymbolResolver* resolver = pair.second;
 			auto entryPoints = resolver->GetEntryPoints();
 			for (auto& entryPoint : entryPoints)
 			{
-				if (entryPoint.Name == CFM::SymbolResolver::InitSymbolName && entryPoint.Universe != CFM::SymbolUniverse::LostInTimeAndSpace)
+				if (entryPoint.Name == SymbolResolver::InitSymbolName && entryPoint.Universe != SymbolUniverse::LostInTimeAndSpace)
 				{
 					initSymbols.push_back(entryPoint);
 				}
-				else if (entryPoint.Name == CFM::SymbolResolver::MainSymbolName)
+				else if (entryPoint.Name == SymbolResolver::MainSymbolName)
 				{
-					assert(mainSymbol.Universe == CFM::SymbolUniverse::LostInTimeAndSpace && "Already assigned a main symbol");
+					assert(mainSymbol.Universe == SymbolUniverse::LostInTimeAndSpace && "Already assigned a main symbol");
 					mainSymbol = entryPoint;
 				}
 			}
 		}
 		
-		assert(mainSymbol.Universe != CFM::SymbolUniverse::LostInTimeAndSpace);
+		assert(mainSymbol.Universe != SymbolUniverse::LostInTimeAndSpace);
 		
 		// Start (but don't run) the main thread. We create it because once a thread is created, the DebugThreadManager
 		// will stop its main loop if it reaches 0 threads again.
@@ -141,7 +145,7 @@ namespace Classix
 		globalTargetThread = thread.GetThreadId();
 		
 		// Run the initializers
-		for (const CFM::ResolvedSymbol& entryPoint : initSymbols)
+		for (const ResolvedSymbol& entryPoint : initSymbols)
 		{
 			const PEF::TransitionVector* transition = allocator->ToPointer<PEF::TransitionVector>(entryPoint.Address);
 			threads.StartThread(stackPrep, StackPreparator::DefaultStackSize, *transition, true);
