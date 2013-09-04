@@ -139,7 +139,7 @@ namespace Common
 	{
 		auto iter = ranges.lower_bound(address);
 		if (iter == ranges.end())
-			return 0;
+			return 0xffffffff;
 		
 		return ToIntPtr(iter->second.start);
 	}
