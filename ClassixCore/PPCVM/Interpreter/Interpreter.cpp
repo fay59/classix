@@ -211,7 +211,7 @@ namespace PPCVM
 		
 		const UInt32* Interpreter::ExecuteOne(const UInt32 *address)
 		{
-			Instruction instruction(currentAddress->Get());
+			Instruction instruction(address->Get());
 			return ExecuteOne(address, instruction);
 		}
 		

@@ -19,6 +19,8 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
+#include <sstream>
+#include <iomanip>
 #include <thread>
 #include <algorithm>
 #include <signal.h>
@@ -295,27 +297,36 @@ namespace Classix
 			return InvalidFormat;
 		}
 		
-		size_t read = 0;
-		size_t invalid = size;
-		const uint8_t* data = nullptr;
-		if (auto details = context->allocator->GetDetails(address))
+		stringstream ss;
+		ss << hex << setw(2) << setfill('0');
+		
+		uint32_t written = 0;
+		while (written < size)
 		{
-			uint32_t offset = context->allocator->GetAllocationOffset(address);
-			read = max(details->Size() - offset, static_cast<size_t>(size));
-			invalid = size - read;
-			data = context->allocator->ToPointer<uint8_t>(address);
+			uint32_t nextAddress = context->allocator->GetNextAllocation(address);
+			for (uint32_t i = address + written; i < nextAddress && written < size; i++)
+			{
+				ss << 0xee;
+				written++;
+			}
+			
+			if (shared_ptr<const AllocationDetails> details = context->allocator->GetDetails(nextAddress))
+			{
+				size_t dataSize = details->Size();
+				uint8_t* data = context->allocator->ToPointer<uint8_t>(nextAddress);
+				for (size_t i = 0; i < dataSize && written < size; i++)
+				{
+					ss << static_cast<unsigned>(data[i]);
+					written++;
+				}
+			}
+			else
+			{
+				assert(written == size);
+			}
 		}
 		
-		outputString.clear();
-		outputString.reserve(size * 2 + 1);
-		for (size_t i = 0; i < read; i++)
-		{
-			uint8_t value = data[i];
-			outputString += hexgits[value >> 4];
-			outputString += hexgits[value & 0xf];
-		}
-		
-		outputString.resize(size * 2, 'e');
+		outputString = ss.str();
 		return NoError;
 	}
 	
@@ -497,7 +508,7 @@ namespace Classix
 	{
 		// for some reason, someone decided that qHostInfo should use base 10
 		// but qProcessInfo should use base 16
-		output = StringPrintf("cputype:%u;cpusubtype:%u;ostype:%s;vendor:%s;endian:%s;ptrsize:%u;arch:powerpc-unknown-unknown;",
+		output = StringPrintf("cputype:%u;cpusubtype:%u;ostype:%s;vendor:%s;endian:%s;ptrsize:%u;",
 			CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "unknown", "unknown", "big", 4);
 		
 		return NoError;
@@ -622,8 +633,8 @@ namespace Classix
 	{
 		if (!context) return TargetKilled;
 		
-		output = StringPrintf("cputype:%x;cpusubtype:%x;ostype:%s;vendor:%s;endian:%s;ptrsize:%u;pid:%x;arch:powerpc-unknown-unknown;",
-			CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "unknown", "unknown", "big", 4, context->pid);
+		output = StringPrintf("cputype:%x;cpusubtype:%x;ostype:%s;vendor:%s;endian:%s;pid:%x;ptrsize:%u;",
+			CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "unknown", "unknown", "big", context->pid, 4);
 		
 		return NoError;
 	}
