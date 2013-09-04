@@ -22,6 +22,7 @@
 #ifndef __Classix__InstructionDecoder__
 #define __Classix__InstructionDecoder__
 
+#include <string>
 #include "InstructionDispatcher.h"
 #include "DisassembledOpcode.h"
 
@@ -43,6 +44,7 @@ namespace PPCVM
 			
 		public:
 			static DisassembledOpcode Decode(Instruction i);
+			static std::string ToString(Instruction i);
 			
 			void unknown(Instruction inst);
 			

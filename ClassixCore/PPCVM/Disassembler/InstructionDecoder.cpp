@@ -19,6 +19,7 @@
 // Classix. If not, see http://www.gnu.org/licenses/.
 //
 
+#include <sstream>
 #include "InstructionDecoder.h"
 
 namespace
@@ -117,6 +118,11 @@ namespace PPCVM
 			InstructionDecoder decoder;
 			decoder.Dispatch(i);
 			return decoder.Opcode;
+		}
+		
+		std::string InstructionDecoder::ToString(PPCVM::Instruction i)
+		{
+			return (std::stringstream() << Decode(i)).str();
 		}
 		
 #pragma mark -

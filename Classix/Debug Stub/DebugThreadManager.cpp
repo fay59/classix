@@ -95,6 +95,21 @@ ThreadUpdate::ThreadUpdate(ThreadContext& ctx)
 : context(ctx), state(context.GetThreadState())
 { }
 
+bool DebugThreadManager::GetRealInstruction(Common::UInt32 *location, PPCVM::Instruction &output)
+{
+	auto iter = breakpoints.find(location);
+	if (iter == breakpoints.end())
+	{
+		output.hex = *location;
+		return false;
+	}
+	else
+	{
+		output = iter->second.first;
+		return true;
+	}
+}
+
 void DebugThreadManager::DebugLoop(ThreadContext& context, bool autostart)
 {
 	context.stopReason = StopReason::InterruptTrap;
@@ -106,10 +121,11 @@ void DebugThreadManager::DebugLoop(ThreadContext& context, bool autostart)
 		context.Perform(RunCommand::Continue);
 	}
 	
+	Instruction initialInstruction;
 	while (context.executionState != ThreadState::Completed)
 	{
-		UInt32* location = allocator.ToPointer<UInt32>(context.pc);
 		RunCommand action = context.GetNextAction();
+		UInt32* location = allocator.ToPointer<UInt32>(context.pc);
 		try
 		{
 			if (action == RunCommand::Kill)
@@ -118,12 +134,15 @@ void DebugThreadManager::DebugLoop(ThreadContext& context, bool autostart)
 			}
 			else if (action == RunCommand::Continue)
 			{
+				GetRealInstruction(location, initialInstruction);
+				location = context.interpreter.ExecuteOne(location, initialInstruction);
 				context.interpreter.Execute(location);
 				context.pc = allocator.ToIntPtr(context.interpreter.GetEndAddress());
 			}
 			else if (action == RunCommand::SingleStep)
 			{
-				location = context.interpreter.ExecuteOne(location);
+				GetRealInstruction(location, initialInstruction);
+				location = context.interpreter.ExecuteOne(location, initialInstruction);
 				context.pc = allocator.ToIntPtr(location);
 			}
 			else if (action == RunCommand::StepOver)
@@ -147,10 +166,8 @@ void DebugThreadManager::DebugLoop(ThreadContext& context, bool autostart)
 						try
 						{
 							// don't be stuck on the breakpoint if it's the first instruction we execute
-							if (location == stopAtNext.GetLocation())
-							{
-								location = context.interpreter.ExecuteOne(location, stopAtNext.GetInstruction());
-							}
+							GetRealInstruction(location, initialInstruction);
+							location = context.interpreter.ExecuteOne(location, stopAtNext.GetInstruction());
 							context.interpreter.Execute(location);
 							context.pc = allocator.ToIntPtr(context.interpreter.GetEndAddress());
 							break;
@@ -306,6 +323,7 @@ ThreadContext& DebugThreadManager::StartThread(const Common::StackPreparator& st
 	context->machineState.r3 = context->machineState.r27 = info.argc;
 	context->machineState.r4 = context->machineState.r28 = allocator.ToIntPtr(info.argv);
 	context->machineState.r5 = context->machineState.r29 = allocator.ToIntPtr(info.envp);
+	context->machineState.lr = allocator.ToIntPtr(context->interpreter.GetEndAddress());
 	context->pc = entryPoint.EntryPoint;
 	
 	context->thread = std::thread(&DebugThreadManager::DebugLoop, this, std::ref(*context), startNow);

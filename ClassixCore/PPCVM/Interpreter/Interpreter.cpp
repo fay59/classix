@@ -132,10 +132,7 @@ namespace PPCVM
 		
 		const UInt32* Interpreter::ExecuteNative(const NativeCall* function)
 		{
-			if (function->Tag != NativeTag)
-			{
-				Panic("Call doesn't have a native tag");
-			}
+			assert(function->Tag == NativeTag && "Invalid call header");
 			
 #ifdef DEBUG_DISASSEMBLE
 			if (getenv("DEBUG_DISASSEMBLE"))
@@ -214,32 +211,8 @@ namespace PPCVM
 		
 		const UInt32* Interpreter::ExecuteOne(const UInt32 *address)
 		{
-			// ExecuteOne is not interruptible
-			currentAddress = address;
-			branchAddress = nullptr;
-			
-			try
-			{
-				if (address->AsBigEndian == NativeTag)
-				{
-					const NativeCall* call = reinterpret_cast<const NativeCall*>(address);
-					branchAddress = ExecuteNative(call);
-				}
-				else
-				{
-					Instruction instruction(currentAddress->Get());
-					Dispatch(instruction);
-					currentAddress++;
-				}
-			}
-			catch (PPCRuntimeException& ex)
-			{
-				uint32_t pc = allocator.ToIntPtr(currentAddress);
-				throw InterpreterException(pc, ex);
-			}
-			
-			const UInt32* br = branchAddress.load(std::memory_order_relaxed);
-			return br == nullptr ? currentAddress : br;
+			Instruction instruction(currentAddress->Get());
+			return ExecuteOne(address, instruction);
 		}
 		
 		const UInt32* Interpreter::ExecuteOne(const UInt32 *baseAddress, Instruction instruction)
@@ -250,9 +223,17 @@ namespace PPCVM
 			
 			try
 			{
-				assert(instruction.hex != NativeTag && "Cannot simulate a native call");
-				Dispatch(instruction);
-				currentAddress++;
+				if (baseAddress->AsBigEndian == NativeTag)
+				{
+					assert(baseAddress->Get() == instruction.hex && "Should never replace a native call");
+					const NativeCall* call = reinterpret_cast<const NativeCall*>(baseAddress);
+					branchAddress = ExecuteNative(call);
+				}
+				else
+				{
+					Dispatch(instruction);
+					currentAddress++;
+				}
 			}
 			catch (PPCRuntimeException& ex)
 			{
@@ -267,7 +248,6 @@ namespace PPCVM
 		void Interpreter::Execute(const UInt32* address)
 		{
 			const void* interrupt = *interruptAddress;
-			state.lr = endAddress.GetVirtualAddress();
 			while (address != *endAddress)
 			{
 				ExecuteUntilBranch(address);

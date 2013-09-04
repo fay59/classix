@@ -129,6 +129,7 @@ class DebugThreadManager : public OSEnvironment::ThreadManager
 	std::shared_ptr<WaitQueue<std::string>> sink;
 	WaitQueue<ThreadUpdate> changingContexts;
 	
+	bool GetRealInstruction(Common::UInt32* location, PPCVM::Instruction& output);
 	void DebugLoop(ThreadContext& context, bool autostart);
 	
 public:

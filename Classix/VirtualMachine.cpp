@@ -30,6 +30,7 @@ namespace Classix
 		
 		auto vector = vm.allocator.ToPointer<const PEF::TransitionVector>(symbol.Address);
 		BeginTransition(*vector);
+		vm.state.lr = vm.allocator.ToIntPtr(vm.interpreter.GetEndAddress());
 		vm.interpreter.Execute(vm.allocator.ToPointer<Common::UInt32>(pc));
 		return vm.state.r3;
 	}
