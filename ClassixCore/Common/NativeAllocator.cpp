@@ -25,6 +25,7 @@
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
+#include <algorithm>
 #include <unistd.h>
 #include <sys/mman.h>
 
@@ -128,10 +129,19 @@ namespace Common
 		return nullptr;
 	}
 	
-	std::shared_ptr<AllocationDetails> NativeAllocator::GetDetails(uint32_t address) const
+	std::shared_ptr<const AllocationDetails> NativeAllocator::GetDetails(uint32_t address) const
 	{
 		auto range = GetAllocationRange(address);
 		return range == nullptr ? nullptr : range->details;
+	}
+	
+	std::shared_ptr<const AllocationDetails> NativeAllocator::GetNextAllocation(uint32_t address) const
+	{
+		auto iter = ranges.lower_bound(address);
+		if (iter == ranges.end())
+			return nullptr;
+		
+		return iter->second.details;
 	}
 	
 	uint32_t NativeAllocator::GetAllocationOffset(uint32_t address) const

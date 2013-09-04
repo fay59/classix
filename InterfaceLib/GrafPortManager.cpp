@@ -306,7 +306,7 @@ namespace InterfaceLib
 	{
 		std::stringstream ss;
 		ss << "GrafPort Support Fields";
-		if (std::shared_ptr<Common::AllocationDetails> details = allocator.GetDetails(&uPort))
+		if (std::shared_ptr<const Common::AllocationDetails> details = allocator.GetDetails(&uPort))
 		{
 			ss << " for \"" << details->GetAllocationName() << "\" (0x";
 			ss << std::hex << std::setw(8) << std::setfill('0') << allocator.ToIntPtr(&uPort) << ")";

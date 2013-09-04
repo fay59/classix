@@ -268,6 +268,7 @@ struct ClassixCoreVM
 				vm->state.r2 = vector->TableOfContents;
 				
 				auto marker = vm->managers.ThreadManager().CreateExecutionMarker();
+				vm->state.lr = vm->allocator.ToIntPtr(vm->interp.GetEndAddress());
 				vm->interp.Execute(vm->allocator.ToPointer<Common::UInt32>(vector->EntryPoint));
 			}
 		}
@@ -323,7 +324,7 @@ struct ClassixCoreVM
 				return [NSString stringWithCString:info.dli_sname encoding:NSUTF8StringEncoding];
 			}
 		}
-		else if (std::shared_ptr<Common::AllocationDetails> details = allocator.GetDetails(address))
+		else if (std::shared_ptr<const Common::AllocationDetails> details = allocator.GetDetails(address))
 		{
 			uint32_t offset = allocator.GetAllocationOffset(address);
 			std::string reason = details->GetAllocationDetails(offset);
@@ -337,7 +338,7 @@ struct ClassixCoreVM
 
 -(NSString*)explainAddress:(unsigned)address
 {
-	if (std::shared_ptr<Common::AllocationDetails> details = vm->allocator.GetDetails(address))
+	if (std::shared_ptr<const Common::AllocationDetails> details = vm->allocator.GetDetails(address))
 	{
 		uint32_t offset = vm->allocator.GetAllocationOffset(address);
 		std::string description = details->GetAllocationDetails(offset);

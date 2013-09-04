@@ -48,7 +48,7 @@ namespace Common
 		unsigned char* invalidPageBegin;
 		unsigned char* invalidPageEnd;
 		
-		const NativeAllocator::AllocatedRange* GetAllocationRange(uint32_t address) const;
+		const AllocatedRange* GetAllocationRange(uint32_t address) const;
 		
 	protected:
 		virtual void* IntPtrToPointer(uint32_t value) const override;
@@ -60,7 +60,8 @@ namespace Common
 		virtual uint32_t CreateInvalidAddress(const AllocationDetails& reason) override;
 		virtual uint8_t* Allocate(const AllocationDetails& details, size_t size) override;
 		virtual void Deallocate(void* address) override;
-		virtual std::shared_ptr<AllocationDetails> GetDetails(uint32_t address) const override;
+		virtual std::shared_ptr<const AllocationDetails> GetDetails(uint32_t address) const override;
+		virtual std::shared_ptr<const AllocationDetails> GetNextAllocation(uint32_t address) const override;
 		virtual uint32_t GetAllocationOffset(uint32_t address) const override;
 		
 		void PrintMemoryMap() const;
