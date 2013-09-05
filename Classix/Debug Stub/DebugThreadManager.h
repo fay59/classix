@@ -93,8 +93,8 @@ public:
 	
 	ThreadContext& StartThread(const Common::StackPreparator& stack, size_t stackSize, const PEF::TransitionVector& entryPoint, bool startNow = false);
 
-	size_t ThreadCount() const;
-	bool GetThread(ThreadId handle, ThreadContext*& context);
+	bool HasCompleted() const;
+	ThreadContext* GetThread(ThreadId handle);
 	
 	template<typename TAction>
 	void ForEachThread(TAction&& action)

@@ -52,6 +52,11 @@ namespace
 		NoReply = 0xff
 	};
 	
+	bool HasPrefix(const string& longer, const string& prefix)
+	{
+		return longer.compare(0, prefix.length(), prefix) == 0;
+	}
+	
 	string StringPrintf(const char* format, ...) __attribute__((format(printf, 1, 2)));
 	string StringPrintf(const char* format, ...)
 	{
@@ -157,13 +162,13 @@ namespace Classix
 		while (infoCountRemaining > 0)
 		{
 			string command = threadSink->TakeOne();
-			assert(command == "$ThreadStatusChanged");
+			assert(HasPrefix(command, "$ThreadStatusChanged"));
 			infoCountRemaining--;
 		}
 		
 		// wait for the thread start notification, then replace the thread manager's event sink with our event sink
 		string command = threadSink->TakeOne();
-		assert(command == "$ThreadStatusChanged");
+		assert(HasPrefix(command, "$ThreadStatusChanged"));
 		threads.SetCommandSink(sink);
 	}
 	
@@ -213,6 +218,7 @@ namespace Classix
 	{
 		if (!context) return TargetKilled;
 		
+		// all threads
 		if (commandString == "?")
 		{
 			output.clear();
@@ -224,29 +230,37 @@ namespace Classix
 				threadCount++;
 			});
 			
-			if (threadCount == 0)
-			{
-				uint32_t exitCode = context->threads.GetLastExitCode();
-				output = StringPrintf("W%02hhx;pid=%x", static_cast<uint8_t>(exitCode), context->pid);
-			}
-			
 			return NoError;
 		}
-		else
+		
+		// just this thread: either qThreadStopInfo or $ThreadStatusChanged
+		DebugThreadManager::ThreadId handle;
+		if (HasPrefix(commandString, "qThreadStopInfo"))
 		{
-			// just this thread
-			DebugThreadManager::ThreadId handle;
 			int assigned = sscanf(commandString.c_str(), "qThreadStopInfo%x", &handle);
 			if (assigned != 1)
 				return InvalidFormat;
 			
-			ThreadContext* threadContext;
-			if (context->threads.GetThread(handle, threadContext))
+			if (ThreadContext* threadContext = context->threads.GetThread(handle))
 			{
 				size_t reasonIndex = static_cast<size_t>(threadContext->GetStopReason());
 				output = StringPrintf("S%02hhxthread:%x;", stopSignals[reasonIndex], handle);
 				return NoError;
 			}
+		}
+		else if (HasPrefix(commandString, "$ThreadStatusChanged"))
+		{
+			int assigned = sscanf(commandString.c_str(), "$ThreadStatusChanged;%x", &handle);
+			if (assigned != 1)
+				return InvalidFormat;
+			
+			if (context->threads.HasCompleted())
+			{
+				uint32_t exitCode = context->threads.GetLastExitCode();
+				output = StringPrintf("W%02hhx;pid=%x", static_cast<uint8_t>(exitCode), context->pid);
+				return NoError;
+			}
+			return NoReply;
 		}
 		return InvalidData;
 	}
@@ -268,8 +282,7 @@ namespace Classix
 			const char* actions = commandString.c_str() + 5;
 			while (sscanf(actions, ";%c:%x%n", &action, &targetThread, &charCount) == 2) // %n doesn't count
 			{
-				ThreadContext* threadContext;
-				if (context->threads.GetThread(targetThread, threadContext))
+				if (ThreadContext* threadContext = context->threads.GetThread(targetThread))
 				{
 					switch (action)
 					{
@@ -349,10 +362,10 @@ namespace Classix
 		for (size_t i = 0; i < threadCount; i++)
 		{
 			string command = killQueue->TakeOne();
-			assert(command == "$ThreadStatusChanged");
+			assert(HasPrefix(command, "$ThreadStatusChanged"));
 		}
 		
-		assert(context->threads.ThreadCount() == 0);
+		assert(context->threads.HasCompleted());
 		context.reset();
 		outputString = "OK";
 		return NoError;
@@ -373,8 +386,8 @@ namespace Classix
 	{
 		if (!context) return TargetKilled;
 		
-		ThreadContext* thread;
-		if (!context->threads.GetThread(context->globalTargetThread, thread))
+		ThreadContext* thread = context->threads.GetThread(context->globalTargetThread);
+		if (thread == nullptr)
 		{
 			return InvalidTarget;
 		}
@@ -681,7 +694,7 @@ namespace Classix
 			{
 				auto iter = find_if(commands.begin(), commands.end(), [&command] (const pair<string, RemoteCommand>& pair)
 				{
-					return command.compare(0, pair.first.length(), pair.first) == 0;
+					return HasPrefix(command, pair.first);
 				});
 				
 				if (iter == commands.end())

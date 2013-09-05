@@ -274,21 +274,20 @@ ThreadContext& DebugThreadManager::StartThread(const Common::StackPreparator& st
 	return *context;
 }
 
-size_t DebugThreadManager::ThreadCount() const
+bool DebugThreadManager::HasCompleted() const
 {
 	std::lock_guard<std::recursive_mutex> lock(threadsLock);
-	return threads.size();
+	return threads.size() == 0;
 }
 
-bool DebugThreadManager::GetThread(ThreadId handle, ThreadContext*& context)
+ThreadContext* DebugThreadManager::GetThread(ThreadId handle)
 {
 	std::lock_guard<std::recursive_mutex> lock(threadsLock);
 	auto iter = threads.find(handle);
 	if (iter == threads.end())
-		return false;
+		return nullptr;
 	
-	context = iter->second.get();
-	return true;
+	return iter->second.get();
 }
 
 DebugThreadManager::Breakpoint::Breakpoint(DebugThreadManager& manager, UInt32* instruction)
