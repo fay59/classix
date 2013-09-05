@@ -33,6 +33,55 @@ using namespace PPCVM;
 
 const uint32_t BreakpointTrap = 0x7C000008;
 
+ThreadContextPointer::ThreadContextPointer()
+: context(nullptr)
+{ }
+
+ThreadContextPointer::ThreadContextPointer(std::unique_lock<std::mutex>&& lock, ThreadContext* context)
+: threadLock(std::move(lock)), context(context)
+{ }
+
+ThreadContextPointer::ThreadContextPointer(ThreadContextPointer&& that)
+: threadLock(std::move(that.threadLock)), context(that.context)
+{
+	that.context = nullptr;
+}
+
+ThreadContextPointer::operator bool() const
+{
+	return context != nullptr;
+}
+
+bool ThreadContextPointer::operator==(std::nullptr_t) const
+{
+	return context == nullptr;
+}
+
+bool ThreadContextPointer::operator!=(std::nullptr_t) const
+{
+	return context != nullptr;
+}
+
+ThreadContext* ThreadContextPointer::operator->()
+{
+	return context;
+}
+
+const ThreadContext* ThreadContextPointer::operator->() const
+{
+	return context;
+}
+
+ThreadContext& ThreadContextPointer::operator*()
+{
+	return *context;
+}
+
+const ThreadContext& ThreadContextPointer::operator*() const
+{
+	return *context;
+}
+
 bool DebugThreadManager::GetRealInstruction(Common::UInt32 *location, PPCVM::Instruction &output)
 {
 	auto iter = breakpoints.find(location);
@@ -227,7 +276,7 @@ void DebugThreadManager::ConsumeThreadEvents()
 		{
 			update.context.thread.join();
 			
-			std::lock_guard<std::recursive_mutex> guard(threadsLock);
+			std::lock_guard<std::mutex> guard(threadsLock);
 			lastExitCode = update.context.machineState.r3;
 			threads.erase(threadId);
 			if (threads.size() == 0)
@@ -268,7 +317,7 @@ ThreadContext& DebugThreadManager::StartThread(const Common::StackPreparator& st
 	context->thread = std::thread(&DebugThreadManager::DebugLoop, this, std::ref(*context), startNow);
 	
 	// this should stay at the end of the method or be scoped
-	std::lock_guard<std::recursive_mutex> lock(threadsLock);
+	std::lock_guard<std::mutex> lock(threadsLock);
 	threads[context->GetThreadId()].reset(context);
 	
 	return *context;
@@ -276,18 +325,18 @@ ThreadContext& DebugThreadManager::StartThread(const Common::StackPreparator& st
 
 bool DebugThreadManager::HasCompleted() const
 {
-	std::lock_guard<std::recursive_mutex> lock(threadsLock);
+	std::lock_guard<std::mutex> lock(threadsLock);
 	return threads.size() == 0;
 }
 
-ThreadContext* DebugThreadManager::GetThread(ThreadId handle)
+ThreadContextPointer DebugThreadManager::GetThread(ThreadId handle)
 {
-	std::lock_guard<std::recursive_mutex> lock(threadsLock);
+	std::unique_lock<std::mutex> lock(threadsLock);
 	auto iter = threads.find(handle);
 	if (iter == threads.end())
-		return nullptr;
+		return ThreadContextPointer();
 	
-	return iter->second.get();
+	return ThreadContextPointer(std::move(lock), iter->second.get());
 }
 
 DebugThreadManager::Breakpoint::Breakpoint(DebugThreadManager& manager, UInt32* instruction)

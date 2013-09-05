@@ -46,6 +46,30 @@ struct ThreadUpdate
 	explicit ThreadUpdate(ThreadContext& context);
 };
 
+class ThreadContextPointer
+{
+	friend class DebugThreadManager;
+	
+	std::unique_lock<std::mutex> threadLock;
+	ThreadContext* context;
+	
+	ThreadContextPointer();
+	ThreadContextPointer(std::unique_lock<std::mutex>&& threadLock, ThreadContext* context);
+	ThreadContextPointer(const ThreadContextPointer& that) = delete;
+	
+public:
+	ThreadContextPointer(ThreadContextPointer&& that);
+	
+	operator bool() const;
+	bool operator==(std::nullptr_t) const;
+	bool operator!=(std::nullptr_t) const;
+	
+	ThreadContext* operator->();
+	const ThreadContext* operator->() const;
+	ThreadContext& operator*();
+	const ThreadContext& operator*() const;
+};
+
 class DebugThreadManager : public OSEnvironment::ThreadManager
 {
 	friend class ThreadContext;
@@ -94,12 +118,12 @@ public:
 	ThreadContext& StartThread(const Common::StackPreparator& stack, size_t stackSize, const PEF::TransitionVector& entryPoint, bool startNow = false);
 
 	bool HasCompleted() const;
-	ThreadContext* GetThread(ThreadId handle);
+	ThreadContextPointer GetThread(ThreadId handle);
 	
 	template<typename TAction>
 	void ForEachThread(TAction&& action)
 	{
-		std::lock_guard<std::recursive_mutex> guard(threadsLock);
+		std::lock_guard<std::mutex> guard(threadsLock);
 		for (auto& pair : threads)
 		{
 			action(*pair.second.get());
@@ -111,7 +135,7 @@ private:
 	Common::Allocator& allocator;
 	unsigned inCriticalSection;
 	
-	mutable std::recursive_mutex threadsLock;
+	mutable std::mutex threadsLock;
 	std::unordered_map<ThreadId, std::unique_ptr<ThreadContext>> threads;
 	uint32_t lastExitCode;
 	

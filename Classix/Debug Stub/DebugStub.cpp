@@ -241,7 +241,7 @@ namespace Classix
 			if (assigned != 1)
 				return InvalidFormat;
 			
-			if (ThreadContext* threadContext = context->threads.GetThread(handle))
+			if (ThreadContextPointer threadContext = context->threads.GetThread(handle))
 			{
 				size_t reasonIndex = static_cast<size_t>(threadContext->GetStopReason());
 				output = StringPrintf("S%02hhxthread:%x;", stopSignals[reasonIndex], handle);
@@ -282,7 +282,7 @@ namespace Classix
 			const char* actions = commandString.c_str() + 5;
 			while (sscanf(actions, ";%c:%x%n", &action, &targetThread, &charCount) == 2) // %n doesn't count
 			{
-				if (ThreadContext* threadContext = context->threads.GetThread(targetThread))
+				if (ThreadContextPointer threadContext = context->threads.GetThread(targetThread))
 				{
 					switch (action)
 					{
@@ -386,7 +386,7 @@ namespace Classix
 	{
 		if (!context) return TargetKilled;
 		
-		ThreadContext* thread = context->threads.GetThread(context->globalTargetThread);
+		ThreadContextPointer thread = context->threads.GetThread(context->globalTargetThread);
 		if (thread == nullptr)
 		{
 			return InvalidTarget;
