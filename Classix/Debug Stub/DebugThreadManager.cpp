@@ -21,79 +21,17 @@
 
 #include <pthread.h>
 
-#include "Todo.h"
 #include "DebugThreadManager.h"
+#include "ThreadContext.h"
 #include "InvalidInstructionException.h"
 #include "AccessViolationException.h"
 #include "TrapException.h"
+#include "Todo.h"
 
 using namespace Common;
 using namespace PPCVM;
 
 const uint32_t BreakpointTrap = 0x7C000008;
-
-ThreadContext::ThreadContext(Common::Allocator& allocator, DebugThreadManager& threads, size_t stackSize)
-	: interpreter(allocator, machineState) , stack(allocator.AllocateAuto("Thread Stack", stackSize))
-{
-	executionState = ThreadState::NotReady;
-	nextAction = RunCommand::None;
-}
-
-void ThreadContext::Interrupt()
-{
-	interpreter.Interrupt();
-}
-
-ThreadState ThreadContext::GetThreadState() const
-{
-	return executionState;
-}
-
-StopReason ThreadContext::GetStopReason() const
-{
-	return stopReason;
-}
-
-void ThreadContext::Perform(RunCommand command)
-{
-	if (executionState != ThreadState::Stopped)
-		throw std::logic_error("Threads can only be resumed from the Stopped state");
-	
-	if (static_cast<int>(command) < 0)
-		throw std::logic_error("Cannot use private command");
-	
-	std::unique_lock<std::mutex> guard(mShouldResume);
-	nextAction = command;
-	cvShouldResume.notify_one();
-}
-
-void ThreadContext::Kill()
-{
-	std::unique_lock<std::mutex> guard(mShouldResume);
-	if (executionState == ThreadState::Executing)
-	{
-		Interrupt();
-	}
-	
-	nextAction = RunCommand::Kill;
-	cvShouldResume.notify_one();
-}
-
-std::thread::native_handle_type ThreadContext::GetThreadId()
-{
-	return thread.native_handle();
-}
-
-RunCommand ThreadContext::GetNextAction()
-{
-	std::unique_lock<std::mutex> guard(mShouldResume);
-	cvShouldResume.wait(guard, [this] { return nextAction.load() != RunCommand::None; });
-	return nextAction.exchange(RunCommand::None);
-}
-
-ThreadUpdate::ThreadUpdate(ThreadContext& ctx)
-: context(ctx), state(context.GetThreadState())
-{ }
 
 bool DebugThreadManager::GetRealInstruction(Common::UInt32 *location, PPCVM::Instruction &output)
 {
@@ -210,9 +148,7 @@ DebugThreadManager::DebugThreadManager(Common::Allocator& allocator)
 
 bool DebugThreadManager::IsThreadExecuting() const
 {
-	std::lock_guard<std::recursive_mutex> lock(threadsLock);
-	auto iter = threads.find(pthread_self());
-	return iter != threads.end();
+	throw std::logic_error("Not implemented");
 }
 
 void DebugThreadManager::MarkThreadAsExecuting()
@@ -222,8 +158,7 @@ void DebugThreadManager::MarkThreadAsExecuting()
 
 void DebugThreadManager::UnmarkThreadAsExecuting()
 {
-	std::lock_guard<std::recursive_mutex> lock(threadsLock);
-	threads.erase(pthread_self());
+	// does nothing, this should probably be redesigned
 }
 
 void DebugThreadManager::EnterCriticalSection() noexcept
@@ -286,7 +221,7 @@ void DebugThreadManager::ConsumeThreadEvents()
 	while (run)
 	{
 		ThreadUpdate update = changingContexts.TakeOne();
-		std::thread::native_handle_type threadId = update.context.GetThreadId();
+		ThreadId threadId = update.context.GetThreadId();
 		
 		if (update.state == ThreadState::Completed)
 		{
@@ -301,7 +236,11 @@ void DebugThreadManager::ConsumeThreadEvents()
 			}
 		}
 		
-		sink->PutOne("$ThreadStatusChanged");
+		std::string message = "$ThreadStatusChanged;";
+		char threadIdString[] = "00000000";
+		sprintf(threadIdString, "%08x", threadId);
+		message += threadIdString;
+		sink->PutOne(message);
 	}
 }
 
@@ -313,7 +252,7 @@ uint32_t DebugThreadManager::GetLastExitCode() const
 ThreadContext& DebugThreadManager::StartThread(const Common::StackPreparator& stack, size_t stackSize, const PEF::TransitionVector& entryPoint, bool startNow)
 {
 	// lldb enforces some alignment constraints on the stack, so align it correctly by allocating some additional memory
-	ThreadContext* context = new ThreadContext(allocator, *this, stackSize + 0x200);
+	ThreadContext* context = new ThreadContext(allocator, (threads.size() + 1) * 16, stackSize + 0x200);
 	uint32_t stackAddress = allocator.ToIntPtr(*context->stack);
 	stackAddress += 0x200;
 	stackAddress &= ~0x1ff;
@@ -341,7 +280,7 @@ size_t DebugThreadManager::ThreadCount() const
 	return threads.size();
 }
 
-bool DebugThreadManager::GetThread(std::thread::native_handle_type handle, ThreadContext*& context)
+bool DebugThreadManager::GetThread(ThreadId handle, ThreadContext*& context)
 {
 	std::lock_guard<std::recursive_mutex> lock(threadsLock);
 	auto iter = threads.find(handle);

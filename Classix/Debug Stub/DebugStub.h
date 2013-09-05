@@ -34,6 +34,7 @@
 #include "MachineState.h"
 #include "FragmentManager.h"
 #include "DebugThreadManager.h"
+#include "ThreadContext.h"
 
 namespace Classix
 {
@@ -45,8 +46,8 @@ namespace Classix
 		OSEnvironment::Managers managers;
 		CFM::FragmentManager fragmentManager;
 		
-		std::unordered_map<char, std::thread::native_handle_type> operationTargetThreads;
-		std::thread::native_handle_type globalTargetThread;
+		std::unordered_map<char, DebugThreadManager::ThreadId> operationTargetThreads;
+		DebugThreadManager::ThreadId globalTargetThread;
 		
 		uint32_t pid;
 		

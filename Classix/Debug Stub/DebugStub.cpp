@@ -198,14 +198,13 @@ namespace Classix
 	uint8_t DebugStub::SetOperationTargetThread(const string &commandString, string &output)
 	{
 		char command;
-		size_t encodedId;
+		DebugThreadManager::ThreadId threadId;
 		
-		int assigned = sscanf(commandString.c_str(), "H%c%zx", &command, &encodedId);
+		int assigned = sscanf(commandString.c_str(), "H%c%x", &command, &threadId);
 		if (assigned != 2)
 			return InvalidFormat;
 		
-		// super evil cast! gotta do what we gotta do: thread IDs need to be serializable to text
-		context->operationTargetThreads[command] = reinterpret_cast<pthread_t>(encodedId);
+		context->operationTargetThreads[command] = threadId;
 		output = "OK";
 		return NoError;
 	}
@@ -221,8 +220,7 @@ namespace Classix
 			context->threads.ForEachThread([&output, &threadCount] (ThreadContext& context)
 			{
 				size_t reasonIndex = static_cast<size_t>(context.GetStopReason());
-				intptr_t serializableHandle = reinterpret_cast<intptr_t>(context.GetThreadId());
-				output += StringPrintf("S%02hhxthread:%zx;", stopSignals[reasonIndex], serializableHandle);
+				output += StringPrintf("S%02hhxthread:%x;", stopSignals[reasonIndex], context.GetThreadId());
 				threadCount++;
 			});
 			
@@ -237,16 +235,16 @@ namespace Classix
 		else
 		{
 			// just this thread
-			intptr_t handle;
-			int assigned = sscanf(commandString.c_str(), "qThreadStopInfo%zx", &handle);
+			DebugThreadManager::ThreadId handle;
+			int assigned = sscanf(commandString.c_str(), "qThreadStopInfo%x", &handle);
 			if (assigned != 1)
 				return InvalidFormat;
 			
 			ThreadContext* threadContext;
-			if (context->threads.GetThread(reinterpret_cast<thread::native_handle_type>(handle), threadContext))
+			if (context->threads.GetThread(handle, threadContext))
 			{
 				size_t reasonIndex = static_cast<size_t>(threadContext->GetStopReason());
-				output = StringPrintf("S%02hhxthread:%zx;", stopSignals[reasonIndex], handle);
+				output = StringPrintf("S%02hhxthread:%x;", stopSignals[reasonIndex], handle);
 				return NoError;
 			}
 		}
@@ -266,12 +264,12 @@ namespace Classix
 		{
 			char action;
 			int charCount;
-			size_t targetThread;
+			DebugThreadManager::ThreadId targetThread;
 			const char* actions = commandString.c_str() + 5;
-			while (sscanf(actions, ";%c:%zx%n", &action, &targetThread, &charCount) == 2) // %n doesn't count
+			while (sscanf(actions, ";%c:%x%n", &action, &targetThread, &charCount) == 2) // %n doesn't count
 			{
 				ThreadContext* threadContext;
-				if (context->threads.GetThread(reinterpret_cast<thread::native_handle_type>(targetThread), threadContext))
+				if (context->threads.GetThread(targetThread, threadContext))
 				{
 					switch (action)
 					{
@@ -305,35 +303,24 @@ namespace Classix
 		uint32_t written = 0;
 		while (written < size)
 		{
-			uint32_t upperAddress = context->allocator->GetUpperAllocation(address);
-			for (uint32_t i = address + written; i < upperAddress && written < size; i++)
+			if (shared_ptr<const AllocationDetails> details = context->allocator->GetDetails(address))
 			{
-				// using EE instead of ee helps distinguish between invalid locations and actual 0xee bytes
-				// when looking at the stream
-				ss << "EE";
-				written++;
-			}
-			
-			if (shared_ptr<const AllocationDetails> details = context->allocator->GetDetails(upperAddress))
-			{
-				size_t dataSize = details->Size();
-				const uint8_t* data = context->allocator->ToPointer<uint8_t>(upperAddress);
-				if (upperAddress < address)
-				{
-					data += address - upperAddress;
-				}
-				
-				for (size_t i = 0; i < dataSize && written < size; i++)
+				uint32_t offset = context->allocator->GetAllocationOffset(address);
+				uint32_t intersectingSize = details->Size() - offset;
+				const uint8_t* data = context->allocator->ToPointer<uint8_t>(address);
+				for (uint32_t i = 0; i < intersectingSize && written < size; i++, written++)
 				{
 					ss << hexgits[data[i] >> 4];
 					ss << hexgits[data[i] & 0xf];
-					written++;
 				}
 			}
-			else
+			
+			uint32_t nextAddress = context->allocator->GetUpperAllocation(address + written);
+			for (uint32_t i = address; i < nextAddress && written < size; i++, written++)
 			{
-				assert(written == size);
+				ss << "EE";
 			}
+			address = nextAddress;
 		}
 		
 		outputString = ss.str();
@@ -528,7 +515,7 @@ namespace Classix
 	{
 		if (!context) return TargetKilled;
 		
-		output = StringPrintf("QC%zx", reinterpret_cast<intptr_t>(context->globalTargetThread));
+		output = StringPrintf("QC%x", context->globalTargetThread);
 		return NoError;
 	}
 	
@@ -546,7 +533,7 @@ namespace Classix
 			output = "m";
 			context->threads.ForEachThread([&output] (ThreadContext& context)
 			{
-				output += StringPrintf("%zx,", reinterpret_cast<intptr_t>(context.GetThreadId()));
+				output += StringPrintf("%x,", context.GetThreadId());
 			});
 			output.resize(output.length() - 1);
 		}

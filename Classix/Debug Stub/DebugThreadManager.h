@@ -35,71 +35,8 @@
 #include "Structures.h"
 #include "WaitQueue.h"
 
-enum class ThreadState
-{
-	NotReady,
-	Stopped,
-	Executing,
-	Completed
-};
-
-enum class StopReason
-{
-	Executing,
-	InterruptTrap,
-	AccessViolation,
-	InvalidInstruction,
-};
-
-enum class RunCommand
-{
-	Kill = -1,
-	None = 0,
-	
-	// Commands <= 0 cannot be passed to Perform
-	SingleStep,
-	StepOver,
-	Continue,
-};
-
-class DebugThreadManager;
-
-struct ThreadContext
-{
-	friend class DebugThreadManager;
-	
-	Common::AutoAllocation stack;
-	PPCVM::MachineState machineState;
-	uint32_t pc; // valid only when thread is stopped
-	
-	ThreadState GetThreadState() const;
-	StopReason GetStopReason() const;
-	void Perform(RunCommand command);
-	
-	void Interrupt();
-	void Kill();
-	
-	std::thread::native_handle_type GetThreadId();
-	
-private:
-	PPCVM::Execution::Interpreter interpreter;
-	std::thread thread;
-	ThreadState executionState;
-	StopReason stopReason;
-	
-	std::mutex mShouldResume;
-	std::condition_variable cvShouldResume;
-	std::atomic<RunCommand> nextAction;
-	
-	ThreadContext(Common::Allocator& allocator, DebugThreadManager& manager, size_t stackSize);
-	
-	RunCommand GetNextAction();
-	
-	ThreadContext(const ThreadContext&) = delete;
-	ThreadContext(ThreadContext&&) = delete;
-	void operator=(const ThreadContext&) = delete;
-	void operator=(ThreadContext&&) = delete;
-};
+class ThreadContext;
+enum class ThreadState;
 
 struct ThreadUpdate
 {
@@ -113,24 +50,6 @@ class DebugThreadManager : public OSEnvironment::ThreadManager
 {
 	friend class ThreadContext;
 	friend class Breakpoint;
-	
-	// needs to be a recursive mutex so EnterCriticalSection doesn't
-	Common::Allocator& allocator;
-	unsigned inCriticalSection;
-	
-	mutable std::recursive_mutex threadsLock;
-	std::unordered_map<std::thread::native_handle_type, std::unique_ptr<ThreadContext>> threads;
-	uint32_t lastExitCode;
-	
-	mutable std::mutex breakpointsLock;
-	std::unordered_map<Common::UInt32*, std::pair<PPCVM::Instruction, unsigned>> breakpoints;
-	
-	// wait queues
-	std::shared_ptr<WaitQueue<std::string>> sink;
-	WaitQueue<ThreadUpdate> changingContexts;
-	
-	bool GetRealInstruction(Common::UInt32* location, PPCVM::Instruction& output);
-	void DebugLoop(ThreadContext& context, bool autostart);
 	
 public:
 	class Breakpoint
@@ -150,6 +69,8 @@ public:
 		PPCVM::Instruction GetInstruction() const;
 		~Breakpoint();
 	};
+	
+	typedef uint32_t ThreadId;
 	
 	DebugThreadManager(Common::Allocator& allocator);
 	
@@ -173,7 +94,7 @@ public:
 	ThreadContext& StartThread(const Common::StackPreparator& stack, size_t stackSize, const PEF::TransitionVector& entryPoint, bool startNow = false);
 
 	size_t ThreadCount() const;
-	bool GetThread(std::thread::native_handle_type handle, ThreadContext*& context);
+	bool GetThread(ThreadId handle, ThreadContext*& context);
 	
 	template<typename TAction>
 	void ForEachThread(TAction&& action)
@@ -184,6 +105,25 @@ public:
 			action(*pair.second.get());
 		}
 	}
+	
+private:
+	// needs to be a recursive mutex so EnterCriticalSection doesn't
+	Common::Allocator& allocator;
+	unsigned inCriticalSection;
+	
+	mutable std::recursive_mutex threadsLock;
+	std::unordered_map<ThreadId, std::unique_ptr<ThreadContext>> threads;
+	uint32_t lastExitCode;
+	
+	mutable std::mutex breakpointsLock;
+	std::unordered_map<Common::UInt32*, std::pair<PPCVM::Instruction, unsigned>> breakpoints;
+	
+	// wait queues
+	std::shared_ptr<WaitQueue<std::string>> sink;
+	WaitQueue<ThreadUpdate> changingContexts;
+	
+	bool GetRealInstruction(Common::UInt32* location, PPCVM::Instruction& output);
+	void DebugLoop(ThreadContext& context, bool autostart);
 };
 
 #endif /* defined(__Classix__DebugThreadManager__) */

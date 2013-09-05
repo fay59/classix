@@ -136,21 +136,10 @@ namespace Common
 	uint32_t NativeAllocator::GetUpperAllocation(uint32_t address) const
 	{
 		auto iter = ranges.upper_bound(address);
-		if (iter != ranges.begin())
-		{
-			iter--;
-			const AllocatedRange& range = iter->second;
-			if (ToIntPtr(range.start) <= address && ToIntPtr(range.end) > address)
-				return iter->first;
-			
-			iter++;
-			if (iter != ranges.end())
-			{
-				return iter->first;
-			}
-		}
+		if (iter == ranges.end())
+			return 0xffffffff;
 		
-		return 0xffffffff;
+		return iter->first;
 	}
 	
 	uint32_t NativeAllocator::GetAllocationOffset(uint32_t address) const
