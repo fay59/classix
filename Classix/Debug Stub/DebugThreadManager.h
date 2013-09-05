@@ -26,6 +26,7 @@
 #include <thread>
 #include <memory>
 #include <vector>
+#include <functional>
 #include <condition_variable>
 
 #include "ThreadManager.h"
@@ -33,8 +34,11 @@
 #include "Interpreter.h"
 #include "StackPreparator.h"
 #include "Structures.h"
+#include "Breakpoint.h"
 #include "WaitQueue.h"
 
+class DebugThreadManager;
+class BreakpointSet;
 class ThreadContext;
 enum class ThreadState;
 
@@ -76,24 +80,6 @@ class DebugThreadManager : public OSEnvironment::ThreadManager
 	friend class Breakpoint;
 	
 public:
-	class Breakpoint
-	{
-		friend class DebugThreadManager;
-		DebugThreadManager& threads;
-		Common::UInt32* location;
-		PPCVM::Instruction instruction;
-		
-		Breakpoint(DebugThreadManager& manager, Common::UInt32* location);
-
-	public:
-		Breakpoint(Breakpoint&& that);
-		Breakpoint(const Breakpoint& that) = delete;
-		
-		const Common::UInt32* GetLocation() const;
-		PPCVM::Instruction GetInstruction() const;
-		~Breakpoint();
-	};
-	
 	typedef uint32_t ThreadId;
 	
 	DebugThreadManager(Common::Allocator& allocator);
@@ -105,12 +91,8 @@ public:
 	virtual void EnterCriticalSection() noexcept override;
 	virtual void ExitCriticalSection() noexcept override;
 	
-	void SetBreakpoint(Common::UInt32* location);
-	bool RemoveBreakpoint(Common::UInt32* location);
-	Breakpoint CreateBreakpoint(Common::UInt32* location);
-	
-	std::shared_ptr<WaitQueue<std::string>> GetCommandSink();
-	void SetCommandSink(std::shared_ptr<WaitQueue<std::string>>& sink);
+	std::shared_ptr<WaitQueue<std::string>>& CommandSink();
+	std::shared_ptr<BreakpointSet>& BreakpointSet();
 	
 	void ConsumeThreadEvents(); // expected to run on a dedicated thread
 	uint32_t GetLastExitCode() const; // exit code of the last thread to complete
@@ -131,22 +113,20 @@ public:
 	}
 	
 private:
-	// needs to be a recursive mutex so EnterCriticalSection doesn't
 	Common::Allocator& allocator;
 	unsigned inCriticalSection;
 	
 	mutable std::mutex threadsLock;
+	ThreadId nextId;
 	std::unordered_map<ThreadId, std::unique_ptr<ThreadContext>> threads;
 	uint32_t lastExitCode;
 	
-	mutable std::mutex breakpointsLock;
-	std::unordered_map<Common::UInt32*, std::pair<PPCVM::Instruction, unsigned>> breakpoints;
+	std::shared_ptr<::BreakpointSet> breakpoints;
 	
 	// wait queues
 	std::shared_ptr<WaitQueue<std::string>> sink;
 	WaitQueue<ThreadUpdate> changingContexts;
 	
-	bool GetRealInstruction(Common::UInt32* location, PPCVM::Instruction& output);
 	void DebugLoop(ThreadContext& context, bool autostart);
 };
 

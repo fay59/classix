@@ -158,7 +158,7 @@ namespace Classix
 		
 		// wait for all initializers to complete; expect two $ThreadStatusChanged commands per initializer
 		size_t infoCountRemaining = initSymbols.size() * 2;
-		auto threadSink = threads.GetCommandSink();
+		auto& threadSink = threads.CommandSink();
 		while (infoCountRemaining > 0)
 		{
 			string command = threadSink->TakeOne();
@@ -169,7 +169,7 @@ namespace Classix
 		// wait for the thread start notification, then replace the thread manager's event sink with our event sink
 		string command = threadSink->TakeOne();
 		assert(HasPrefix(command, "$ThreadStatusChanged"));
-		threads.SetCommandSink(sink);
+		threads.CommandSink() = sink;
 	}
 	
 	const unordered_map<string, DebugStub::RemoteCommand> DebugStub::commands = {
@@ -247,6 +247,11 @@ namespace Classix
 				output = StringPrintf("S%02hhxthread:%x;", stopSignals[reasonIndex], handle);
 				return NoError;
 			}
+			else
+			{
+				output = "W";
+				return NoError;
+			}
 		}
 		else if (HasPrefix(commandString, "$ThreadStatusChanged"))
 		{
@@ -254,7 +259,13 @@ namespace Classix
 			if (assigned != 1)
 				return InvalidFormat;
 			
-			if (context->threads.HasCompleted())
+			if (ThreadContextPointer threadContext = context->threads.GetThread(handle))
+			{
+				size_t reasonIndex = static_cast<size_t>(threadContext->GetStopReason());
+				output = StringPrintf("S%02hhxthread:%x;", stopSignals[reasonIndex], handle);
+				return NoError;
+			}
+			else if (context->threads.HasCompleted())
 			{
 				uint32_t exitCode = context->threads.GetLastExitCode();
 				output = StringPrintf("W%02hhx;pid=%x", static_cast<uint8_t>(exitCode), context->pid);
@@ -312,6 +323,7 @@ namespace Classix
 			return InvalidFormat;
 		}
 		
+		auto inhibitedBreakpoints = context->threads.BreakpointSet()->InhibitBreakpoints();
 		stringstream ss;
 		uint32_t written = 0;
 		while (written < size)
@@ -352,7 +364,7 @@ namespace Classix
 		
 		size_t threadCount = 0;
 		shared_ptr<WaitQueue<string>> killQueue(new WaitQueue<string>);
-		context->threads.SetCommandSink(killQueue);
+		context->threads.CommandSink() = killQueue;
 		context->threads.ForEachThread([&threadCount] (ThreadContext& context)
 		{
 			context.Kill();
@@ -454,14 +466,15 @@ namespace Classix
 		uint8_t type;
 		uint32_t address;
 		uint8_t kind;
-		if (sscanf(commandString.c_str(), "Z%hhu;%x;%hhu", &type, &address, &kind) == 3)
+		if (sscanf(commandString.c_str(), "Z%hhu,%x,%hhu", &type, &address, &kind) == 3)
 		{
 			if (type == 0 && kind == 4)
 			{
 				try
 				{
 					UInt32* breakpointAddress = context->allocator->ToPointer<UInt32>(address);
-					context->threads.SetBreakpoint(breakpointAddress);
+					context->threads.BreakpointSet()->SetBreakpoint(breakpointAddress);
+					outputString = "OK";
 					return NoError;
 				}
 				catch (AccessViolationException& ex)
@@ -492,7 +505,7 @@ namespace Classix
 				try
 				{
 					UInt32* breakpointAddress = context->allocator->ToPointer<UInt32>(address);
-					context->threads.RemoveBreakpoint(breakpointAddress);
+					context->threads.BreakpointSet()->RemoveBreakpoint(breakpointAddress);
 					return NoError;
 				}
 				catch (AccessViolationException& ex)
@@ -697,9 +710,9 @@ namespace Classix
 					return HasPrefix(command, pair.first);
 				});
 				
+				output.clear();
 				if (iter == commands.end())
 				{
-					output.clear();
 					commandResult = NoError;
 				}
 				else

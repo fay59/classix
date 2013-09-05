@@ -107,6 +107,7 @@
 		DC734278175A50B800E39F20 /* ThreadManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DC734276175A50B800E39F20 /* ThreadManager.h */; };
 		DC7795C717D84859007F1A62 /* ThreadContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7795C517D84857007F1A62 /* ThreadContext.cpp */; };
 		DC7795C817D84B8A007F1A62 /* DebugThreadManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC490D2B17C5D46A001F9AFD /* DebugThreadManager.cpp */; };
+		DC7795CB17D91329007F1A62 /* Breakpoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7795C917D91328007F1A62 /* Breakpoint.cpp */; };
 		DC787EAE164F68E30010A288 /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC787EB2164F6A910010A288 /* StdCLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC787EB0164F6A810010A288 /* StdCLib.cpp */; };
 		DC7898381758984D003A4FB0 /* ThreadsLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC6E87F21758549B00D7B74F /* ThreadsLib.cpp */; };
@@ -540,6 +541,8 @@
 		DC75BC371635AD8500F89EA1 /* FragmentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FragmentManager.h; sourceTree = "<group>"; };
 		DC7795C517D84857007F1A62 /* ThreadContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ThreadContext.cpp; sourceTree = "<group>"; };
 		DC7795C617D84858007F1A62 /* ThreadContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadContext.h; sourceTree = "<group>"; };
+		DC7795C917D91328007F1A62 /* Breakpoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Breakpoint.cpp; sourceTree = "<group>"; };
+		DC7795CA17D91328007F1A62 /* Breakpoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Breakpoint.h; sourceTree = "<group>"; };
 		DC787EA8164F68990010A288 /* libStdCLib.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libStdCLib.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC787EAF164F69000010A288 /* StdCLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StdCLib.h; sourceTree = "<group>"; };
 		DC787EB0164F6A810010A288 /* StdCLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StdCLib.cpp; sourceTree = "<group>"; };
@@ -1371,6 +1374,8 @@
 				DC490D2917C5D46A001F9AFD /* DebugThreadManager.h */,
 				DC7795C517D84857007F1A62 /* ThreadContext.cpp */,
 				DC7795C617D84858007F1A62 /* ThreadContext.h */,
+				DC7795C917D91328007F1A62 /* Breakpoint.cpp */,
+				DC7795CA17D91328007F1A62 /* Breakpoint.h */,
 				DC490D2A17C5D46A001F9AFD /* WaitQueue.h */,
 			);
 			path = "Debug Stub";
@@ -1934,6 +1939,7 @@
 				DCFB29B517B717590088747B /* DebugStub.cpp in Sources */,
 				DC7795C717D84859007F1A62 /* ThreadContext.cpp in Sources */,
 				DC7795C817D84B8A007F1A62 /* DebugThreadManager.cpp in Sources */,
+				DC7795CB17D91329007F1A62 /* Breakpoint.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

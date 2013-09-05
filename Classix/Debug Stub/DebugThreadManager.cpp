@@ -31,8 +31,6 @@
 using namespace Common;
 using namespace PPCVM;
 
-const uint32_t BreakpointTrap = 0x7C000008;
-
 ThreadContextPointer::ThreadContextPointer()
 : context(nullptr)
 { }
@@ -82,21 +80,6 @@ const ThreadContext& ThreadContextPointer::operator*() const
 	return *context;
 }
 
-bool DebugThreadManager::GetRealInstruction(Common::UInt32 *location, PPCVM::Instruction &output)
-{
-	auto iter = breakpoints.find(location);
-	if (iter == breakpoints.end())
-	{
-		output.hex = *location;
-		return false;
-	}
-	else
-	{
-		output = iter->second.first;
-		return true;
-	}
-}
-
 void DebugThreadManager::DebugLoop(ThreadContext& context, bool autostart)
 {
 	context.stopReason = StopReason::InterruptTrap;
@@ -121,14 +104,14 @@ void DebugThreadManager::DebugLoop(ThreadContext& context, bool autostart)
 			}
 			else if (action == RunCommand::Continue)
 			{
-				GetRealInstruction(location, initialInstruction);
+				breakpoints->GetRealInstruction(location, initialInstruction);
 				location = context.interpreter.ExecuteOne(location, initialInstruction);
 				context.interpreter.Execute(location);
 				context.pc = allocator.ToIntPtr(context.interpreter.GetEndAddress());
 			}
 			else if (action == RunCommand::SingleStep)
 			{
-				GetRealInstruction(location, initialInstruction);
+				breakpoints->GetRealInstruction(location, initialInstruction);
 				location = context.interpreter.ExecuteOne(location, initialInstruction);
 				context.pc = allocator.ToIntPtr(location);
 			}
@@ -145,7 +128,7 @@ void DebugThreadManager::DebugLoop(ThreadContext& context, bool autostart)
 				{
 					// ...then we should set a breakpoint on the next instruction, and execute until we reach it,
 					// and make sure the stack is the same size (otherwise we're doing recursion).
-					Breakpoint stopAtNext = CreateBreakpoint(&location[1]);
+					Breakpoint stopAtNext = breakpoints->CreateBreakpoint(&location[1]);
 					uint32_t stopPC = allocator.ToIntPtr(stopAtNext.GetLocation());
 					uint32_t sp = context.machineState.r1;
 					do
@@ -153,7 +136,7 @@ void DebugThreadManager::DebugLoop(ThreadContext& context, bool autostart)
 						try
 						{
 							// don't be stuck on the breakpoint if it's the first instruction we execute
-							GetRealInstruction(location, initialInstruction);
+							breakpoints->GetRealInstruction(location, initialInstruction);
 							location = context.interpreter.ExecuteOne(location, stopAtNext.GetInstruction());
 							context.interpreter.Execute(location);
 							context.pc = allocator.ToIntPtr(context.interpreter.GetEndAddress());
@@ -192,7 +175,7 @@ void DebugThreadManager::DebugLoop(ThreadContext& context, bool autostart)
 }
 
 DebugThreadManager::DebugThreadManager(Common::Allocator& allocator)
-: allocator(allocator), sink(new WaitQueue<std::string>), lastExitCode(0xeeeeeeee)
+: allocator(allocator), sink(new WaitQueue<std::string>), lastExitCode(0xeeeeeeee), nextId(0x10), breakpoints(new class BreakpointSet)
 { }
 
 bool DebugThreadManager::IsThreadExecuting() const
@@ -220,48 +203,14 @@ void DebugThreadManager::ExitCriticalSection() noexcept
 	TODO("Implement critical sections");
 }
 
-void DebugThreadManager::SetBreakpoint(UInt32 *location)
-{
-	std::lock_guard<std::mutex> guard(breakpointsLock);
-	auto iter = breakpoints.find(location);
-	if (iter == breakpoints.end())
-	{
-		iter = breakpoints.insert(std::make_pair(location, std::make_pair(Instruction(location->Get()), 0))).first;
-		*location = BreakpointTrap;
-	}
-	
-	iter->second.second++;
-}
-
-bool DebugThreadManager::RemoveBreakpoint(UInt32 *location)
-{
-	std::lock_guard<std::mutex> guard(breakpointsLock);
-	auto iter = breakpoints.find(location);
-	if (iter == breakpoints.end())
-		return false;
-	
-	iter->second.second--;
-	if (iter->second.second == 0)
-	{
-		*iter->first = iter->second.first.hex;
-		breakpoints.erase(iter);
-	}
-	return true;
-}
-
-DebugThreadManager::Breakpoint DebugThreadManager::CreateBreakpoint(UInt32 *location)
-{
-	return Breakpoint(*this, location);
-}
-
-std::shared_ptr<WaitQueue<std::string>> DebugThreadManager::GetCommandSink()
+std::shared_ptr<WaitQueue<std::string>>& DebugThreadManager::CommandSink()
 {
 	return sink;
 }
 
-void DebugThreadManager::SetCommandSink(std::shared_ptr<WaitQueue<std::string>>& sink)
+std::shared_ptr<BreakpointSet>& DebugThreadManager::BreakpointSet()
 {
-	this->sink = sink;
+	return breakpoints;
 }
 
 void DebugThreadManager::ConsumeThreadEvents()
@@ -301,7 +250,7 @@ uint32_t DebugThreadManager::GetLastExitCode() const
 ThreadContext& DebugThreadManager::StartThread(const Common::StackPreparator& stack, size_t stackSize, const PEF::TransitionVector& entryPoint, bool startNow)
 {
 	// lldb enforces some alignment constraints on the stack, so align it correctly by allocating some additional memory
-	ThreadContext* context = new ThreadContext(allocator, (threads.size() + 1) * 16, stackSize + 0x200);
+	ThreadContext* context = new ThreadContext(allocator, nextId, stackSize + 0x200);
 	uint32_t stackAddress = allocator.ToIntPtr(*context->stack);
 	stackAddress += 0x200;
 	stackAddress &= ~0x1ff;
@@ -319,6 +268,7 @@ ThreadContext& DebugThreadManager::StartThread(const Common::StackPreparator& st
 	// this should stay at the end of the method or be scoped
 	std::lock_guard<std::mutex> lock(threadsLock);
 	threads[context->GetThreadId()].reset(context);
+	nextId += 0x10;
 	
 	return *context;
 }
@@ -337,34 +287,4 @@ ThreadContextPointer DebugThreadManager::GetThread(ThreadId handle)
 		return ThreadContextPointer();
 	
 	return ThreadContextPointer(std::move(lock), iter->second.get());
-}
-
-DebugThreadManager::Breakpoint::Breakpoint(DebugThreadManager& manager, UInt32* instruction)
-: threads(manager), location(instruction), instruction(*instruction)
-{
-	threads.SetBreakpoint(instruction);
-}
-
-DebugThreadManager::Breakpoint::Breakpoint(Breakpoint&& that)
-: threads(that.threads), instruction(that.instruction), location(that.location)
-{
-	that.location = nullptr;
-}
-
-const UInt32* DebugThreadManager::Breakpoint::GetLocation() const
-{
-	return location;
-}
-
-PPCVM::Instruction DebugThreadManager::Breakpoint::GetInstruction() const
-{
-	return instruction;
-}
-
-DebugThreadManager::Breakpoint::~Breakpoint()
-{
-	if (location != nullptr)
-	{
-		threads.RemoveBreakpoint(location);
-	}
 }
