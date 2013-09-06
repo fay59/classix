@@ -268,7 +268,7 @@ namespace Classix
 			else if (context->threads.HasCompleted())
 			{
 				uint32_t exitCode = context->threads.GetLastExitCode();
-				output = StringPrintf("W%02hhx;pid=%x", static_cast<uint8_t>(exitCode), context->pid);
+				output = StringPrintf("W%02hhx;pid=%x;", static_cast<uint8_t>(exitCode), context->pid);
 				return NoError;
 			}
 			return NoReply;
@@ -378,8 +378,8 @@ namespace Classix
 		}
 		
 		assert(context->threads.HasCompleted());
+		outputString = StringPrintf("W%x;pid=%x;", context->threads.GetLastExitCode(), context->pid);
 		context.reset();
-		outputString = "OK";
 		return NoError;
 	}
 	
@@ -468,6 +468,7 @@ namespace Classix
 		uint8_t kind;
 		if (sscanf(commandString.c_str(), "Z%hhu,%x,%hhu", &type, &address, &kind) == 3)
 		{
+			// type 0: memory breakpoint; kind 4: 4-byte breakpoint
 			if (type == 0 && kind == 4)
 			{
 				try
@@ -500,12 +501,14 @@ namespace Classix
 		uint8_t kind;
 		if (sscanf(commandString.c_str(), "z%hhu;%x;%hhu", &type, &address, &kind) == 3)
 		{
+			// type 0: memory breakpoint; kind 4: 4-byte breakpoint
 			if (type == 0 && kind == 4)
 			{
 				try
 				{
 					UInt32* breakpointAddress = context->allocator->ToPointer<UInt32>(address);
 					context->threads.BreakpointSet()->RemoveBreakpoint(breakpointAddress);
+					outputString = "OK";
 					return NoError;
 				}
 				catch (AccessViolationException& ex)
@@ -710,9 +713,17 @@ namespace Classix
 					return HasPrefix(command, pair.first);
 				});
 				
+#if DEBUG
+				output = "<no reply>";
+#else
 				output.clear();
+#endif
 				if (iter == commands.end())
 				{
+#if DEBUG
+					cerr << "*** $" << command << "$: not implemented" << endl;
+					output.clear();
+#endif
 					commandResult = NoError;
 				}
 				else
@@ -722,7 +733,7 @@ namespace Classix
 				
 				if (stream)
 				{
-					if (commandResult == 0)
+					if (commandResult == NoError)
 					{
 						stream->WriteAnswer(output);
 					}
