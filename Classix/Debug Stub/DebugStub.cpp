@@ -33,6 +33,7 @@
 #include "PEFLibraryResolver.h"
 #include "DummyLibraryResolver.h"
 #include "DebugThreadManager.h"
+#include "DebugLib.h"
 #include "Todo.h"
 
 using namespace std;
@@ -87,6 +88,8 @@ DebugContext::DebugContext(const string& executable, uint32_t pid)
 {
 	using namespace ClassixCore;
 	
+	resolvers.emplace_back(new DebugLib(*allocator));
+	
 	BundleLibraryResolver* bundleResolver = new BundleLibraryResolver(*allocator, managers);
 	bundleResolver->AllowLibrary("InterfaceLib");
 	bundleResolver->AllowLibrary("ControlStripLib");
@@ -109,6 +112,11 @@ DebugContext::DebugContext(const string& executable, uint32_t pid)
 	
 	if (!fragmentManager.LoadContainer(executable))
 		throw logic_error("Couldn't load executable");
+	
+	if (!fragmentManager.LoadContainer(DebugLib::LibraryName))
+	{
+		cerr << "*** Could not load DebugLib" << endl;
+	}
 }
 
 void DebugContext::Start(shared_ptr<WaitQueue<string>>& sink)

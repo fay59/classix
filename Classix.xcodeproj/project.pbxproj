@@ -52,6 +52,7 @@
 		DC5584FE17D0FAF50063B608 /* Interpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7273FD16471CD800DA17E5 /* Interpreter.cpp */; };
 		DC5656D316ED070400083F0E /* NotImplementedException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC5656D116ED070300083F0E /* NotImplementedException.cpp */; };
 		DC5656D416ED070400083F0E /* NotImplementedException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC5656D216ED070300083F0E /* NotImplementedException.h */; };
+		DC56BDD117DBBA3B008D3813 /* DebugLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC56BDCF17DBBA3A008D3813 /* DebugLib.cpp */; };
 		DC5CF824166153D200577272 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = DC5CF823166153D200577272 /* arrow.png */; };
 		DC5CF825166165D200577272 /* StdCLibFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE988111660B11A00C28F25 /* StdCLibFunctions.cpp */; };
 		DC5ED1BD167CFF8100C249B7 /* CXStackTrace.m in Sources */ = {isa = PBXBuildFile; fileRef = DC5ED1BC167CFF8100C249B7 /* CXStackTrace.m */; };
@@ -415,6 +416,8 @@
 		DC539D03174DC21D00BA5946 /* MathLibFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathLibFunctions.h; sourceTree = "<group>"; };
 		DC5656D116ED070300083F0E /* NotImplementedException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NotImplementedException.cpp; sourceTree = "<group>"; };
 		DC5656D216ED070300083F0E /* NotImplementedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotImplementedException.h; sourceTree = "<group>"; };
+		DC56BDCF17DBBA3A008D3813 /* DebugLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebugLib.cpp; sourceTree = "<group>"; };
+		DC56BDD017DBBA3B008D3813 /* DebugLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugLib.h; sourceTree = "<group>"; };
 		DC5CF823166153D200577272 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		DC5E33C5163A496300944FFD /* FileMapping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileMapping.cpp; sourceTree = "<group>"; };
 		DC5E33C6163A496300944FFD /* FileMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileMapping.h; sourceTree = "<group>"; };
@@ -1377,6 +1380,8 @@
 				DC7795C917D91328007F1A62 /* Breakpoint.cpp */,
 				DC7795CA17D91328007F1A62 /* Breakpoint.h */,
 				DC490D2A17C5D46A001F9AFD /* WaitQueue.h */,
+				DC56BDCF17DBBA3A008D3813 /* DebugLib.cpp */,
+				DC56BDD017DBBA3B008D3813 /* DebugLib.h */,
 			);
 			path = "Debug Stub";
 			sourceTree = "<group>";
@@ -1940,6 +1945,7 @@
 				DC7795C717D84859007F1A62 /* ThreadContext.cpp in Sources */,
 				DC7795C817D84B8A007F1A62 /* DebugThreadManager.cpp in Sources */,
 				DC7795CB17D91329007F1A62 /* Breakpoint.cpp in Sources */,
+				DC56BDD117DBBA3B008D3813 /* DebugLib.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
