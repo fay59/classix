@@ -28,41 +28,38 @@
 #include <thread>
 #include "WaitQueue.h"
 
-namespace Classix
+class BufferedReader;
+// uses the lldb remote protocol
+class ControlStream
 {
-	class BufferedReader;
-	// uses the lldb remote protocol
-	class ControlStream
-	{
-		int fd;
-		std::unique_ptr<BufferedReader> reader;
-		
-		std::shared_ptr<WaitQueue<std::string>> commandQueue;
-		
-		// control parameters
-		bool expectAcks;
-		size_t maxPayloadSize;
-		
-		ControlStream(std::shared_ptr<WaitQueue<std::string>>&, int fd);
-		
-		bool HandleMetaPacket(const std::string& packet);
-		
-	public:
-		ControlStream(const ControlStream& that) = delete;
-		ControlStream(ControlStream&& that);
-		
-		static ControlStream Listen(std::shared_ptr<WaitQueue<std::string>>& waitQueue, uint16_t port);
-		
-		void WriteAnswer(const std::string& answer);
-		void WriteAnswer(uint8_t errorCode);
-		
-		bool ExpectsAcks() const;
-		size_t MaxPayloadSize() const;
-		
-		void ConsumeReadEvents(); // expected to run on a dedicated thread
-		
-		~ControlStream();
-	};
-}
+	int fd;
+	std::unique_ptr<BufferedReader> reader;
+	
+	std::shared_ptr<WaitQueue<std::string>> commandQueue;
+	
+	// control parameters
+	bool expectAcks;
+	size_t maxPayloadSize;
+	
+	ControlStream(std::shared_ptr<WaitQueue<std::string>>&, int fd);
+	
+	bool HandleMetaPacket(const std::string& packet);
+	
+public:
+	ControlStream(const ControlStream& that) = delete;
+	ControlStream(ControlStream&& that);
+	
+	static ControlStream Listen(std::shared_ptr<WaitQueue<std::string>>& waitQueue, uint16_t port);
+	
+	void WriteAnswer(const std::string& answer);
+	void WriteAnswer(uint8_t errorCode);
+	
+	bool ExpectsAcks() const;
+	size_t MaxPayloadSize() const;
+	
+	void ConsumeReadEvents(); // expected to run on a dedicated thread
+	
+	~ControlStream();
+};
 
 #endif /* defined(__Classix__ControlStream__) */

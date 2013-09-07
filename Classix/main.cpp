@@ -234,7 +234,7 @@ static int debugStub(uint16_t port, const std::string& path, int argc, const cha
 	const char** envEnd = envp;
 	while (*envEnd != nullptr) envEnd++;
 	
-	Classix::DebugStub stub(path);
+	DebugStub stub(path);
 	stub.SetArguments(argv, argv + argc);
 	stub.SetEnvironment(envp, envEnd);
 	stub.Accept(port);
