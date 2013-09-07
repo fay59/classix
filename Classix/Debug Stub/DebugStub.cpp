@@ -191,6 +191,7 @@ namespace Classix
 		make_pair("qRegisterInfo", &DebugStub::QueryRegisterInformation),
 		make_pair("qThreadStopInfo", &DebugStub::GetStopReason),
 		make_pair("qProcessInfo", &DebugStub::QueryProcessInformation),
+		make_pair("qMemoryRegionInfo", &DebugStub::QueryMemoryRegionInfo),
 		
 		make_pair("$StreamClosed", &DebugStub::PrivateStreamClosed),
 		make_pair("$ThreadStatusChanged", &DebugStub::GetStopReason),
@@ -663,6 +664,28 @@ namespace Classix
 			CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_750, "unknown", "unknown", "big", context->pid, 4);
 		
 		return NoError;
+	}
+	
+	uint8_t DebugStub::QueryMemoryRegionInfo(const std::string &commandString, std::string &output)
+	{
+		if (!context) return TargetKilled;
+		
+		uint32_t address;
+		if (sscanf(commandString.c_str(), "qMemoryRegionInfo:%x", &address) == 1)
+		{
+			if (auto details = context->allocator->GetDetails(address))
+			{
+				uint32_t offset = context->allocator->GetAllocationOffset(address);
+				output = StringPrintf("start:%x;size:%x;permissions:%s;", address - offset, static_cast<uint32_t>(details->Size()), "rwx");
+				return NoError;
+			}
+			else
+			{
+				return InvalidData;
+			}
+		}
+		
+		return NotImplemented;
 	}
 	
 	uint8_t DebugStub::PrivateStreamClosed(const string&, string& output)

@@ -93,6 +93,7 @@ namespace Classix
 		uint8_t QueryHostInformation(const std::string& commandString, std::string& output);
 		uint8_t QueryRegisterInformation(const std::string& commandString, std::string& output);
 		uint8_t QueryProcessInformation(const std::string& commandString, std::string& output);
+		uint8_t QueryMemoryRegionInfo(const std::string& commandString, std::string& output);
 		
 		// Private Commands (commands that aren't passed by the debugger)
 		uint8_t PrivateStreamClosed(const std::string& commandString, std::string& output);
