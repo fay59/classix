@@ -37,6 +37,11 @@ namespace PPCVM
 			NativeCallback& Callback;
 			
 			NativeCall(NativeCallback& cb);
+			
+			template<typename T>
+			NativeCall(void (&cb)(T*, MachineState*))
+			: NativeCall(reinterpret_cast<NativeCall&>(cb))
+			{ }
 		};
 	}
 }

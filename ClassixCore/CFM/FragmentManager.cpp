@@ -79,6 +79,11 @@ namespace CFM
 		return resolvers.end();
 	}
 	
+	size_t FragmentManager::size() const
+	{
+		return resolvers.size();
+	}
+	
 	SymbolResolver* FragmentManager::GetSymbolResolver(const std::string &resolver)
 	{
 		auto iter = resolvers.find(resolver);

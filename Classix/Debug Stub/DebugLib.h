@@ -29,6 +29,8 @@
 #include "SymbolResolver.h"
 #include "STAllocator.h"
 #include "Structures.h"
+#include "FragmentManager.h"
+#include "NativeCall.h"
 
 // DebugLib supports debugger-initiated operations through the function call interface
 
@@ -39,13 +41,15 @@ class DebugLib : public CFM::LibraryResolver, public CFM::SymbolResolver
 	Common::Allocator& allocator;
 	DebugLibContext* context;
 	
+	Common::STAllocator<DebugLib> stAllocator;
 	std::list<PEF::TransitionVector, Common::STAllocator<PEF::TransitionVector>> transitions;
+	std::list<PPCVM::Execution::NativeCall, Common::STAllocator<PPCVM::Execution::NativeCall>> nativeCalls;
 	std::unordered_map<std::string, CFM::ResolvedSymbol> symbols;
 	
 public:
 	static const std::string LibraryName;
 	
-	DebugLib(Common::Allocator& allocator);
+	DebugLib(Common::Allocator& allocator, CFM::FragmentManager& fragmentManager);
 	
 	// LibraryResolver
 	virtual SymbolResolver* ResolveLibrary(const std::string& name) override;
