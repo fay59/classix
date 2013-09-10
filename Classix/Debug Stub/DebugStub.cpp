@@ -88,7 +88,7 @@ DebugContext::DebugContext(const string& executable, uint32_t pid)
 {
 	using namespace ClassixCore;
 	
-	resolvers.emplace_back(new DebugLib(*allocator));
+	resolvers.emplace_back(new DebugLib(*allocator, fragmentManager));
 	
 	BundleLibraryResolver* bundleResolver = new BundleLibraryResolver(*allocator, managers);
 	bundleResolver->AllowLibrary("InterfaceLib");
@@ -182,12 +182,15 @@ const unordered_map<string, DebugStub::RemoteCommand> DebugStub::commands = {
 	make_pair("H", &DebugStub::SetOperationTargetThread),
 	make_pair("?", &DebugStub::GetStopReason),
 	make_pair("m", &DebugStub::ReadMemory),
+	make_pair("M", &DebugStub::WriteMemory),
 	make_pair("vCont", &DebugStub::ThreadResume),
 	make_pair("c", &DebugStub::Continue),
 	make_pair("k", &DebugStub::Kill),
 	make_pair("p", &DebugStub::ReadSingleRegister),
 	make_pair("Z", &DebugStub::SetBreakpoint),
 	make_pair("z", &DebugStub::RemoveBreakpoint),
+	make_pair("_M", &DebugStub::AllocateMemory),
+	make_pair("_m", &DebugStub::DeallocateMemory),
 	
 	make_pair("qC", &DebugStub::QueryCurrentThread),
 	make_pair("qfThreadInfo", &DebugStub::QueryThreadList),
@@ -209,6 +212,8 @@ DebugStub::DebugStub(const string& path)
 
 uint8_t DebugStub::SetOperationTargetThread(const string &commandString, string &output)
 {
+	if (!context) return TargetKilled;
+	
 	char command;
 	DebugThreadManager::ThreadId threadId;
 	
@@ -357,6 +362,48 @@ uint8_t DebugStub::ReadMemory(const string &commandString, string &outputString)
 	
 	outputString = ss.str();
 	return NoError;
+}
+
+uint8_t DebugStub::WriteMemory(const string& commandString, string& output)
+{
+	if (!context) return TargetKilled;
+	
+	uint32_t address;
+	size_t size;
+	int charsRead;
+	if (sscanf(commandString.c_str(), "M%x,%zd:%n", &address, &size, &charsRead) == 2)
+	{
+		uint8_t* memory = context->allocator->ToPointer<uint8_t>(address);
+		auto details = context->allocator->GetDetails(memory);
+		uint32_t offset = context->allocator->GetAllocationOffset(memory);
+		if (address + size > address - offset + details->Size())
+			return InvalidData;
+		
+		if ((commandString.length() - charsRead) / 2 != size)
+			return InvalidData;
+		
+		const char* text = commandString.c_str() + charsRead;
+		for (size_t i = 0; i < size; i++)
+		{
+			uint8_t byte = 0;
+			for (int j = 0; j < 2; j++)
+			{
+				byte <<= 4;
+				if (*text >= '0' && *text <= '9')
+					byte |= *text - '0';
+				else if (*text >= 'a' && *text <= 'f')
+					byte |= *text - 'a' + 0xa;
+				else if (*text >= 'A' && *text <= 'F')
+					byte |= *text - 'A' + 0xa;
+				text++;
+			}
+			memory[i] = byte;
+		}
+		output = "OK";
+		return NoError;
+	}
+	
+	return InvalidData;
 }
 
 uint8_t DebugStub::Kill(const string &commandString, string &outputString)
@@ -527,6 +574,39 @@ uint8_t DebugStub::RemoveBreakpoint(const string &commandString, string &outputS
 		{
 			return NotImplemented;
 		}
+	}
+	
+	return InvalidData;
+}
+
+uint8_t DebugStub::AllocateMemory(const string& commandString, string& output)
+{
+	if (!context) return TargetKilled;
+	
+	uint32_t size;
+	
+	// ignore permissions, always allocate with rwx
+	if (sscanf(commandString.c_str(), "_M%x,", &size) == 1)
+	{
+		void* memory = context->allocator->Allocate("Debugger-Allocated Block", size);
+		output = StringPrintf("%x", context->allocator->ToIntPtr(memory));
+		return NoError;
+	}
+	
+	return InvalidData;
+}
+
+uint8_t DebugStub::DeallocateMemory(const string& commandString, string& output)
+{
+	if (!context) return TargetKilled;
+	
+	uint32_t address;
+	if (sscanf(commandString.c_str(), "_m%x", &address) == 1)
+	{
+		void* memory = context->allocator->ToPointer<void>(address);
+		context->allocator->Deallocate(memory);
+		output = "OK";
+		return NoError;
 	}
 	
 	return InvalidData;

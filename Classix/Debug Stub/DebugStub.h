@@ -78,11 +78,14 @@ class DebugStub
 	uint8_t GetStopReason(const std::string& commandString, std::string& output);
 	uint8_t ThreadResume(const std::string& commandString, std::string& output);
 	uint8_t ReadMemory(const std::string& commandString, std::string& outputString);
+	uint8_t WriteMemory(const std::string& commandString, std::string& outputString);
 	uint8_t Kill(const std::string& commandString, std::string& outputString);
 	uint8_t Continue(const std::string& commandString, std::string& outputString);
 	uint8_t ReadSingleRegister(const std::string& commandString, std::string& outputString);
 	uint8_t SetBreakpoint(const std::string& commandString, std::string& outputString);
 	uint8_t RemoveBreakpoint(const std::string& commandString, std::string& outputString);
+	uint8_t AllocateMemory(const std::string& commandString, std::string& outputString);
+	uint8_t DeallocateMemory(const std::string& commandString, std::string& outputString);
 	
 	// Query commands
 	uint8_t QueryCurrentThread(const std::string& commandString, std::string& output);
