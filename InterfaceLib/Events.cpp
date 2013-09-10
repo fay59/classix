@@ -218,8 +218,9 @@ void InterfaceLib_WaitNextEvent(InterfaceLib::Globals* globals, MachineState* st
 	EventMask mask = static_cast<EventMask>(state->r3);
 	uint32_t ticksTimeout = state->r5; // tick = 1/60s
 	MacRegion* region;
-	if (Common::UInt32* regionHandle = globals->allocator.ToPointer<Common::UInt32>(state->r6, true))
+	if (state->r6 != 0)
 	{
+		Common::UInt32* regionHandle = globals->allocator.ToPointer<Common::UInt32>(state->r6);
 		region = globals->allocator.ToPointer<MacRegion>(*regionHandle);
 	}
 	else

@@ -162,10 +162,10 @@ namespace Common
 		}
 		
 		template<typename T>
-		T* ToPointer(uint32_t value, bool allowNullptr = false) const
+		T* ToPointer(uint32_t value) const
 		{
 #ifdef DEBUG
-			if (!allowNullptr || value != 0)
+			if (value != 0)
 			{
 				AccessViolationException::Check(*this, value, sizeof(T));
 			}
@@ -174,10 +174,10 @@ namespace Common
 		}
 		
 		template<typename T>
-		T* ToArray(uint32_t value, size_t count, bool allowNullptr = false) const
+		T* ToArray(uint32_t value, size_t count) const
 		{
 #ifdef DEBUG
-			if (!allowNullptr || value != 0)
+			if (value != 0)
 			{
 				AccessViolationException::Check(*this, value, sizeof(T) * count);
 			}
