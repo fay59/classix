@@ -38,7 +38,12 @@ namespace CFM
 		return &fakePath;
 	}
 	
-	std::vector<std::string> DummySymbolResolver::SymbolList() const
+	std::vector<std::string> DummySymbolResolver::CodeSymbolList() const
+	{
+		return std::vector<std::string>();
+	}
+	
+	std::vector<std::string> DummySymbolResolver::DataSymbolList() const
 	{
 		return std::vector<std::string>();
 	}

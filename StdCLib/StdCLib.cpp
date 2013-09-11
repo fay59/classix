@@ -168,6 +168,7 @@ namespace StdCLib
 		Common::UInt64 NumericData;
 		Common::UInt32 StandAlone;
 		Common::UInt64 TimeData;
+		
 		uint8_t cType[256];
 	};
 

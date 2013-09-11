@@ -117,7 +117,7 @@ void InterfaceLib___LibraryInit(InterfaceLib::Globals* globals, PPCVM::MachineSt
 	}
 }
 
-const char* LibrarySymbolNames[] = {
+const char* LibraryCodeSymbolNames[] = {
 	/* AEDataModel */
 	"AECoerceDesc",
 	"AECoercePtr",
@@ -3101,4 +3101,8 @@ const char* LibrarySymbolNames[] = {
 	"WideSubtract",
 	"WideWideDivide",
 	"XorRgn"
+};
+
+const char* LibraryDataSymbolNames[] = {
+	nullptr
 };

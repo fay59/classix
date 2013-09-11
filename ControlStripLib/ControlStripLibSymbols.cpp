@@ -21,7 +21,7 @@
 
 #include "ControlStripLib.h"
 
-const char* LibrarySymbolNames[] = {
+const char* LibraryCodeSymbolNames[] = {
 	"SBGetBarGraphWidth",
 	"SBTrackPopupMenu",
 	"SBIsShowHideHotKeyEnabled",
@@ -45,4 +45,9 @@ const char* LibrarySymbolNames[] = {
 	"SBSafeToAccessStartupDisk",
 	"SBLoadPreferences",
 	"SBSetControlStripFontSize",
+	nullptr
+};
+
+const char* LibraryDataSymbolNames[] = {
+	nullptr
 };

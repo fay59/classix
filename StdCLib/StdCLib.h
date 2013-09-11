@@ -41,7 +41,8 @@ extern "C"
 	SymbolType LibraryLookup(StdCLib::Globals* globals, const char* symbolName, void** symbol);
 	void LibraryUnload(StdCLib::Globals* context);
 	
-	extern const char* LibrarySymbolNames[];
+	extern const char* LibraryCodeSymbolNames[];
+	extern const char* LibraryDataSymbolNames[];
 }
 
 #endif

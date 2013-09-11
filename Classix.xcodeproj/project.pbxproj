@@ -47,14 +47,14 @@
 		DC4C646D165B62B80097288E /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC539D00174DC17E00BA5946 /* MathLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC539CFE174DC17E00BA5946 /* MathLib.cpp */; };
 		DC539D01174DC17E00BA5946 /* MathLib.h in Headers */ = {isa = PBXBuildFile; fileRef = DC539CFF174DC17E00BA5946 /* MathLib.h */; };
-		DC539D04174DC21D00BA5946 /* MathLibFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC539D02174DC21D00BA5946 /* MathLibFunctions.cpp */; };
+		DC539D04174DC21D00BA5946 /* MathLibSymbols.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC539D02174DC21D00BA5946 /* MathLibSymbols.cpp */; };
 		DC539D05174DC21D00BA5946 /* MathLibFunctions.h in Headers */ = {isa = PBXBuildFile; fileRef = DC539D03174DC21D00BA5946 /* MathLibFunctions.h */; };
 		DC5584FE17D0FAF50063B608 /* Interpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC7273FD16471CD800DA17E5 /* Interpreter.cpp */; };
 		DC5656D316ED070400083F0E /* NotImplementedException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC5656D116ED070300083F0E /* NotImplementedException.cpp */; };
 		DC5656D416ED070400083F0E /* NotImplementedException.h in Headers */ = {isa = PBXBuildFile; fileRef = DC5656D216ED070300083F0E /* NotImplementedException.h */; };
 		DC56BDD117DBBA3B008D3813 /* DebugLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC56BDCF17DBBA3A008D3813 /* DebugLib.cpp */; };
 		DC5CF824166153D200577272 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = DC5CF823166153D200577272 /* arrow.png */; };
-		DC5CF825166165D200577272 /* StdCLibFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE988111660B11A00C28F25 /* StdCLibFunctions.cpp */; };
+		DC5CF825166165D200577272 /* StdCLibSymbols.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCE988111660B11A00C28F25 /* StdCLibSymbols.cpp */; };
 		DC5ED1BD167CFF8100C249B7 /* CXStackTrace.m in Sources */ = {isa = PBXBuildFile; fileRef = DC5ED1BC167CFF8100C249B7 /* CXStackTrace.m */; };
 		DC5EE2EB16CE068200B2629F /* StackPreparator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC5EE2E916CE068200B2629F /* StackPreparator.cpp */; };
 		DC5EE2EC16CE068200B2629F /* StackPreparator.h in Headers */ = {isa = PBXBuildFile; fileRef = DC5EE2EA16CE068200B2629F /* StackPreparator.h */; };
@@ -112,7 +112,7 @@
 		DC787EAE164F68E30010A288 /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC787EB2164F6A910010A288 /* StdCLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC787EB0164F6A810010A288 /* StdCLib.cpp */; };
 		DC7898381758984D003A4FB0 /* ThreadsLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC6E87F21758549B00D7B74F /* ThreadsLib.cpp */; };
-		DC78983917589851003A4FB0 /* ThreadsLibFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC6E87FA175854B400D7B74F /* ThreadsLibFunctions.cpp */; };
+		DC78983917589851003A4FB0 /* ThreadsLibSymbols.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC6E87FA175854B400D7B74F /* ThreadsLibSymbols.cpp */; };
 		DC78983A17589869003A4FB0 /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC7ECFD816850D830063F14E /* CXDebugUIController.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC7ECFD716850D830063F14E /* CXDebugUIController.mm */; };
 		DC82C3A51719A69000A11444 /* CXIOSurfaceView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC82C3A41719A69000A11444 /* CXIOSurfaceView.m */; };
@@ -127,7 +127,7 @@
 		DC87262C177EAD5A00201FA9 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC930AA01708BA4800B739B1 /* CoreFoundation.framework */; };
 		DC872632177EAD5A00201FA9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC872630177EAD5A00201FA9 /* InfoPlist.strings */; };
 		DC872639177EADF100201FA9 /* ControlStripLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC872637177EADF100201FA9 /* ControlStripLib.cpp */; };
-		DC87263C177EB39200201FA9 /* ControlStripLibFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC87263A177EB39200201FA9 /* ControlStripLibFunctions.cpp */; };
+		DC87263C177EB39200201FA9 /* ControlStripLibSymbols.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC87263A177EB39200201FA9 /* ControlStripLibSymbols.cpp */; };
 		DC87264D177EB5D400201FA9 /* libClassixCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9D8D47164F63AB00036FDD /* libClassixCore.dylib */; };
 		DC8A501B1665DB5900B72EB7 /* run.png in Resources */ = {isa = PBXBuildFile; fileRef = DC8A501A1665DB5900B72EB7 /* run.png */; };
 		DC930A9F170888D100B739B1 /* NativeLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = DC930A9D170888D100B739B1 /* NativeLibrary.h */; };
@@ -412,7 +412,7 @@
 		DC539CF9174DC0E400BA5946 /* libMathLib.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMathLib.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC539CFE174DC17E00BA5946 /* MathLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathLib.cpp; sourceTree = "<group>"; };
 		DC539CFF174DC17E00BA5946 /* MathLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathLib.h; sourceTree = "<group>"; };
-		DC539D02174DC21D00BA5946 /* MathLibFunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathLibFunctions.cpp; sourceTree = "<group>"; };
+		DC539D02174DC21D00BA5946 /* MathLibSymbols.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathLibSymbols.cpp; sourceTree = "<group>"; };
 		DC539D03174DC21D00BA5946 /* MathLibFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathLibFunctions.h; sourceTree = "<group>"; };
 		DC5656D116ED070300083F0E /* NotImplementedException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NotImplementedException.cpp; sourceTree = "<group>"; };
 		DC5656D216ED070300083F0E /* NotImplementedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotImplementedException.h; sourceTree = "<group>"; };
@@ -525,7 +525,7 @@
 		DC6E87ED1758545200D7B74F /* libThreadsLib.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libThreadsLib.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC6E87F21758549B00D7B74F /* ThreadsLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ThreadsLib.cpp; sourceTree = "<group>"; };
 		DC6E87F31758549B00D7B74F /* ThreadsLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadsLib.h; sourceTree = "<group>"; };
-		DC6E87FA175854B400D7B74F /* ThreadsLibFunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ThreadsLibFunctions.cpp; sourceTree = "<group>"; };
+		DC6E87FA175854B400D7B74F /* ThreadsLibSymbols.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ThreadsLibSymbols.cpp; sourceTree = "<group>"; };
 		DC6E87FB175854B400D7B74F /* ThreadsLibFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadsLibFunctions.h; sourceTree = "<group>"; };
 		DC7273F816471CD800DA17E5 /* FloatingPointInstructions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FloatingPointInstructions.cpp; sourceTree = "<group>"; };
 		DC7273FC16471CD800DA17E5 /* IntegerInstructions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntegerInstructions.cpp; sourceTree = "<group>"; };
@@ -578,7 +578,7 @@
 		DC872633177EAD5A00201FA9 /* ControlStripLib-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ControlStripLib-Prefix.pch"; sourceTree = "<group>"; };
 		DC872637177EADF100201FA9 /* ControlStripLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlStripLib.cpp; sourceTree = "<group>"; };
 		DC872638177EADF100201FA9 /* ControlStripLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlStripLib.h; sourceTree = "<group>"; };
-		DC87263A177EB39200201FA9 /* ControlStripLibFunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlStripLibFunctions.cpp; sourceTree = "<group>"; };
+		DC87263A177EB39200201FA9 /* ControlStripLibSymbols.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlStripLibSymbols.cpp; sourceTree = "<group>"; };
 		DC87263B177EB39200201FA9 /* ControlStripLibFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlStripLibFunctions.h; sourceTree = "<group>"; };
 		DC8A501A1665DB5900B72EB7 /* run.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = run.png; sourceTree = "<group>"; };
 		DC930A9D170888D100B739B1 /* NativeLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NativeLibrary.h; sourceTree = "<group>"; };
@@ -645,7 +645,7 @@
 		DCE9880D16604ED700C28F25 /* CXNavBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXNavBar.m; sourceTree = "<group>"; };
 		DCE9880F1660A81A00C28F25 /* function.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = function.png; sourceTree = "<group>"; };
 		DCE988101660A9B400C28F25 /* label.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = label.png; sourceTree = "<group>"; };
-		DCE988111660B11A00C28F25 /* StdCLibFunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StdCLibFunctions.cpp; sourceTree = "<group>"; };
+		DCE988111660B11A00C28F25 /* StdCLibSymbols.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StdCLibSymbols.cpp; sourceTree = "<group>"; };
 		DCE988131660B3D900C28F25 /* export.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = export.png; sourceTree = "<group>"; };
 		DCF3599616384E1400EC1A95 /* Container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Container.cpp; sourceTree = "<group>"; };
 		DCF3599716384E1400EC1A95 /* Container.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
@@ -888,7 +888,7 @@
 				DC539CFF174DC17E00BA5946 /* MathLib.h */,
 				DC539CFE174DC17E00BA5946 /* MathLib.cpp */,
 				DC539D03174DC21D00BA5946 /* MathLibFunctions.h */,
-				DC539D02174DC21D00BA5946 /* MathLibFunctions.cpp */,
+				DC539D02174DC21D00BA5946 /* MathLibSymbols.cpp */,
 			);
 			path = MathLib;
 			sourceTree = "<group>";
@@ -913,7 +913,7 @@
 			children = (
 				DC6E87F21758549B00D7B74F /* ThreadsLib.cpp */,
 				DC6E87F31758549B00D7B74F /* ThreadsLib.h */,
-				DC6E87FA175854B400D7B74F /* ThreadsLibFunctions.cpp */,
+				DC6E87FA175854B400D7B74F /* ThreadsLibSymbols.cpp */,
 				DC6E87FB175854B400D7B74F /* ThreadsLibFunctions.h */,
 			);
 			path = ThreadsLib;
@@ -956,7 +956,7 @@
 				DC787EAF164F69000010A288 /* StdCLib.h */,
 				DC787EB0164F6A810010A288 /* StdCLib.cpp */,
 				DC787EB3164F6F110010A288 /* StdCLibFunctions.h */,
-				DCE988111660B11A00C28F25 /* StdCLibFunctions.cpp */,
+				DCE988111660B11A00C28F25 /* StdCLibSymbols.cpp */,
 			);
 			path = StdCLib;
 			sourceTree = "<group>";
@@ -1040,7 +1040,7 @@
 			children = (
 				DC872637177EADF100201FA9 /* ControlStripLib.cpp */,
 				DC872638177EADF100201FA9 /* ControlStripLib.h */,
-				DC87263A177EB39200201FA9 /* ControlStripLibFunctions.cpp */,
+				DC87263A177EB39200201FA9 /* ControlStripLibSymbols.cpp */,
 				DC87263B177EB39200201FA9 /* ControlStripLibFunctions.h */,
 				DC87262E177EAD5A00201FA9 /* Supporting Files */,
 			);
@@ -1740,7 +1740,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC539D00174DC17E00BA5946 /* MathLib.cpp in Sources */,
-				DC539D04174DC21D00BA5946 /* MathLibFunctions.cpp in Sources */,
+				DC539D04174DC21D00BA5946 /* MathLibSymbols.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1749,7 +1749,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC7898381758984D003A4FB0 /* ThreadsLib.cpp in Sources */,
-				DC78983917589851003A4FB0 /* ThreadsLibFunctions.cpp in Sources */,
+				DC78983917589851003A4FB0 /* ThreadsLibSymbols.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1758,7 +1758,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC787EB2164F6A910010A288 /* StdCLib.cpp in Sources */,
-				DC5CF825166165D200577272 /* StdCLibFunctions.cpp in Sources */,
+				DC5CF825166165D200577272 /* StdCLibSymbols.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1767,7 +1767,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC872639177EADF100201FA9 /* ControlStripLib.cpp in Sources */,
-				DC87263C177EB39200201FA9 /* ControlStripLibFunctions.cpp in Sources */,
+				DC87263C177EB39200201FA9 /* ControlStripLibSymbols.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

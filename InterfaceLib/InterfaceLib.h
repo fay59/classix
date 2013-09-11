@@ -68,7 +68,9 @@ extern "C"
 	InterfaceLib::Globals* LibraryLoad(Common::Allocator* allocator, OSEnvironment::Managers* managers);
 	SymbolType LibraryLookup(InterfaceLib::Globals* globals, const char* symbolName, void** symbol);
 	void LibraryUnload(InterfaceLib::Globals* context);
-	extern const char* LibrarySymbolNames[];
+	
+	extern const char* LibraryCodeSymbolNames[];
+	extern const char* LibraryDataSymbolNames[];
 	
 	void InterfaceLib___LibraryInit(InterfaceLib::Globals* globals, PPCVM::MachineState* state);
 }

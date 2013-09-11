@@ -84,10 +84,24 @@ namespace ClassixCore
 		return &library.Path;
 	}
 	
-	std::vector<std::string> NativeSymbolResolver::SymbolList() const
+	std::vector<std::string> NativeSymbolResolver::CodeSymbolList() const
 	{
 		std::vector<std::string> symbols;
-		if (const char** nameIter = library.Symbols)
+		if (const char** nameIter = library.CodeSymbols)
+		{
+			while (*nameIter)
+			{
+				symbols.push_back(*nameIter);
+				nameIter++;
+			}
+		}
+		return symbols;
+	}
+	
+	std::vector<std::string> NativeSymbolResolver::DataSymbolList() const
+	{
+		std::vector<std::string> symbols;
+		if (const char** nameIter = library.DataSymbols)
 		{
 			while (*nameIter)
 			{

@@ -56,7 +56,8 @@ public:
 	
 	// SymbolResolver
 	virtual const std::string* FilePath() const override;
-	virtual std::vector<std::string> SymbolList() const override;
+	virtual std::vector<std::string> CodeSymbolList() const override;
+	virtual std::vector<std::string> DataSymbolList() const override;
 	virtual CFM::ResolvedSymbol ResolveSymbol(const std::string& name) override;
 	virtual std::vector<CFM::ResolvedSymbol> GetEntryPoints() override;
 	

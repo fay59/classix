@@ -45,7 +45,7 @@ struct DebugLibContext
 		state->r3 = static_cast<uint32_t>(context->fragments.size());
 	}
 	
-	static void GetExportedSymbols(DebugLibContext* context, MachineState* state)
+	static void GetExportedFunctions(DebugLibContext* context, MachineState* state)
 	{
 		auto iter = context->fragments.begin();
 		for (uint32_t i = 0; i < state->r3 && iter != context->fragments.end(); i++)
@@ -58,7 +58,7 @@ struct DebugLibContext
 		}
 		
 		stringstream ss;
-		for (const string& symbolName : iter->second->SymbolList())
+		for (const string& symbolName : iter->second->CodeSymbolList())
 		{
 			ResolvedSymbol symbol = iter->second->ResolveSymbol(symbolName);
 			ss << symbolName << ':' << hex << symbol.Address << ';';
@@ -85,7 +85,7 @@ const string DebugLib::LibraryName = ":DebugLib";
 #define CALLBACK(n)	make_pair("DebugLib_" #n, &DebugLibContext::n)
 unordered_map<string, DebugLibContext::NativeCallback*> DebugLibContext::Callbacks = {
 	CALLBACK(GetLoadedLibrariesCount),
-	CALLBACK(GetExportedSymbols),
+	CALLBACK(GetExportedFunctions),
 	CALLBACK(DisposeMemory),
 };
 #undef CALLBACK
@@ -109,7 +109,7 @@ const string* DebugLib::FilePath() const
 	return &LibraryName;
 }
 
-vector<string> DebugLib::SymbolList() const
+vector<string> DebugLib::CodeSymbolList() const
 {
 	vector<string> list;
 	list.reserve(DebugLibContext::Callbacks.size());
@@ -117,6 +117,11 @@ vector<string> DebugLib::SymbolList() const
 		list.push_back(iter->first);
 	
 	return list;
+}
+
+vector<string> DebugLib::DataSymbolList() const
+{
+	return vector<string>();
 }
 
 ResolvedSymbol DebugLib::ResolveSymbol(const string &name)

@@ -42,7 +42,8 @@ extern "C"
 	SymbolType LibraryLookup(MathLib::Globals* globals, const char* symbolName, void** symbol);
 	void LibraryUnload(MathLib::Globals* globals);
 	
-	extern const char* LibrarySymbolNames[];
+	extern const char* LibraryCodeSymbolNames[];
+	extern const char* LibraryDataSymbolNames[];
 }
 
 #endif /* defined(__Classix__MathLib__) */

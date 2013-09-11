@@ -63,7 +63,8 @@ namespace ClassixCore
 		const void* GetGlobals() const;
 		
 		virtual const std::string* FilePath() const override;
-		virtual std::vector<std::string> SymbolList() const override;
+		virtual std::vector<std::string> CodeSymbolList() const override;
+		virtual std::vector<std::string> DataSymbolList() const override;
 		
 		virtual ResolvedSymbol ResolveSymbol(const std::string& name) override;
 		virtual std::vector<ResolvedSymbol> GetEntryPoints() override;

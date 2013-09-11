@@ -41,7 +41,8 @@ extern "C"
 	SymbolType LibraryLookup(ControlStripLib::Globals* globals, const char* symbolName, void** symbol);
 	void LibraryUnload(ControlStripLib::Globals* context);
 	
-	extern const char* LibrarySymbolNames[];
+	extern const char* LibraryCodeSymbolNames[];
+	extern const char* LibraryDataSymbolNames[];
 }
 
 #endif /* defined(__Classix__File__) */

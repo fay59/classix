@@ -95,9 +95,10 @@ namespace ClassixCore
 		void* onLoad = CFBundleGetFunctionPointerForName(bundle, CFSTR("LibraryLoad"));
 		void* lookup = CFBundleGetFunctionPointerForName(bundle, CFSTR("LibraryLookup"));
 		void* onUnload = CFBundleGetFunctionPointerForName(bundle, CFSTR("LibraryUnload"));
-		void* symbols = CFBundleGetDataPointerForName(bundle, CFSTR("LibrarySymbolNames"));
+		void* codeSymbols = CFBundleGetDataPointerForName(bundle, CFSTR("LibraryCodeSymbolNames"));
+		void* dataSymbols = CFBundleGetDataPointerForName(bundle, CFSTR("LibraryDataSymbolNames"));
 		
-		if (onLoad == nullptr || lookup == nullptr || onUnload == nullptr || symbols == nullptr)
+		if (onLoad == nullptr || lookup == nullptr || onUnload == nullptr)
 			throw std::logic_error("Incomplete library");
 		
 		Path = CFURLToStdString(bundleUrl);
@@ -105,7 +106,8 @@ namespace ClassixCore
 		OnLoad = reinterpret_cast<OnLoadFunction>(onLoad);
 		Lookup = reinterpret_cast<LookupFunction>(lookup);
 		OnUnload = reinterpret_cast<OnUnloadFunction>(onUnload);
-		Symbols = reinterpret_cast<const char**>(symbols);
+		CodeSymbols = reinterpret_cast<const char**>(codeSymbols);
+		DataSymbols = reinterpret_cast<const char**>(dataSymbols);
 		this->bundle = bundle;
 		CFRetain(bundle);
 	}
@@ -117,7 +119,8 @@ namespace ClassixCore
 		OnLoad = std::move(that.OnLoad);
 		Lookup = std::move(that.Lookup);
 		OnUnload = std::move(that.OnUnload);
-		Symbols = that.Symbols;
+		CodeSymbols = that.CodeSymbols;
+		DataSymbols = that.DataSymbols;
 		bundle = that.bundle;
 		that.bundle = nullptr;
 	}

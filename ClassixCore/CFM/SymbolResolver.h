@@ -65,7 +65,8 @@ namespace CFM
 		static const std::string TermSymbolName;
 		
 		virtual const std::string* FilePath() const = 0;
-		virtual std::vector<std::string> SymbolList() const = 0;
+		virtual std::vector<std::string> CodeSymbolList() const = 0;
+		virtual std::vector<std::string> DataSymbolList() const = 0;
 		
 		virtual ResolvedSymbol ResolveSymbol(const std::string& name) = 0;
 		virtual std::vector<ResolvedSymbol> GetEntryPoints() = 0;

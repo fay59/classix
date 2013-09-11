@@ -27,6 +27,19 @@
 #include "PEFRelocator.h"
 #include "LibraryResolutionException.h"
 
+namespace
+{
+	std::vector<std::string> GetSymbolsOfType(const PEF::ExportHashTable& table, CFM::SymbolClasses::Enum type)
+	{
+		std::vector<std::string> list;
+		std::copy_if(table.begin(), table.end(), std::back_inserter(list), [&table, type](const std::string& symbol)
+		{
+			 return table.Find(symbol)->Class == type;
+		});
+		return list;
+	}
+}
+
 namespace CFM
 {
 	PEFSymbolResolver::PEFSymbolResolver(Common::Allocator& allocator, FragmentManager& cfm, const std::string& filePath)
@@ -106,10 +119,14 @@ namespace CFM
 		return &mapping.path();
 	}
 	
-	std::vector<std::string> PEFSymbolResolver::SymbolList() const
+	std::vector<std::string> PEFSymbolResolver::CodeSymbolList() const
 	{
-		const PEF::ExportHashTable& table = container.LoaderSection()->ExportTable;
-		return std::vector<std::string>(table.begin(), table.end());
+		return GetSymbolsOfType(container.LoaderSection()->ExportTable, SymbolClasses::CodeSymbol);
+	}
+	
+	std::vector<std::string> PEFSymbolResolver::DataSymbolList() const
+	{
+		return GetSymbolsOfType(container.LoaderSection()->ExportTable, SymbolClasses::DataSymbol);
 	}
 	
 	ResolvedSymbol PEFSymbolResolver::ResolveSymbol(const std::string &symbolName)

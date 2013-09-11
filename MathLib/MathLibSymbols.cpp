@@ -22,9 +22,7 @@
 #include "MathLib.h"
 #include "MathLibFunctions.h"
 
-extern "C" const char* LibrarySymbolNames[] = {
-	"_FE_DFL_ENV",
-	"pi",
+extern "C" const char* LibraryCodeSymbolNames[] = {
 	"__fpclassify",
 	"__fpclassifyd",
 	"__fpclassifyf",
@@ -172,4 +170,11 @@ extern "C" const char* LibrarySymbolNames[] = {
 	"truncl",
 	"x80tod",
 	"x80told",
+	nullptr
+};
+
+extern "C" const char* LibraryDataSymbolNames[] = {
+	"_FE_DFL_ENV",
+	"pi",
+	nullptr
 };

@@ -21,7 +21,7 @@
 
 #include "StdCLib.h"
 
-const char* LibrarySymbolNames[] = {
+const char* LibraryCodeSymbolNames[] = {
 	"__abort",
 	"__assertprint",
 	"__DebugMallocHeap",
@@ -271,5 +271,39 @@ const char* LibrarySymbolNames[] = {
 	"wcstombs",
 	"wctomb",
 	"write",
+	nullptr
+};
+
+const char* LibraryDataSymbolNames[] = {
+	"__C_phase",
+	"__loc",
+	"__NubAt3",
+	"__p_CType",
+	"__SigEnv",
+	"__target_for_exit",
+	"__yd",
+	"_CategoryLoc",
+	"_DBL_EPSILON",
+	"_DBL_MAX",
+	"_DBL_MIN",
+	"_exit_status",
+	"_FLT_EPSILON",
+	"_FLT_MAX",
+	"_FLT_MIN",
+	"_IntEnv",
+	"_iob",
+	"_lastbuf",
+	"_LDBL_EPSILON",
+	"_LDBL_MIN",
+	"_LDBL_MAX",
+	"_PublicTimeInfo",
+	"_StdDevs",
+	"errno",
+	"MacOSErr",
+	"MoneyData",
+	"NoMoreDebugStr",
+	"NumericData",
+	"StandAlone",
+	"TimeData",
 	nullptr
 };

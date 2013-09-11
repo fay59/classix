@@ -21,7 +21,7 @@
 
 #include "ThreadsLib.h"
 
-const char* LibrarySymbolNames[] = {
+const char* LibraryCodeSymbolNames[] = {
 	"GetThreadCurrentTaskRef",
 	"GetDefaultThreadStackSize",
 	"SetThreadTerminator",
@@ -44,4 +44,9 @@ const char* LibrarySymbolNames[] = {
 	"ThreadEndCritical",
 	"SetThreadReadyGivenTaskRef",
 	"YieldToAnyThread",
+	nullptr
+};
+
+const char* LibraryDataSymbolNames[] = {
+	nullptr
 };

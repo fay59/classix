@@ -41,7 +41,8 @@ namespace ClassixCore
 		OnLoad = std::move(that.OnLoad);
 		Lookup = std::move(that.Lookup);
 		OnUnload = std::move(that.OnUnload);
-		Symbols = that.Symbols;
+		CodeSymbols = that.CodeSymbols;
+		DataSymbols = that.DataSymbols;
 		dlHandle = that.dlHandle;
 		that.dlHandle = nullptr;
 	}
@@ -55,9 +56,10 @@ namespace ClassixCore
 		OnLoad = dlsym<OnLoadFunction>(dlHandle, "LibraryLoad");
 		Lookup = dlsym<LookupFunction>(dlHandle, "LibraryLookup");
 		OnUnload = dlsym<OnUnloadFunction>(dlHandle, "LibraryUnload");
-		Symbols = dlsym<const char**>(dlHandle, "LibrarySymbolNames");
+		CodeSymbols = dlsym<const char**>(dlHandle, "LibraryCodeSymbolNames");
+		DataSymbols = dlsym<const char**>(dlHandle, "LibraryDataSymbolNames");
 		
-		if (OnLoad == nullptr || Lookup == nullptr || OnUnload == nullptr || Symbols == nullptr)
+		if (OnLoad == nullptr || Lookup == nullptr || OnUnload == nullptr)
 			throw std::logic_error("Incomplete library");
 		
 		// get the full file path

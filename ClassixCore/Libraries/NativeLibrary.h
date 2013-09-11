@@ -47,7 +47,8 @@ namespace ClassixCore
 		OnLoadFunction OnLoad;
 		LookupFunction Lookup;
 		OnUnloadFunction OnUnload;
-		const char** Symbols;
+		const char** CodeSymbols;
+		const char** DataSymbols;
 		
 		NativeLibrary() = default;
 		NativeLibrary(const NativeLibrary& that) = delete;
