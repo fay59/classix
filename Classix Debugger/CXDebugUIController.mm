@@ -306,7 +306,7 @@ static NSNib* uiNib;
 
 -(NSMenu*)exportMenuForResolver:(const CFM::SymbolResolver *)resolver
 {
-	std::vector<std::string> symbols = resolver->SymbolList();
+	std::vector<std::string> symbols = resolver->CodeSymbolList();
 	if (symbols.size() == 0)
 		return nil;
 	
