@@ -23,12 +23,15 @@
 #define __Classix__StackPreparation__
 
 #include <deque>
+#include <vector>
 #include <string>
+#include <type_traits>
 
 namespace Common
 {
 	class StackPreparator
 	{
+		std::vector<uint8_t> specialData;
 		std::deque<std::string> argv;
 		std::deque<std::string> envp;
 		
@@ -59,6 +62,15 @@ namespace Common
 		void AddEnvironmentVariables(const TIter& begin, const TIter& end)
 		{
 			envp.insert(envp.end(), begin, end);
+		}
+		
+		template<typename T>
+		void AddSpecialData(const T& item)
+		{
+			static_assert(std::is_trivially_copyable<T>::value, "Special data must be trivially copyable");
+			const uint8_t* begin = reinterpret_cast<const uint8_t*>(&item);
+			const uint8_t* end = begin + sizeof item;
+			specialData.insert(specialData.end(), begin, end);
 		}
 		
 		StackInfo WriteStack(char* stack, uint32_t virtualAddress, size_t stackSize) const;

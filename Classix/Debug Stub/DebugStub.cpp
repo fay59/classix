@@ -124,6 +124,24 @@ void DebugContext::Start(shared_ptr<WaitQueue<string>>& sink)
 	using namespace CFM;
 	
 	StackPreparator stackPrep;
+	// Put the transition vector to DebugLib_GetExportedFunctions on the top of the stack
+	// so the debugger can find it
+	uint32_t index = 0;
+	for (auto iter = fragmentManager.begin(); iter != fragmentManager.end(); iter++)
+	{
+		if (iter->first == DebugLib::LibraryName)
+		{
+			ResolvedSymbol symbol = iter->second->ResolveSymbol("DebugLib_GetExportedFunctions");
+			if (symbol.Universe != SymbolUniverse::LostInTimeAndSpace)
+			{
+				const PEF::TransitionVector* vector = allocator->ToPointer<PEF::TransitionVector>(symbol.Address);
+				stackPrep.AddSpecialData(*vector);
+				stackPrep.AddSpecialData(UInt32(index));
+			}
+			break;
+		}
+		index++;
+	}
 	
 	// Do a pass to find all init symbols and the main symbol. We need this to be able to create the main thread
 	// before the initializer threads.

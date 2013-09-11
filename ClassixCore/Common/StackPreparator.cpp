@@ -67,6 +67,14 @@ namespace
 			memcpy(sp, &value, sizeof value);
 			return sp - begin;
 		}
+		
+		ptrdiff_t Write(const uint8_t* value, size_t size)
+		{
+			sp -= size;
+			assert(sp >= begin && "Stack overflow");
+			memcpy(sp, value, size);
+			return sp - begin;
+		}
 	};
 }
 
@@ -99,6 +107,8 @@ namespace Common
 	StackPreparator::StackInfo StackPreparator::WriteStack(char *stack, uint32_t virtualAddress, size_t stackSize) const
 	{
 		//  stack layout:
+		// +-------------+
+		// | special data|
 		// +-------------+
 		// | string area |
 		// +-------------+
@@ -135,6 +145,8 @@ namespace Common
 		
 		StackInfo result;
 		StackBuilder builder(stack, stackSize);
+		
+		builder.Write(specialData.data(), specialData.size());
 		
 		std::deque<uint32_t> stringOffsets;
 		for (const std::string& arg : argv)
