@@ -125,7 +125,8 @@ void DebugContext::Start(shared_ptr<WaitQueue<string>>& sink)
 	
 	StackPreparator stackPrep;
 	// Put the transition vector to DebugLib_GetExportedFunctions on the top of the stack
-	// so the debugger can find it
+	// so the debugger can find it. This is done with a linear search because we need the
+	// index of the resolver.
 	uint32_t index = 0;
 	for (auto iter = fragmentManager.begin(); iter != fragmentManager.end(); iter++)
 	{
@@ -167,7 +168,7 @@ void DebugContext::Start(shared_ptr<WaitQueue<string>>& sink)
 	
 	assert(mainSymbol.Universe != SymbolUniverse::LostInTimeAndSpace);
 	
-	// Start (but don't run) the main thread. We create it because once a thread is created, the DebugThreadManager
+	// Create (but don't run) the main thread. We create it because once a thread is created, the DebugThreadManager
 	// will stop its main loop if it reaches 0 threads again.
 	const PEF::TransitionVector* vector = allocator->ToPointer<PEF::TransitionVector>(mainSymbol.Address);
 	auto& thread = threads.StartThread(stackPrep, StackPreparator::DefaultStackSize, *vector, false);
@@ -389,7 +390,7 @@ uint8_t DebugStub::WriteMemory(const string& commandString, string& output)
 	uint32_t address;
 	size_t size;
 	int charsRead;
-	if (sscanf(commandString.c_str(), "M%x,%zd:%n", &address, &size, &charsRead) == 2)
+	if (sscanf(commandString.c_str(), "M%x,%zx:%n", &address, &size, &charsRead) == 2)
 	{
 		uint8_t* memory = context->allocator->ToPointer<uint8_t>(address);
 		auto details = context->allocator->GetDetails(memory);
@@ -737,7 +738,7 @@ uint8_t DebugStub::QueryRegisterInformation(const string &commandString, string 
 	output = StringPrintf("name:%s;bitsize:%u;offset:%lu;encoding:%s;format:%s;set:%s;", regName, bitSize, offset, encoding, format, set);
 	if (regNumber == 1)
 	{
-		output += "alt-name:sp;generic:fp;";
+		output += "alt-name:sp;generic:sp;";
 	}
 	else if (regNumber == 2)
 	{
